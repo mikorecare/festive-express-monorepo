@@ -1,0 +1,254 @@
+/* assets/css/main.css */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', system-ui, sans-serif;}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', system-ui, sans-serif;
+}
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+  
+/* Page Banner Hero Global */
+.page-hero {
+  position: relative;
+  height: 420px;
+  background-image: url('/Images/hero-image.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  color: white;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 35, 64, 0.75);
+  display: flex;
+  align-items: center;
+}
+
+.hero-content {
+  text-align: center;
+  width: 100%;
+}
+
+.hero-content h1 {
+  font-size: 3.8rem;
+  margin-bottom: 8px;
+}
+.breadcrumb {
+  font-size: 1.1rem !important;
+  opacity: 0.9;
+  text-align: center;
+  display: block !important;
+}
+
+.snow-bg:after {
+  content: '';
+  display: block;
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background-image: 
+    url('/Images/Banner/snow1.png'),
+    url('/Images/Banner/snow2.png'),
+    url('/Images/Banner/snow3.png');
+  animation: snow 15s linear infinite;
+}
+@keyframes snow {
+  0% { background-position: 0 0, 0 0, 0 0; }
+  100% { background-position: 500px 1000px, 300px 800px, 200px 600px; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page-hero {
+    height: 320px;
+  }
+  .hero-content h1 {
+    font-size: 2.8rem;
+  }
+}
+/* End Page Hero Global */
+
+/* Page Main Section - Header */
+.page-main-section {
+  padding: 70px 0;
+  background: white;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+.section-title {
+  font-size: 2.5rem;
+  color: #0c2340;
+  margin-bottom: 12px;
+}
+.subtitle {
+  color: #555;
+  max-width: 600px;
+  margin: 0 auto;
+}
+/* End Page Main Section */
+
+/* BUTTONS */
+.btn-primary {
+  display: block;
+  width: 100%;
+  max-width: 320px;           /* Optional: limit max width */
+  margin: 20px auto 0;
+  background: #F49322;
+  color: white;
+  border: none;
+  padding: 16px 32px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  background: #0c2340;
+  transform: translateY(-2px);
+}
+
+.btn-primary.btn-large {
+  width: 100%;
+  padding: 18px;
+  font-size: 1.2rem;
+  margin-top: 24px;
+}
+
+.btn-primary:hover {
+  background: #0c2340;
+}
+
+.btn-secondary {
+  display: block;
+  width: auto;
+  max-width: 320px;           /* Optional: limit max width */
+  margin: 0 auto;
+  background: #0c2340 !important; 
+  color: white !important;
+  border: none;
+  padding: 16px 32px !important;
+  border-radius: 8px !important;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.3s !important;
+  text-decoration: none !important;
+}
+
+.btn-secondary:hover {
+  background: #0c2340;
+  transform: translateY(-2px);
+}
+
+.select-btn-border {
+  padding: 12px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  background: transparent;
+  color: #f59e0b;
+  border: 1px solid #f59e0b;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.select-btn-border:hover {
+  background-color: rgb(253 153 35 / 0.1);
+  transform: scale(1.03);
+}
+
+.details-btn, .select-btn {
+  padding: 12px 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  background: #f59e0b;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.details-btn:hover, .select-btn:hover {
+  background: #d97706;
+  color: #fff;
+  transform: scale(1.03);
+}
+
+
+
+
+/* Font Color */
+.font-color-orange {
+  color: #F49322 !important;
+}
+.font-weight-bold{
+  font-weight: bold;
+}
+.ml-2{margin-left: .5rem !important;}
+.mr-2{margin-right: .5rem !important;}
+
+/* Badge */
+.badge {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 6px 18px;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: white;
+  display: none !important;
+}
+
+.standard {
+  background: #f59e0b;   /* Orange */
+}
+
+.popular {
+  background: #ef4444;   /* Red */
+}
+
+.premium {
+  background: #8b5cf6;   /* Purple / Violet */
+}
+
+.featured {
+  background: #0c2340;   /* Dark Navy */
+}
+
+* New ones */
+.new {
+  background: #10b981;   /* Green */
+}
+
+.best-seller {
+  background: #F49322;   /* Brand Orange */
+}
+
+.limited {
+  background: #dc2626;   /* Strong Red */
+}
+
+.exclusive {
+  background: #1e3a8a;   /* Deep Blue */
+}
