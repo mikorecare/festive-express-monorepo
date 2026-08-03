@@ -1,342 +1,391 @@
 <template>
-  <section class="packages-table-section">
+  <section class="featured-bundles">
     <div class="container">
-      <h2 class="section-title">Package Comparison</h2>
-      <p class="section-sub">See exactly what’s included in each plan</p>
-
-      <div class="table-wrapper">
-        <table class="compare-table">
-          <thead>
-            <tr>
-              <th class="feature-col">Features</th>
-              <th v-for="pkg in packageProducts" :key="pkg.id" class="pkg-col">
-                <div class="pkg-head" :class="pkg.name?.toLowerCase()">
-                  <img 
-                    v-if="pkg.image_url" 
-                    :src="getImageUrl(pkg.image_url)" 
-                    :alt="pkg.name"
-                    class="pkg-img"
-                    @error="handleImgError"
-                  >
-                  <h4>{{ pkg.name }}</h4>
-                  <div class="pkg-price">${{ Number(pkg.price).toLocaleString() }}</div>
-                  <small v-if="pkg.max_roofline_ft || true">up to 125 ft</small>
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(row, rIndex) in comparisonRows" :key="rIndex">
-              <td class="feature-name">
-                <img 
-                  :src="row.image" 
-                  :alt="row.label" 
-                  class="feature-icon"
-                  @error="handleImgError"
-                >
-                <span>{{ row.label }}</span>
-              </td>
-              <td v-for="pkg in packageProducts" :key="pkg.id" class="value-cell">
-                <template v-if="getValue(pkg, row.key) === false || getValue(pkg, row.key) === 'x'">
-                  <span class="icon-no">✕</span>
-                </template>
-                <template v-else-if="getValue(pkg, row.key) === true || getValue(pkg, row.key) === '✓'">
-                  <span class="icon-yes">✓</span>
-                </template>
-                <template v-else>
-                  <span class="icon-qty">{{ getValue(pkg, row.key) }}</span>
-                </template>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="section-header">
+        <h2 class="section-title">Holiday Package Programs</h2>
+        <p class="subtitle">Choose the perfect package for your home</p>
       </div>
 
-      <div class="table-actions">
-        <NuxtLink 
-          v-for="pkg in packageProducts" 
+      <div class="packages-grid">
+        <div
+          v-for="pkg in packageProducts"
           :key="pkg.id"
-          :to="`/checkout?package=${pkg.slug || pkg.name?.toLowerCase()}`"
-          class="btn-select"
-          :class="pkg.name?.toLowerCase()"
+          class="package-card"
+          :class="{ popular: pkg.is_popular }"
         >
-          Select {{ pkg.name }}
-        </NuxtLink>
+          <div class="image-wrapper">
+            <img
+              :src="getImageUrl(pkg.image_url)"
+              :alt="pkg.name"
+              class="package-image"
+            >
+            <div
+              class="badge"
+              :class="{
+                standard: isName(pkg.name, 'joy'),
+                popular: isName(pkg.name, 'jolly'),
+                premium: isName(pkg.name, 'merry')
+              }"
+            >
+              {{ getBadgeText(pkg.name) }}
+            </div>
+          </div>
+
+          <div class="packages-info">
+            <div class="title-row">
+              <h3>{{ pkg.name }}</h3>
+              <div class="price">${{ Number(pkg.price).toFixed(2) }}</div>
+            </div>
+
+            <div class="card-actions">
+              <div class="description-tooltip">
+                <button type="button" class="select-btn-border w-100">View Features</button>
+                <div class="tooltip-content">
+                  <div
+                    v-for="(variation, vIndex) in (pkg.variations || [])"
+                    :key="vIndex"
+                    class="variation-group"
+                  >
+                    <strong>{{ variation.name }}</strong>
+                    <div
+                      v-for="(option, oIndex) in (variation.options || [])"
+                      :key="oIndex"
+                      class="feature-line"
+                    >
+                      <img
+                        v-if="option.image_url"
+                        :src="getImageUrl(option.image_url)"
+                        class="option-preview"
+                        alt=""
+                      >
+                      <span>{{ option.name }}</span>
+                    </div>
+                  </div>
+                  <p v-if="!pkg.variations?.length" class="empty-features">
+                    Features coming soon
+                  </p>
+                </div>
+              </div>
+
+              <button type="button" class="select-btn w-100" @click="selectPackage(pkg)">
+                Select {{ shortName(pkg.name) }}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-const config = useRuntimeConfig()
+type PackageProduct = {
+  id: number
+  name: string
+  price: number
+  is_popular?: boolean
+  is_package?: boolean
+  package_data?: string
+  image_url?: string | null
+  created_at?: string
+  variations?: Array<{
+    name: string
+    options: Array<{ name: string; image_url?: string }>
+  }>
+}
 
-const packages = ref<any[]>([])
+const packages = ref<PackageProduct[]>([])
+const config = useRuntimeConfig()
 
 onMounted(async () => {
   try {
     const res: any = await $fetch('/products', {
       baseURL: config.public.apiBase,
-      params: { is_package: true, status: 'publish' }
+      params: {
+        is_package: true,
+        status: 'publish'
+      }
     })
     packages.value = res.data || res || []
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    console.error('Failed to load packages:', error)
   }
 })
 
+/** Outdoor only */
 const packageProducts = computed(() =>
   packages.value
-    .filter((p: any) => p.is_package && p.package_data === 'holiday-lighting-package-programs')
-    .sort((a: any, b: any) => a.id - b.id)
+    .filter(
+      (p) =>
+        p.is_package &&
+        p.package_data === 'holiday-lighting-package-programs'
+    )
+    .sort((a, b) => {
+      const ta = a.created_at ? new Date(a.created_at).getTime() : 0
+      const tb = b.created_at ? new Date(b.created_at).getTime() : 0
+      return ta - tb
+    })
 )
 
-// Rows shown in the table (edit labels/images as needed)
-const comparisonRows = [
-  {
-    key: 'c9',
-    label: 'C-9 Lights, roofline',
-    image: '/Images/inclusions/c9-lights.jpg'
-  },
-  {
-    key: 'wreath',
-    label: '24" Mixed Noble Wreath',
-    image: '/Images/inclusions/wreath.jpg'
-  },
-  {
-    key: 'bow',
-    label: '12" Velvet Red Bow',
-    image: '/Images/inclusions/bow.jpg'
-  },
-  {
-    key: 'stake',
-    label: 'Stake Lights, Warm White',
-    image: '/Images/inclusions/stake-lights.jpg'
-  },
-  {
-    key: 'minis',
-    label: '5mm Minis, Warm White',
-    image: '/Images/inclusions/mini-lights.jpg'
-  },
-  {
-    key: 'bursts',
-    label: 'Light Bursts, Warm White',
-    image: '/Images/inclusions/light-bursts.jpg'
-  },
-]
-
-// Map package name → values (match your real inclusions)
-const packageMatrix: Record<string, Record<string, string | number | boolean>> = {
-  joy: {
-    c9: '✓',
-    wreath: false,
-    bow: false,
-    stake: false,
-    minis: false,
-    bursts: false,
-  },
-  jolly: {
-    c9: '✓',
-    wreath: 1,
-    bow: 1,
-    stake: 50,
-    minis: false,
-    bursts: false,
-  },
-  merry: {
-    c9: '✓',
-    wreath: 1,
-    bow: 1,
-    stake: 50,
-    minis: 15,
-    bursts: 6,
-  },
-}
-
-const getValue = (pkg: any, key: string) => {
-  const name = pkg.name?.toLowerCase() || ''
-  return packageMatrix[name]?.[key] ?? false
+const selectPackage = (pkg: PackageProduct) => {
+  navigateTo(`/products/${pkg.id}`)
 }
 
 const getImageUrl = (url?: string | null) => {
-  if (!url) return '/Images/placeholder.jpg'
-  if (url.startsWith('http')) return url
-  return `${config.public.imageBase.replace(/\/$/, '')}/${url.replace(/^\//, '')}`
+  if (!url) return '/Images/placeholder.png'
+  return `${config.public.imageBase}/${url}`
 }
 
-const handleImgError = (e: Event) => {
-  const img = e.target as HTMLImageElement
-  if (img) img.src = '/Images/placeholder.jpg'
+const isName = (name: string, key: string) =>
+  name.toLowerCase().includes(key)
+
+const getBadgeText = (name: string) => {
+  const n = name.toLowerCase()
+  if (n.includes('joy')) return 'STANDARD'
+  if (n.includes('jolly')) return 'POPULAR'
+  if (n.includes('merry')) return 'PREMIUM'
+  return 'PACKAGE'
+}
+
+const shortName = (name: string) => {
+  const n = name.toLowerCase()
+  if (n.includes('joy')) return 'Joy'
+  if (n.includes('jolly')) return 'Jolly'
+  if (n.includes('merry')) return 'Merry'
+  return name
 }
 </script>
 
 <style scoped>
-.packages-table-section {
-  padding: 80px 0;
-  background: #0c2340;
-  color: #fff;
+.featured-bundles {
+  padding: 70px 0;
+  background: #fff;
 }
 
-.section-title {
+.section-header {
   text-align: center;
-  font-size: 2.4rem;
-  font-weight: 800;
-  margin-bottom: 8px;
-}
-
-.section-sub {
-  text-align: center;
-  opacity: 0.8;
   margin-bottom: 40px;
 }
 
-.table-wrapper {
-  overflow-x: auto;
-  border-radius: 16px;
-  background: rgba(255,255,255,0.05);
+.section-title {
+  font-size: 2.5rem;
+  color: #0c2340;
+  margin-bottom: 10px;
 }
 
-.compare-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 700px;
-}
-
-.compare-table th,
-.compare-table td {
-  padding: 16px 18px;
+.subtitle {
+  color: #555;
+  margin: 0;
   text-align: center;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  max-width: 100%;
 }
 
-.feature-col {
-  text-align: left !important;
-  width: 28%;
+/* 3 columns on desktop */
+.packages-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
 }
 
-.pkg-head {
+.package-card {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 12px 8px;
-  border-radius: 12px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.pkg-head.joy { background: #166534; }
-.pkg-head.jolly { background: #c2410f; }
-.pkg-head.merry { background: #991b1b; }
+.package-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
+}
 
-.pkg-img {
-  width: 56px;
-  height: 56px;
+.image-wrapper {
+  position: relative;
+}
+
+.package-image {
+  width: 100%;
+  height: 220px;
   object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 4px;
-}
-
-.pkg-head h4 {
-  margin: 0;
-  font-size: 1.2rem;
-  font-weight: 800;
-}
-
-.pkg-price {
-  font-size: 1.1rem;
-  font-weight: 700;
-}
-
-.pkg-head small {
-  font-size: 0.8rem;
-  opacity: 0.85;
-}
-
-.feature-name {
-  text-align: left !important;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-weight: 500;
-  color: #e2e8f0;
-}
-
-.feature-icon {
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
-  border-radius: 8px;
-  flex-shrink: 0;
-  background: rgba(255,255,255,0.1);
-}
-
-.value-cell {
-  font-size: 1.1rem;
-  font-weight: 700;
-}
-
-.icon-no {
-  color: #f87171;
-  font-size: 1.2rem;
-}
-
-.icon-yes {
-  color: #4ade80;
-  font-size: 1.3rem;
-}
-
-.icon-qty {
-  color: #fff;
-  background: rgba(255,255,255,0.15);
-  padding: 4px 12px;
-  border-radius: 50px;
-  font-size: 0.95rem;
-}
-
-.table-actions {
-  display: grid;
-  grid-template-columns: 28% 1fr 1fr 1fr;
-  gap: 12px;
-  margin-top: 24px;
-  align-items: center;
-}
-
-.table-actions .btn-select {
   display: block;
-  text-align: center;
-  padding: 14px;
-  border-radius: 10px;
-  font-weight: 700;
-  text-decoration: none;
-  color: #fff;
-  background: #1e3a5f;
-  transition: background 0.3s;
 }
 
-.table-actions .btn-select:hover {
+.badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: #0c2340;
+}
+
+.badge.popular {
   background: #F49322;
 }
 
-.table-actions .btn-select.joy { background: #166534; }
-.table-actions .btn-select.jolly { background: #c2410f; }
-.table-actions .btn-select.merry { background: #991b1b; }
-
-.table-actions .btn-select:first-child {
-  /* spacer under feature column */
-  visibility: hidden;
-  pointer-events: none;
+.badge.premium {
+  background: #991b1b;
 }
 
-/* Fix: actions only under the 3 packages */
-.table-actions {
+.badge.standard {
+  background: #166534;
+}
+
+.packages-info {
+  padding: 22px 22px 26px;
   display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-  padding-left: 28%;
+  flex-direction: column;
+  gap: 18px;
+  flex: 1;
 }
 
-@media (max-width: 768px) {
-  .table-actions {
-    padding-left: 0;
-    flex-direction: column;
+.title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title-row h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0c2340;
+}
+
+.price {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #F49322;
+  white-space: nowrap;
+}
+
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.btn-outline,
+.btn-select {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-outline {
+  background: #fff;
+  color: #0c2340;
+  border: 2px solid #0c2340;
+}
+
+.btn-outline:hover {
+  background: #f8fafc;
+}
+
+.btn-select {
+  background: #92400e;
+  color: #fff;
+  border: none;
+}
+
+.btn-select:hover {
+  background: #0c2340;
+}
+
+/* Features tooltip */
+.description-tooltip {
+  position: relative;
+}
+
+.tooltip-content {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(340px, 90vw);
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  z-index: 20;
+  text-align: left;
+}
+
+.description-tooltip:hover .tooltip-content,
+.description-tooltip:focus-within .tooltip-content {
+  opacity: 1;
+  visibility: visible;
+}
+
+.variation-group {
+  margin-bottom: 10px;
+}
+
+.variation-group strong {
+  display: block;
+  color: #0c2340;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.feature-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.option-preview {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.empty-features {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 992px) {
+  .packages-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .section-title {
+    font-size: 1.85rem;
+  }
+
+  .packages-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .package-image {
+    height: 200px;
   }
 }
 </style>
