@@ -3,7 +3,7 @@
     <HomeHero />
     <!-- <HomeCollections /> -->
     <!-- <HomeFeaturedBundles /> -->
-    <HomeFeaturedPackage /> <!-- With Indoor -->
+    <!--<HomeFeaturedPackage />  With Indoor -->
     <HomeFeaturedPackage3 />  <!-- Without Indoor -->
     <!-- <HomePatrioticDecor />
     <HomeSeasonalSale />
