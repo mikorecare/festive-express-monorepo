@@ -39,6 +39,21 @@
                 <label class="form-label">Installation Address</label>
                 <input v-model="form.shipping_address_1" type="text" class="form-control" placeholder="123 Festive Lane, Sarasota, FL 34234" required>
               </div>
+
+              <div class="col-md-6">
+                <label class="form-label">ZIP / Postcode</label>
+                <input
+                  v-model="form.billing_postcode"
+                  type="text"
+                  class="form-control"
+                  maxlength="10"
+                  placeholder="e.g. 34236"
+                  required
+                >
+                <small class="zip-hint">Service area: Sarasota &amp; Manatee counties (incl. Lakewood Ranch)</small>
+                <p v-if="zipError" class="error">{{ zipError }}</p>
+              </div>
+
               <!-- Customer Note -->
               <div class="col-12">
                 <label class="form-label">Customer Note <span class="text-muted">(optional)</span></label>
@@ -206,6 +221,11 @@
 </template>
 
 <script setup lang="ts">
+useHead({
+  title: computed(() => {
+    return 'Checkout - Festive Lighting Pros Express'
+  })
+})
 const config = useRuntimeConfig()
 const FL_TAX_RATE = Number(config.public.flTaxRate) || 0.07
 const { cartItems, cartTotal, cartCount, loadCart, clearCart } = useCart()
@@ -224,6 +244,7 @@ const form = ref({
   billing_email: '',
   billing_phone: '',
   shipping_address_1: '',
+  billing_postcode: '',
   preferred_install_date: '',
   removal_date: '',
   card_name: '',
@@ -283,13 +304,15 @@ const buildOrderPayload = () => {
     billing_last_name: lastName,
     billing_email: form.value.billing_email,
     billing_phone: form.value.billing_phone,
+    billing_postcode: form.value.billing_postcode,
     shipping_address_1: form.value.shipping_address_1,
+    shipping_postcode: form.value.billing_postcode,
     preferred_install_date: form.value.preferred_install_date,
     removal_date: form.value.removal_date || null,
-    status: 'processing',           // paid
+    status: 'processing',
     payment_method: 'converge',
     payment_status: 'paid',
-    subtotal: cartTotal.value+ alacarteCartTotal.value, // or your subtotal
+    subtotal: cartTotal.value + alacarteCartTotal.value,
     tax_total: estimatedTax.value,
     total: grandTotal.value,
     items: cartItems.value.map((item: any) => ({
@@ -313,6 +336,14 @@ const validateCheckout = () => {
     toast.error('Please fill in all required service information')
     return false
   }
+  if (!form.value.shipping_address_1) {
+    toast.error('Please enter the installation address')
+    return false
+  }
+  if (!validateZips()) {
+    toast.error(zipError.value)
+    return false
+  }
   if (!form.value.preferred_install_date) {
     toast.error('Please select a preferred installation date')
     return false
@@ -327,13 +358,17 @@ const payWithConverge = async () => {
   try {
     await loadConvergeScript()
 
+    const nameParts = form.value.billing_first_name.trim().split(' ')
+    const firstName = nameParts[0] || ''
+    const lastName = nameParts.slice(1).join(' ') || firstName
+
     const tokenRes: any = await $fetch('/converge/token', {
       baseURL: config.public.apiBase,
       method: 'POST',
       body: {
         amount: grandTotal.value,
-        first_name: form.value.billing_first_name,
-        last_name: form.value.billing_last_name,
+        first_name: firstName,
+        last_name: lastName,
         email: form.value.billing_email,
         invoice_number: `FLP-${Date.now()}`,
       }
@@ -449,6 +484,31 @@ const payWithConverge = async () => {
 //     isSubmitting.value = false
 //   }
 // }
+
+const { isServiceZip, normalizeZip } = useServiceZips()
+
+const zipError = ref('')
+
+const validateZips = () => {
+  zipError.value = ''
+
+  const zip = normalizeZip(form.value.billing_postcode || '')
+
+  if (!zip || zip.length !== 5) {
+    zipError.value = 'Please enter a valid 5-digit ZIP code.'
+    return false
+  }
+
+  if (!isServiceZip(zip)) {
+    zipError.value =
+      'Sorry, we only serve the Sarasota / Bradenton / Lakewood Ranch area. Please enter a valid ZIP code.'
+    return false
+  }
+
+  form.value.billing_postcode = zip
+  return true
+}
+
 
 onMounted(() => {
   loadCart()
@@ -621,5 +681,17 @@ onMounted(() => {
 .early-bird i {
   font-size: 2rem;
   opacity: 0.8;
+}
+
+.zip-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+.error {
+  color: #ef4444;
+  font-size: 0.9rem;
+  margin-top: 6px;
 }
 </style>
