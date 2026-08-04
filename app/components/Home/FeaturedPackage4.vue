@@ -3,7 +3,7 @@
     <div class="container">
       <div class="section-header">
         <h2 class="section-title">
-          Festive Express makes professional holiday lighting simple.
+          Festive Express makes<br>professional <span>holiday lighting</span> simple.
         </h2>
         <p class="subtitle">
           Choose one of three fixed packages.<br>
@@ -222,13 +222,19 @@ const getPackagePhoto = (name: string) => {
   font-size: 2.5rem;
   color: var(--navy);
   margin-bottom: 12px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+.section-title span{
+  color: var(--orange);
 }
 
 .subtitle {
-  color: #555;
-  max-width: 600px;
+  color: #000;
+  max-width: 80%;
   margin: 0 auto;
-  line-height: 1.55;
+  line-height: 1.3;
+  font-size: 1.25rem
 }
 
 .packages-cards-row {
@@ -243,7 +249,7 @@ const getPackagePhoto = (name: string) => {
   width: 100%;
   max-width: 340px;
   border-radius: 28px;
-  background: var(--navy);
+  /* background: var(--navy); */
   overflow: visible;
   box-shadow: 0 14px 36px rgba(28, 45, 91, 0.28);
 }
@@ -251,7 +257,7 @@ const getPackagePhoto = (name: string) => {
 .card-top {
   position: relative;
   padding: 12px 12px 0;
-  background: var(--navy);
+  /* background: var(--navy); */
 }
 
 .card-image {
@@ -310,14 +316,31 @@ const getPackagePhoto = (name: string) => {
   z-index: -1;
 }
 
+/* .card-panel {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 140px 18px 22px;
+  background: var(--navy);
+  border-radius: 28px 28px 0 0;
+  margin-top: -90px;
+} */
+
 .card-panel {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: 12px;
-  padding: 40px 18px 22px;
-  background: var(--navy);
-  border-radius: 0 0 28px 28px;
+  padding: 140px 18px 22px;
+  margin-top: -90px;
+  border-radius: 28px 28px 0 0;
+
+  background-color: var(--navy);
+  background-image: url('/Images/LV.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 200%; /* or contain / 100% 100% */
 }
 
 .btn-inclusions {
@@ -447,10 +470,10 @@ const getPackagePhoto = (name: string) => {
 }
 
 .footer-note h4 {
-  color: var(--navy);
+  color: #000;
   font-weight: 500;
-  line-height: 1.5;
-  max-width: 720px;
+  line-height: 1.3;
+  max-width: 80%;
   margin: 0 auto;
 }
 
@@ -488,8 +511,10 @@ const getPackagePhoto = (name: string) => {
   }
 
   .card-panel {
-    padding: 36px 14px 18px;
+    padding: 100px 14px 18px; /* less top space */
+    margin-top: -70px;
     flex-wrap: wrap;
+    gap: 10px;
   }
 
   .btn-inclusions {
