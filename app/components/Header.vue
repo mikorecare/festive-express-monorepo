@@ -76,7 +76,7 @@
         <div class="header-content">
           <!-- Logo -->
           <NuxtLink to="/" class="logo">
-            <img src="/Images/FLP-EXPRESS-BLUE.png" alt="FLP Express Logo" class="logo-img">
+            <img src="/Images/FE-Logo.jpg" alt="FLP Express Logo" class="logo-img">
             <p class="tagline">Rent • Relax • Celebrate</p>
           </NuxtLink>
 

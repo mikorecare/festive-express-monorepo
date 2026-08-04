@@ -6,8 +6,10 @@
     <div class="overlay"></div>
     
     <div class="hero-content">
-      <h1>YOUR HOLIDAY LIGHTS, YOUR WAY!</h1>
-      <p class="tagline">Brighten your home for the holidays—fast, easy, and totally under your control.</p>
+      <h1>YOUR HOLIDAY LIGHTS, DONE.</h1>
+      <p class="tagline">Giftwrapped in One Simple Package.<br>
+        <span>(No ladders. No tangled cords. No storage. No stress.)</span>
+      </p>
       <NuxtLink to="/packages" class="btn-primary">Shop Packages</NuxtLink>
     </div>
   </div>
@@ -66,5 +68,9 @@
 .hero-content .tagline {
   font-size: 1.5rem;
   margin-bottom: 40px;
+}
+.hero-content .tagline span{
+  font-size: 1rem;
+  /* margin-bottom: 40px; */
 }
 </style>
