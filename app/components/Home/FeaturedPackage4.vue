@@ -3,7 +3,8 @@
     <div class="container">
       <div class="section-header">
         <h2 class="section-title">Festive Express makes professional holiday lighting simple.</h2>
-        <p class="subtitle">Choose one of three fixed packages. Pay once. Pick your install date and take-down date. We handle the rest.</p>
+        <p class="subtitle">Choose one of three fixed packages. <br>
+Pay once. Pick your install date and take-down date.  We handle the rest.</p>
       </div>
 
       <div class="packages-cards-row">
