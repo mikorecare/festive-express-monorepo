@@ -1,5 +1,5 @@
 <template>
-  <section class="dream-holiday">
+  <section class="dream-holiday" id="how-it-works">
     <div class="container">
       <div class="dream-content">
         <div class="dream-text">
@@ -30,6 +30,7 @@
   position: relative;
   overflow: hidden;
   z-index: 2;
+  scroll-margin-top: 110px;
 }
 /* Pattern Overlay */
 .dream-holiday::before {

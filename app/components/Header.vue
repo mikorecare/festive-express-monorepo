@@ -14,14 +14,6 @@
             </span>
           </div>
 
-          <!-- <div class="social-icons">
-            <a href="#" target="_blank" class="social-link" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-            <a href="#" target="_blank" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-            <a href="#" target="_blank" class="social-link" aria-label="X"><i class="fab fa-x-twitter"></i></a>
-            <a href="#" target="_blank" class="social-link" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-            <a href="#" target="_blank" class="social-link" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
-          </div> -->
-
           <div class="social-icons">
             <a
               v-if="settings.social_facebook"
@@ -84,26 +76,18 @@
           <nav class="main-menu desktop-nav">
             <ul>
               <li><NuxtLink to="/">Home</NuxtLink></li>
-              <li><NuxtLink to="/packages">Packages</NuxtLink></li>
-              <li><NuxtLink to="/how-it-works">How It Works</NuxtLink></li>
+              <li><a href="/#packages" @click.prevent="scrollTo('packages')">Packages</a></li>
+              <li><a href="/#how-it-works" @click.prevent="scrollTo('how-it-works')">How It Works</a></li>
               <li><NuxtLink to="/contact">Contact Us</NuxtLink></li>
             </ul>
           </nav>
 
           <!-- Right actions -->
           <div class="header-actions">
-            <!-- <a href="tel:+19412221012" class="contact-box btn-secondary">
-              <span class="phone-icon"><i class="fas fa-phone-alt"></i></span>
-              <div class="contact-text">
-                <div class="phone-number">(941) 222-1012</div>
-                <div class="call-now">CALL US NOW!</div>
-              </div>
-            </a> -->
-
             <a :href="telHref" class="contact-box btn-secondary">
               <span class="phone-icon"><i class="fas fa-phone-alt"></i></span>
               <div class="contact-text">
-                <div class="phone-number">{{ settings.contact_phone_display || '(941) 222-1012' }}</div>
+                <div class="phone-number">{{ settings.contact_phone_display || '(941) 239-4722' }}</div>
                 <div class="call-now">CALL US NOW!</div>
               </div>
             </a>
@@ -157,6 +141,16 @@ const { cartTotal, cartCount, loadCart } = useCart()
 
 const handleScroll = () => {
   isSticky.value = window.scrollY > 120
+}
+
+const router = useRouter()
+
+const scrollTo = async (id: string) => {
+  if (route.path !== '/') {
+    await navigateTo({ path: '/', hash: `#${id}` })
+  }
+  await nextTick()
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
 }
 
 onMounted(() => {

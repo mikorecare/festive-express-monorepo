@@ -1,14 +1,41 @@
 /* assets/css/main.css */
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', system-ui, sans-serif;}
+html { scroll-behavior: smooth; }
 body {
   margin: 0;
   padding: 0;
   font-family: 'Poppins', system-ui, sans-serif;
+  padding-top: 195px;
 }
 .container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 20px;
+}
+header{
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+@keyframes festive-express-animation-pulse-grow {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+
+/* Optional reusable class */
+.pulse-grow {
+  animation-name: festive-express-animation-pulse-grow;
+  animation-duration: 0.3s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
 }
   
 /* Page Banner Hero Global */
@@ -47,7 +74,7 @@ body {
   display: block !important;
 }
 
-.snow-bgxx:after {
+/* .snow-bg:after {
   content: '';
   display: block;
   position: absolute;
@@ -66,7 +93,7 @@ body {
 @keyframes snow {
   0% { background-position: 0 0, 0 0, 0 0; }
   100% { background-position: 500px 1000px, 300px 800px, 200px 600px; }
-}
+} */
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -251,4 +278,13 @@ body {
 
 .exclusive {
   background: #1e3a8a;   /* Deep Blue */
+}
+
+
+
+/* Global or in the packages component */
+#packages,
+#how-it-works,
+section[id] {
+  scroll-margin-top: 110px; /* adjust to header height */
 }
