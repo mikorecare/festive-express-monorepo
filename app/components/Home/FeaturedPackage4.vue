@@ -19,11 +19,20 @@
         >
           <div class="card-top">
             <div class="card-image">
-              <img
+              <!-- <img
                 :src="getImageUrl(pkg.image_url)"
                 :alt="pkg.name"
               >
+            </div> -->
+
+            <!-- Static -->
+            <div class="card-image">
+              <img
+                :src="getPackagePhoto(pkg.name)"
+                :alt="pkg.name"
+              >
             </div>
+          </div>
 
             <img
               class="pkg-title-img"
@@ -181,6 +190,15 @@ const getPackageIcon = (name: string) => {
   if (n.includes('merry')) return `${BASE}/Icon3.png`
   return `${BASE}/Icon1.png`
 }
+
+// Static for Placeholder Temp
+const getPackagePhoto = (name: string) => {
+  const n = name.toLowerCase()
+  if (n.includes('jolly')) return `${BASE}/JollyPhoto.png`
+  if (n.includes('merry')) return `${BASE}/MERRYphoto.png`
+  return `${BASE}/JoyPhoto.png`
+}
+
 </script>
 
 <style scoped>

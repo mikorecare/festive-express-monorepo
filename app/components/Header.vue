@@ -76,8 +76,8 @@
           <nav class="main-menu desktop-nav">
             <ul>
               <li><NuxtLink to="/">Home</NuxtLink></li>
-              <li><a href="/#packages" @click.prevent="scrollTo('packages')">Packages</a></li>
-              <li><a href="/#how-it-works" @click.prevent="scrollTo('how-it-works')">How It Works</a></li>
+              <li><NuxtLink to="/packages">Packages</NuxtLink></li>
+              <li><NuxtLink to="/how-it-works">How It Works</NuxtLink></li>
               <li><NuxtLink to="/contact">Contact Us</NuxtLink></li>
             </ul>
           </nav>
