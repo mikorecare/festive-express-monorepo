@@ -94,8 +94,11 @@
     font-size: 2.8rem;
     margin-top: 15px;
   }
-  .hero-content .tagline, .hero-content .tagline span{
+  .hero-content .tagline{
     font-size: 0.9rem;
+  }
+  .hero-content .tagline span{
+    font-size: 0.7rem;
   }
   .hero-image-fixed{
     background-attachment: scroll;
