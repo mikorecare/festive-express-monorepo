@@ -6,7 +6,7 @@
     <div class="overlay"></div>
     
     <div class="hero-content">
-      <h1>YOUR HOLIDAY LIGHTS, DONE.</h1>
+      <h1>YOUR HOLIDAY DECOR, DONE.</h1>
       <p class="tagline">Giftwrapped in One Simple Package.<br>
         <span>(No ladders. No tangled cords. No storage. No stress.)</span>
       </p>

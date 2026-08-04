@@ -10,16 +10,17 @@
         <!-- Contact Us -->
         <div class="footer-column">
           <h4>CONTACT US</h4>
-          <p>Corp@FLPros.com</p>
-          <p>☎ (941) 222-1012</p>
-          <p>1973 Northgate Blvd, Sarasota, FL 34234</p>
+          <p>packages@festive.express</p>
+          <p>☎ {{ settings.contact_phone_display || '(941) 239-4722' }}</p>
+          <p>By appointment only</p>
+          <!-- <p>1973 Northgate Blvd, Sarasota, FL 34234</p> -->
         </div>
 
         <!-- Customer -->
         <div class="footer-column">
           <h4>CUSTOMER</h4>
           <a href="#">Help Center</a>
-          <a href="#">My Account</a>
+          <!-- <a href="#">My Account</a> -->
           <a href="#">Refund Policy</a>
           <a href="#">Gift Cards</a>
         </div>
@@ -27,7 +28,7 @@
         <!-- Quick Links -->
         <div class="footer-column">
           <h4>QUICK LINKS</h4>
-          <a href="#">Search</a>
+          <!-- <a href="#">Search</a> -->
           <a href="#">About Us</a>
           <a href="#">Contact Us</a>
           <a href="#">Privacy Policy</a>
@@ -49,6 +50,11 @@
     </div>
   </footer>
 </template>
+
+<script setup lang="ts">
+const { settings, loadSettings, telHref } = useSettings()
+
+</script>
 
 <style scoped>
 .main-footer {
