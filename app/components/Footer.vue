@@ -120,6 +120,9 @@ const { settings, loadSettings, telHref } = useSettings()
   margin-left: 12px;
   font-size: 1.1rem;
 }
+.payment-method-img{
+  width: 100%;
+}
 
 /* Responsive */
 @media (max-width: 992px) {

@@ -82,4 +82,21 @@
   font-size: 1rem;
   /* margin-bottom: 40px; */
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-banner {
+    height: 320px;
+    min-height: 100%;
+  }
+  .hero-content h1 {
+    font-size: 2.8rem;
+  }
+  .hero-content .tagline{
+    font-size: 0.9rem;
+  }
+  .hero-image-fixed{
+    background-attachment: scroll;
+  }
+}
 </style>
