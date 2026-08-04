@@ -55,7 +55,7 @@
   text-align: center;
   color: white;
   text-shadow: 0 2px 15px rgba(0,0,0,0.8);
-  max-width: 800px;
+  max-width: 1000px; /* 800px; */
   padding: 0 20px;
 }
 
