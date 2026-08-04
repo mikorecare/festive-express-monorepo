@@ -54,7 +54,8 @@
   right: 0;
   bottom: 0;
   /* background: rgba(0, 0, 0, 0.45); */
-  background: rgba(12, 35, 64, 0.75);
+  /* background: rgba(12, 35, 64, 0.75); */
+  background: rgb(8 8 8 / 75%);
   z-index: 1;
 }
 
@@ -86,13 +87,14 @@
 /* Responsive */
 @media (max-width: 768px) {
   .hero-banner {
-    height: 320px;
+    /* height: 320px; */
     min-height: 100%;
   }
   .hero-content h1 {
     font-size: 2.8rem;
+    margin-top: 15px;
   }
-  .hero-content .tagline{
+  .hero-content .tagline, .hero-content .tagline span{
     font-size: 0.9rem;
   }
   .hero-image-fixed{
