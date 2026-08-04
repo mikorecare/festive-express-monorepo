@@ -42,7 +42,7 @@ body {
 .page-hero {
   position: relative;
   height: 420px;
-  background-image: url('/Images/Banner/hero-image2.webp');
+  background-image: url('/Images/Banner/hero-image.webp');
   background-size: cover;
   background-position: center;
   display: flex;
