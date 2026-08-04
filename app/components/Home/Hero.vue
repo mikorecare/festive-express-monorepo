@@ -35,13 +35,14 @@
   background-image: url('/Images/Banner/hero-image.webp');
   background-size: cover;
   background-position: center;
-  background-attachment: scroll; /* default: works on iOS */
+  background-attachment: fixed;   /* Fixed only in hero */
   z-index: 0;
 }
 
-@media (hover: hover) and (pointer: fine) {
+@supports (-webkit-touch-callout: none) {
+  /* iOS */
   .hero-image-fixed {
-    background-attachment: fixed;
+    background-attachment: scroll;
   }
 }
 
