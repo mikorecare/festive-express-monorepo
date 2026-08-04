@@ -1,5 +1,5 @@
 <template>
-  <div class="hero-banner snow-bg">
+  <div class="hero-banner snow-bgxx">
     <div class="hero-image-fixed"></div>
     
     <!-- Black Overlay -->
