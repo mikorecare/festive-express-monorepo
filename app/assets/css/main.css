@@ -15,7 +15,7 @@ body {
 .page-hero {
   position: relative;
   height: 420px;
-  background-image: url('/Images/hero-image.jpg');
+  background-image: url('/Images/Banner/hero-image2.webp');
   background-size: cover;
   background-position: center;
   display: flex;
@@ -47,7 +47,7 @@ body {
   display: block !important;
 }
 
-.snow-bg:after {
+.snow-bgxx:after {
   content: '';
   display: block;
   position: absolute;

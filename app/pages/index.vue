@@ -3,8 +3,9 @@
     <HomeHero />
     <!-- <HomeCollections /> -->
     <!-- <HomeFeaturedBundles /> -->
-    <HomeFeaturedPackage /> <!-- With Indoor -->
-    <HomeFeaturedPackage3 />  <!-- Without Indoor -->
+    <!-- <HomeFeaturedPackage />  With Indoor -->
+    <!-- <HomeFeaturedPackage3 /> -->  <!-- Without Indoor -->
+    <HomeFeaturedPackage4 /> <!-- NEW Indoor Only Joy, Jolly, Merry -->
     <!-- <HomePatrioticDecor />
     <HomeSeasonalSale />
     <HomeHalloweenDecor /> -->
@@ -12,8 +13,7 @@
     <HomeWhyChooseUs />
     <!-- <Newsletter /> -->
      <HomeFeaturedPackage2 />
-     <!-- <HomeFeaturedPackage3 />
-     <HomeFeaturedPackage4 /> -->
+    
   </div>
 </template>
 

@@ -1,263 +1,387 @@
 <template>
-  <section class="packages-table-section">
+  <section class="featured-bundles">
     <div class="container">
-      <h2 class="section-title">Package Comparison</h2>
-      <p class="section-sub">See exactly what’s included in each plan</p>
-
-      <div class="table-wrapper">
-        <table class="compare-table">
-          <thead>
-            <tr>
-              <th v-for="pkg in packageProducts" :key="pkg.id" class="pkg-col">
-                <div class="pkg-head" :class="pkg.name?.toLowerCase()">
-                  <img
-                    v-if="pkg.image_url"
-                    :src="getImageUrl(pkg.image_url)"
-                    :alt="pkg.name"
-                    class="pkg-img"
-                    @error="handleImgError"
-                  >
-                  <h4>{{ pkg.name }}</h4>
-                  <div class="pkg-price">${{ Number(pkg.price).toLocaleString() }}</div>
-                  <small>up to 125 ft</small>
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(row, rIndex) in comparisonRows" :key="rIndex">
-              <td
-                v-for="pkg in packageProducts"
-                :key="pkg.id"
-                class="value-cell"
-              >
-                <!-- Has value: show feature image + qty -->
-                <div v-if="hasValue(pkg, row.key)" class="cell-content">
-                  <img
-                    :src="row.image"
-                    :alt="row.label"
-                    class="check-img"
-                    @error="handleImgError"
-                  >
-                  <span v-if="isQty(pkg, row.key)" class="qty">
-                    {{ getValue(pkg, row.key) }}
-                  </span>
-                </div>
-                <!-- No value: leave blank -->
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="section-header">
+        <h2 class="section-title">Festive Express makes professional holiday lighting simple.</h2>
+        <p class="subtitle">Choose one of three fixed packages. Pay once. Pick your install date and take-down date. We handle the rest.</p>
       </div>
 
-      <div class="table-actions">
-        <NuxtLink
+      <div class="packages-cards-row">
+        <div
           v-for="pkg in packageProducts"
           :key="pkg.id"
-          :to="`/checkout?package=${pkg.slug || pkg.name?.toLowerCase()}`"
-          class="btn-select"
-          :class="pkg.name?.toLowerCase()"
+          class="package-card-v2"
+          :style="{ '--accent': pkg.color || '#F49322' }"
         >
-          Select {{ pkg.name }}
-        </NuxtLink>
+          <!-- Photo + overlapping title / lights badge -->
+          <div class="card-top">
+            <div class="card-image">
+              <img
+                :src="getImageUrl(pkg.image_url)"
+                :alt="pkg.name"
+              >
+            </div>
+
+            <h3 class="pkg-title">{{ pkg.name }}</h3>
+
+            <div class="lights-badge" aria-hidden="true">
+              <span class="sparkle">✦</span>
+              <span class="lights-icon">💡</span>
+            </div>
+          </div>
+
+          <!-- Navy bottom -->
+          <div class="card-panel">
+            <div class="description-tooltip">
+              <button type="button" class="btn-inclusions">
+                <span class="gift-icon">🎁</span>
+                <span>Discover What’s<br>Included</span>
+              </button>
+              <div class="tooltip-content">
+                <div
+                  v-for="(variation, vIndex) in (pkg.variations || [])"
+                  :key="vIndex"
+                  class="variation-group"
+                >
+                  <strong>{{ variation.name }}:</strong>
+                  <div
+                    v-for="(option, oIndex) in variation.options"
+                    :key="oIndex"
+                    class="feature-line"
+                  >
+                    <img
+                      v-if="option.image_url"
+                      :src="getImageUrl(option.image_url)"
+                      class="option-preview"
+                      alt=""
+                    >
+                    {{ option.name }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="right-actions">
+              <div class="price">
+                ${{ Number(pkg.price).toFixed(2) }}
+              </div>
+              <button
+                type="button"
+                class="btn-cart"
+                :aria-label="`Select ${pkg.name}`"
+                @click="selectPackage(pkg)"
+              >
+                🛒
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
+      
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-const config = useRuntimeConfig()
-const packages = ref<any[]>([])
+interface PackageOption {
+  name: string
+  image_url?: string
+}
+
+interface PackageVariation {
+  name: string
+  options: PackageOption[]
+}
+
+interface PackageProduct {
+  id: number
+  name: string
+  price: number | string
+  color?: string
+  image_url: string | null
+  is_package?: boolean
+  package_data?: string
+  created_at?: string
+  variations?: PackageVariation[]
+}
+
+const packages = ref<PackageProduct[]>([])
 
 onMounted(async () => {
   try {
-    const res: any = await $fetch('/products', {
-      baseURL: config.public.apiBase,
-      params: { is_package: true, status: 'publish' }
+    const res: any = await $fetch('/products?is_package=true', {
+      baseURL: useRuntimeConfig().public.apiBase,
+      params: { status: 'publish' },
     })
     packages.value = res.data || res || []
-  } catch (e) {
-    console.error(e)
+  } catch (error) {
+    console.error('Failed to load packages:', error)
   }
 })
 
 const packageProducts = computed(() =>
   packages.value
-    .filter((p: any) => p.is_package && p.package_data === 'holiday-lighting-package-programs')
-    .sort((a: any, b: any) => a.id - b.id)
+    .filter((p) => p.is_package && p.package_data === 'holiday-lighting-package-programs')
+    .sort(
+      (a, b) =>
+        new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime()
+    )
 )
 
-const comparisonRows = [
-  { key: 'c9',     label: 'C-9 Lights',        image: '/Images/Holiday-Lighting-Package/c9lights.png' },
-  { key: 'wreath', label: '24" Noble Wreath',   image: '/Images/Holiday-Lighting-Package/mixed-noble-wreath.png' },
-  { key: 'bow',    label: '12" Velvet Bow',     image: '/Images/Holiday-Lighting-Package/velvet-red-bow.png' },
-  { key: 'stake',  label: 'Stake Lights',       image: '/Images/Holiday-Lighting-Package/ground-lights.png' },
-  { key: 'minis',  label: '5mm Minis',          image: '/Images/Holiday-Lighting-Package/5mm-minis.png' },
-  { key: 'bursts', label: 'Light Bursts',       image: '/Images/Holiday-Lighting-Package/light-bursts.png' },
-]
-
-const packageMatrix: Record<string, Record<string, string | number | boolean>> = {
-  joy:   { c9: true, wreath: false, bow: false, stake: false, minis: false, bursts: false },
-  jolly: { c9: true, wreath: 1,     bow: 1,     stake: 50,    minis: false, bursts: false },
-  merry: { c9: true, wreath: 1,     bow: 1,     stake: 50,    minis: 15,    bursts: 6 },
+const selectPackage = (pkg: PackageProduct) => {
+  navigateTo(`/products/${pkg.id}`)
 }
 
-const getValue = (pkg: any, key: string) => {
-  const name = pkg.name?.toLowerCase() || ''
-  return packageMatrix[name]?.[key]
-}
-
-const hasValue = (pkg: any, key: string) => {
-  const val = getValue(pkg, key)
-  return val !== false && val !== null && val !== undefined && val !== 'x'
-}
-
-const isQty = (pkg: any, key: string) => {
-  const val = getValue(pkg, key)
-  return typeof val === 'number'
-}
-
-const getImageUrl = (url?: string | null) => {
-  if (!url) return '/Images/placeholder.jpg'
-  if (url.startsWith('http')) return url
-  return `${config.public.imageBase.replace(/\/$/, '')}/${url.replace(/^\//, '')}`
-}
-
-const handleImgError = (e: Event) => {
-  const img = e.target as HTMLImageElement
-  if (img) img.src = '/Images/placeholder.jpg'
+const getImageUrl = (url: string | null | undefined) => {
+  if (!url) return '/Images/placeholder.png'
+  return `${useRuntimeConfig().public.imageBase}/${url}`
 }
 </script>
 
 <style scoped>
-.packages-table-section {
-  padding: 80px 0;
-  background: #0c2340;
-  color: #fff;
+.featured-bundles {
+  padding: 70px 0;
+  background: #fff;
 }
 
-.section-title {
+.section-header {
   text-align: center;
-  font-size: 2.4rem;
-  font-weight: 800;
-  margin-bottom: 8px;
-}
-
-.section-sub {
-  text-align: center;
-  opacity: 0.8;
   margin-bottom: 40px;
 }
 
-.table-wrapper {
-  overflow-x: auto;
-  border-radius: 16px;
-  background: rgba(255,255,255,0.05);
+.section-title {
+  font-size: 2.5rem;
+  color: #0c2340;
+  margin-bottom: 12px;
 }
 
-.compare-table {
+.subtitle {
+  color: #555;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.packages-cards-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 32px;
+  justify-items: center;
+}
+
+/* Card shell */
+.package-card-v2 {
   width: 100%;
-  border-collapse: collapse;
+  max-width: 340px;
+  border-radius: 28px;
+  background: #0c2340;
+  overflow: hidden;
+  box-shadow: 0 14px 36px rgba(12, 35, 64, 0.28);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.compare-table th,
-.compare-table td {
-  padding: 18px 16px;
-  text-align: center;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  width: 33.33%;
+.package-card-v2:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 44px rgba(12, 35, 64, 0.36);
 }
 
-.pkg-head {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 14px 10px;
-  border-radius: 12px;
+/* Top: image + overlays */
+.card-top {
+  position: relative;
+  padding: 12px 12px 0;
+  background: #0c2340;
 }
 
-.pkg-head.joy   { background: #166534; }
-.pkg-head.jolly { background: #c2410f; }
-.pkg-head.merry { background: #991b1b; }
+.card-image {
+  border-radius: 22px;
+  border: 4px solid var(--accent, #F49322);
+  overflow: hidden;
+  line-height: 0;
+}
 
-.pkg-img {
-  width: 56px;
-  height: 56px;
+.card-image img {
+  width: 100%;
+  height: 200px;
   object-fit: cover;
-  border-radius: 10px;
+  display: block;
 }
 
-.pkg-head h4 {
+/* Script title over bottom-left of photo */
+.pkg-title {
+  position: absolute;
+  left: 22px;
+  bottom: -8px;
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 800;
-}
-
-.pkg-price {
-  font-size: 1.15rem;
+  font-family: 'Playfair Display', Georgia, 'Brush Script MT', cursive;
+  font-size: 3.2rem;
   font-weight: 700;
+  font-style: italic;
+  line-height: 1;
+  color: #fff;
+  -webkit-text-stroke: 3px var(--accent, #F49322);
+  paint-order: stroke fill;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  z-index: 2;
+  pointer-events: none;
 }
 
-.pkg-head small {
-  font-size: 0.8rem;
-  opacity: 0.85;
+/* Orange circle + lights on right */
+.lights-badge {
+  position: absolute;
+  right: 18px;
+  bottom: -28px;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--accent, #F49322);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(244, 147, 34, 0.5);
+  z-index: 3;
 }
 
-.value-cell {
-  vertical-align: middle;
-  height: 80px;
+.lights-icon {
+  font-size: 1.75rem;
+  filter: brightness(2);
 }
 
-.cell-content {
+.sparkle {
+  position: absolute;
+  left: -6px;
+  top: 8px;
+  color: #fff;
+  font-size: 1rem;
+  text-shadow: 0 0 8px #fff;
+}
+
+/* Bottom navy panel */
+.card-panel {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 36px 18px 22px;
+  background: #0c2340;
+}
+
+.btn-inclusions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: left;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.btn-inclusions:hover {
+  border-color: var(--accent, #F49322);
+  background: rgba(244, 147, 34, 0.15);
+}
+
+.gift-icon {
+  font-size: 1.35rem;
+}
+
+.right-actions {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
+  align-items: flex-end;
+  gap: 10px;
 }
 
-.check-img {
+.price {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.btn-cart {
   width: 48px;
   height: 48px;
-  object-fit: cover;
-  border-radius: 10px;
-  background: rgba(255,255,255,0.1);
-}
-
-.qty {
-  font-size: 0.9rem;
-  font-weight: 700;
-  background: rgba(255,255,255,0.15);
-  padding: 2px 10px;
-  border-radius: 50px;
-}
-
-.table-actions {
+  border: none;
+  border-radius: 12px;
+  background: var(--accent, #F49322);
+  color: #fff;
+  font-size: 1.25rem;
+  cursor: pointer;
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 16px;
-  margin-top: 28px;
-  flex-wrap: wrap;
+  transition: transform 0.2s, background 0.2s;
 }
 
-.btn-select {
-  display: inline-block;
-  text-align: center;
-  padding: 14px 32px;
-  border-radius: 10px;
-  font-weight: 700;
-  text-decoration: none;
-  color: #fff;
-  min-width: 160px;
-  transition: background 0.3s;
+.btn-cart:hover {
+  transform: scale(1.08);
+  background: #ff9f2e;
 }
 
-.btn-select.joy   { background: #166534; }
-.btn-select.jolly { background: #c2410f; }
-.btn-select.merry { background: #991b1b; }
+/* Tooltip */
+.description-tooltip {
+  position: relative;
+}
 
-.btn-select:hover {
-  background: #F49322 !important;
-  color: #fff;
+.tooltip-content {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 14px;
+  width: 280px;
+  max-width: 90vw;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s ease;
+  z-index: 30;
+  margin-bottom: 8px;
+  text-align: left;
+  color: #0c2340;
+}
+
+.description-tooltip:hover .tooltip-content {
+  opacity: 1;
+  visibility: visible;
+}
+
+.feature-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.9rem;
+}
+
+.option-preview {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+@media (max-width: 576px) {
+  .section-title {
+    font-size: 1.85rem;
+  }
+
+  .packages-cards-row {
+    grid-template-columns: 1fr;
+  }
+
+  .pkg-title {
+    font-size: 2.6rem;
+  }
 }
 </style>

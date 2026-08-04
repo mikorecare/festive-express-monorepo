@@ -11,7 +11,7 @@
       </div>
     </section>
 
-    <HomeFeaturedPackage />
+    <HomeFeaturedPackage4 />
 
   </div>
 </template>

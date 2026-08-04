@@ -4,7 +4,7 @@
       <div class="footer-content">
         <!-- Logo -->
         <div class="footer-logo">
-          <img src="/Images/FLP-Express-Transparent.png" alt="Festive Lighting Pros" class="footer-logo-img">
+          <img src="/Images/FE-Logo.jpg" alt="Festive Lighting Pros" class="footer-logo-img">
         </div>
 
         <!-- Contact Us -->
@@ -39,7 +39,7 @@
         <!-- Bottom Bar -->
         <div class="container footer-bottom">
             <div class="copyright">
-                Copyright © 2025 Festive Lighting Pros. All Rights Reserved.
+                Copyright © 2026 Festive Lighting Pros. All Rights Reserved.
             </div>
             
             <div class="payment-methods">

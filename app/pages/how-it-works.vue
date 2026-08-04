@@ -29,6 +29,13 @@
           </div>
         </div>
       </div>
+
+      <div class="mt-5">
+        <h4 class="text-center">
+          That’s it. One decision. Zero hassle. All the magic.<br><br>
+          Powered by the same team behind Festive Lighting Pros — Florida’s trusted illumineers who create professional holiday displays year after year.
+        </h4>
+      </div>
     </div>
 
     <Newsletter />
@@ -43,16 +50,16 @@ import { ref, onMounted, onUnmounted } from 'vue'
 
 const steps = [
   {
-    title: "Measure Your Space",
-    description: "Before ordering, take basic measurements of the areas you want decorated—such as rooflines, walkways, shrubs, trees, or entryways. Don't worry, we provide simple measuring guides to help you get accurate numbers."
+    title: "Pick your package",
+    description: "Choose Joy, Jolly, or Merry based on your home size and the look you want."
   },
   {
-    title: "Choose Your Lighting & Décor",
-    description: "Select the lighting style, color, and décor options that fit your home or business. Choose from roofline lighting, ground and shrub lighting, garlands, wreaths, and more."
+    title: "Pay the set price",
+    description: "One clear package price — no hidden fees or surprise quotes."
   },
   {
-    title: "Place Your Order Online",
-    description: "Once you've selected your options and entered your measurements, place your order through our secure online checkout. This reserves your installation slot."
+    title: "Choose install + take-down dates",
+    description: "Select when we install and when we remove the lights so it fits your schedule."
   },
   {
     title: "We Review & Confirm Details",
