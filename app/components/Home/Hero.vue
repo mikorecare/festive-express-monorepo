@@ -18,7 +18,8 @@
 <style scoped>
 .hero-banner {
   position: relative;
-  height: 100vh;
+  /* height: 100vh; */
+  height: 420px;
   min-height: 600px;
   overflow: hidden;
   display: flex;
@@ -52,7 +53,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.45);
+  /* background: rgba(0, 0, 0, 0.45); */
+  background: rgba(12, 35, 64, 0.75);
   z-index: 1;
 }
 
