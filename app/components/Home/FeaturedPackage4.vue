@@ -185,12 +185,12 @@ const getPackageIcon = (name: string) => {
 }
 
 // Static for Placeholder Temp
-const getPackagePhoto = (name: string) => {
-  const n = name.toLowerCase()
-  if (n.includes('jolly')) return `${BASE}/JollyPhoto.webp`
-  if (n.includes('merry')) return `${BASE}/MERRYphoto.webp`
-  return `${BASE}/JoyPhoto.webp`
-}
+// const getPackagePhoto = (name: string) => {
+//   const n = name.toLowerCase()
+//   if (n.includes('jolly')) return `${BASE}/JollyPhoto.webp`
+//   if (n.includes('merry')) return `${BASE}/MERRYphoto.webp`
+//   return `${BASE}/JoyPhoto.webp`
+// }
 
 </script>
 
