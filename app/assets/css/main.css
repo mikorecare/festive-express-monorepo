@@ -8,7 +8,7 @@ body {
   /* padding-top: 195px; */
 }
 .container {
-  max-width: 1280px;
+  max-width: 1400px !important;
   margin: 0 auto;
   padding: 0 20px;
 }
@@ -134,7 +134,7 @@ body {
   width: 100%;
   max-width: 320px;           /* Optional: limit max width */
   margin: 20px auto 0;
-  background: #F49322;
+  background: #ff890b;
   color: white;
   border: none;
   padding: 16px 32px;
@@ -226,7 +226,7 @@ body {
 
 /* Font Color */
 .font-color-orange {
-  color: #F49322 !important;
+  color: #ff890b !important;
 }
 .font-weight-bold{
   font-weight: bold;
@@ -269,7 +269,7 @@ body {
 }
 
 .best-seller {
-  background: #F49322;   /* Brand Orange */
+  background: #ff890b;   /* Brand Orange */
 }
 
 .limited {

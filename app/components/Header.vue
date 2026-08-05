@@ -4,16 +4,7 @@
     <div class="top-bar">
       <div class="container">
         <div class="top-content">
-          <div class="welcome">
-            Welcome to
-            <span class="highlight">
-              <span class="brand-text">Festive Express</span>
-              <svg class="underline-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 150" preserveAspectRatio="none">
-                <path d="M7.7,145.6C109,125,299.9,116.2,401,121.3c42.1,2.2,87.6,11.8,87.3,25.7" />
-              </svg>
-            </span>
-          </div>
-
+          <!-- Social Icons (Left) -->
           <div class="social-icons">
             <a
               v-if="settings.social_facebook"
@@ -57,7 +48,19 @@
             ><i class="fab fa-pinterest-p"></i></a>
           </div>
 
+          <!-- Welcome Message (Centered) -->
+          <div class="welcome">
+            Welcome to
+            <span class="highlight">
+              <span class="brand-text">Festive Express</span>
+              <svg class="underline-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 150" preserveAspectRatio="none">
+                <path d="M7.7,145.6C109,125,299.9,116.2,401,121.3c42.1,2.2,87.6,11.8,87.3,25.7" />
+              </svg>
+            </span>
+          </div>
 
+          <!-- Spacer div to keep grid center mathematically aligned -->
+          <div class="top-bar-spacer"></div>
         </div>
       </div>
     </div>
@@ -91,13 +94,6 @@
                 <div class="call-now">CALL US NOW!</div>
               </div>
             </a>
-
-            <div class="cart-total">
-              <span class="price">${{ cartTotal.toFixed(2) }}</span>
-              <NuxtLink to="/cart" class="cart-icon">
-                🛒 <span class="count">{{ cartCount }}</span>
-              </NuxtLink>
-            </div>
 
             <!-- Hamburger -->
             <button
@@ -174,19 +170,35 @@ watch(() => route.fullPath, () => {
 .top-bar {
   background: #0c2340;
   color: white;
-  padding: 10px  0;
+  padding: 10px 0;
   font-size: 1rem;
   font-weight: 600;
 }
 
 .top-content {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
 }
 
+.welcome {
+  text-align: center;
+  grid-column: 2;
+}
+
+.social-icons {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-start;
+  grid-column: 1;
+}
+
+.top-bar-spacer {
+  grid-column: 3;
+}
+
 .main-header {
-  background: transparent; /* Hero background initially */
+  background: transparent;
   padding: 20px 0;
   transition: all 0.3s ease;
 }
@@ -248,35 +260,29 @@ watch(() => route.fullPath, () => {
   text-align: center;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .logo-img {
-    max-height: 55px;
-  }
-}
-
-@media (max-width: 480px) {
-  .logo-img {
-    max-height: 48px;
-  }
-}
-
-.contact-box{
+.contact-box {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #0c2340;
+  color: #fff;
   text-decoration: none;
   padding: 8px 16px;
   border-radius: 8px;
   transition: all 0.3s ease;
-  background: rgba(12, 35, 64, 0.05);
+  background: #ff890b !important;
 }
+
 .contact-box:hover {
-  background: #0c2340;
-  color: white;
-  transform: translateY(-2px);
+  background: #0c2340 !important;
+  color: #ff890b !important;
+  /* transform: translateY(-2px); */
+  animation-name: festive-express-animation-pulse-grow;
+  animation-duration: 0.3s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
 }
+
 .phone-icon {
   font-size: 1.6rem;
   color: inherit;
@@ -296,94 +302,6 @@ watch(() => route.fullPath, () => {
   font-size: 0.85rem;
   font-weight: 500;
   opacity: 0.9;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .contact-box {
-    padding: 6px 12px;
-  }
-}
-
-/* MAIN MENU */
-.menu-bar {
-  background: white;
-  border-bottom: 3px solid #f5a623;   /* Orange border like your design */
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-
-.menu-bar.sticky {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  z-index: 9999;
-}
-.menu-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 10px;
-}
-
-.main-menu {
-  display: flex;
-  gap: 32px;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  font-weight: 500;
-}
-
-.main-menu a {
-  color: #1a2b4a;
-  text-decoration: none;
-  padding: 18px 0;
-  transition: color 0.3s;
-}
-
-.main-menu a:hover {
-  color: #F49322;
-}
-/* MAIN MENU */
-
-.cart {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-weight: 600;
-}
-
-.cart-total {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #69727d;
-  font-weight: 600;
-  padding: 6px 20px;
-  border: 1px solid #69727d;
-  border-radius: 14px;
-  margin: 10px 0;
-}
-
-.cart-icon {
-  position: relative;
-  font-size: 1.4rem;
-  color: white;
-  text-decoration: none;
-}
-
-.count {
-  position: absolute;
-  top: -4px;
-  right: -8px;
-  background: #f5a623;
-  color: #000;
-  font-size: 0.75rem;
-  padding: 1px 6px;
-  border-radius: 50%;
-  font-weight: bold;
 }
 
 /* highlight Welcome */
@@ -425,32 +343,14 @@ watch(() => route.fullPath, () => {
 }
 
 @keyframes drawLine {
-  0% {
-    stroke-dashoffset: 800;
-  }
-  25% {
-    stroke-dashoffset: 0;
-  }
-  70% {
-    stroke-dashoffset: 0;
-  }
-  80% {
-    stroke-dashoffset: 0;
-    opacity: 1;
-  }
-  100% {
-    stroke-dashoffset: 800;
-    opacity: 0.6;
-  }
+  0% { stroke-dashoffset: 800; }
+  25% { stroke-dashoffset: 0; }
+  70% { stroke-dashoffset: 0; }
+  80% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: 800; opacity: 0.6; }
 }
-/* highlight Welcome */
 
 /* Social Icons */
-.social-icons {
-  display: flex;
-  gap: 16px;
-}
-
 .social-link {
   color: white;
   font-size: 1.5rem;
@@ -461,59 +361,6 @@ watch(() => route.fullPath, () => {
   color: #F49322;
   transform: translateY(-4px);
 }
-
-/* ==================== RESPONSIVE MEDIA QUERIES ==================== */
-
-@media (max-width: 1024px) {
-  .nav-content {
-    gap: 20px;
-  }
-  .search-bar {
-    max-width: 350px;
-  }
-}
-
-@media (max-width: 768px) {
-  .top-content {
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .nav-content {
-    flex-direction: column;
-    gap: 15px;
-  }
-  
-  .search-bar {
-    width: 100%;
-    max-width: none;
-  }
-  
-  .menu-bar ul {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-    padding: 10px 0;
-  }
-  
-  
-  .logo {
-    text-align: center;
-    display: block;
-  }
-}
-
-@media (max-width: 480px) {
-  .top-bar {
-    font-size: 0.85rem;
-  }
-  
-  .menu-bar ul {
-    gap: 10px;
-    font-size: 0.9rem;
-  }
-}
-
 
 .header-actions {
   display: flex;
@@ -590,136 +437,53 @@ watch(() => route.fullPath, () => {
 
 /* ===== Tablet ===== */
 @media (max-width: 1024px) {
-  .header-content {
-    gap: 16px;
-  }
-
-  .main-menu ul {
-    gap: 16px;
-  }
-
-  .main-menu a {
-    padding: 8px 10px;
-    font-size: 0.95rem;
-  }
-
-  .contact-box {
-    padding: 6px 10px;
-  }
-
-  .phone-number {
-    font-size: 1rem;
-  }
-
-  .logo-img {
-    max-height: 60px;
-  }
+  .header-content { gap: 16px; }
+  .main-menu ul { gap: 16px; }
+  .main-menu a { padding: 8px 10px; font-size: 0.95rem; }
+  .contact-box { padding: 6px 10px; }
+  .phone-number { font-size: 1rem; }
+  .logo-img { max-height: 60px; }
 }
 
 /* ===== Mobile ===== */
 @media (max-width: 768px) {
-  .top-bar {
-    padding: 8px 0;
-    font-size: 0.9rem;
-  }
-
+  .top-bar { padding: 8px 0; font-size: 0.9rem; }
+  
   .top-content {
+    display: flex;
     flex-direction: column;
     gap: 8px;
     text-align: center;
   }
+
+  .top-bar-spacer { display: none; }
 
   .social-icons {
     gap: 14px;
     justify-content: center;
   }
 
-  .social-link {
-    font-size: 1.25rem;
-  }
+  .social-link { font-size: 1.25rem; }
+  .main-header { padding: 12px 0; }
+  .header-content { gap: 10px; flex-wrap: nowrap; }
+  .logo { align-items: flex-start; }
+  .logo-img { max-height: 48px; }
+  .tagline { font-size: 0.75rem; }
 
-  .main-header {
-    padding: 12px 0;
-  }
+  .desktop-nav { display: none !important; }
+  .contact-box .contact-text { display: none; }
+  .contact-box { padding: 8px; border-radius: 50%; background: rgba(12, 35, 64, 0.08); }
+  .phone-icon { font-size: 1.15rem; }
 
-  .header-content {
-    gap: 10px;
-    flex-wrap: nowrap;
-  }
+  .menu-toggle { display: flex; }
+  .mobile-nav { display: block; }
 
-  .logo {
-    align-items: flex-start;
-  }
-
-  .logo-img {
-    max-height: 48px;
-  }
-
-  .tagline {
-    font-size: 0.75rem;
-  }
-
-  /* Hide desktop nav + full contact text */
-  .desktop-nav {
-    display: none !important;
-  }
-
-  .contact-box .contact-text {
-    display: none;
-  }
-
-  .contact-box {
-    padding: 8px;
-    border-radius: 50%;
-    background: rgba(12, 35, 64, 0.08);
-  }
-
-  .phone-icon {
-    font-size: 1.15rem;
-  }
-
-  .cart-total {
-    padding: 4px 10px;
-    margin: 0;
-    gap: 6px;
-    font-size: 0.85rem;
-  }
-
-  .cart-icon {
-    font-size: 1.2rem;
-  }
-
-  .menu-toggle {
-    display: flex;
-  }
-
-  .mobile-nav {
-    display: block;
-  }
-
-  /* Sticky: full width white bar */
-  .main-header.sticky {
-    padding: 10px 0;
-  }
+  .main-header.sticky { padding: 10px 0; }
 }
 
 @media (max-width: 480px) {
-  .welcome {
-    font-size: 0.85rem;
-  }
-
-  .underline-svg {
-    height: 12px;
-    bottom: -4px;
-  }
-
-  .price {
-    display: none; /* icon + count only on very small screens */
-  }
-
-  .logo-img {
-    max-height: 42px;
-  }
+  .welcome { font-size: 0.85rem; }
+  .underline-svg { height: 12px; bottom: -4px; }
+  .logo-img { max-height: 42px; }
 }
-
 </style>
