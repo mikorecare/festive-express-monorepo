@@ -154,6 +154,8 @@
   .hero-card {
     max-width: 100%;
     padding: 2rem 1.25rem;
+    bottom: -112px;
+    position: relative;
   }
 
   .hero-card h1 {
