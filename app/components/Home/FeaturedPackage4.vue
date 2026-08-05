@@ -204,6 +204,10 @@ const getPackagePhoto = (name: string) => {
   padding: 70px 0;
   background: #fff;
   scroll-margin-top: 110px;
+  background-image: url(/Images/LV.png);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  background-size: cover;
 }
 
 .section-header {
@@ -330,10 +334,10 @@ const getPackagePhoto = (name: string) => {
   border-radius: 28px 28px 0 0;
 
   background-color: var(--navy);
-  background-image: url('/Images/LV.png');
+  /* background-image: url('/Images/LV.png');
   background-repeat: no-repeat;
-  background-position: center;
-  background-size: 200%; /* or contain / 100% 100% */
+  background-position: center; */
+  /* background-size: 200%; or contain / 100% 100% */
 }
 
 .btn-inclusions {
