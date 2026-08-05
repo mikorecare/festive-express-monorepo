@@ -39,13 +39,14 @@
 
 <style scoped>
 .dream-holiday {
-  background-color: #172a50; /* Solid deep navy color matching the design */
+  background-color: #172a50;
   color: white;
   padding: 90px 0;
   position: relative;
   overflow: hidden;
   z-index: 2;
   scroll-margin-top: 110px;
+  font-family: 'Poppins', 'Roboto', sans-serif;
 }
 
 /* Background Waves Container */
@@ -87,7 +88,7 @@
 }
 
 .dream-title {
-  font-family: sans-serif;
+  font-family: 'Poppins', 'Roboto', sans-serif;
   font-size: 3.5rem;
   line-height: 1.15;
   font-weight: 800;
