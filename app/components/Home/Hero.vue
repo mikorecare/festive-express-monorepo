@@ -55,7 +55,8 @@
   bottom: 0;
   /* background: rgba(0, 0, 0, 0.45); */
   /* background: rgba(12, 35, 64, 0.75); */
-  background: rgb(8 8 8 / 75%);
+  /* background: rgb(8 8 8 / 75%); */
+  background: rgb(8 8 8 / 50%);
   z-index: 1;
 }
 
