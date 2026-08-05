@@ -51,9 +51,9 @@
                 type="button"
                 class="btn-inclusions"
                 @click.stop="openTooltipId = openTooltipId === pkg.id ? null : pkg.id"
-                @mouseenter="openTooltipId = pkg.id"
-                @mouseleave="openTooltipId = null"
               >
+                <!-- @mouseenter="openTooltipId = pkg.id"
+                @mouseleave="openTooltipId = null" -->
                 <i class="fas fa-gift"></i>
                 <span>Explore Package<br>Details</span>
               </button>
@@ -216,7 +216,7 @@ const getPackagePhoto = (name: string) => {
 }
 
 .section-title {
-  font-size: 2.5rem;
+  font-size: 2.4rem;
   color: var(--navy);
   margin-bottom: 12px;
   text-transform: uppercase;
@@ -402,7 +402,7 @@ const getPackagePhoto = (name: string) => {
 }
 
 .btn-cart:hover {
-  background: #e08518;
+  background: #ff890b;
   animation-name: festive-express-animation-pulse-grow;
   animation-duration: 0.3s;
   animation-timing-function: linear;
@@ -421,7 +421,7 @@ const getPackagePhoto = (name: string) => {
 
 .tooltip-content {
   position: absolute;
-  bottom: 100%;
+  top: 100%;
   left: 0;
   background: #fff;
   border: 1px solid var(--gray);
@@ -434,7 +434,7 @@ const getPackagePhoto = (name: string) => {
   visibility: hidden;
   transition: all 0.25s ease;
   z-index: 30;
-  margin-bottom: 8px;
+  margin-top: 8px;
   text-align: left;
   color: var(--navy);
 }

@@ -88,7 +88,7 @@
 }
 
 .hero-card h1 {
-  font-size: 2.4rem;
+  font-size: 2.5rem;
   line-height: 1.15;
   margin-bottom: 1rem;
   font-weight: 800;
@@ -121,7 +121,7 @@
 /* Glass Card Button */
 .btn-primary-card {
   display: inline-block;
-  background-color: #f7941d;
+  background-color: #ff890b;
   color: #ffffff;
   font-size: 1.1rem;
   font-weight: 700;
@@ -134,7 +134,8 @@
 }
 
 .btn-primary-card:hover {
-  background-color: #e08310;
+  background-color: #ff890b;
+  color: #0c2340;
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(247, 148, 29, 0.5);
 }
