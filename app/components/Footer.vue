@@ -4,7 +4,7 @@
       <div class="footer-content">
         <!-- Logo -->
         <div class="footer-logo">
-          <img src="/Images/FE-Logo.jpg" alt="Festive Lighting Pros" class="footer-logo-img">
+          <img src="/Images/FE-Logo.png" alt="Festive Lighting Pros" class="footer-logo-img">
         </div>
 
         <!-- Contact Us -->

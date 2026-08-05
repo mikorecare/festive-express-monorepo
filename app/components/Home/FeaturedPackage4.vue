@@ -19,20 +19,11 @@
         >
           <div class="card-top">
             <div class="card-image">
-              <!-- <img
+              <img
                 :src="getImageUrl(pkg.image_url)"
                 :alt="pkg.name"
               >
-            </div> -->
-
-            <!-- Static -->
-            <div class="card-image">
-              <img
-                :src="getPackagePhoto(pkg.name)"
-                :alt="pkg.name"
-              >
             </div>
-          </div>
 
             <img
               class="pkg-title-img"
@@ -52,7 +43,7 @@
                 alt=""
               >
             </div>
-          </div>
+          </div> <!-- Proper closing tag for card-top -->
 
           <div class="card-panel">
             <div class="description-tooltip">
@@ -60,9 +51,11 @@
                 type="button"
                 class="btn-inclusions"
                 @click.stop="openTooltipId = openTooltipId === pkg.id ? null : pkg.id"
+                @mouseenter="openTooltipId = pkg.id"
+                @mouseleave="openTooltipId = null"
               >
                 <i class="fas fa-gift"></i>
-                <span>View Package<br>Inclusions</span>
+                <span>Explore Package<br>Details</span>
               </button>
 
               <div
