@@ -1,52 +1,62 @@
 <template>
-    <section class="packages-compare">
-        <div class="container">
-            <h2 class="section-title">Choose Your Holiday Package</h2>
-            <p class="section-sub">Compare what’s included in each plan</p>
+  <section class="packages-compare">
+    <div class="container">
+      <h2 class="section-title">CHOOSE YOUR HOLIDAY PACKAGE</h2>
+      <p class="section-sub">COMPARE WHAT’S INCLUDED IN EACH PLAN</p>
 
-            <div class="compare-grid">
-                <div 
-                    class="package-col" 
-                    v-for="pkg in packageProducts" 
-                    :key="pkg.id"
-                    :class="{ popular: pkg.is_popular }"
-                    >
-                    <div class="package-header" :class="pkg.name?.toLowerCase()">
-                        <h3>{{ pkg.name }}</h3>
-                        <div class="price"><sup>$</sup>{{ Number(pkg.price).toLocaleString() }}</div>
-                        <!-- <p>{{ pkg.description || 'Holiday lighting package' }}</p> -->
-                    </div>
-
-                    <div class="inclusions">
-                        <template v-for="(variation, vIndex) in pkg.variations" :key="vIndex">
-                            <div
-                                class="inclusion-item"
-                                v-for="(option, oIndex) in variation.options"
-                                :key="`${vIndex}-${oIndex}`"
-                                >
-                                <img
-                                    :src="getImageUrl(option.image_url)"
-                                    :alt="option.name"
-                                    @error="handleImgError"
-                                >
-                                <div class="inclusion-text">
-                                    <strong>{{ option.name }}</strong>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-
-                    <!-- <NuxtLink 
-                    :to="`/checkout?package=${pkg.slug || pkg.name?.toLowerCase()}`" 
-                    class="btn-select"
-                    >
-                    Select {{ pkg.name }}
-                    </NuxtLink> -->
-                    <button @click="selectPackage(pkg)" class="select-btn w-75 d-block mx-auto">Select Package</button>
-                </div>
+      <div class="compare-grid">
+        <div 
+          class="package-col" 
+          v-for="pkg in packageProducts" 
+          :key="pkg.id"
+          :class="{ popular: pkg.is_popular }"
+        >
+          <!-- Package Header -->
+          <div class="package-header">
+            <div class="title-img-wrapper">
+              <img
+                class="pkg-title-img"
+                :src="getPackageTitleImage(pkg.name)"
+                :alt="pkg.name"
+              >
             </div>
+            <div class="price">${{ Number(pkg.price).toLocaleString() }}</div>
+          </div>
+
+          <!-- Package Body / Inclusions -->
+          <div class="inclusions-wrapper">
+            <div class="inclusions">
+              <template v-for="(variation, vIndex) in pkg.variations" :key="vIndex">
+                <div
+                  class="inclusion-item"
+                  v-for="(option, oIndex) in variation.options"
+                  :key="`${vIndex}-${oIndex}`"
+                >
+                  <div class="img-circle">
+                    <img
+                      :src="getImageUrl(option.image_url)"
+                      :alt="option.name"
+                      @error="handleImgError"
+                    >
+                  </div>
+                  <div class="inclusion-text">
+                    <strong>{{ option.name }}</strong>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <!-- Bottom Orange Shell with Overlapping Button -->
+          <div class="package-footer">
+            <button class="select-btn" @click="selectPackage(pkg)">
+              SELECT PACKAGE
+            </button>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -93,7 +103,7 @@ onMounted(async () => {
 const packageProducts = computed(() => 
   packages.value
     .filter(p => p.is_package && p.package_data === 'holiday-lighting-package-programs')
-    .sort((a, b) => a.id - b.id) // oldest first
+    .sort((a, b) => a.id - b.id)
 )
 
 const getImageUrl = (url?: string | null) => {
@@ -110,172 +120,188 @@ const handleImgError = (e: Event) => {
 const selectPackage = async (pkg: any) => {
   navigateTo(`/products/${pkg.id}`)
 }
+
+const BASE = '/Images/Holiday-Lighting-Package'
+const getPackageTitleImage = (name: string) => {
+  const n = name.toLowerCase()
+  if (n.includes('jolly')) return `${BASE}/Jolly.png`
+  if (n.includes('merry')) return `${BASE}/Merry.png`
+  return `${BASE}/Joy.png`
+}
 </script>
 
 <style scoped>
+/* Main Section Background using #0c2340 */
 .packages-compare {
   padding: 80px 0;
-  background: #f8fafc;
+  background: radial-gradient(circle at center, #13335c 0%, #0c2340 100%);
+  color: #ffffff;
 }
 
+/* Titles */
 .section-title {
   text-align: center;
-  font-size: 2.4rem;
-  font-weight: 800;
-  color: #0c2340;
-  margin-bottom: 8px;
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: #ffffff;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .section-sub {
   text-align: center;
-  color: #6b7280;
+  color: #e2e8f0;
   margin-bottom: 50px;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
+/* Compare Grid */
 .compare-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
-  align-items: start;
+  gap: 30px;
+  align-items: stretch;
 }
 
+/* Outer Card Container with #ff890b border */
 .package-col {
-  background: #fff;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.06);
-  position: relative;
+  background: #ff890b; /* Solid orange background for top border & bottom shell */
+  border: 4px solid #ff890b;
+  border-radius: 28px;
   display: flex;
   flex-direction: column;
-  height: 100%;
-}
-
-.package-col.popular {
-  transform: scale(1.03);
-  box-shadow: 0 12px 40px rgba(244, 147, 34, 0.2);
-  border: 2px solid #F49322;
-  z-index: 2;
-}
-
-.package-header {
-  padding: 32px 24px 24px;
-  text-align: center;
-  color: #fff;
   position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
-.package-header.joy {
-  background: linear-gradient(135deg, #166534, #15803d);
+/* Header Container */
+.package-header {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0c2340;
+  min-height: 90px;
 }
 
-.package-header.jolly {
-  background: linear-gradient(135deg, #c2410f, #ea580c);
+.title-img-wrapper {
+  display: flex;
+  align-items: center;
+  flex: 1;
 }
 
-.package-header.merry {
-  background: linear-gradient(135deg, #991b1b, #b91c1c);
-}
-
-.package-header h3 {
-  font-size: 1.8rem;
-  font-weight: 800;
-  margin-bottom: 6px;
+.pkg-title-img {
+  height: 60px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
 .package-header .price {
   font-size: 2.2rem;
-  font-weight: 800;
-  margin-bottom: 6px;
+  font-weight: 900;
+  color: #ffffff;
+  margin-left: 12px;
 }
 
-.package-header .price sup {
-  font-size: 1rem;
-}
-
-.package-header p {
-  opacity: 0.9;
-  font-size: 0.95rem;
-  margin: 0;
+/* Inner Body Box */
+.inclusions-wrapper {
+  background: #ffffff;
+  border-bottom-left-radius: 70px; 
+  border-bottom-right-radius: 70px;
+  padding: 24px 20px 60px; /* Adds bottom breathing room inside the white card */
+  flex: 1;
 }
 
 .inclusions {
-  padding: 16px 20px 8px;
   display: flex;
-  flex-direction: column;   /* ← stack rows */
+  flex-direction: column;
+  gap: 16px;
   width: 100%;
-  flex: 1;
 }
 
+/* Inclusion Items */
 .inclusion-item {
-  display: flex;            /* ← image + text on one line */
-  flex-direction: row;
+  display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   width: 100%;
-  padding: 10px 0;
-  border-bottom: 1px solid #f1f5f9;
 }
 
-.inclusion-item:last-child {
-  border-bottom: none;
-}
-
-.inclusion-item img {
-  width: 48px;
-  height: 48px;
-  object-fit: cover;
-  border-radius: 10px;
+/* Circular Images with #ff890b border */
+.img-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid #ff890b;
+  overflow: hidden;
   flex-shrink: 0;
-  background: #f1f5f9;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.inclusion-text {
-  flex: 1;
-  min-width: 0;
+.img-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .inclusion-text strong {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: #0c2340;
-  line-height: 1.35;
+  font-weight: 800;
+  line-height: 1.3;
   display: block;
 }
 
-.btn-select {
-  display: block;
-  margin: 16px 20px 24px;
-  text-align: center;
+/* Footer & Action Button */
+.package-footer {
+  background: transparent;
+  padding: 0 16px 16px; /* Bottom padding inside the orange shell */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+}
+
+.select-btn {
+  width: 85%;
+  background: #ff890b;
+  color: #ffffff;
+  border: 2px solid #0c2340; 
+  border-radius: 50px;       
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  margin-top: -30px;
+}
+
+.select-btn:hover {
   background: #0c2340;
-  color: #fff;
-  padding: 14px;
-  border-radius: 12px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: background 0.3s;
+  color: #ffffff;
+  transform: translateY(-2px);
 }
 
-.btn-select:hover {
-  background: #F49322;
-  color: #fff;
-}
-
-.package-col.popular .btn-select {
-  background: #F49322;
-}
-
-.package-col.popular .btn-select:hover {
-  background: #0c2340;
-}
-
+/* Responsive breakpoint */
 @media (max-width: 992px) {
   .compare-grid {
     grid-template-columns: 1fr;
     max-width: 420px;
     margin: 0 auto;
-  }
-  .package-col.popular {
-    transform: none;
   }
 }
 </style>
