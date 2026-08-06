@@ -91,7 +91,7 @@
           <!-- Right actions -->
           <div class="header-actions">
             <a :href="telHref" class="contact-box btn-secondary">
-              <span class="phone-icon"><i class="fas fa-phone-alt"></i></span>
+              <span class="phone-icon"><i class="fas fa-phone"></i></span>
               <div class="contact-text">
                 <div class="phone-number">{{ settings.contact_phone_display || '(941) 239-4722' }}</div>
                 <div class="call-now">CALL US NOW!</div>

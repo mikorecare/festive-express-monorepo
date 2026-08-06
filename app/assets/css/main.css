@@ -34,6 +34,15 @@ body {
   100% { left: 150%; }
 }
 
+@keyframes borderGlowInfinite {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* Optional reusable class */
 .pulse-grow {
   animation-name: festive-express-animation-pulse-grow;
