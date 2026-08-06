@@ -241,7 +241,7 @@ onUnmounted(() => {
   
   position: absolute;
   top: -133px;
-  right: -15%;
+  right: -17%;
 
   /* Required to contain the animated glossy sheen */
   position: relative;
