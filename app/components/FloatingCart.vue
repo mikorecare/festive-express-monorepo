@@ -1,7 +1,7 @@
 <!-- components/FloatingCart.vue -->
 <template>
   <Transition name="fade-slide">
-    <div v-if="cartCount > 0" class="floating-cart-container">
+    <div v-if="cartCount >= 0" class="floating-cart-container">
       <NuxtLink to="/cart" class="cart-total-link" aria-label="View Cart">
         <!-- Price on the Left -->
         <span class="price-content">
