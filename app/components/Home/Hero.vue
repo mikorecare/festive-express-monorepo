@@ -11,7 +11,7 @@
       <div class="hero-card">
         <h1>
           HOLIDAY MAGIC<br>
-          <span class="highlight">INSTALLED</span>
+          <span class="highlight">DONE</span>
         </h1>
         <p class="tagline">
           Giftwrapped in<br class="mobile-only">One Simple Package.<br>
@@ -420,7 +420,29 @@ onUnmounted(() => {
     padding: 0.5rem 1.25rem;
     border-radius: 8px;
     display: inline-block;
+    position: relative;
+    overflow: hidden;
   }
+  .btn-primary-card::after{
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -150%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      60deg,
+      rgba(255, 255, 255, 0) 20%,
+      rgba(255, 255, 255, 0.08) 40%,
+      rgba(255, 255, 255, 0.35) 50%,
+      rgba(255, 255, 255, 0.08) 60%,
+      rgba(255, 255, 255, 0) 80%
+    );
+    transform: rotate(25deg);
+    pointer-events: none;
+    animation: glossyShineContinuous 3s linear infinite;
+  }
+  
 
   /* 6. Text-Only Countdown Widget */
   .hero-countdown-widget {
