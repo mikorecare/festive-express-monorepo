@@ -111,7 +111,7 @@ const { settings, loadSettings, telHref } = useSettings()
   font-size: 0.95rem;
 }
 .footer-bottom2 {
-  background-color: #152645;
+  background-color: #0c2340;
   padding-bottom: 25px;
 }
 .copyright{color: #fff; font-size: 16px;}

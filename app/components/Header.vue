@@ -93,8 +93,8 @@
             <a :href="telHref" class="contact-box btn-secondary-2">
               <span class="phone-icon"><i class="fas fa-phone"></i></span>
               <div class="contact-text">
-                <div class="phone-number">{{ settings.contact_phone_display || '(941) 239-4722' }}</div>
                 <div class="call-now">CALL US NOW!</div>
+                <div class="phone-number">{{ settings.contact_phone_display || '(941) 239-4722' }}</div>
               </div>
             </a>
 
@@ -380,7 +380,7 @@ watch(() => route.fullPath, () => {
   display: flex;
   flex-direction: column;
   text-align: left;
-  line-height: 1.1;
+  line-height: 1.5;
   position: relative;
   z-index: 1;
 }

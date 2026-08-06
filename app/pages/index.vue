@@ -9,11 +9,10 @@
     <!-- <HomePatrioticDecor />
     <HomeSeasonalSale />
     <HomeHalloweenDecor /> -->
-    <HomeDreamHoliday />
-    <HomeWhyChooseUs />
+    <HomeDreamHoliday />    
     <!-- <Newsletter /> -->
     <HomeFeaturedPackage2 />
-
+    <HomeWhyChooseUs />
   </div>
 </template>
 

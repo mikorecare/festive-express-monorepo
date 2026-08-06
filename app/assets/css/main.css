@@ -43,6 +43,39 @@ body {
   }
 }
 
+/* Keyframe animation for infinite 360-degree rotation */
+@keyframes spin-infinite {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Keyframe definition */
+@keyframes flip-y-infinite {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(360deg);
+  }
+}
+
+/* Keyframe definition */
+@keyframes flip-3d-infinite {
+  0% {
+    transform: rotateY(0deg) scale(1);
+  }
+  50% {
+    transform: rotateY(180deg) scale(1.15);
+  }
+  100% {
+    transform: rotateY(360deg) scale(1);
+  }
+}
+
 /* Optional reusable class */
 .pulse-grow {
   animation-name: festive-express-animation-pulse-grow;
@@ -337,3 +370,40 @@ iframe#chat-widget-container,
     display: none !important; /* Hide desktop-widget on mobile/tablet */
   }
 }  
+
+
+
+/* ANIMATIONS */
+/* ==========================================================================
+   Global Scroll Animation Utilities
+   ========================================================================== */
+
+/* Base state for elements waiting to animate */
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(35px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Active state when scrolled into view */
+.scroll-animate.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Optional Festive Highlight Pop Effect */
+.scroll-animate .highlight {
+  display: inline-block;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 0.6s ease 0.3s, 
+              transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s,
+              text-shadow 0.6s ease 0.3s;
+}
+
+.scroll-animate.is-visible .highlight {
+  opacity: 1;
+  transform: scale(1);
+  text-shadow: 0 0 15px rgba(247, 148, 29, 0.5);
+}
