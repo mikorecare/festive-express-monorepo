@@ -239,9 +239,9 @@ onUnmounted(() => {
   text-align: center;
   color: #ffffff;
   
-  /* position: absolute;
+  position: absolute;
   top: -133px;
-  right: -7%; */
+  right: -15%;
 
   /* Required to contain the animated glossy sheen */
   position: relative;
