@@ -14,8 +14,8 @@
           <span class="highlight">INSTALLED</span>
         </h1>
         <p class="tagline">
-          Giftwrapped in One Simple Package.<br>
-          <span class="subtext">(No ladders. No tangled cords. No storage. No stress.)</span>
+          Giftwrapped in<br class="mobile-only">One Simple Package.<br>
+          <span class="subtext">(No ladders. No tangled cords.<br class="mobile-only">No storage. No stress.)</span>
         </p>
         <NuxtLink to="/packages" class="btn-primary-card">Shop Packages</NuxtLink>
       </div>
@@ -43,7 +43,7 @@
           </div>
         </div>
 
-        <p class="hero-timer-subtext">It's never been easier to shine bright this holiday season.</p>
+        <p class="hero-timer-subtext">It's never been easier to<br class="mobile-only">shine bright this holiday season.</p>
       </div>
 
     </div>
@@ -339,32 +339,9 @@ onUnmounted(() => {
   }
 }
 
-/* @media (max-width: 768px) {
-  .hero-banner {
-    min-height: 560px;
-  }
-
-  .hero-card {
-    max-width: 100%;
-    padding: 2rem 1.25rem;
-  }
-
-  .hero-card h1 {
-    font-size: 1.9rem;
-  }
-
-  .hero-card .tagline {
-    font-size: 0.95rem;
-  }
-
-  .hero-card .tagline .subtext {
-    font-size: 0.78rem;
-  }
-
-  .hero-content-container {
-    padding: 0 5%;
-  }
-} */
+.mobile-only {
+  display: none;
+}
 
 @media (max-width: 768px) {
   /* 1. Hero Banner Setup */
@@ -392,7 +369,7 @@ onUnmounted(() => {
     flex-direction: column;
     align-items: flex-start;
     justify-content: space-between;
-    gap: 2rem;
+    gap: 6rem;
     padding: 0 5%;
   }
 
@@ -502,6 +479,10 @@ onUnmounted(() => {
     line-height: 1.15;
     text-align: left;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+  }
+
+  .mobile-only {
+    display: inline;
   }
 }
 </style>
