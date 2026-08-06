@@ -12,7 +12,7 @@
           <h4>CONTACT US</h4>
           <p>packages@festive.express</p>
           <p>☎ {{ settings.contact_phone_display || '(941) 239-4722' }}</p>
-          <p>By appointment only</p>
+          <!-- <p>By appointment only</p> -->
           <!-- <p>1973 Northgate Blvd, Sarasota, FL 34234</p> -->
         </div>
 
@@ -40,7 +40,7 @@
         <!-- Bottom Bar -->
         <div class="container footer-bottom">
             <div class="copyright">
-                Copyright © 2026 Festive Lighting Pros. All Rights Reserved.
+                Copyright © 2026 Festive Express. All Rights Reserved.
             </div>
             
             <div class="payment-methods">

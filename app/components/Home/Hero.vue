@@ -101,8 +101,8 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   background-image: url('/Images/Banner/hero-image.webp');
-  background-size: cover;
-  background-position: center;
+  background-size: 110% auto;;
+  background-position: center 28%;
   background-attachment: fixed;
   z-index: 0;
 }
@@ -335,10 +335,11 @@ onUnmounted(() => {
     position: relative;
     top: 0;
     right: 0;
+    padding: 0 5%;
   }
 }
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .hero-banner {
     min-height: 560px;
   }
@@ -362,6 +363,145 @@ onUnmounted(() => {
 
   .hero-content-container {
     padding: 0 5%;
+  }
+} */
+
+@media (max-width: 768px) {
+  /* 1. Hero Banner Setup */
+  .hero-banner {
+    min-height: auto;
+    padding: 2.5rem 0;
+  }
+
+  /* 2. Mobile-Specific Background Image */
+  .hero-image-fixed {
+    background-image: url('/Images/Banner/hero-image-mobile-768.webp');
+    background-size: cover;
+    background-position: center center;
+    background-attachment: scroll;
+  }
+
+  /* 3. Dark Overlay for Better Text Contrast */
+  .overlay {
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  /* 4. Container Layout */
+  .hero-content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 0 5%;
+  }
+
+  /* 5. Main Hero Card (Text-Only / Transparent) */
+  .hero-card {
+    order: 1;
+    max-width: 90%;
+    padding: 0;
+    text-align: left;
+
+    /* Completely remove card styling & glass effects */
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  /* Turn off glossy sheen animation on mobile */
+  .hero-card::after {
+    display: none !important;
+  }
+
+  .hero-card h1 {
+    font-size: 1.35rem;
+    margin-bottom: 0.35rem;
+    line-height: 1.15;
+    text-align: left;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7); /* Sharp text shadow for contrast */
+  }
+
+  .hero-card .tagline {
+    font-size: 0.82rem;
+    margin-bottom: 0.85rem;
+    line-height: 1.25;
+    text-align: left;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+  }
+
+  .hero-card .tagline .subtext {
+    font-size: 0.68rem;
+    margin-top: 0.15rem;
+  }
+
+  .btn-primary-card {
+    font-size: 0.82rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    display: inline-block;
+  }
+
+  /* 6. Text-Only Countdown Widget */
+  .hero-countdown-widget {
+    order: 2;
+    position: relative;
+    top: auto;
+    right: auto;
+    width: auto;
+    max-width: 100%;
+    padding: 0;
+    
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    text-align: left;
+    border-radius: 0 !important;
+  }
+
+  .hero-countdown-widget::after {
+    display: none !important;
+  }
+
+  .hero-timer-title {
+    font-size: 0.75rem;
+    margin-bottom: 0.35rem;
+    text-align: left;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+  }
+
+  .timer-blocks {
+    justify-content: flex-start;
+    gap: 4px;
+    margin-bottom: 0.35rem;
+  }
+
+  .mini-timer-item {
+    min-width: 28px;
+    padding: 2px 5px;
+    border-radius: 4px;
+    background: rgba(9, 26, 48, 0.6);
+    border: 1px solid rgba(255, 137, 11, 0.5);
+  }
+
+  .mini-timer-item span {
+    font-size: 0.8rem;
+  }
+
+  .mini-timer-item small {
+    font-size: 0.55rem;
+  }
+
+  .hero-timer-subtext {
+    font-size: 0.68rem;
+    line-height: 1.15;
+    text-align: left;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
   }
 }
 </style>
