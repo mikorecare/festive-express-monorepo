@@ -274,6 +274,7 @@ watch(() => route.fullPath, () => {
   border-radius: 8px;
   transition: all 0.3s ease;
   background: #ff890b !important;
+  border: 3px solid #0c2340;
 }
 
 .contact-box:hover {
@@ -285,6 +286,7 @@ watch(() => route.fullPath, () => {
   animation-timing-function: linear;
   animation-iteration-count: infinite;
   animation-direction: alternate;
+  border: 3px solid #ff890b;
 }
 
 .phone-icon {
