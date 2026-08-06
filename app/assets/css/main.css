@@ -320,3 +320,7 @@ iframe#chat-widget-container,
 .chat-widget-button {
   background-color: #ff890b !important;
 }
+
+.mobile-only {
+  display: none;
+}

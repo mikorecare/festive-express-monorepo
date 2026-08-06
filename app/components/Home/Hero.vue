@@ -4,8 +4,11 @@
     
     <!-- Full-width subtle dark overlay -->
     <div class="overlay"></div>
+
+    <CountdownWidget class="desktop-widget" :time-left="timeLeft" 
+        :format-number="formatNumber"  />
     
-    <div class="hero-content-container">
+    <div class="hero-content-container container">
       
       <!-- Main Glassmorphic Card (Left Side) -->
       <div class="hero-card">
@@ -20,31 +23,14 @@
         <NuxtLink to="/packages" class="btn-primary-card">Shop Packages</NuxtLink>
       </div>
 
-      <!-- Hero Countdown Widget (Upper Right Corner) -->
-      <div class="hero-countdown-widget">
-        <h3 class="hero-timer-title">Christmas Countdown</h3>
-        
-        <div class="timer-blocks">
-          <div class="mini-timer-item">
-            <span>{{ formatNumber(timeLeft.days) }}</span>
-            <small>d</small>
-          </div>
-          <div class="mini-timer-item">
-            <span>{{ formatNumber(timeLeft.hours) }}</span>
-            <small>h</small>
-          </div>
-          <div class="mini-timer-item">
-            <span>{{ formatNumber(timeLeft.minutes) }}</span>
-            <small>m</small>
-          </div>
-          <div class="mini-timer-item">
-            <span>{{ formatNumber(timeLeft.seconds) }}</span>
-            <small>s</small>
-          </div>
-        </div>
+      <!-- Single Reusable Countdown Widget Instance -->
+      <CountdownWidget 
+        class="mobile-widget"
+        :time-left="timeLeft" 
+        :format-number="formatNumber" 
+      />
 
-        <p class="hero-timer-subtext">It's never been easier to<br class="mobile-only">shine bright this holiday season.</p>
-      </div>
+      
 
     </div>
   </div>
@@ -94,6 +80,7 @@ onUnmounted(() => {
   align-items: center;
 }
 
+/* Base Fixed Background Image (Desktop) */
 .hero-image-fixed {
   position: absolute;
   top: 0;
@@ -101,12 +88,14 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   background-image: url('/Images/Banner/hero-image.webp');
-  background-size: 110% auto;;
+  background-size: cover;
   background-position: center 28%;
+  background-repeat: no-repeat !important;
   background-attachment: fixed;
   z-index: 0;
 }
 
+/* iOS Safari Fix */
 @supports (-webkit-touch-callout: none) {
   .hero-image-fixed {
     background-attachment: scroll;
@@ -123,21 +112,21 @@ onUnmounted(() => {
   z-index: 1;
 }
 
-/* Outer Layout Grid for Left Card & Right Widget */
+/* Outer Layout Grid */
 .hero-content-container {
   position: relative;
   z-index: 3;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 0%;
+  padding: 0 1.5rem;
   display: flex;
   justify-content: space-between;
-  align-items: center; /* flex-start; */
+  align-items: center;
   gap: 20px;
 }
 
-/* Glassmorphism Left Card */
+/* Glassmorphism Hero Card */
 .hero-card {
   width: 100%;
   max-width: 460px;
@@ -226,144 +215,25 @@ onUnmounted(() => {
   box-shadow: 0 6px 18px rgba(247, 148, 29, 0.5);
 }
 
-/* Hero Upper Right Countdown Box */
-.hero-countdown-widget {
-  background: rgba(12, 35, 64, 0.65);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 16px;
-  padding: 1.25rem 1.5rem;
-  max-width: 330px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
-  text-align: center;
-  color: #ffffff;
-  
-  position: absolute;
-  top: -133px;
-  right: -17%;
-
-  /* Required to contain the animated glossy sheen */
-  position: relative;
-  overflow: hidden;
-}
-
-/* Continuous Glossy Sheen Overlay */
-.hero-countdown-widget::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -150%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    60deg,
-    rgba(255, 255, 255, 0) 20%,
-    rgba(255, 255, 255, 0.08) 40%,
-    rgba(255, 255, 255, 0.35) 50%,
-    rgba(255, 255, 255, 0.08) 60%,
-    rgba(255, 255, 255, 0) 80%
-  );
-  transform: rotate(25deg);
-  pointer-events: none;
-  animation: glossyShineContinuous 3s linear infinite;
-}
-
-.hero-timer-title {
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: #ff890b;
-  text-transform: uppercase;
-  margin-bottom: 0.75rem;
-  letter-spacing: 0.5px;
-}
-
-.timer-blocks {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 0.85rem;
-}
-
-.mini-timer-item {
-  background: rgba(9, 26, 48, 0.8);
-  border: 1.5px solid rgba(255, 137, 11, 0.6);
-  border-radius: 8px;
-  padding: 6px 10px;
-  display: flex;
-  align-items: baseline;
-  gap: 2px;
-  min-width: 52px;
-  justify-content: center;
-}
-
-.mini-timer-item span {
-  font-size: 1.25rem;
-  font-weight: 900;
-  color: #ffffff;
-  line-height: 1;
-}
-
-.mini-timer-item small {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #ff890b;
-  text-transform: lowercase;
-}
-
-.hero-timer-subtext {
-  font-size: 0.88rem;
-  line-height: 1.35;
-  color: #e2e8f0;
-  margin: 0;
-  font-weight: 500;
-}
-
-/* Responsive Layout */
+/* Tablet & Mobile Layout Adjustments */
 @media (max-width: 992px) {
-  .hero-content-container {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .hero-countdown-widget {
-    order: -1; /* Shows countdown above the card on mobile/tablets */
-    max-width: 100%;
-    width: 100%;
-
-    position: relative;
-    top: 0;
-    right: 0;
-    padding: 0 5%;
-  }
-}
-
-.mobile-only {
-  display: none;
-}
-
-@media (max-width: 768px) {
-  /* 1. Hero Banner Setup */
   .hero-banner {
     min-height: auto;
     padding: 2.5rem 0;
   }
 
-  /* 2. Mobile-Specific Background Image */
   .hero-image-fixed {
     background-image: url('/Images/Banner/hero-image-mobile-768.webp');
     background-size: cover;
     background-position: center center;
+    background-repeat: no-repeat !important;
     background-attachment: scroll;
   }
 
-  /* 3. Dark Overlay for Better Text Contrast */
   .overlay {
     background: rgba(0, 0, 0, 0.45);
   }
 
-  /* 4. Container Layout */
   .hero-content-container {
     display: flex;
     flex-direction: column;
@@ -373,14 +243,11 @@ onUnmounted(() => {
     padding: 0 5%;
   }
 
-  /* 5. Main Hero Card (Text-Only / Transparent) */
   .hero-card {
     order: 1;
     max-width: 90%;
     padding: 0;
     text-align: left;
-
-    /* Completely remove card styling & glass effects */
     background: transparent !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
@@ -389,7 +256,6 @@ onUnmounted(() => {
     border-radius: 0 !important;
   }
 
-  /* Turn off glossy sheen animation on mobile */
   .hero-card::after {
     display: none !important;
   }
@@ -399,7 +265,7 @@ onUnmounted(() => {
     margin-bottom: 0.35rem;
     line-height: 1.15;
     text-align: left;
-    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7); /* Sharp text shadow for contrast */
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
   }
 
   .hero-card .tagline {
@@ -420,10 +286,11 @@ onUnmounted(() => {
     padding: 0.5rem 1.25rem;
     border-radius: 8px;
     display: inline-block;
-    position: relative;
-    overflow: hidden;
   }
-  .btn-primary-card::after{
+}
+
+@media (max-width: 768px) {
+  .btn-primary-card::after {
     content: '';
     position: absolute;
     top: -50%;
@@ -441,70 +308,6 @@ onUnmounted(() => {
     transform: rotate(25deg);
     pointer-events: none;
     animation: glossyShineContinuous 3s linear infinite;
-  }
-  
-
-  /* 6. Text-Only Countdown Widget */
-  .hero-countdown-widget {
-    order: 2;
-    position: relative;
-    top: auto;
-    right: auto;
-    width: auto;
-    max-width: 100%;
-    padding: 0;
-    
-    background: transparent !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    border: none !important;
-    box-shadow: none !important;
-    text-align: left;
-    border-radius: 0 !important;
-  }
-
-  .hero-countdown-widget::after {
-    display: none !important;
-  }
-
-  .hero-timer-title {
-    font-size: 0.75rem;
-    margin-bottom: 0.35rem;
-    text-align: left;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
-  }
-
-  .timer-blocks {
-    justify-content: flex-start;
-    gap: 4px;
-    margin-bottom: 0.35rem;
-  }
-
-  .mini-timer-item {
-    min-width: 28px;
-    padding: 2px 5px;
-    border-radius: 4px;
-    background: rgba(9, 26, 48, 0.6);
-    border: 1px solid rgba(255, 137, 11, 0.5);
-  }
-
-  .mini-timer-item span {
-    font-size: 0.8rem;
-  }
-
-  .mini-timer-item small {
-    font-size: 0.55rem;
-  }
-
-  .hero-timer-subtext {
-    font-size: 0.68rem;
-    line-height: 1.15;
-    text-align: left;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
-  }
-
-  .mobile-only {
-    display: inline;
   }
 }
 </style>
