@@ -324,3 +324,16 @@ iframe#chat-widget-container,
 .mobile-only {
   display: none;
 }
+
+/* --------------------------------------------------
+   Tablet & Mobile Overrides (992px & Below)
+-------------------------------------------------- */
+@media (max-width: 992px) {
+  .mobile-only {
+    display: inline;
+  }
+
+  .desktop-widget {
+    display: none !important; /* Hide desktop-widget on mobile/tablet */
+  }
+}  

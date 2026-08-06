@@ -17,8 +17,8 @@
           <span class="highlight">DONE</span>
         </h1>
         <p class="tagline">
-          Giftwrapped in<br class="mobile-only">One Simple Package.<br>
-          <span class="subtext">(No ladders. No tangled cords.<br class="mobile-only">No storage. No stress.)</span>
+          Giftwrapped in<br class="mobile-only"> One Simple Package.<br>
+          <span class="subtext">(No ladders. No tangled cords.<br class="mobile-only"> No storage. No stress.)</span>
         </p>
         <NuxtLink to="/packages" class="btn-primary-card">Shop Packages</NuxtLink>
       </div>

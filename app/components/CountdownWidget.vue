@@ -222,14 +222,6 @@ defineProps({
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
   }
 
-  .mobile-only {
-    display: inline;
-  }
-
-  .desktop-widget {
-    display: none !important; /* Hide desktop-widget on mobile/tablet */
-  }
-
   .mobile-widget {
     display: block;
     order: 2;
