@@ -6,11 +6,12 @@
     <div class="overlay"></div>
     
     <div class="hero-content-container">
-      <!-- Glassmorphic Card -->
+      
+      <!-- Main Glassmorphic Card (Left Side) -->
       <div class="hero-card">
         <h1>
-          YOUR HOLIDAY<br>
-          <span class="highlight">LIGHTS,</span> DONE.
+          HOLIDAY MAGIC<br>
+          <span class="highlight">INSTALLED</span>
         </h1>
         <p class="tagline">
           Giftwrapped in One Simple Package.<br>
@@ -18,9 +19,70 @@
         </p>
         <NuxtLink to="/packages" class="btn-primary-card">Shop Packages</NuxtLink>
       </div>
+
+      <!-- Hero Countdown Widget (Upper Right Corner) -->
+      <div class="hero-countdown-widget">
+        <h3 class="hero-timer-title">Christmas Countdown</h3>
+        
+        <div class="timer-blocks">
+          <div class="mini-timer-item">
+            <span>{{ formatNumber(timeLeft.days) }}</span>
+            <small>d</small>
+          </div>
+          <div class="mini-timer-item">
+            <span>{{ formatNumber(timeLeft.hours) }}</span>
+            <small>h</small>
+          </div>
+          <div class="mini-timer-item">
+            <span>{{ formatNumber(timeLeft.minutes) }}</span>
+            <small>m</small>
+          </div>
+          <div class="mini-timer-item">
+            <span>{{ formatNumber(timeLeft.seconds) }}</span>
+            <small>s</small>
+          </div>
+        </div>
+
+        <p class="hero-timer-subtext">It's never been easier to shine bright this holiday season.</p>
+      </div>
+
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+// Countdown Logic
+const timeLeft = ref({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+let timerInterval: ReturnType<typeof setInterval> | null = null
+
+const calculateTimeLeft = () => {
+  const now = new Date()
+  let christmas = new Date(now.getFullYear(), 11, 25, 0, 0, 0)
+  if (now.getTime() > christmas.getTime()) {
+    christmas = new Date(now.getFullYear() + 1, 11, 25, 0, 0, 0)
+  }
+  const diff = christmas.getTime() - now.getTime()
+  if (diff <= 0) return
+
+  timeLeft.value = {
+    days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((diff / 1000 / 60) % 60),
+    seconds: Math.floor((diff / 1000) % 60)
+  }
+}
+
+const formatNumber = (num: number) => String(num).padStart(2, '0')
+
+onMounted(() => {
+  calculateTimeLeft()
+  timerInterval = setInterval(calculateTimeLeft, 1000)
+})
+
+onUnmounted(() => {
+  if (timerInterval) clearInterval(timerInterval)
+})
+</script>
 
 <style scoped>
 .hero-banner {
@@ -46,7 +108,6 @@
 }
 
 @supports (-webkit-touch-callout: none) {
-  /* iOS fix for fixed background */
   .hero-image-fixed {
     background-attachment: scroll;
   }
@@ -62,17 +123,21 @@
   z-index: 1;
 }
 
-/* Outer layout wrapper */
+/* Outer Layout Grid for Left Card & Right Widget */
 .hero-content-container {
   position: relative;
   z-index: 3;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 5%;
+  padding: 0 0%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* flex-start; */
+  gap: 20px;
 }
 
-/* Glassmorphism Dark Card */
+/* Glassmorphism Left Card */
 .hero-card {
   width: 100%;
   max-width: 460px;
@@ -85,6 +150,8 @@
   color: #ffffff;
   text-align: center;
   border: 1px solid rgba(255, 255, 255, 0.12);
+  position: relative;
+  overflow: hidden;
 }
 
 .hero-card h1 {
@@ -94,7 +161,6 @@
   font-weight: 800;
   letter-spacing: 0.5px;
   color: #ffffff;
-  text-shadow: none;
 }
 
 .hero-card h1 .highlight {
@@ -107,7 +173,6 @@
   line-height: 1.35;
   margin-bottom: 1.75rem;
   color: #e2e8f0;
-  text-shadow: none;
 }
 
 .hero-card .tagline .subtext {
@@ -116,6 +181,27 @@
   font-weight: 400;
   margin-top: 0.4rem;
   opacity: 0.9;
+}
+
+/* Permanent Glossy Sheen Overlay */
+.hero-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -150%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.08) 60%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  animation: glossyShineContinuous 3s linear infinite;
 }
 
 /* Glass Card Button */
@@ -140,23 +226,126 @@
   box-shadow: 0 6px 18px rgba(247, 148, 29, 0.5);
 }
 
-/* Responsive Styles */
-@media (max-width: 768px) {
-  .hero-banner {
-    min-height: 520px;
+/* Hero Upper Right Countdown Box */
+.hero-countdown-widget {
+  background: rgba(12, 35, 64, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  max-width: 330px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+  text-align: center;
+  color: #ffffff;
+  
+  /* position: absolute;
+  top: -133px;
+  right: -7%; */
+
+  /* Required to contain the animated glossy sheen */
+  position: relative;
+  overflow: hidden;
+}
+
+/* Continuous Glossy Sheen Overlay */
+.hero-countdown-widget::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -150%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.08) 60%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  animation: glossyShineContinuous 3s linear infinite;
+}
+
+.hero-timer-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ff890b;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+.timer-blocks {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.85rem;
+}
+
+.mini-timer-item {
+  background: rgba(9, 26, 48, 0.8);
+  border: 1.5px solid rgba(255, 137, 11, 0.6);
+  border-radius: 8px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  min-width: 52px;
+  justify-content: center;
+}
+
+.mini-timer-item span {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.mini-timer-item small {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ff890b;
+  text-transform: lowercase;
+}
+
+.hero-timer-subtext {
+  font-size: 0.88rem;
+  line-height: 1.35;
+  color: #e2e8f0;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Responsive Layout */
+@media (max-width: 992px) {
+  .hero-content-container {
+    flex-direction: column;
+    align-items: center;
   }
 
-  .hero-content-container {
-    display: flex;
-    justify-content: center;
-    padding: 0 15px;
+  .hero-countdown-widget {
+    order: -1; /* Shows countdown above the card on mobile/tablets */
+    max-width: 100%;
+    width: 100%;
+
+    position: relative;
+    top: 0;
+    right: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-banner {
+    min-height: 560px;
   }
 
   .hero-card {
     max-width: 100%;
     padding: 2rem 1.25rem;
-    bottom: -112px;
-    position: relative;
   }
 
   .hero-card h1 {
@@ -171,9 +360,8 @@
     font-size: 0.78rem;
   }
 
-  .hero-image-fixed {
-    background-attachment: scroll;
+  .hero-content-container {
+    padding: 0 5%;
   }
 }
 </style>
-

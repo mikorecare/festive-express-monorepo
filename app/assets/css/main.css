@@ -29,6 +29,11 @@ body {
   }
 }
 
+@keyframes glossyShineContinuous {
+  0% { left: -150%; }
+  100% { left: 150%; }
+}
+
 /* Optional reusable class */
 .pulse-grow {
   animation-name: festive-express-animation-pulse-grow;
@@ -287,4 +292,22 @@ body {
 #how-it-works,
 section[id] {
   scroll-margin-top: 110px; /* adjust to header height */
+}
+
+
+
+/* FOR CHATBOT */
+/* Example override using CSS custom properties or deep targeting */
+:root {
+  --chat-widget-primary-color: #ff890b !important; /* Changes theme color if CSS variables are exposed */
+}
+
+/* Force styling directly on iframe / widget wrappers if needed */
+iframe#chat-widget-container,
+.chat-widget-header {
+  background-color: #0c2340 !important;
+}
+
+.chat-widget-button {
+  background-color: #ff890b !important;
 }
