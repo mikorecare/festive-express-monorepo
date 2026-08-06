@@ -150,7 +150,7 @@ onMounted(() => {
 
 @media (max-width: 576px) {
   .floating-cart-container {
-    bottom: 20px;
+    /* bottom: 20px; */
     right: 20px;
   }
 }
