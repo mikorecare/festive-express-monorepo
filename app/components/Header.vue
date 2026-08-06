@@ -61,6 +61,9 @@
 
           <!-- Spacer div to keep grid center mathematically aligned -->
           <div class="top-bar-spacer"></div>
+           
+
+
         </div>
       </div>
     </div>
@@ -164,6 +167,7 @@ const route = useRoute()
 watch(() => route.fullPath, () => {
   mobileOpen.value = false
 })
+
 </script>
 
 <style scoped>

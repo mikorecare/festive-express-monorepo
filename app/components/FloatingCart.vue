@@ -31,12 +31,18 @@ onMounted(() => {
 <style scoped>
 .floating-cart-container {
   position: fixed;
-  bottom: 30px;
+  bottom: 170px;
   right: 30px;
   z-index: 999;
   font-family: 'Poppins', 'Roboto', sans-serif;
   display: flex;
   justify-content: flex-end;
+
+  animation-name: festive-express-animation-pulse-grow;
+  animation-duration: 0.5s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
 }
 
 .cart-total-link {
