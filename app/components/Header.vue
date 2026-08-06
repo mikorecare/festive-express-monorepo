@@ -90,7 +90,7 @@
 
           <!-- Right actions -->
           <div class="header-actions">
-            <a :href="telHref" class="contact-box btn-secondary">
+            <a :href="telHref" class="contact-box btn-secondary-2">
               <span class="phone-icon"><i class="fas fa-phone"></i></span>
               <div class="contact-text">
                 <div class="phone-number">{{ settings.contact_phone_display || '(941) 239-4722' }}</div>
@@ -195,6 +195,7 @@ watch(() => route.fullPath, () => {
   gap: 16px;
   justify-content: flex-start;
   grid-column: 1;
+  margin-left: 25px;
 }
 
 .top-bar-spacer {
@@ -288,6 +289,120 @@ watch(() => route.fullPath, () => {
   animation-direction: alternate;
   border: 3px solid #ff890b;
 }
+
+
+
+
+
+
+/* 3D Glossy Orange Pill Button */
+.contact-box.btn-secondary-2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.6rem 2rem;
+  border-radius: 50px; /* Fully rounded pill shape */
+  text-decoration: none;
+  color: #ffffff;
+  font-family: inherit;
+  
+  /* Vibrant Orange-Red Gradient Body */
+  background: linear-gradient(180deg, #ff7a00 0%, #ff4500 50%, #e02e00 100%);
+  
+  /* Thick Red Outer Border & Soft Shadow */
+  /* border: 4px solid #cc1100; */
+  border: none;
+  box-shadow: 
+    0 6px 12px rgba(0, 0, 0, 0.35),         /* Drop shadow underneath */
+    inset 0 2px 3px rgba(255, 255, 255, 0.6); /* Inner edge top glow */
+  
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Inner Glossy Top Rim Highlight */
+.contact-box.btn-secondary-2::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  right: 6px;
+  height: 45%;
+  border-radius: 40px 40px 20px 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.05) 100%);
+  pointer-events: none;
+}
+
+.contact-box.btn-secondary-2::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -150%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.08) 60%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  animation: glossyShineContinuous 3s linear infinite;
+}
+
+/* Hover & Active States */
+.contact-box.btn-secondary-2:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 16px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.8);
+}
+
+.contact-box.btn-secondary-2:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Typography & Icon Layout */
+.contact-box .phone-icon {
+  font-size: 1.25rem;
+  color: #ffffff;
+  position: relative;
+  z-index: 1;
+}
+
+.contact-box .contact-text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  line-height: 1.1;
+  position: relative;
+  z-index: 1;
+}
+
+.contact-box .phone-number {
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.contact-box .call-now {
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  opacity: 0.95;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+
+
+
 
 .phone-icon {
   font-size: 1.6rem;
