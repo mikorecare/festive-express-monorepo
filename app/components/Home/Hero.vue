@@ -286,10 +286,15 @@ onUnmounted(() => {
     padding: 0.5rem 1.25rem;
     border-radius: 8px;
     display: inline-block;
+    position: relative;
   }
 }
 
 @media (max-width: 768px) {
+  .btn-primary-card {
+    position: relative;
+    overflow: hidden;
+  }
   .btn-primary-card::after {
     content: '';
     position: absolute;
@@ -308,6 +313,10 @@ onUnmounted(() => {
     transform: rotate(25deg);
     pointer-events: none;
     animation: glossyShineContinuous 3s linear infinite;
+  }
+
+  .hero-card::after {
+    display: none !important;
   }
 }
 </style>
