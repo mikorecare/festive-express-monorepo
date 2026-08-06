@@ -133,9 +133,36 @@ const getPackageTitleImage = (name: string) => {
 <style scoped>
 /* Main Section Background using #0c2340 */
 .packages-compare {
+  position: relative;
+  /* 1. Add background image with parallax effect */
+  background-image: url('/Images/Choose-Your-Package.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* Creates the Parallax Effect */
+
+  /* 2. Optional: Add an overlay padding so text remains readable */
   padding: 80px 0;
-  background: radial-gradient(circle at center, #13335c 0%, #0c2340 100%);
-  color: #ffffff;
+  z-index: 1;
+}
+
+/* Optional: Dark Overlay to keep comparison text legible */
+.packages-compare::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* background: rgba(12, 35, 64, 0.75);  */
+  z-index: -1;
+}
+
+/* iOS Safari Parallax Fix (Prevents rendering glitches on mobile devices) */
+@supports (-webkit-touch-callout: none) {
+  .packages-compare {
+    background-attachment: scroll;
+  }
 }
 
 /* Titles */

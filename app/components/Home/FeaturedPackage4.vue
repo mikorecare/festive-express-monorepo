@@ -262,6 +262,9 @@ const getPackageIcon = (name: string) => {
   border: 4px solid var(--orange);
   overflow: hidden;
   line-height: 0;
+
+  position: relative;
+  overflow: hidden;
 }
 
 .card-image img {
@@ -270,6 +273,27 @@ const getPackageIcon = (name: string) => {
   object-fit: cover;
   display: block;
 }
+
+.card-image::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -150%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      60deg,
+      rgba(255, 255, 255, 0) 20%,
+      rgba(255, 255, 255, 0.08) 40%,
+      rgba(255, 255, 255, 0.35) 50%,
+      rgba(255, 255, 255, 0.08) 60%,
+      rgba(255, 255, 255, 0) 80%
+    );
+    transform: rotate(25deg);
+    pointer-events: none;
+    animation: glossyShineContinuous 3s linear infinite;
+  }
+
 
 .pkg-title-img {
   position: absolute;
@@ -331,7 +355,7 @@ const getPackageIcon = (name: string) => {
   gap: 12px;
   padding: 140px 18px 22px;
   margin-top: -90px;
-  border-radius: 28px 28px 0 0;
+  border-radius: 28px 28px 28px 28px;
 
   background-color: var(--navy);
   /* background-image: url('/Images/LV.png');

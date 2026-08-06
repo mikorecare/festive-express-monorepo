@@ -1,26 +1,12 @@
 <template>
   <section class="dream-holiday" id="how-it-works">
-    <!-- SVG Curved Wave Pattern -->
-    <div class="wave-shape">
-      <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
-        <path
-          fill="rgba(255, 255, 255, 0.06)"
-          d="M0,192L80,181.3C160,171,320,149,480,165.3C640,181,800,235,960,234.7C1120,235,1280,181,1360,154.7L1440,128L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,0,320Z"
-        ></path>
-        <path
-          fill="rgba(110, 85, 120, 0.2)"
-          d="M0,224L80,213.3C160,203,320,181,480,197.3C640,213,800,267,960,261.3C1120,256,1280,192,1360,160L1440,128L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,0,320Z"
-        ></path>
-      </svg>
-    </div>
-
+  
     <div class="container">
       <div class="dream-content">
         <div class="dream-text">
           <div class="small-badge text-uppercase">SEASONAL SALE • NOW LIVE</div>
-          <h2 class="dream-title">
-            Your <span class="highlight">Dream</span> Holiday<br>
-            Starts here
+          <h2 ref="titleRef" class="dream-title scroll-animate">
+            Your <span class="highlight">Dream Holiday</span> Starts here
           </h2>
           <p class="dream-desc">
             This season's sale won't last long! Browse our full range of<br>
@@ -37,11 +23,21 @@
   </section>
 </template>
 
+<script setup>
+import { ref } from 'vue'
+
+const titleRef = ref(null)
+useScrollAnimate(titleRef) // Works instantly on any element!
+</script>
+
 <style scoped>
 .dream-holiday {
-  background-color: #172a50;
+  /* Set background image with overlay and fallbacks */
+  background: 
+    linear-gradient(rgba(23, 42, 80, 0.75), rgba(23, 42, 80, 0.85)),
+    url('/Images/Dream-Holiday.png') no-repeat center center / cover;
   color: white;
-  padding: 90px 0;
+  padding: 100px 0;
   position: relative;
   overflow: hidden;
   z-index: 2;
@@ -49,22 +45,6 @@
   font-family: 'Poppins', 'Roboto', sans-serif;
 }
 
-/* Background Waves Container */
-.wave-shape {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.wave-shape svg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
 
 .dream-content {
   position: relative;
@@ -84,7 +64,7 @@
   letter-spacing: 1.5px;
   display: inline-block;
   margin-bottom: 12px;
-  font-size: 0.95rem;
+  font-size: 1.5rem;
 }
 
 .dream-title {
@@ -105,10 +85,10 @@
 }
 
 .dream-desc {
-  font-size: 1.05rem;
+  font-size: 1.25rem;
   max-width: 720px;
   margin: 0 auto 36px;
-  opacity: 0.9;
+  opacity: 0.95;
   line-height: 1.5;
 }
 
@@ -180,4 +160,5 @@
     max-width: 320px;
   }
 }
+
 </style>
