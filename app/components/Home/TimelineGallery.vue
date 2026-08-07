@@ -122,24 +122,31 @@ const dismissOverlay = () => {
 
 // Timeline Data Array
 const timelineItems = ref([
-  { id: 1, year: '', description: '', image: '/Images/Gallery/Festive-Images-1.webp', imagePosition: 'left', dividerImage: null },
-  { id: 2, year: '', description: '', image: '/Images/Gallery/Festive-Images-2.webp', imagePosition: 'right', dividerImage: null },
-  { id: 3, year: '', description: '', image: '/Images/Gallery/Festive-Images-3.webp', imagePosition: 'right', dividerImage: null },
+  // Start strong with a fun portrait instead of a dark house exterior
+  { id: 13, year: '', description: '', image: '/Images/Gallery/Festive-Images-13.webp', imagePosition: 'left', dividerImage: null },
+  { id: 1, year: '', description: '', image: '/Images/Gallery/Festive-Images-1.webp', imagePosition: 'right', dividerImage: null },
+  { id: 17, year: '', description: '', image: '/Images/Gallery/Festive-Images-17.webp', imagePosition: 'right', dividerImage: null },
+  { id: 7, year: '', description: '', image: '/Images/Gallery/Festive-Images-7.webp', imagePosition: 'right', dividerImage: null },
+
+  // Group selfie / fun shot mid-early section
+  { id: 14, year: '', description: '', image: '/Images/Gallery/Festive-Images-14.webp', imagePosition: 'right', dividerImage: null },
+  { id: 10, year: '', description: '', image: '/Images/Gallery/Festive-Images-10.webp', imagePosition: 'right', dividerImage: null },
+  { id: 9, year: '', description: '', image: '/Images/Gallery/Festive-Images-9.webp', imagePosition: 'right', dividerImage: null },
   { id: 4, year: '', description: '', image: '/Images/Gallery/Festive-Images-4.webp', imagePosition: 'right', dividerImage: null },
+
+  // Playful character photo near the middle
+  { id: 15, year: '', description: '', image: '/Images/Gallery/Festive-Images-15.webp', imagePosition: 'right', dividerImage: null },
+  { id: 8, year: '', description: '', image: '/Images/Gallery/Festive-Images-8.webp', imagePosition: 'right', dividerImage: null },
+  { id: 18, year: '', description: '', image: '/Images/Gallery/Festive-Images-18.webp', imagePosition: 'right', dividerImage: null },
+  { id: 2, year: '', description: '', image: '/Images/Gallery/Festive-Images-2.webp', imagePosition: 'right', dividerImage: null },
+
+  // Colorful pathway detail leading into the final stretch
+  { id: 16, year: '', description: '', image: '/Images/Gallery/Festive-Images-16.webp', imagePosition: 'right', dividerImage: null },
+  { id: 11, year: '', description: '', image: '/Images/Gallery/Festive-Images-11.webp', imagePosition: 'right', dividerImage: null },
+  { id: 3, year: '', description: '', image: '/Images/Gallery/Festive-Images-3.webp', imagePosition: 'right', dividerImage: null },
+  { id: 12, year: '', description: '', image: '/Images/Gallery/Festive-Images-13.webp', imagePosition: 'right', dividerImage: null },
   { id: 5, year: '', description: '', image: '/Images/Gallery/Festive-Images-5.webp', imagePosition: 'right', dividerImage: null },
   { id: 6, year: '', description: '', image: '/Images/Gallery/Festive-Images-6.webp', imagePosition: 'right', dividerImage: null },
-  { id: 7, year: '', description: '', image: '/Images/Gallery/Festive-Images-7.webp', imagePosition: 'right', dividerImage: null },
-  { id: 8, year: '', description: '', image: '/Images/Gallery/Festive-Images-8.webp', imagePosition: 'right', dividerImage: null },
-  { id: 9, year: '', description: '', image: '/Images/Gallery/Festive-Images-9.webp', imagePosition: 'right', dividerImage: null },
-  { id: 10, year: '', description: '', image: '/Images/Gallery/Festive-Images-10.webp', imagePosition: 'right', dividerImage: null },
-  { id: 11, year: '', description: '', image: '/Images/Gallery/Festive-Images-11.webp', imagePosition: 'right', dividerImage: null },
-  { id: 12, year: '', description: '', image: '/Images/Gallery/Festive-Images-12.webp', imagePosition: 'right', dividerImage: null },
-  { id: 13, year: '', description: '', image: '/Images/Gallery/Festive-Images-13.webp', imagePosition: 'right', dividerImage: null },
-  { id: 14, year: '', description: '', image: '/Images/Gallery/Festive-Images-14.webp', imagePosition: 'right', dividerImage: null },
-  { id: 15, year: '', description: '', image: '/Images/Gallery/Festive-Images-15.webp', imagePosition: 'right', dividerImage: null },
-  { id: 16, year: '', description: '', image: '/Images/Gallery/Festive-Images-16.webp', imagePosition: 'right', dividerImage: null },
-  { id: 17, year: '', description: '', image: '/Images/Gallery/Festive-Images-17.webp', imagePosition: 'right', dividerImage: null },
-  { id: 18, year: '', description: '', image: '/Images/Gallery/Festive-Images-18.webp', imagePosition: 'right', dividerImage: null },
 ])
 
 // Refs & Reactive State
