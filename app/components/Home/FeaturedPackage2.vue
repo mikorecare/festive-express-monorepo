@@ -334,4 +334,5 @@ const getPackageTitleImage = (name: string) => {
     margin: 0 auto;
   }
 }
+
 </style>
