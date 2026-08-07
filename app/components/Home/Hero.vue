@@ -211,7 +211,7 @@ onUnmounted(() => {
   }
 
   .overlay {
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.25);
   }
 
   .hero-content-container {
