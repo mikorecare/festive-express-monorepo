@@ -91,15 +91,16 @@
       <div class="nav-track-line"></div>
 
       <!-- Draggable Spinner Indicator -->
+       <!-- :style="{ left: scrollProgress + '%', transform: `translateX(-50%) rotate(${spinnerRotation}deg)` }" -->
       <div 
         class="spinner-indicator"
         :class="{ 'is-dragging': isSpinnerDragging }"
-        :style="{ left: scrollProgress + '%', transform: `translateX(-50%) rotate(${spinnerRotation}deg)` }"
+        :style="{ left: scrollProgress + '%' }"
         @mousedown="startSpinnerDrag"
         @touchstart="startSpinnerDrag"
-      >
+        >
         <img :src="spinnerImage" alt="Timeline Ornament" draggable="false" />
-      </div>
+      </div>  
     </div>
   </section>
 </template>
@@ -394,13 +395,16 @@ const onSpinnerDrag = (e) => {
 .spinner-indicator {
   position: absolute;
   top: 50%;
-  width: 50px;
-  height: 50px;
-  margin-top: -25px;
+  width: 70px;
+  height: 70px;
+  margin-top: -35px;
+  transform: translateX(-50%); /* Centering handled here instead of inline style */
   cursor: grab;
   user-select: none;
   touch-action: none;
   z-index: 5;
+  transition: none; /* Prevents CSS transitions from causing lag/jitter during drag */
+  will-change: left; /* Helps browser render smooth movement */
 }
 
 .spinner-indicator.is-dragging {
@@ -412,6 +416,7 @@ const onSpinnerDrag = (e) => {
   height: 100%;
   object-fit: contain;
   pointer-events: none;
+  transform: scaleX(-1);
 }
 
 /* Overlay Layer */

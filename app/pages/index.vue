@@ -9,10 +9,10 @@
     <!-- <HomePatrioticDecor />
     <HomeSeasonalSale />
     <HomeHalloweenDecor /> -->
-    <HomeDreamHoliday />    
-    <!-- <Newsletter /> -->
-    <HomeFeaturedPackage2 />
     <HomeTimelineGallery />
+    <!-- <HomeDreamHoliday />     -->
+    <!-- <Newsletter /> -->
+    <HomeFeaturedPackage2 />    
     <HomeWhyChooseUs />
   </div>
 </template>
