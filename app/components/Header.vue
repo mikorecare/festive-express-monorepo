@@ -90,7 +90,7 @@
 
           <!-- Right actions -->
           <div class="header-actions">
-            <a :href="telHref" class="contact-box btn-secondary-2">
+            <a href="tel:9412394722" class="contact-box btn-secondary-2">
               <span class="phone-icon"><i class="fas fa-phone"></i></span>
               <div class="contact-text">
                 <div class="call-now">CALL US NOW!</div>
@@ -121,8 +121,11 @@
             <li><NuxtLink to="/how-it-works" @click="mobileOpen = false">How It Works</NuxtLink></li>
             <li><NuxtLink to="/contact" @click="mobileOpen = false">Contact Us</NuxtLink></li>
           </ul>
-          <a :href="telHref" class="mobile-call" @click="mobileOpen = false">
-            <i class="fas fa-phone-alt"></i> {{ settings.contact_phone_display || '(941) 222-1012' }}
+          <!-- <a :href="telHref" class="mobile-call" @click="mobileOpen = false">
+            <i class="fas fa-phone-alt"></i> {{ settings.contact_phone_display || '(941) 239-4722' }}
+          </a> -->
+          <a href="tel:9412394722" class="mobile-call" @click="mobileOpen = false">
+            <i class="fas fa-phone-alt"></i> {{ settings.contact_phone_display || '(941) 239-4722' }}
           </a>
         </nav>
       </div>
