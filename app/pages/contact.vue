@@ -27,7 +27,7 @@
               <div class="icon">✉️</div>
               <div>
                 <strong>Contact Us</strong><br>
-                Call us: <span class="highlight">(941) 222-1012</span><br>
+                Call us: <span class="highlight">(941) 239-4722</span><br>
                 Email: Corp@FLPros.com
               </div>
             </div>
@@ -77,12 +77,12 @@
     </div>
 
     <!-- Map Section -->
-    <section class="map-section">
+    <!-- <section class="map-section">
         <div class="container">
             <h2 class="map-title">Our Office Location</h2>
-            <div class="map-wrapper">
+            <div class="map-wrapper"> -->
             <!-- Google Maps Embed -->
-            <iframe 
+            <!-- <iframe 
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3520.0000000000005!2d-82.12345678901234!3d27.123456789012345!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88c0e5c8e8e8e8e8%3A0x1234567890abcdef!2s1973%20Northgate%20Blvd%2C%20Sarasota%2C%20FL%2034234!5e0!3m2!1sen!2sus!4v1720000000000" 
                 width="100%" 
                 height="450" 
@@ -93,7 +93,7 @@
             </iframe>
             </div>
         </div>
-    </section>
+    </section> -->
 
     <Newsletter />
   </div>
