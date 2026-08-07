@@ -125,6 +125,7 @@ const timelineItems = ref([
   // Start strong with a fun portrait instead of a dark house exterior
   { id: 7, year: '', description: '', image: '/Images/Gallery/Festive-Images-7.webp', imagePosition: 'right', dividerImage: null },
   { id: 13, year: '', description: '', image: '/Images/Gallery/Festive-Images-13.webp', imagePosition: 'left', dividerImage: null },
+  { id: 19, year: '', description: '', image: '/Images/Gallery/Festive-Images-19.webp', imagePosition: 'left', dividerImage: null },
   { id: 1, year: '', description: '', image: '/Images/Gallery/Festive-Images-1.webp', imagePosition: 'right', dividerImage: null },
   { id: 17, year: '', description: '', image: '/Images/Gallery/Festive-Images-17.webp', imagePosition: 'right', dividerImage: null },
 
@@ -136,6 +137,7 @@ const timelineItems = ref([
 
   // Playful character photo near the middle
   { id: 15, year: '', description: '', image: '/Images/Gallery/Festive-Images-15.webp', imagePosition: 'right', dividerImage: null },
+  { id: 20, year: '', description: '', image: '/Images/Gallery/Festive-Images-20.webp', imagePosition: 'left', dividerImage: null },
   { id: 8, year: '', description: '', image: '/Images/Gallery/Festive-Images-8.webp', imagePosition: 'right', dividerImage: null },
   { id: 18, year: '', description: '', image: '/Images/Gallery/Festive-Images-18.webp', imagePosition: 'right', dividerImage: null },
   { id: 2, year: '', description: '', image: '/Images/Gallery/Festive-Images-2.webp', imagePosition: 'right', dividerImage: null },
