@@ -28,7 +28,7 @@
               <div>
                 <strong>Contact Us</strong><br>
                 Call us: <span class="highlight">(941) 239-4722</span><br>
-                Email: Corp@FLPros.com
+                packages@festive.express
               </div>
             </div>
 
