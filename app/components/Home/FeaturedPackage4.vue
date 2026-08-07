@@ -104,10 +104,11 @@
       </div>
 
       <div class="footer-note">
-        <h4>
+        <h4 class="mb-5">
           Every package is professionally installed, maintained through the season,
           and taken down when you’re ready. You simply enjoy the holidays.
         </h4>
+        <NuxtLink to="/packages" class="btn-primary-card">Which Package Fits Your Home?</NuxtLink>
       </div>
     </div>
   </section>
@@ -197,8 +198,8 @@ const getPackageIcon = (name: string) => {
 <style scoped>
 /* Brand tokens */
 .featured-bundles {
-  --navy: #1C2D5B;
-  --orange: #F49321;
+  --navy: #0c2340;
+  --orange: #ff7a00;
   --gray: #D6D7D8;
 
   padding: 70px 0;
@@ -494,6 +495,38 @@ const getPackageIcon = (name: string) => {
   line-height: 1.3;
   max-width: 80%;
   margin: 0 auto;
+}
+
+.btn-primary-card {
+  position: relative;
+  overflow: hidden;
+
+  border: 2px solid var(--navy);
+
+  animation-name: festive-express-animation-pulse-grow;
+  animation-duration: 0.5s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+.btn-primary-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -150%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.08) 60%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  animation: glossyShineContinuous 3s linear infinite;
 }
 
 @media (max-width: 576px) {

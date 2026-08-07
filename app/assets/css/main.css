@@ -98,7 +98,7 @@ body {
 .page-hero {
   position: relative;
   height: 420px;
-  background-image: url('/Images/Banner/hero-image.webp');
+  background-image: url('/Images/Banner/Page-Hero-Cover.webp');
   background-size: cover;
   background-position: center;
   display: flex;
@@ -157,7 +157,7 @@ body {
     height: 320px;
   }
   .hero-content h1 {
-    font-size: 2.8rem;
+    font-size: 1.4rem;
   }
 
   .section-title{
@@ -286,6 +286,29 @@ body {
   color: #fff;
   transform: scale(1.03);
 }
+
+/* Glass Card Button */
+.btn-primary-card {
+  display: inline-block;
+  background-color: #ff890b;
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 0.8rem 2.2rem;
+  border-radius: 10px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(247, 148, 29, 0.35);
+  transition: all 0.25s ease-in-out;
+}
+
+.btn-primary-card:hover {
+  background-color: #ff890b;
+  color: #0c2340;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(247, 148, 29, 0.5);
+}
+
 
 
 .highlight {

@@ -254,7 +254,7 @@ watch(() => route.fullPath, () => {
 }
 
 .main-menu a:hover {
-  color: #F49322;
+  color: #ff7a00;
 }
 
 .tagline {

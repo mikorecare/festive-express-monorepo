@@ -23,7 +23,7 @@
     </div>
 
     <p class="hero-timer-subtext">
-      It's never been easier to<br class="mobile-only">shine bright this holiday season.
+      Install Dates Are Filling - <br class="mobile-only">Reserve Yours
     </p>
   </div>
 </template>
