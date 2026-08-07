@@ -93,6 +93,7 @@ onUnmounted(() => {
   background-repeat: no-repeat !important;
   background-attachment: fixed;
   z-index: 0;
+  will-change: transform;
 }
 
 /* iOS Safari Fix */
@@ -207,7 +208,8 @@ onUnmounted(() => {
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat !important;
-    background-attachment: scroll;
+    background-attachment: scroll !important;
+    transform: translateZ(0);
   }
 
   .overlay {
@@ -263,7 +265,7 @@ onUnmounted(() => {
 
   .btn-primary-card {
     font-size: 0.82rem;
-    padding: 0.5rem 1.25rem;
+    padding: 0.5rem 0.8rem;
     border-radius: 8px;
     display: inline-block;
     position: relative;
