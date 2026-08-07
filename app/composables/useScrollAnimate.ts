@@ -6,7 +6,11 @@ export function useScrollAnimate(targetRef: Ref<HTMLElement | null>) {
 
   onMounted(() => {
     observer = new IntersectionObserver(
-      ([entry]) => {
+      (entries) => {
+        const entry = entries[0]
+        // Guard against undefined to satisfy strict TypeScript rules
+        if (!entry) return
+
         if (entry.isIntersecting) {
           entry.target.classList.add('is-visible')
         } else {

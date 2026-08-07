@@ -58,9 +58,10 @@ const { settings, loadSettings, telHref } = useSettings()
 
 <style scoped>
 .main-footer {
-  background: #1d3156;
+  background: #101518;
   color: white;
   padding-top: 60px;
+  border-top: 5px solid #FFF;
 }
 
 .footer-content {
@@ -82,7 +83,7 @@ const { settings, loadSettings, telHref } = useSettings()
 }
 
 .footer-column h4 {
-  color: #F49322;
+  color: #ff7a00;
   margin-bottom: 20px;
   font-size: 1.1rem;
 }
@@ -96,7 +97,7 @@ const { settings, loadSettings, telHref } = useSettings()
 }
 
 .footer-column a:hover {
-  color: #F49322;
+  color: #ff7a00;
 }
 
 .footer-bottom {
@@ -111,10 +112,10 @@ const { settings, loadSettings, telHref } = useSettings()
   font-size: 0.95rem;
 }
 .footer-bottom2 {
-  background-color: #0c2340;
+  background-color: #fff;
   padding-bottom: 25px;
 }
-.copyright{color: #fff; font-size: 16px;}
+.copyright{color: #0c2340; font-size: 16px;}
 
 .payment-methods span {
   margin-left: 12px;
