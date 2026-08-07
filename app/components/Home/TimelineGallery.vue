@@ -57,7 +57,7 @@
         <div class="timeline-card">
           <!-- Image Left Layout -->
           <template v-if="item.imagePosition === 'left'">
-            <div v-if="item.image" class="card-media">
+            <div v-if="item.image" class="card-media clickable" @click="openLightbox(item.image)">
               <img :src="item.image" :alt="item.year || 'Gallery Image'" draggable="false" />
             </div>
             <div v-if="item.year || item.description" class="card-content">
@@ -72,11 +72,21 @@
               <span v-if="item.year" class="year-header">{{ item.year }}</span>
               <p v-if="item.description">{{ item.description }}</p>
             </div>
-            <div v-if="item.image" class="card-media">
+            <div v-if="item.image" class="card-media clickable" @click="openLightbox(item.image)">
               <img :src="item.image" :alt="item.year || 'Gallery Image'" draggable="false" />
             </div>
           </template>
         </div>
+
+        <!-- Lightbox Modal -->
+        <Transition name="fade">
+        <div v-if="activeImage" class="lightbox-overlay" @click.self="closeLightbox">
+            <button class="lightbox-close" @click="closeLightbox" aria-label="Close modal">&times;</button>
+            <div class="lightbox-content">
+            <img :src="activeImage" alt="Enlarged view" />
+            </div>
+        </div>
+        </Transition>
 
         <!-- Optional Centerpiece/Divider between cards -->
         <div v-if="item.dividerImage" class="timeline-divider">
@@ -170,6 +180,8 @@ onMounted(() => {
   window.addEventListener('mouseup', stopSpinnerDrag)
   window.addEventListener('touchmove', onSpinnerDrag)
   window.addEventListener('touchend', stopSpinnerDrag)
+
+  window.addEventListener('keydown', handleKeyDown)
 })
 
 onUnmounted(() => {
@@ -177,6 +189,8 @@ onUnmounted(() => {
   window.removeEventListener('mouseup', stopSpinnerDrag)
   window.removeEventListener('touchmove', onSpinnerDrag)
   window.removeEventListener('touchend', stopSpinnerDrag)
+
+  window.removeEventListener('keydown', handleKeyDown)
 })
 
 // Rotation calculation
@@ -254,6 +268,26 @@ const onSpinnerDrag = (e) => {
   const maxScroll = trackRef.value.scrollWidth - trackRef.value.clientWidth
   trackRef.value.scrollLeft = (percent / 100) * maxScroll
 }
+
+
+// State for active lightbox image
+const activeImage = ref(null)
+
+const openLightbox = (imageSrc) => {
+  activeImage.value = imageSrc
+}
+
+const closeLightbox = () => {
+  activeImage.value = null
+}
+
+// Close lightbox on Escape key press
+const handleKeyDown = (e) => {
+  if (e.key === 'Escape' && activeImage.value) {
+    closeLightbox()
+  }
+}
+
 </script>
 
 <style scoped>
@@ -323,14 +357,23 @@ const onSpinnerDrag = (e) => {
 .card-media {
   flex-shrink: 0;
   width: 100%;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    aspect-ratio: 16 / 10;
-    background-color: #f0f0f0;
-    border: 3px solid #f0f0f0;
-    border-radius: 2px;
-    box-shadow: 1px 1px 3px 2px #8b8b8b;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  aspect-ratio: 16 / 10;
+  border-radius: 16px;
+  background-color: #0c1a35; /* Solid dark background while image loads */
+  border: none;
+  outline: 2px solid rgba(255, 122, 0, 0.2); /* Subtle orange ring */
+  outline-offset: -2px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.card-media:hover {
+  outline: 2px solid #ff7a00; /* Crisp primary orange highlight */
+  outline-offset: 4px; /* Pops out on hover */
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
 }
 
 .card-media img {
@@ -502,6 +545,79 @@ const onSpinnerDrag = (e) => {
   transition: opacity 0.5s ease;
 }
 
+.fade-leave-to {
+  opacity: 0;
+}
+
+
+/* Make media container indicate clickability */
+.card-media.clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.card-media.clickable:hover {
+  transform: scale(1.02);
+  filter: brightness(1.05);
+}
+
+/* Lightbox Overlay */
+.lightbox-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.lightbox-content {
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightbox-content img {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 2.5rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 10000;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.lightbox-close:hover {
+  color: #ff7a00;
+  transform: scale(1.15);
+}
+
+/* Transition Animations */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.fade-enter-from,
 .fade-leave-to {
   opacity: 0;
 }

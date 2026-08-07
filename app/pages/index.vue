@@ -19,6 +19,6 @@
 
 <script setup lang="ts">
 useHead({
-  title: 'Festive Lighting Pros Express - Illumineers Creating Wonder'
+  title: 'Illumineers Creating Wonder'
 })
 </script>

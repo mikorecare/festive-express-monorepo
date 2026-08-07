@@ -50,7 +50,7 @@
           <!-- Bottom Orange Shell with Overlapping Button -->
           <div class="package-footer">
             <button class="select-btn" @click="selectPackage(pkg)">
-              SELECT PACKAGE
+              {{ getPackageButtonText(pkg) }}
             </button>
           </div>
         </div>
@@ -127,6 +127,17 @@ const getPackageTitleImage = (name: string) => {
   if (n.includes('jolly')) return `${BASE}/Jolly.png`
   if (n.includes('merry')) return `${BASE}/Merry.png`
   return `${BASE}/Joy.png`
+}
+
+const getPackageButtonText = (pkg: { name: string; id?: string | number }) => {
+  const name = pkg.name.toLowerCase()
+
+  if (name.includes('joy')) return 'Choose Joy'
+  if (name.includes('jolly')) return 'Get Jolly'
+  if (name.includes('merry')) return 'Make It Merry'
+
+  // Fallback for any other package name
+  return `Choose ${pkg.name}`
 }
 </script>
 

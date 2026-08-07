@@ -14,13 +14,13 @@
       <div class="hero-card">
         <h1>
           HOLIDAY MAGIC<br>
-          <span class="highlight">DONE</span>
+          <span class="highlight">FULLY INSTALLED</span>
         </h1>
         <p class="tagline">
           Giftwrapped in<br class="mobile-only"> One Simple Package.<br>
           <span class="subtext">(No ladders. No tangled cords.<br class="mobile-only"> No storage. No stress.)</span>
         </p>
-        <NuxtLink to="/packages" class="btn-primary-card">Shop Packages</NuxtLink>
+        <NuxtLink to="/packages" class="btn-primary-card">Shop the Packages</NuxtLink>
       </div>
 
       <!-- Single Reusable Countdown Widget Instance -->
@@ -193,27 +193,7 @@ onUnmounted(() => {
   animation: glossyShineContinuous 3s linear infinite;
 }
 
-/* Glass Card Button */
-.btn-primary-card {
-  display: inline-block;
-  background-color: #ff890b;
-  color: #ffffff;
-  font-size: 1.1rem;
-  font-weight: 700;
-  text-decoration: none;
-  padding: 0.8rem 2.2rem;
-  border-radius: 10px;
-  border: 2px solid #ffffff;
-  box-shadow: 0 4px 12px rgba(247, 148, 29, 0.35);
-  transition: all 0.25s ease-in-out;
-}
 
-.btn-primary-card:hover {
-  background-color: #ff890b;
-  color: #0c2340;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(247, 148, 29, 0.5);
-}
 
 /* Tablet & Mobile Layout Adjustments */
 @media (max-width: 992px) {
