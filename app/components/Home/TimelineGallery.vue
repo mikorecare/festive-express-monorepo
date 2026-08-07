@@ -144,7 +144,7 @@ const timelineItems = ref([
   { id: 16, year: '', description: '', image: '/Images/Gallery/Festive-Images-16.webp', imagePosition: 'right', dividerImage: null },
   { id: 11, year: '', description: '', image: '/Images/Gallery/Festive-Images-11.webp', imagePosition: 'right', dividerImage: null },
   { id: 3, year: '', description: '', image: '/Images/Gallery/Festive-Images-3.webp', imagePosition: 'right', dividerImage: null },
-  { id: 12, year: '', description: '', image: '/Images/Gallery/Festive-Images-13.webp', imagePosition: 'right', dividerImage: null },
+  { id: 12, year: '', description: '', image: '/Images/Gallery/Festive-Images-12.webp', imagePosition: 'right', dividerImage: null },
   { id: 5, year: '', description: '', image: '/Images/Gallery/Festive-Images-5.webp', imagePosition: 'right', dividerImage: null },
   { id: 6, year: '', description: '', image: '/Images/Gallery/Festive-Images-6.webp', imagePosition: 'right', dividerImage: null },
 ])
