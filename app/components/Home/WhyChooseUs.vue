@@ -5,15 +5,15 @@
       <!-- Content Container (Sits over the blue area on desktop) -->
       <div class="content-side">
         <div class="section-header">
-          <span class="sub-heading">WHY CHOOSE US?</span>
-          <h2 class="section-title">
+          <span v-fade class="sub-heading">WHY CHOOSE US?</span>
+          <h2 v-fade class="section-title">
             Festive Express <span class="highlight">Difference</span>
           </h2>
         </div>
 
         <div class="benefits-row">
           <!-- Item 1: Full-Service Installation -->
-          <div class="benefit-item">
+          <div v-fade-left class="benefit-item">
             <div class="icon-wrapper">
               <img src="/Images/Icons/trained.png" alt="Full-Service Installation" class="benefit-icon-img" />
             </div>
@@ -22,7 +22,7 @@
           </div>
 
           <!-- Item 2: Licensed & Insured -->
-          <div class="benefit-item">
+          <div v-fade-left class="benefit-item">
             <div class="icon-wrapper">
               <img src="/Images/Icons/secured.png" alt="Licensed & Insured" class="benefit-icon-img" />
             </div>
@@ -31,7 +31,7 @@
           </div>
 
           <!-- Item 3: Professional Grade Lighting -->
-          <div class="benefit-item">
+          <div v-fade-left class="benefit-item">
             <div class="icon-wrapper">
               <img src="/Images/Icons/service.png" alt="Professional Grade Lighting" class="benefit-icon-img" />
             </div>
@@ -40,7 +40,7 @@
           </div>
 
           <!-- Item 4: Ongoing Local Support -->
-          <div class="benefit-item">
+          <div v-fade-left class="benefit-item">
             <div class="icon-wrapper">
               <img src="/Images/Icons/location.png" alt="Ongoing Local Support" class="benefit-icon-img" />
             </div>
@@ -69,7 +69,7 @@
   background-size: cover;
   background-position: center right;
   background-repeat: no-repeat;
-  min-height: 280px;
+  min-height: 480px;
   display: flex;
   align-items: center;
   position: relative;
@@ -153,7 +153,7 @@
 
 /* Trigger infinite rotation on hover */
 .benefit-item:hover .benefit-icon-img {
-  animation: spin-infinite 3s linear infinite;
+  animation: spin-once 0.8s ease-in-out 1;
 }
 
 .benefit-item:hover .icon-wrapper {

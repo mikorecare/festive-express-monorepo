@@ -76,14 +76,6 @@ useScrollAnimate(titleRef) // Works instantly on any element!
   color: #ffffff;
 }
 
-.highlight {
-  font-size: inherit;
-  font-style: normal;
-  color: #f7941d;
-  font-family: inherit;
-  font-weight: inherit;
-}
-
 .dream-desc {
   font-size: 1.25rem;
   max-width: 720px;

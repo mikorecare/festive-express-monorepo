@@ -12,6 +12,7 @@
     <HomeDreamHoliday />    
     <!-- <Newsletter /> -->
     <HomeFeaturedPackage2 />
+    <HomeTimelineGallery />
     <HomeWhyChooseUs />
   </div>
 </template>

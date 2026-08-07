@@ -216,9 +216,7 @@ const getPackageIcon = (name: string) => {
 }
 
 .section-title {
-  font-size: 2.4rem;
   color: var(--navy);
-  margin-bottom: 12px;
   text-transform: uppercase;
   font-weight: bold;
 }
@@ -275,24 +273,24 @@ const getPackageIcon = (name: string) => {
 }
 
 .card-image::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -150%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-      60deg,
-      rgba(255, 255, 255, 0) 20%,
-      rgba(255, 255, 255, 0.08) 40%,
-      rgba(255, 255, 255, 0.35) 50%,
-      rgba(255, 255, 255, 0.08) 60%,
-      rgba(255, 255, 255, 0) 80%
-    );
-    transform: rotate(25deg);
-    pointer-events: none;
-    animation: glossyShineContinuous 3s linear infinite;
-  }
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -150%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.08) 60%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  animation: glossyShineContinuous 3s linear infinite;
+}
 
 
 .pkg-title-img {

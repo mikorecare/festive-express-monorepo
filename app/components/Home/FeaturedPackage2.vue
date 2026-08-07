@@ -1,8 +1,8 @@
 <template>
   <section class="packages-compare">
     <div class="container">
-      <h2 class="section-title">CHOOSE YOUR HOLIDAY PACKAGE</h2>
-      <p class="section-sub">COMPARE WHAT’S INCLUDED IN EACH PLAN</p>
+      <h2 v-fade class="section-title">CHOOSE YOUR <span class="highlight">HOLIDAY</span> PACKAGE</h2>
+      <p v-fade class="section-sub">COMPARE WHAT’S INCLUDED IN EACH PLAN</p>
 
       <div class="compare-grid">
         <div 
@@ -144,6 +144,7 @@ const getPackageTitleImage = (name: string) => {
   /* 2. Optional: Add an overlay padding so text remains readable */
   padding: 80px 0;
   z-index: 1;
+  border-top: 5px solid #ff890b;
 }
 
 /* Optional: Dark Overlay to keep comparison text legible */
@@ -168,10 +169,8 @@ const getPackageTitleImage = (name: string) => {
 /* Titles */
 .section-title {
   text-align: center;
-  font-size: 2.6rem;
   font-weight: 900;
   color: #ffffff;
-  margin-bottom: 6px;
   letter-spacing: 1px;
   text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
@@ -244,6 +243,10 @@ const getPackageTitleImage = (name: string) => {
   border-bottom-right-radius: 70px;
   padding: 24px 20px 60px; /* Adds bottom breathing room inside the white card */
   flex: 1;
+  background-image: url(/Images/LV.png);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  background-size: cover;
 }
 
 .inclusions {
