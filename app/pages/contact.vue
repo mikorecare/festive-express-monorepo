@@ -5,8 +5,8 @@
       <div class="hero-overlay">
         <div class="container">
           <div class="hero-content">
-            <h1>CONTACT US</h1>
-            <p class="breadcrumb">HOME / CONTACT US</p>
+            <h1 v-fade>CONTACT US</h1>
+            <p v-fade class="breadcrumb">HOME / CONTACT US</p>
           </div>
         </div>
       </div>

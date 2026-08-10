@@ -5,8 +5,8 @@
       <div class="hero-overlay">
         <div class="container">
           <div class="hero-content">
-            <h1>HOW IT WORKS</h1>
-            <p class="breadcrumb">HOME / HOW IT WORKS</p>
+            <h1 v-fade>HOW IT WORKS</h1>
+            <p v-fade class="breadcrumb">HOME / HOW IT WORKS</p>
           </div>
         </div>
       </div>
@@ -38,7 +38,7 @@
       </div>
     </div>
 
-    <Newsletter />
+    <!-- <Newsletter /> -->
   </div>
 </template>
 
@@ -126,13 +126,26 @@ onMounted(() => {
   flex-shrink: 0;
   background: white;
   z-index: 2;
-  transition: all 0.6s ease;
+  /* transition: all 0.6s ease; */
+
+  /* Initial state before active */
+  transform: scale(0.8);
+  opacity: 0.5;
+
+  /* Slower transition with a smooth ease-out curve */
+  transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 1.4s ease,
+              border-color 1.4s ease,
+              opacity 1.4s ease;
+  will-change: transform, background-color, border-color, opacity;
+
 }
 
 .timeline-item.active .timeline-dot {
   background: #F49322;
   border-color: #F49322;
-  transform: scale(1.1);
+  transform: scale(1.4);
+  opacity: 1;
 }
 
 .timeline-content h3 {

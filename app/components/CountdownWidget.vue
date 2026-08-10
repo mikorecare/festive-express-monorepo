@@ -23,7 +23,7 @@
     </div>
 
     <p class="hero-timer-subtext">
-      Install Dates Are Filling - <br class="mobile-only">Reserve Yours
+      Install Dates Are Filling Up - <br class="mobile-only">Reserve Yours
     </p>
   </div>
 </template>
