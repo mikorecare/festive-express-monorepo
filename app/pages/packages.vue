@@ -131,11 +131,11 @@
 
             <!-- Right Column: Details, Inclusions & Purchase Action -->
             <div class="details-column">
-              <!-- <div 
+              <div 
                 v-if="pkg.description" 
                 class="package-description" 
                 v-html="pkg.description"
-              ></div> -->
+              ></div>
 
               <div class="inclusions-block">
                 <h3>Package Inclusions:</h3>
@@ -159,6 +159,11 @@
                   </li>
                 </ul>
               </div>
+
+              <button @click="scrollToSpecs" class="info-btn">
+                For More Product Information
+                <span class="arrow-down">↓</span>
+              </button>
 
               <div class="p-info-card">
                 <p class="info-text">
@@ -194,6 +199,231 @@
           </div>
         </div>
       </section>
+
+      <!-- Product Information Section -->
+    <section id="product-specs" class="product-info-section">
+      <div class="container">
+        <div class="section-header2 text-center">
+          <h2>Product Specifications</h2>
+          <p class="section-subtitle">Discover the professional-grade materials and engineering behind every installation.</p>
+        </div>
+
+        <div class="product-grid">
+          <!-- C-9 Roofline Lights -->
+          <div class="product-card">
+            <div class="product-header">
+              <h3>C-9 Roofline Lights</h3>
+              <span class="badge">Roofline & Trim</span>
+            </div>
+            <div class="product-body">
+              <p class="description">
+                Professional quality, durability, and energy efficiency. Polystyrene lenses make them ultra-strong, while SMD technology delivers brilliant brightness. These cool-to-the-touch bulbs are built to last season after season.
+              </p>
+              <div class="options-tag"><strong>Color Options:</strong> Warm White, Pure White, Champagne</div>
+              
+              <div class="spec-block">
+                <h4>Features</h4>
+                <ul>
+                  <li>C-9 LED Premium Bulbs with E17 base</li>
+                  <li>SMD LED technology for brilliant light</li>
+                  <li>Diamond-cut pattern facets generating light halos</li>
+                  <li>Average bulb life: 60,000 hours</li>
+                  <li>Nickel base to prevent corrosion</li>
+                  <li>Rated for Indoor & Outdoor use</li>
+                </ul>
+              </div>
+
+              <div class="spec-block">
+                <h4>Specifications</h4>
+                <div class="spec-grid">
+                  <div><span>Voltage:</span> 120V</div>
+                  <div><span>Watts/Bulb:</span> 0.65W</div>
+                  <div><span>Kelvin:</span> 3000K</div>
+                  <div><span>Lumens:</span> 37</div>
+                  <div><span>Dimmable:</span> Yes</div>
+                  <div><span>Diode Count:</span> 3</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5mm Wide Angle LED String Lights -->
+          <div class="product-card">
+            <div class="product-header">
+              <h3>5mm Wide Angle LED Lights</h3>
+              <span class="badge">Commercial Grade</span>
+            </div>
+            <div class="product-body">
+              <p class="description">
+                IP67 water-tight string lights engineered for the harshest weather conditions. Features shatterproof acrylic bulbs with non-fading infused color and heavy-duty 20 gauge wire for end-to-end reliability.
+              </p>
+              <div class="options-tag"><strong>Color Options:</strong> Warm White, Pure White, Champagne</div>
+
+              <div class="spec-block">
+                <h4>Features</h4>
+                <ul>
+                  <li>IP67 Rated: Waterproof and dust-tight</li>
+                  <li>Bulb lifespan up to 100,000 hours</li>
+                  <li>ENERGY STAR® certified (Up to 90% energy savings)</li>
+                  <li>Heavy-duty 20 gauge wire with tighter wire twists</li>
+                  <li>Connect up to 432 watts end-to-end</li>
+                  <li>Contractor Pack pre-balled sets for efficient install</li>
+                </ul>
+              </div>
+
+              <div class="spec-block">
+                <h4>Specifications</h4>
+                <div class="spec-grid">
+                  <div><span>Spacing:</span> 4" apart</div>
+                  <div><span>Length:</span> 17 ft total</div>
+                  <div><span>Wire:</span> 20 Gauge Green</div>
+                  <div><span>Voltage:</span> 120V</div>
+                  <div><span>Color Temp:</span> 3000K</div>
+                  <div><span>Rating:</span> WeatherPRO™ Commercial</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 24" Prelit Wreath -->
+          <div class="product-card">
+            <div class="product-header">
+              <h3>24” Sequoia Fir Wreath</h3>
+              <span class="badge">Greenery & Decor</span>
+            </div>
+            <div class="product-body">
+              <p class="description">
+                Features 200 PVC tips on a galvanized metal wire frame that will not rust. Flame retardant, non-allergenic, fade- and crush-resistant 2-ply needles maintain a lush, full appearance every season.
+              </p>
+              <div class="options-tag"><strong>Color Options:</strong> Warm White, Pure White</div>
+
+              <div class="spec-block">
+                <h4>Features</h4>
+                <ul>
+                  <li>Sequoia Fir artificial Christmas wreath with 200 PVC tips</li>
+                  <li>Galvanized metal wire frame prevents rust</li>
+                  <li>Flame retardant and non-allergenic materials</li>
+                  <li>Prelit with 50 energy-saving LED lights</li>
+                  <li>UL Listed for quality and safety assurance</li>
+                </ul>
+              </div>
+
+              <div class="spec-block">
+                <h4>Specifications</h4>
+                <div class="spec-grid">
+                  <div><span>Size:</span> 24" Outer Diameter</div>
+                  <div><span>Inner Dia:</span> 6 in</div>
+                  <div><span>Frame Dia:</span> 14 in</div>
+                  <div><span>Weight:</span> 6 lbs</div>
+                  <div><span>Lights:</span> 50 LEDs</div>
+                  <div><span>Rating:</span> Indoor / Outdoor</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 18" Commercial Bow -->
+          <div class="product-card">
+            <div class="product-header">
+              <h3>18” Structural Bow</h3>
+              <span class="badge">Greenery & Decor</span>
+            </div>
+            <div class="product-body">
+              <p class="description">
+                A sturdy, commercial-grade structural bow featuring a durable 3D nylon design in vibrant red with gold trim. Designed to keep its shape and hold securely on large outdoor wreaths all season.
+              </p>
+
+              <div class="spec-block">
+                <h4>Features</h4>
+                <ul>
+                  <li>Sturdy commercial-grade 3D nylon design</li>
+                  <li>Red finish with rich gold trim</li>
+                  <li>4-loop structural construction</li>
+                  <li>Indoor / Outdoor weather resistant</li>
+                </ul>
+              </div>
+
+              <div class="spec-block">
+                <h4>Specifications</h4>
+                <div class="spec-grid">
+                  <div><span>Color:</span> Red / Gold Trim</div>
+                  <div><span>Loop Count:</span> 4</div>
+                  <div><span>Material:</span> 3D Nylon</div>
+                  <div><span>Application:</span> Wreaths & Displays</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ground Lights & Stakes -->
+          <div class="product-card">
+            <div class="product-header">
+              <h3>Ground & Pathway Lights</h3>
+              <span class="badge">Landscaping</span>
+            </div>
+            <div class="product-body">
+              <p class="description">
+                Utilizes the same ultra-bright C-9 bulbs as our roofline displays. Mounted with professional-grade offset stakes engineered to hammer easily into tough soil, keeping walkways straight and secure.
+              </p>
+
+              <div class="spec-block">
+                <h4>Features</h4>
+                <ul>
+                  <li>Manufactured with UV-additive polymers for weather durability</li>
+                  <li>Special offset stake design for easy installation in hard ground</li>
+                  <li>Keeps lights upright and perfectly aligned all season</li>
+                  <li>Gives driveways and paths a clean, crisp border</li>
+                </ul>
+              </div>
+
+              <div class="spec-block">
+                <h4>Specifications</h4>
+                <div class="spec-grid">
+                  <div><span>Bulb Compatibility:</span> C7, C9</div>
+                  <div><span>Bulb Type:</span> C9 LED</div>
+                  <div><span>Stake Type:</span> Heavy Duty Offset</div>
+                  <div><span>Application:</span> Walkways & Driveways</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Light Bursts -->
+          <div class="product-card">
+            <div class="product-header">
+              <h3>36" LED Light Bursts</h3>
+              <span class="badge">Landscaping</span>
+            </div>
+            <div class="product-body">
+              <p class="description">
+                Natural-looking brown lighted branches with warm white LEDs. Features a 1-in-5 twinkle effect that adds depth, warmth, and organic elegance to garden beds, walkways, or floral arrangements.
+              </p>
+
+              <div class="spec-block">
+                <h4>Features</h4>
+                <ul>
+                  <li>36" brown branches with 140 warm white LED lights</li>
+                  <li>Dynamic 1-in-5 twinkle lighting effect</li>
+                  <li>Continuous-lit technology (if one light goes out, rest stay lit)</li>
+                  <li>Includes mounting ground stakes</li>
+                </ul>
+              </div>
+
+              <div class="spec-block">
+                <h4>Specifications</h4>
+                <div class="spec-grid">
+                  <div><span>Height:</span> 36 in</div>
+                  <div><span>Quantity:</span> 6 per order</div>
+                  <div><span>Lead Wire:</span> 120 in</div>
+                  <div><span>Voltage:</span> Low Voltage (Transformer)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     </div>
 
     <!-- Lightbox Modal -->
@@ -457,6 +687,13 @@ const getPackageIcon = (name: string) => {
   if (n.includes('jolly')) return `${BASE}/Icon2.png`
   if (n.includes('merry')) return `${BASE}/Icon3.png`
   return `${BASE}/Icon1.png`
+}
+
+const scrollToSpecs = () => {
+  const el = document.getElementById('product-specs')
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' })
+  }
 }
 </script>
 
@@ -941,5 +1178,183 @@ const getPackageIcon = (name: string) => {
   align-items: center;
   justify-content: center;
   gap: 8px;
+}
+
+.info-btn {
+  /* display: inline-flex; */
+  align-items: center;
+  gap: 8px;
+  background-color: transparent;
+  color: #0c2340;
+  border: 2px solid #0c2340;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.info-btn:hover {
+  background-color: #0c2340;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.arrow-down {
+  font-size: 1.1rem;
+  transition: transform 0.3s ease;
+}
+
+.info-btn:hover .arrow-down {
+  transform: translateY(3px);
+}
+</style>
+
+<style scoped>
+.product-info-section {
+  padding: 80px 0;
+  background-color: #f8f9fa;
+}
+
+.section-header2 {
+  margin-bottom: 50px;
+}
+
+.section-header2 h2 {
+  font-size: 2.2rem;
+  color: #0c2340;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.section-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 30px;
+}
+
+.product-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.product-header {
+  background-color: #0c2340;
+  color: #ffffff;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.product-header h3 {
+  font-size: 1.25rem;
+  margin: 0;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.badge {
+  background-color: #f49322;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+.product-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.description {
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.options-tag {
+  background-color: #f0f4f8;
+  color: #0c2340;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  margin-bottom: 20px;
+}
+
+.spec-block {
+  margin-top: 15px;
+}
+
+.spec-block h4 {
+  font-size: 1rem;
+  color: #0c2340;
+  margin-bottom: 10px;
+  border-bottom: 2px solid #f49322;
+  display: inline-block;
+  padding-bottom: 3px;
+}
+
+.spec-block ul {
+  padding-left: 18px;
+  margin-bottom: 15px;
+}
+
+.spec-block li {
+  color: #555;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.spec-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 12px;
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #444;
+}
+
+.spec-grid span {
+  font-weight: 600;
+  color: #0c2340;
+}
+
+@media (max-width: 768px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .product-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
 }
 </style>
