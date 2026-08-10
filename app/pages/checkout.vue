@@ -521,13 +521,6 @@ onMounted(() => {
   min-height: 80vh;
 }
 
-.page-hero {
-  position: relative;
-  height: 340px;           /* Smaller height */
-  overflow: hidden;
-  background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
-}
-
 .checkout-card {
   background: #fff;
   border-radius: 16px;

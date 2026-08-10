@@ -1135,22 +1135,22 @@ const skipAlacarte = () => {
   position: relative;
   height: 340px;           /* Smaller height */
   overflow: hidden;
-  background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
+  /* background-image: linear-gradient(to bottom, var(--tw-gradient-stops)); */
 }
 
 .page-hero-joy {
   /* background-image: url('/Images/Banner/FLP-Express-Hero-Banner.webp'); */
-  background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
+  /* background-image: linear-gradient(to bottom, var(--tw-gradient-stops)); */
 }
 
 .page-hero-jolly {
   /* background-image: url('/Images/Banner/FLP-Express-Hero-Banner.webp'); */
-  background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
+  /* background-image: linear-gradient(to bottom, var(--tw-gradient-stops)); */
 }
 
 .page-hero-merry {
   /* background-image: url('/Images/Banner/FLP-Express-Hero-Banner.webp'); */
-  background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
+  /* background-image: linear-gradient(to bottom, var(--tw-gradient-stops)); */
 }
 
 .product-grid {

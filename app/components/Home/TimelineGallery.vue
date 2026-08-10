@@ -135,8 +135,8 @@ const timelineItems = ref([
   // Start strong with a fun portrait instead of a dark house exterior
   { id: 7, year: '', description: '', image: '/Images/Gallery/Festive-Images-7.webp', imagePosition: 'right', dividerImage: null },
   { id: 13, year: '', description: '', image: '/Images/Gallery/Festive-Images-13.webp', imagePosition: 'left', dividerImage: null },
-  { id: 19, year: '', description: '', image: '/Images/Gallery/Festive-Images-19.webp', imagePosition: 'left', dividerImage: null },
   { id: 1, year: '', description: '', image: '/Images/Gallery/Festive-Images-1.webp', imagePosition: 'right', dividerImage: null },
+  { id: 19, year: '', description: '', image: '/Images/Gallery/Festive-Images-19.webp', imagePosition: 'left', dividerImage: null },
   { id: 17, year: '', description: '', image: '/Images/Gallery/Festive-Images-17.webp', imagePosition: 'right', dividerImage: null },
 
   // Group selfie / fun shot mid-early section
