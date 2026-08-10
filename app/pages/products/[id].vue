@@ -457,7 +457,7 @@
     </div>
 
     <!-- Explore More Packages -->
-    <section class="explore-packages py-5">
+    <section class="explore-packages py-5 d-none">
       <div class="container">
         <!-- Header -->
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
@@ -877,7 +877,7 @@ const allHotspots: Hotspot[] = [
   {
     key: 'c9',
     label: 'C-9 Roofline Lights',
-    top: '31%',
+    top: '38%',
     left: '72%',
     thumb: '/Images/Holiday-Lighting-Package/c9lights.png',
     packages: ['joy', 'jolly', 'merry']
@@ -886,8 +886,8 @@ const allHotspots: Hotspot[] = [
   {
     key: 'wreath',
     label: '24" Mixed Noble Wreath',
-    top: '60%',
-    left: '38%',
+    top: '37%',
+    left: '54%',
     thumb: '/Images/Holiday-Lighting-Package/mixed-noble-wreath.png',
     packages: ['jolly', 'merry']
     // desc: 'Classic wreath on the front door'
@@ -895,8 +895,8 @@ const allHotspots: Hotspot[] = [
   {
     key: 'bow',
     label: '12" Velvet Red Bow',
-    top: '67%',
-    left: '40%',
+    top: '37%',
+    left: '57%',
     thumb: '/Images/Holiday-Lighting-Package/velvet-red-bow.png',
     packages: ['jolly', 'merry']
   },
@@ -904,23 +904,23 @@ const allHotspots: Hotspot[] = [
     key: 'ground',
     label: 'Ground Stake Lights',
     top: '86%',
-    left: '64%',
+    left: '44%',
     thumb: '/Images/Holiday-Lighting-Package/ground-lights.png',
     packages: ['jolly', 'merry']
   },
   {
     key: 'minis',
     label: '5mm Mini Lights',
-    top: '76%',
-    left: '11%',
+    top: '65%',
+    left: '76%',
     thumb: '/Images/Holiday-Lighting-Package/5mm-minis.png',
     packages: ['merry']
   },
   {
     key: 'bursts',
     label: 'Light Bursts',
-    top: '80%',
-    left: '27%',
+    top: '67%',
+    left: '66%',
     thumb: '/Images/Holiday-Lighting-Package/light-bursts.png',
     packages: ['merry']
   },

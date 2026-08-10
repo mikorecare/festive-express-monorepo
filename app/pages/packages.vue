@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <div class="packages-page">
     <!-- Hero Section -->
     <section class="page-hero snow-bg">
       <div class="hero-overlay">
         <div class="container">
-          <div class="hero-content">
+          <div class="hero-content text-center">
             <h1>Holiday Lighting Package Programs</h1>
             <p class="breadcrumb">Choose the perfect package for your home</p>
           </div>
@@ -13,172 +13,212 @@
     </section>
 
     <!-- Loading State -->
-    <div class="product-detail-page">
-      <div class="container">
-      <div v-if="loading" class="text-center py-5">
-        <p class="text-muted fs-5">Loading package options...</p>
-      </div>
+    <div v-if="loading" class="text-center py-16">
+      <p class="text-lg text-gray-600">Loading package programs...</p>
+    </div>
 
-      <!-- Error / Empty State -->
-      <div v-else-if="!packages.length" class="text-center py-5">
-        <p class="text-muted fs-5">No packages found at this time.</p>
-      </div>
-
-      <!-- Packages Grid -->
-      <div v-else class="packages-grid">
-        <div 
-          v-for="pkg in packages" 
-          :key="pkg.id" 
-          class="package-card"
-          :class="{ 'featured': pkg.isPopular }"
-        >
-          <!-- Popular Badge -->
-          <div v-if="pkg.isPopular" class="popular-badge">Most Popular</div>
-
-          <!-- Package Header -->
-          <div class="card-header">
-            <h2 class="package-title">{{ pkg.name }}</h2>
-            <div class="package-price">
-              <span class="currency">$</span>
-              <span class="amount">{{ pkg.price }}</span>
+    <!-- Horizontal Package Sections -->
+    <div v-else class="package-sections-container">
+      <section
+        v-for="pkg in orderedPackages"
+        :key="pkg.id"
+        :id="getPackageSlug(pkg.name)"
+        class="package-section"
+        :class="[getPackageSlug(pkg.name), { 'bg-alt': getPackageSlug(pkg.name) === 'jolly' }]"
+      >
+        <div class="container">
+          <!-- Package Section Header -->
+          <div class="section-header">
+            <div class="header-left">
+              <span class="badge" :class="getPackageSlug(pkg.name)">
+                {{ getBadgeText(pkg.name) }}
+              </span>
+              <h2 class="package-title">{{ pkg.name }}</h2>
             </div>
-            <p class="package-desc">{{ pkg.description }}</p>
+            <div class="package-price font-color-orange">
+              ${{ pkg.price || '0.00' }}
+            </div>
           </div>
 
-          <!-- Image & Hotspots Preview -->
-          <div class="image-section">
-            <div class="image-wrapper" @click="openLightbox(pkg)">
-              <img 
-                :src="getColorImageUrl(pkg.slug, pkg.selectedColor)" 
-                :alt="pkg.name" 
-                class="package-image"
-                @error="handleImageError"
-              />
+          <!-- Horizontal 2-Column Product Detail Layout -->
+          <div class="horizontal-layout">
+            <!-- Left Column: Interactive Image Preview & Color Picker -->
+            <div class="media-column">
+              <div class="image-wrapper" @click="openLightbox(pkg)">
+                <img
+                  :src="getColorImageUrl(pkg.name, selectedColors[pkg.id])"
+                  :alt="pkg.name"
+                  class="main-image"
+                  @error="handleImageError"
+                />
 
-              <!-- Interactive Hotspots -->
-              <button
-                v-for="spot in getHotspotsForPackage(pkg.slug)"
-                :key="spot.key"
-                type="button"
-                class="hotspot"
-                :class="{ active: pkg.activeHotspot === spot.key }"
-                :style="{ top: spot.top, left: spot.left }"
-                @click.stop="toggleHotspot(pkg, spot.key)"
-              >
-                <span class="hotspot-dot"></span>
-                <span class="hotspot-pulse"></span>
-              </button>
+                <!-- Hotspots -->
+                <button
+                  v-for="spot in getHotspotsForPackage(pkg.name)"
+                  :key="spot.key"
+                  type="button"
+                  class="hotspot"
+                  :class="{ active: activeInclusions[pkg.id] === spot.key }"
+                  :style="{ top: spot.top, left: spot.left }"
+                  @click.stop="activateHotspot(pkg.id, spot.key)"
+                >
+                  <span class="hotspot-dot"></span>
+                  <span class="hotspot-pulse"></span>
+                </button>
 
-              <!-- Hotspot Popup Card -->
-              <div
-                v-if="pkg.activeHotspot"
-                class="hotspot-popup"
-                :style="getPopupStyle(pkg)"
-                @click.stop
-              >
-                <button type="button" class="hotspot-close" @click.stop="pkg.activeHotspot = null">×</button>
-                <div v-if="getActiveSpot(pkg)?.thumb" class="hotspot-popup-img-wrap">
-                  <img :src="getActiveSpot(pkg)?.thumb" :alt="getActiveSpot(pkg)?.label" class="hotspot-popup-img" />
+                <!-- Hotspot Popup Card -->
+                <div
+                  v-if="getActiveSpot(pkg.id, pkg.name)"
+                  class="hotspot-popup"
+                  :style="{ top: getActiveSpot(pkg.id, pkg.name)?.top, left: getActiveSpot(pkg.id, pkg.name)?.left }"
+                  @click.stop
+                >
+                  <button 
+                    type="button" 
+                    class="hotspot-close" 
+                    @click.stop="activeInclusions[pkg.id] = null"
+                  >
+                    ×
+                  </button>
+                  <div class="hotspot-popup-img-wrap" v-if="getActiveSpot(pkg.id, pkg.name)?.thumb">
+                    <img 
+                      :src="getActiveSpot(pkg.id, pkg.name)?.thumb" 
+                      :alt="getActiveSpot(pkg.id, pkg.name)?.label" 
+                      class="hotspot-popup-img" 
+                    />
+                  </div>
+                  <div class="hotspot-popup-body">
+                    <h4 class="hotspot-popup-title">{{ getActiveSpot(pkg.id, pkg.name)?.label }}</h4>
+                  </div>
                 </div>
-                <div class="hotspot-popup-body">
-                  <h4 class="hotspot-popup-title">{{ getActiveSpot(pkg)?.label }}</h4>
+              </div>
+
+              <!-- C-9 Color Selection Options -->
+              <div class="color-overlay">
+                <h4 class="color-title">Select C-9 Light Color</h4>
+                <div class="color-options">
+                  <div
+                    v-for="color in colors"
+                    :key="color.name"
+                    class="color-option"
+                    :class="{ active: selectedColors[pkg.id] === color.name }"
+                    @click="selectedColors[pkg.id] = color.name"
+                  >
+                    <div class="color-swatch" :style="{ backgroundColor: color.hex }"></div>
+                    <span class="color-label">{{ color.name }}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- Color Selector -->
-          <div class="color-picker-section">
-            <label class="color-picker-label">Select C-9 Light Color:</label>
-            <div class="color-options">
-              <div
-                v-for="color in colors"
-                :key="color.name"
-                class="color-option"
-                :class="{ active: pkg.selectedColor === color.name }"
-                @click="pkg.selectedColor = color.name"
-              >
-                <div class="color-swatch" :style="{ backgroundColor: color.hex }"></div>
-                <span class="color-name">{{ color.name }}</span>
+            <!-- Right Column: Details, Inclusions & Purchase Action -->
+            <div class="details-column">
+              <div 
+                v-if="pkg.description" 
+                class="package-description" 
+                v-html="pkg.description"
+              ></div>
+
+              <div class="inclusions-block">
+                <h3>Package Inclusions:</h3>
+                <ul v-if="pkg.variations && pkg.variations.length" class="inclusions-list">
+                  <li v-for="(variation, vIndex) in pkg.variations" :key="vIndex">
+                    <div
+                      v-for="(option, oIndex) in variation.options"
+                      :key="oIndex"
+                      class="feature-line"
+                      @click="highlightInclusion(pkg.id, option.name)"
+                    >
+                      <span v-if="!option.image_url" class="check-icon">✔</span>
+                      <img
+                        v-if="option.image_url"
+                        :src="getImageUrl(option.image_url)"
+                        class="option-preview"
+                        :alt="option.name"
+                      >
+                      <span>{{ option.name }}</span>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="p-info-card">
+                <p class="info-text">
+                  <i class="fas fa-info-circle text-secondary"></i>
+                  Includes commercial-grade LEDs, custom fit sizing, professional installation, maintenance, and seasonal removal.
+                </p>
+              </div>
+
+              <div class="action-block">
+                <!-- <button
+                  class="btn-primary btn-large"
+                  :disabled="pkg.stock <= 0"
+                  @click="addToCartHandler(pkg)"
+                >
+                  {{ pkg.stock <= 0 ? 'Out of Stock' : `Add ${pkg.name} to Cart` }}
+                </button> -->
+
+                <button
+                  class="btn-primary btn-large"
+                  :disabled="pkg.stock <= 0 || addingToCartId === pkg.id"
+                  @click="addToCartHandler(pkg)"
+                >
+                  <span v-if="addingToCartId === pkg.id" class="button-loader">
+                    <i class="fas fa-spinner fa-spin"></i> Adding...
+                  </span>
+                  <span v-else>
+                    {{ pkg.stock <= 0 ? 'Out of Stock' : `Add ${pkg.name} to Cart` }}
+                  </span>
+                </button>
+
               </div>
             </div>
-          </div>
-
-          <!-- Package Inclusions -->
-          <div class="inclusions-section">
-            <h3 class="inclusions-title">Package Inclusions:</h3>
-            <ul class="inclusions-list">
-              <li 
-                v-for="(item, idx) in pkg.inclusions" 
-                :key="idx"
-                class="inclusion-item"
-                :class="{ active: pkg.activeHotspot === item.hotspotKey }"
-                @click="toggleHotspot(pkg, item.hotspotKey)"
-              >
-                <span class="check-icon">✔</span>
-                <span class="item-text">{{ item.label }}</span>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Action Button -->
-          <div class="card-footer">
-            <button 
-              class="btn-primary add-to-cart-btn"
-              @click="addToCartHandler(pkg)"
-            >
-              Add {{ pkg.name }} Package to Cart
-            </button>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
     </div>
 
-    <!-- Lightbox -->
-    <!-- <div v-if="lightboxImage" class="lightbox" @click.self="lightboxImage = null">
-      <button class="lightbox-close" @click="lightboxImage = null">×</button>
-      <img :src="lightboxImage" alt="Enlarged View" class="lightbox-image" />
-    </div> -->
-
-    
+    <!-- Lightbox Modal -->
+    <div v-if="activeLightboxImage" class="lightbox" @click.self="closeLightbox">
+      <button class="lightbox-close" @click="closeLightbox">×</button>
+      <img
+        :src="activeLightboxImage"
+        alt="Preview Fullscreen"
+        class="lightbox-image"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-useHead({
-  title: 'Our Packages'
-})
-
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { toast } from 'sonner'
 
-const route = useRoute()
-const productId = route.params.id
 const config = useRuntimeConfig()
 const { addToCart } = useCart()
 
-type Inclusion = {
-  label: string
-  hotspotKey?: string
-}
-
-type Package = {
+interface PackageProduct {
   id: number
   name: string
-  slug: string
-  price: number
   description: string
-  isPopular?: boolean
-  selectedColor: string
-  activeHotspot: string | null
-  inclusions: Inclusion[]
+  price: number
+  stock: number
+  image_url: string | null
+  variations: Array<{
+    name: string
+    options: Array<{
+      name: string
+      image_url: string
+    }>
+  }>
 }
 
-// State variables
-const packages = ref<Package[]>([])
+const packages = ref<PackageProduct[]>([])
 const loading = ref(true)
-const lightboxImage = ref<string | null>(null)
+
+const selectedColors = ref<Record<number, string>>({})
+const activeInclusions = ref<Record<number, string | null>>({})
+const activeLightboxImage = ref<string | null>(null)
 
 const colors = [
   { name: 'Warm White', hex: '#f5e8c7' },
@@ -186,79 +226,97 @@ const colors = [
   { name: 'Champagne', hex: '#f0e4d2' }
 ]
 
-const allHotspots = [
-  { key: 'c9', label: 'C-9 Roofline Lights', top: '31%', left: '72%', thumb: '/Images/Holiday-Lighting-Package/c9lights.png', packages: ['joy', 'jolly', 'merry'] },
-  { key: 'wreath', label: 'Deluxe Wreath', top: '60%', left: '38%', thumb: '/Images/Holiday-Lighting-Package/mixed-noble-wreath.png', packages: ['jolly', 'merry'] },
-  { key: 'bow', label: '12" Velvet Red Bow', top: '67%', left: '40%', thumb: '/Images/Holiday-Lighting-Package/velvet-red-bow.png', packages: ['jolly'] },
-  { key: 'ground', label: 'Ground Stake Lights', top: '86%', left: '64%', thumb: '/Images/Holiday-Lighting-Package/ground-lights.png', packages: ['jolly', 'merry'] },
-  { key: 'minis', label: '5mm Tree Mini Lights', top: '76%', left: '11%', thumb: '/Images/Holiday-Lighting-Package/5mm-minis.png', packages: ['merry'] },
-  { key: 'bursts', label: 'Light Bursts', top: '80%', left: '27%', thumb: '/Images/Holiday-Lighting-Package/light-bursts.png', packages: ['merry'] }
-]
-
-// Helper function to convert API variations or items into local inclusions
-const mapInclusions = (pkgData: any): Inclusion[] => {
-  if (pkgData.inclusions && Array.isArray(pkgData.inclusions)) {
-    return pkgData.inclusions
-  }
-
-  const list: Inclusion[] = []
-  if (pkgData.variations && Array.isArray(pkgData.variations)) {
-    pkgData.variations.forEach((v: any) => {
-      v.options?.forEach((opt: any) => {
-        const name = opt.name.toLowerCase()
-        let key: string | undefined
-
-        if (name.includes('c-9') || name.includes('roofline')) key = 'c9'
-        else if (name.includes('wreath')) key = 'wreath'
-        else if (name.includes('bow')) key = 'bow'
-        else if (name.includes('ground') || name.includes('stake')) key = 'ground'
-        else if (name.includes('mini')) key = 'minis'
-        else if (name.includes('burst')) key = 'bursts'
-
-        list.push({ label: opt.name, hotspotKey: key })
-      })
-    })
-  }
-
-  return list
-}
-
-// API Call on Mount
-onMounted(async () => {
-  try {
-    const res: any = await $fetch('/products/packages', {
-      baseURL: config.public.apiBase
-    })
-
-    const rawData = Array.isArray(res) ? res : res.data || []
-
-    packages.value = rawData.map((item: any) => {
-      const slug = (item.slug || item.name || '').toLowerCase().trim()
-      return {
-        id: item.id,
-        name: item.name,
-        slug: slug,
-        price: item.price,
-        description: item.description,
-        isPopular: item.is_popular || slug.includes('jolly'),
-        selectedColor: colors[0]?.name ?? 'Warm White',
-        activeHotspot: null,
-        inclusions: mapInclusions(item)
-      }
-    })
-  } catch (error) {
-    console.error('Failed to fetch packages:', error)
-    toast.error('Unable to load holiday packages.')
-  } finally {
-    loading.value = false
-  }
+useHead({
+  title: 'Holiday Lighting Packages - Festive Lighting Pros'
 })
 
-// UI Helper Methods
-const getColorImageUrl = (packageSlug: string, colorName: string) => {
-  const colorSlug = colorName.toLowerCase().replace(/\s+/g, '-')
-  const capSlug = packageSlug.charAt(0).toUpperCase() + packageSlug.slice(1)
-  return `/Images/Colors/${capSlug}-${colorSlug}.jpg`
+// Hotspots Definition
+type Hotspot = {
+  key: string
+  label: string
+  top: string
+  left: string
+  thumb?: string
+  packages: string[]
+}
+
+const allHotspots: Hotspot[] = [
+  {
+    key: 'c9',
+    label: 'C-9 Roofline Lights',
+    top: '33%',
+    left: '72%',
+    thumb: '/Images/Holiday-Lighting-Package/c9lights.png',
+    packages: ['joy', 'jolly', 'merry']
+  },
+  {
+    key: 'wreath',
+    label: '24" Mixed Noble Wreath',
+    top: '33%',
+    left: '55%',
+    thumb: '/Images/Holiday-Lighting-Package/mixed-noble-wreath.png',
+    packages: ['jolly', 'merry']
+  },
+  {
+    key: 'bow',
+    label: '12" Velvet Red Bow',
+    top: '30%',
+    left: '57%',
+    thumb: '/Images/Holiday-Lighting-Package/velvet-red-bow.png',
+    packages: ['jolly', 'merry']
+  },
+  {
+    key: 'ground',
+    label: 'Ground Stake Lights',
+    top: '86%',
+    left: '45%',
+    thumb: '/Images/Holiday-Lighting-Package/ground-lights.png',
+    packages: ['jolly', 'merry']
+  },
+  {
+    key: 'minis',
+    label: '5mm Mini Lights',
+    top: '70%',
+    left: '76%',
+    thumb: '/Images/Holiday-Lighting-Package/5mm-minis.png',
+    packages: ['merry']
+  },
+  {
+    key: 'bursts',
+    label: 'Light Bursts',
+    top: '74%',
+    left: '66%',
+    thumb: '/Images/Holiday-Lighting-Package/light-bursts.png',
+    packages: ['merry']
+  }
+]
+
+const getPackageSlug = (name: string) => {
+  const n = name.toLowerCase()
+  if (n.includes('merry')) return 'merry'
+  if (n.includes('jolly')) return 'jolly'
+  return 'joy'
+}
+
+// Ensures correct display order: Joy -> Jolly -> Merry
+const orderedPackages = computed(() => {
+  const order = ['joy', 'jolly', 'merry']
+  return [...packages.value].sort((a, b) => {
+    return order.indexOf(getPackageSlug(a.name)) - order.indexOf(getPackageSlug(b.name))
+  })
+})
+
+const getBadgeText = (name: string) => {
+  const slug = getPackageSlug(name)
+  if (slug === 'joy') return 'STANDARD PACKAGE'
+  if (slug === 'jolly') return 'MOST POPULAR PACKAGE'
+  if (slug === 'merry') return 'PREMIUM PACKAGE'
+  return 'FEATURED PACKAGE'
+}
+
+const getImageUrl = (url: string | null | undefined) => {
+  if (!url) return '/Images/Colors/default-house.jpg'
+  return `${config.public.imageBase.replace(/\/$/, '')}/${url.replace(/^\//, '')}`
 }
 
 const handleImageError = (e: Event) => {
@@ -266,287 +324,245 @@ const handleImageError = (e: Event) => {
   if (img) img.src = '/Images/Colors/default-house.jpg'
 }
 
-const getHotspotsForPackage = (packageSlug: string) => {
-  return allHotspots.filter(h => h.packages.includes(packageSlug.toLowerCase()))
+const getColorImageUrl = (pkgName: string, colorName?: string) => {
+  const packageSlug = getPackageSlug(pkgName).charAt(0).toUpperCase() + getPackageSlug(pkgName).slice(1)
+  const colorSlug = (colorName || 'Warm White')
+    .trim()
+    .split(/\s+/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join('-')
+  
+  return `/Images/Colors/${packageSlug}-${colorSlug}.jpg`
 }
 
-const toggleHotspot = (pkg: Package, hotspotKey?: string) => {
-  if (!hotspotKey) return
-  pkg.activeHotspot = pkg.activeHotspot === hotspotKey ? null : hotspotKey
+const getHotspotsForPackage = (pkgName: string) => {
+  const slug = getPackageSlug(pkgName)
+  return allHotspots.filter(s => s.packages.includes(slug))
 }
 
-const getActiveSpot = (pkg: Package) => {
-  if (!pkg.activeHotspot) return null
-  return allHotspots.find(h => h.key === pkg.activeHotspot) || null
+const getActiveSpot = (pkgId: number, pkgName: string) => {
+  const key = activeInclusions.value[pkgId]
+  if (!key) return null
+  return getHotspotsForPackage(pkgName).find(s => s.key === key) || null
 }
 
-const getPopupStyle = (pkg: Package) => {
-  const spot = getActiveSpot(pkg)
-  if (!spot) return {}
-  return {
-    top: `calc(${spot.top} - 12px)`,
-    left: spot.left,
-    transform: 'translate(-50%, -100%)'
+const activateHotspot = (pkgId: number, key: string) => {
+  if (activeInclusions.value[pkgId] === key) {
+    activeInclusions.value[pkgId] = null
+  } else {
+    activeInclusions.value[pkgId] = key
   }
 }
 
-const openLightbox = (pkg: Package) => {
-  lightboxImage.value = getColorImageUrl(pkg.slug, pkg.selectedColor)
+const highlightInclusion = (pkgId: number, optionName: string) => {
+  const n = optionName.toLowerCase()
+  let key: string | null = null
+  if (n.includes('c-9') || n.includes('roofline')) key = 'c9'
+  else if (n.includes('wreath')) key = 'wreath'
+  else if (n.includes('bow')) key = 'bow'
+  else if (n.includes('ground') || n.includes('stake')) key = 'ground'
+  else if (n.includes('mini')) key = 'minis'
+  else if (n.includes('burst')) key = 'bursts'
+
+  activeInclusions.value[pkgId] = key
 }
 
-const addToCartHandler = async (pkg: Package) => {
+const openLightbox = (pkg: PackageProduct) => {
+  activeLightboxImage.value = getColorImageUrl(pkg.name, selectedColors.value[pkg.id])
+  document.body.style.overflow = 'hidden'
+}
+
+const closeLightbox = () => {
+  activeLightboxImage.value = null
+  document.body.style.overflow = ''
+}
+
+// Track loading state per package ID
+const addingToCartId = ref<number | null>(null)
+
+const addToCartHandler = async (pkg: PackageProduct) => {
+  if (addingToCartId.value === pkg.id) return
+  
+  addingToCartId.value = pkg.id
+  const color = selectedColors.value[pkg.id] || 'Warm White'
+  
   try {
-    await addToCart(pkg.id, 1, true, {
-      c9_color: pkg.selectedColor
+    await addToCart(pkg.id, 1, true, { c9_color: color })
+    toast.success('Added to cart!', {
+      description: `${pkg.name} (${color})`
     })
-
-    toast.success(`Added ${pkg.name} Package to cart!`, {
-      description: `Color: ${pkg.selectedColor} — $${pkg.price}`
-    })
-  } catch (err) {
-    toast.error(`Failed to add ${pkg.name} Package to cart.`)
+  } catch (error) {
+    console.error('Failed to add to cart:', error)
+  } finally {
+    addingToCartId.value = null
   }
 }
+
+onMounted(async () => {
+  try {
+    const res: any = await $fetch('/products?type=packages', {
+      baseURL: config.public.apiBase
+    })
+    
+    const allProducts: PackageProduct[] = res?.data || res || []
+    packages.value = allProducts.filter(p => 
+      ['joy', 'jolly', 'merry'].some(k => p.name.toLowerCase().includes(k))
+    )
+
+    packages.value.forEach(pkg => {
+      selectedColors.value[pkg.id] = 'Warm White'
+      activeInclusions.value[pkg.id] = null
+    })
+  } catch (error) {
+    console.error('Failed to load package programs:', error)
+  } finally {
+    loading.value = false
+  }
+
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') closeLightbox()
+  }
+  window.addEventListener('keydown', onKey)
+  onUnmounted(() => window.removeEventListener('keydown', onKey))
+})
 </script>
 
 <style scoped>
-.product-detail-page {
-  padding: 60px 0;
-  background: #f8fafc;
+/* .page-hero {
+  position: relative;
+  height: 220px;
+  background: #0c2340;
+  color: #fff;
+  display: flex;
+  align-items: center;
 }
 
-.outdoor-layout {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 48px;
-  align-items: start;
-  padding: 40px 0 60px;
+.hero-overlay {
+  width: 100%;
 }
 
-/* Lights Preview */
-.lights-preview-section {
+.hero-content h1 {
+  font-size: 2.25rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.breadcrumb {
+  font-size: 1.1rem;
+  opacity: 0.85;
   margin: 0;
-  background: #f8fafc;
-  border-radius: 16px;
-}
+} */
 
-.product-image {
+/* Sections Styling */
+.package-sections-container {
   display: flex;
   flex-direction: column;
-  gap: 0;
+}
+
+.package-section {
+  padding: 64px 0;
+  border-bottom: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+
+.package-section.bg-alt {
+  background: #f8fafc;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.package-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #0c2340;
+  margin: 0;
+}
+
+.package-price {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #F49322;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #fff;
+  background: #0c2340;
+  letter-spacing: 0.05em;
+}
+
+.badge.jolly {
+  background: #F49322;
+}
+
+.badge.merry {
+  background: #059669;
+}
+
+/* Horizontal Layout Inside Each Section */
+.horizontal-layout {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+@media (max-width: 992px) {
+  .horizontal-layout {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+/* Media Column & Image Preview */
+.media-column {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
 }
 
 .image-wrapper {
   position: relative;
-  border-radius: 16px 16px 0 0;
   background: #f1f5f9;
   cursor: zoom-in;
-  overflow: visible;
 }
 
 .main-image {
   width: 100%;
-  display: block;
+  height: 380px;
   object-fit: cover;
-  transition: transform 0.3s;
-  border-radius: 16px 16px 0 0;
+  display: block;
 }
 
-.image-wrapper:hover .main-image {
-  transform: scale(1.02);
-}
-
-.zoom-hint {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  background: rgba(12, 35, 64, 0.8);
-  color: #fff;
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 8px 14px;
-  border-radius: 50px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  opacity: 0;
-  transition: opacity 0.2s;
-  pointer-events: none;
-}
-
-.image-wrapper:hover .zoom-hint {
-  opacity: 1;
-}
-
-/* Lightbox */
-.lightbox {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.9);
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  cursor: zoom-out;
-}
-
-.lightbox-image {
-  max-width: 95vw;
-  max-height: 90vh;
-  object-fit: contain;
-  border-radius: 8px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-  cursor: default;
-}
-
-.lightbox-close {
-  position: absolute;
-  top: 20px;
-  right: 24px;
-  background: transparent;
-  border: none;
-  color: #fff;
-  font-size: 2.5rem;
-  line-height: 1;
-  cursor: pointer;
-  opacity: 0.8;
-  transition: opacity 0.2s;
-  z-index: 10000;
-}
-
-.lightbox-close:hover {
-  opacity: 1;
-}
-
-/* Color Picker Strip */
-.color-overlay {
-  padding: 20px 16px 24px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-top: none;
-  border-radius: 0 0 16px 16px;
-  text-align: center;
-}
-
-.color-title {
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #0c2340;
-  text-align: center;
-}
-
-.color-options {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-
-.color-option {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  padding: 10px 14px;
-  border-radius: 12px;
-  border: 2px solid transparent;
-  transition: all 0.2s;
-  min-width: 90px;
-  background: #ececec;
-}
-
-.color-option:hover {
-  background: #f8fafc;
-}
-
-.color-option.active {
-  border-color: #F49322;
-  background: #fff7ed;
-}
-
-.color-swatch {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: 3px solid #d1d5db;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-}
-
-.color-option.active .color-swatch {
-  border-color: #F49322;
-  box-shadow: 0 0 0 3px rgba(244, 147, 34, 0.25);
-}
-
-.color-label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #374151;
-}
-
-.product-description {
-  line-height: 1.7;
-  color: #374151;
-  font-size: 1.05rem;
-  white-space: pre-line;
-}
-
-.btn-large {
-  width: 100%;
-  padding: 18px;
-  font-size: 1.2rem;
-  margin-top: 24px;
-}
-
-.custom-description ul {
-  list-style: none;
-  padding: 0;
-  margin: 24px 0;
-}
-
-.feature-line {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border-bottom: 1px solid #f1f5f9;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
-}
-
-.feature-line:hover {
-  background: #f8fafc;
-}
-
-.feature-line.active {
-  background: #fff7ed;
-  border: 2px solid #F49322;
-  box-shadow: 0 0 0 3px rgba(244, 147, 34, 0.15);
-}
-
-.feature-line .check-icon {
-  display: inline-block;
-  margin-right: 8px;
-}
-
-.feature-line img {
-  display: inline-block;
-  margin-right: 8px;
-  vertical-align: middle;
-}
-
-.p-info-card {
-  padding: 1.5rem;
-  background-color: #eff4ff;
-  border: 1px dashed #c5c6ce;
-  border-radius: 0.75rem;
-}
-
-/* Hotspots */
+/* Hotspot */
 .hotspot {
   position: absolute;
   z-index: 6;
@@ -583,6 +599,7 @@ const addToCartHandler = async (pkg: Package) => {
   border-radius: 50%;
   border: 2px solid #F49322;
   opacity: 0;
+  animation: none;
 }
 
 .hotspot.active .hotspot-pulse {
@@ -590,18 +607,18 @@ const addToCartHandler = async (pkg: Package) => {
 }
 
 @keyframes pulseRing {
-  0% { transform: scale(0.6); opacity: 0.7; }
+  0%   { transform: scale(0.6); opacity: 0.7; }
   100% { transform: scale(1.8); opacity: 0; }
 }
 
-/* Hotspot Popup */
+/* Popup Card */
 .hotspot-popup {
   position: absolute;
   z-index: 10;
-  width: 180px;
+  width: 170px;
   background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
   overflow: hidden;
   pointer-events: auto;
   animation: popupIn 0.2s ease;
@@ -631,34 +648,32 @@ const addToCartHandler = async (pkg: Package) => {
 
 .hotspot-close {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 6px;
+  right: 6px;
   z-index: 2;
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   border: none;
   border-radius: 50%;
   background: #0c2340;
   color: #fff;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0.9;
-  transition: background 0.2s, transform 0.2s;
 }
 
 .hotspot-close:hover {
   background: #F49322;
-  transform: scale(1.08);
 }
 
 .hotspot-popup-img-wrap {
   width: 100%;
-  height: 140px;
+  height: 100px;
   background: #e2e8f0;
-  padding: 10px;
+  padding: 6px;
 }
 
 .hotspot-popup-img {
@@ -669,29 +684,183 @@ const addToCartHandler = async (pkg: Package) => {
 }
 
 .hotspot-popup-body {
-  padding: 14px 16px 16px;
+  padding: 10px;
 }
 
 .hotspot-popup-title {
-  margin: 0 0 6px;
-  font-size: 0.875rem;
+  margin: 0;
+  font-size: 0.8rem;
   font-weight: 700;
   color: #0c2340;
-  line-height: 1.3;
   text-align: center;
 }
 
-.hotspot-popup-desc {
-  margin: 0;
-  font-size: 0.85rem;
-  color: #64748b;
-  line-height: 1.45;
+/* Color Options Below Image */
+.color-overlay {
+  padding: 20px;
+  background: #fff;
+  border-top: 1px solid #e2e8f0;
+  text-align: center;
 }
 
-@media (max-width: 900px) {
-  .outdoor-layout {
-    grid-template-columns: 1fr;
-    gap: 32px;
-  }
+.color-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #0c2340;
+}
+
+.color-options {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.color-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+  background: #f8fafc;
+}
+
+.color-option.active {
+  border-color: #F49322;
+  background: #fff7ed;
+}
+
+.color-swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #d1d5db;
+}
+
+.color-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Details Column */
+.details-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.package-description {
+  font-size: 1.05rem;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.inclusions-block h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0c2340;
+  margin-bottom: 12px;
+}
+
+.inclusions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.feature-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.feature-line:hover {
+  border-color: #F49322;
+  background: #fff7ed;
+}
+
+.feature-line .check-icon {
+  color: #10b981;
+}
+
+.feature-line .option-preview {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.feature-line span {
+  font-size: 0.9rem;
+  color: #374151;
+  font-weight: 600;
+}
+
+.p-info-card {
+  padding: 16px 20px;
+  background-color: #eff4ff;
+  border: 1px dashed #c5c6ce;
+  border-radius: 12px;
+}
+
+.info-text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #3b82f6;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Lightbox Modal */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  cursor: zoom-out;
+}
+
+.lightbox-image {
+  max-width: 90vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 2.5rem;
+  cursor: pointer;
+}
+
+
+.button-loader {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 </style>
