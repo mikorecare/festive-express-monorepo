@@ -524,8 +524,8 @@ const allHotspots: Hotspot[] = [
   {
     key: 'minis',
     label: '5mm Mini Lights',
-    top: '70%',
-    left: '76%',
+    top: '65%',
+    left: '88',
     thumb: '/Images/Holiday-Lighting-Package/5mm-minis.png',
     packages: ['merry']
   },
@@ -1089,7 +1089,7 @@ const scrollToSpecs = () => {
   padding: 0;
   margin: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 12px;
 }
 

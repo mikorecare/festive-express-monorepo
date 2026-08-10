@@ -911,8 +911,8 @@ const allHotspots: Hotspot[] = [
   {
     key: 'minis',
     label: '5mm Mini Lights',
-    top: '65%',
-    left: '76%',
+    top: '61%',
+    left: '89%',
     thumb: '/Images/Holiday-Lighting-Package/5mm-minis.png',
     packages: ['merry']
   },
