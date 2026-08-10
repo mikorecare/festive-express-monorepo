@@ -137,7 +137,7 @@
                 v-html="pkg.description"
               ></div>
 
-              <div class="inclusions-block">
+              <div class="inclusions-block mt-4">
                 <h3>Package Inclusions:</h3>
                 <ul v-if="pkg.variations && pkg.variations.length" class="inclusions-list">
                   <li v-for="(variation, vIndex) in pkg.variations" :key="vIndex">
@@ -325,7 +325,7 @@
           <!-- 18" Commercial Bow -->
           <div class="product-card">
             <div class="product-header">
-              <h3>18” Structural Bow</h3>
+              <h3>12” Structural Bow</h3>
               <span class="badge">Greenery & Decor</span>
             </div>
             <div class="product-body">
@@ -1074,6 +1074,7 @@ const scrollToSpecs = () => {
   font-size: 1.05rem;
   color: #475569;
   line-height: 1.6;
+  white-space: pre-line;
 }
 
 .inclusions-block h3 {
