@@ -41,14 +41,14 @@
               </div>
             </div>
 
-            <div class="info-card">
+            <!-- <div class="info-card">
               <div class="icon">📍</div>
               <div>
                 <strong>Our Office</strong><br>
                 1973 Northgate Blvd<br>
                 Sarasota, FL 34234
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
 
@@ -95,7 +95,7 @@
         </div>
     </section> -->
 
-    <Newsletter />
+    <!-- <Newsletter /> -->
   </div>
 </template>
 

@@ -158,10 +158,10 @@
               <span>Estimated Tax (FL)</span>
               <span class="font-weight-bold">${{ estimatedTax.toFixed(2) }}</span>
             </div>
-            <div class="summary-row">
+            <!-- <div class="summary-row">
               <span>Installation Deposit</span>
               <span class="font-weight-bold">${{ installDeposit.toFixed(2) }}</span>
-            </div>
+            </div> -->
 
             <div class="summary-total">
               <div>
@@ -257,7 +257,8 @@ const promoCode = ref('')
 const estimatedTax = computed(() =>
   Number(cartTotal.value) * FL_TAX_RATE
 )
-const installDeposit = ref(250)
+// const installDeposit = ref(250)
+const installDeposit = ref(0)
 const grandTotal = computed(() => 
   Number(cartTotal.value) + estimatedTax.value + installDeposit.value + alacarteCartTotal.value
 )
