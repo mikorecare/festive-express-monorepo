@@ -101,7 +101,7 @@
 
 <script setup lang="ts">
 useHead({
-  title: 'Contact Us'
+  title: 'Contact Us - Festive Express'
 })
 const form = ref({
   name: '',
