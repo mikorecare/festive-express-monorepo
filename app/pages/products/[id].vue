@@ -133,7 +133,7 @@
 
               <div
                 v-if="product?.description"
-                class="product-description mb-4"
+                class="product-description mb-4 mt-4"
                 v-html="product.description"
               ></div>
             </div>
