@@ -17,7 +17,7 @@
         </div>
 
         <!-- Customer -->
-        <div class="footer-column">
+        <div class="footer-column d-none">
           <h4>CUSTOMER</h4>
           <a href="#">Help Center</a>
           <!-- <a href="#">My Account</a> -->
@@ -66,7 +66,8 @@ const { settings, loadSettings, telHref } = useSettings()
 
 .footer-content {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+  /* grid-template-columns: 2fr 1fr 1fr 1fr; */
+  grid-template-columns: repeat(3, 1fr); /* 3 col */
   gap: 40px;
   margin-bottom: 60px;
 }

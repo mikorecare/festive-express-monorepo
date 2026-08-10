@@ -13,7 +13,7 @@
 
     <div class="page-main-section container">
       <div class="legal-content">
-        <p class="updated">Last updated: November 18, 2019</p>
+        <p class="updated">Last updated: August 10, 2026</p>
 
         <h2>1. Who We Are</h2>
         <p>
