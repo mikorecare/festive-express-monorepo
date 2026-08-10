@@ -182,13 +182,22 @@
               </div>
             </div>
 
-            <NuxtLink to="/checkout" class="btn-checkout"
+            <!-- <NuxtLink to="/checkout" class="btn-checkout"
               :class="{ 'disabled-link': !cartItems.length }"
   :aria-disabled="!cartItems.length"
   @click.prevent="!cartItems.length && $event.preventDefault()"
             >
               Proceed to Checkout <i class="fas fa-arrow-right"></i>
-            </NuxtLink>
+            </NuxtLink> -->
+
+            <button
+                type="button"
+                class="btn-checkout"
+                :disabled="!cartItems.length"
+                @click="handleCheckout"
+              >
+                Proceed to Checkout <i class="fas fa-arrow-right"></i>
+              </button>
 
             <p class="checkout-note">
               A representative will contact you within 24 hours to schedule your specific installation date.
@@ -304,6 +313,11 @@ const getBadgeText = (name?: string | null) => {
   return 'FEATURED'
 }
 
+const handleCheckout = () => {
+  if (!cartItems.value.length) return
+  navigateTo('/checkout')
+}
+
 </script>
 
 <style scoped>
@@ -311,19 +325,6 @@ const getBadgeText = (name?: string | null) => {
   padding: 0 0 40px;
   background: #e7e7e7;
   min-height: 100vh;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-.page-hero {
-  position: relative;
-  height: 340px;           /* Smaller height */
-  overflow: hidden;
-  background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
 }
 
 .page-header {
@@ -579,6 +580,30 @@ const getBadgeText = (name?: string | null) => {
   font-weight: 700;
   text-decoration: none;
   transition: background 0.3s;
+  border: 2px solid #0c2340;
+
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-checkout::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -150%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.08) 60%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  animation: glossyShineContinuous 3s linear infinite;
 }
 
 .btn-checkout:hover {
@@ -631,6 +656,14 @@ const getBadgeText = (name?: string | null) => {
   .item-price {
     align-self: flex-end;
   }
+}
+
+
+.btn-checkout:disabled,
+.btn-checkout.disabled-link {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 </style>
