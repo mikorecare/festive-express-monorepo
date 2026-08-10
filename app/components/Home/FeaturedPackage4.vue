@@ -2,10 +2,10 @@
   <section class="featured-bundles" id="packages">
     <div class="container">
       <div class="section-header">
-        <h2 class="section-title">
+        <h2 v-fade class="section-title">
           Festive Express makes<br>professional <span>holiday lighting</span> simple.
         </h2>
-        <p class="subtitle">
+        <p v-fade class="subtitle">
           Choose one of three fixed packages.<br>
           Pay once. Pick your install date and take-down date. We handle the rest.
         </p>

@@ -176,7 +176,7 @@ onMounted(async () => {
 })
 
 useHead({
-  title: 'Thank You - Festive Lighting Pros Express'
+  title: 'Thank You - Festive Express'
 })
 </script>
 

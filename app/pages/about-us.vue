@@ -4,8 +4,8 @@
       <div class="hero-overlay">
         <div class="container">
           <div class="hero-content">
-            <h1>About Festive Express</h1>
-            <p class="breadcrumb">Our story and mission to simplify holiday lighting</p>
+            <h1 v-fade>About Festive Express</h1>
+            <p v-fade class="breadcrumb">Our story and mission to simplify holiday lighting</p>
           </div>
         </div>
       </div>
@@ -129,6 +129,9 @@ useHead({
   
   /* Required for smooth rendering during animations or scrolling */
   will-change: transform;
+
+  position: relative;
+  overflow: hidden;
 }
 
 .about-image img {
@@ -145,6 +148,27 @@ useHead({
   transform-origin: center center;
   object-fit: cover; /* Ensures the image covers the entire circular area */
   pointer-events: none; /* Recommended if you have complex interactions */
+
+}
+
+.about-image::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -150%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.08) 60%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  animation: glossyShineContinuous 3s linear infinite;
 }
 
 /* Tablet & Mobile Responsiveness */

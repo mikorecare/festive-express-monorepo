@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 useHead({
-  title: 'How It Works'
+  title: 'How It Works - Festive Express'
 })
 import { ref, onMounted, onUnmounted } from 'vue'
 

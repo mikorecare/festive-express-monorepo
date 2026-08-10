@@ -5,8 +5,8 @@
       <div class="hero-overlay">
         <div class="container">
           <div class="hero-content text-center">
-            <h1>Holiday Lighting Package Programs</h1>
-            <p class="breadcrumb">Choose the perfect package for your home</p>
+            <h1 v-fade>Holiday Lighting Package Programs</h1>
+            <p v-fade class="breadcrumb">Choose the perfect package for your home</p>
           </div>
         </div>
       </div>
@@ -33,7 +33,12 @@
               <span class="badge" :class="getPackageSlug(pkg.name)">
                 {{ getBadgeText(pkg.name) }}
               </span>
-              <h2 class="package-title">{{ pkg.name }}</h2>
+              <!-- <h2 class="package-title">{{ pkg.name }}</h2> -->
+              <img
+                class="pkg-title-img"
+                :src="getPackageTitleImage(pkg.name)"
+                :alt="pkg.name"
+              >
             </div>
             <div class="package-price font-color-orange">
               ${{ pkg.price || '0.00' }}
@@ -51,6 +56,19 @@
                   class="main-image"
                   @error="handleImageError"
                 />
+
+                <div class="lights-badge" aria-hidden="true">
+                  <img
+                    class="sparkle-img"
+                    src="/Images/Holiday-Lighting-Package/starburst.png"
+                    alt=""
+                  >
+                  <img
+                    class="lights-icon-img"
+                    :src="getPackageIcon(pkg.name)"
+                    alt=""
+                  >
+                </div>
 
                 <!-- Hotspots -->
                 <button
@@ -113,11 +131,11 @@
 
             <!-- Right Column: Details, Inclusions & Purchase Action -->
             <div class="details-column">
-              <div 
+              <!-- <div 
                 v-if="pkg.description" 
                 class="package-description" 
                 v-html="pkg.description"
-              ></div>
+              ></div> -->
 
               <div class="inclusions-block">
                 <h3>Package Inclusions:</h3>
@@ -227,7 +245,7 @@ const colors = [
 ]
 
 useHead({
-  title: 'Holiday Lighting Packages - Festive Lighting Pros'
+  title: 'Holiday Lighting Packages - Festive Express'
 })
 
 // Hotspots Definition
@@ -425,6 +443,21 @@ onMounted(async () => {
   window.addEventListener('keydown', onKey)
   onUnmounted(() => window.removeEventListener('keydown', onKey))
 })
+
+const BASE = '/Images/Holiday-Lighting-Package'
+const getPackageTitleImage = (name: string) => {
+  const n = name.toLowerCase()
+  if (n.includes('jolly')) return `${BASE}/Jolly.png`
+  if (n.includes('merry')) return `${BASE}/Merry.png`
+  return `${BASE}/Joy.png`
+}
+
+const getPackageIcon = (name: string) => {
+  const n = name.toLowerCase()
+  if (n.includes('jolly')) return `${BASE}/Icon2.png`
+  if (n.includes('merry')) return `${BASE}/Icon3.png`
+  return `${BASE}/Icon1.png`
+}
 </script>
 
 <style scoped>
@@ -492,6 +525,48 @@ onMounted(async () => {
   margin: 0;
 }
 
+.pkg-title-img {
+  /* position: absolute; */
+  left: 45px;
+  bottom: -38px;
+  height: 72px;
+  width: auto;
+  z-index: 2;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
+}
+
+.lights-badge {
+  position: absolute;
+  right: 0px;
+  bottom: -30px;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: var(--orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  box-shadow: 0 6px 16px rgba(244, 147, 33, 0.45);
+}
+
+.lights-icon-img {
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
+}
+
+.sparkle-img {
+  position: absolute;
+  left: -46px;
+  top: 7px;
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  z-index: -1;
+}
+
 .package-price {
   font-size: 2.25rem;
   font-weight: 800;
@@ -543,8 +618,8 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   background: #fff;
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
+  /* border-radius: 16px; */
+  /* border: 1px solid #e2e8f0; */
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
 }
@@ -553,6 +628,7 @@ onMounted(async () => {
   position: relative;
   background: #f1f5f9;
   cursor: zoom-in;
+  
 }
 
 .main-image {
@@ -560,6 +636,9 @@ onMounted(async () => {
   height: 380px;
   object-fit: cover;
   display: block;
+  border: 4px solid #ff7a00;
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 /* Hotspot */

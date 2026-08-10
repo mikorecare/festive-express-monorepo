@@ -238,7 +238,7 @@
 <script setup lang="ts">
 useHead({
   title: computed(() => {
-    return 'Cart - Festive Lighting Pros Express'
+    return 'Cart - Festive Express'
   })
 })
 const config = useRuntimeConfig()
