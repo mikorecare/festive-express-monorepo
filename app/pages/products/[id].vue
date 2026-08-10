@@ -600,8 +600,14 @@ const getColorImageUrl = (colorName: string) => {
   
   if (productName.toLowerCase().includes('jolly')) packageSlug = 'Jolly'
   else if (productName.toLowerCase().includes('merry')) packageSlug = 'Merry'
+
+  const colorSlug = colorName
+    .trim()
+    .split(/\s+/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join('-')
   
-  const colorSlug = colorName.toLowerCase().replace(/\s+/g, '-')
+  // const colorSlug = colorName.toLowerCase().replace(/\s+/g, '-')
   
   console.log('Package detected:', packageSlug, 'Product:', productName)
   
