@@ -182,7 +182,11 @@
               </div>
             </div>
 
-            <NuxtLink to="/checkout" class="btn-checkout">
+            <NuxtLink to="/checkout" class="btn-checkout"
+              :class="{ 'disabled-link': !cartItems.length }"
+  :aria-disabled="!cartItems.length"
+  @click.prevent="!cartItems.length && $event.preventDefault()"
+            >
               Proceed to Checkout <i class="fas fa-arrow-right"></i>
             </NuxtLink>
 
