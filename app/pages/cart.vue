@@ -105,7 +105,7 @@
                   <div><i class="fas fa-check"></i> 24-hour repair guarantee</div>
                 </div>
 
-                <div class="item-actions" v-if="!item.is_package">
+                <div class="item-actions"> <!-- v-if="!item.is_package" -->
                   <div class="qty-controls">
                     <button @click="updateQty(item, item.quantity - 1)">−</button>
                     <span>{{ item.quantity }}</span>
@@ -243,7 +243,7 @@ useHead({
 })
 const config = useRuntimeConfig()
 const FL_TAX_RATE = Number(config.public.flTaxRate) || 0.07
-const { cartTotal, cartCount, cartItems, loadCart, removeFromCart } = useCart()
+const { cartTotal, cartCount, cartItems, loadCart, removeFromCart, updateCartItemQty } = useCart()
 
 
 // Sum of a la carte across all items
@@ -275,9 +275,12 @@ const handleImageError = (e: Event) => {
 
 const updateQty = async (item: any, qty: number) => {
   if (qty < 1) return
-  // Optional: call API to update quantity
-  item.quantity = qty
-  await loadCart()
+  try {
+    await updateCartItemQty(item.id, qty)  // cart item id, not product_id
+    await loadCart()
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 const removeItem = async (id: number) => {

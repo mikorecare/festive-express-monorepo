@@ -73,6 +73,14 @@ export const useCart = () => {
     cartCount.value = 0
   }
 
+  const updateCartItemQty = async (id: number | string, quantity: number) => {
+    await $fetch(`/cart/${id}`, {
+      baseURL: config.public.apiBase,
+      method: 'PUT',
+      body: { quantity },
+    })
+  }
+
   return {
     cartItems,
     cartTotal,
@@ -81,5 +89,6 @@ export const useCart = () => {
     addToCart,
     removeFromCart,
     clearCart,
+    updateCartItemQty,
   }
 }
