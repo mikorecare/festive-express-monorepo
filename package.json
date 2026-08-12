@@ -1,1 +1,17 @@
-{"name": "festive-express-monorepo", "private": true, "workspaces": ["apps/*", "packages/*"]} 
+{
+  "name": "festive-express-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:storefront\" \"npm run dev:admin\"",
+    "dev:storefront": "npm run dev --workspace=apps/storefront",
+    "dev:admin": "npm run dev --workspace=apps/admin",
+    "build:storefront": "npm run build --workspace=apps/storefront",
+    "build:admin": "npm run build --workspace=apps/admin",
+    "clean": "git clean -Xdf node_modules"
+  }
+}
