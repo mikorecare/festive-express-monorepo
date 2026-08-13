@@ -1,272 +1,145 @@
 <template>
-  <aside class="admin-sidebar" :class="{ collapsed: isCollapsed }">
-    <div class="logo">
-        <img 
-            src="/Images/FLP-Express-Transparent.PNG" 
-            alt="FLP Admin" 
-            class="admin-logo"
-        >
+  <aside 
+    class="bg-navy text-white min-h-screen flex flex-col flex-shrink-0 relative transition-all duration-300"
+    :class="[isCollapsed ? 'w-18' : 'w-64']"
+  >
+    <!-- Logo -->
+    <div class="p-6 flex items-center justify-center">
+      <img 
+        src="/Images/FLP-Express-Transparent.PNG" 
+        alt="FLP Admin" 
+        class="max-h-20 w-auto my-4 block"
+      >
     </div>
 
-    <nav class="sidebar-nav">
-        <NuxtLink to="/admin" class="nav-item">
-            <span class="icon">📊</span> Dashboard
+    <!-- Navigation -->
+    <nav class="flex-1 space-y-1">
+      <NuxtLink 
+        to="/admin" 
+        class="flex items-center gap-3 px-6 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline"
+        active-class="bg-brand-orange text-navy no-underline"
+      >
+        <span class="text-xl">📊</span>
+        <span v-if="!isCollapsed">Dashboard</span>
+      </NuxtLink>
+
+      <NuxtLink 
+        to="/admin/orders" 
+        class="flex items-center gap-3 px-6 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline"
+        active-class="bg-brand-orange text-navy"
+      >
+        <span class="text-xl">📦</span>
+        <span v-if="!isCollapsed">Orders</span>
+      </NuxtLink>
+
+      <!-- Submenu Item -->
+      <div class="relative group">
+        <NuxtLink 
+          to="/admin/products" 
+          class="flex items-center gap-3 px-6 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline"
+          active-class="bg-brand-orange text-navy"
+        >
+          <span class="text-xl">🛍️</span>
+          <span v-if="!isCollapsed">Products</span>
         </NuxtLink>
-        <NuxtLink to="/admin/orders" class="nav-item">
-            <span class="icon">📦</span> Orders
-        </NuxtLink>
-        <NuxtLink to="/admin/products" class="nav-item has-submenu">
-            <span class="icon">🛍️</span> Products
-            <div class="submenu">
-                <NuxtLink to="/admin/products">All Products</NuxtLink>
-                <NuxtLink to="/admin/products/create">Add New Product</NuxtLink>
-                <NuxtLink to="/admin/products/categories">Categories</NuxtLink>
-                <!-- <NuxtLink to="/admin/packages" class="submenu-item">Packages</NuxtLink> -->
-                <NuxtLink to="/admin/package-categories" class="submenu-item">Package Categories</NuxtLink>
-                <NuxtLink to="/admin/products/attributes">Attributes</NuxtLink>
-            </div>
-        </NuxtLink>
-        <NuxtLink to="/admin/users" class="nav-item">
-          <span class="icon">👤</span>
-          <span v-if="!isCollapsed">Users</span>
-        </NuxtLink>
-        <NuxtLink to="/admin/customers" class="nav-item">
-            <span class="icon">👥</span> Customers
-        </NuxtLink>
-        <NuxtLink to="/admin/settings" class="nav-item">
-            <span class="icon">⚙️</span> Settings
-        </NuxtLink>
+
+        <!-- Submenu Flyout -->
+        <div class="hidden group-hover:block absolute left-full top-0 bg-slate-800 min-w-52 rounded-md shadow-xl z-50 py-2 border border-slate-700">
+          <NuxtLink to="/admin/products" class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline">All Products</NuxtLink>
+          <NuxtLink to="/admin/products/create" class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline">Add New Product</NuxtLink>
+          <NuxtLink to="/admin/products/categories" class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline">Categories</NuxtLink>
+          <NuxtLink to="/admin/package-categories" class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline">Package Categories</NuxtLink>
+          <NuxtLink to="/admin/products/attributes" class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline">Attributes</NuxtLink>
+        </div>
+      </div>
+
+      <NuxtLink 
+        to="/admin/users" 
+        class="flex items-center gap-3 px-6 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline"
+        active-class="bg-brand-orange text-navy"
+      >
+        <span class="text-xl">👤</span>
+        <span v-if="!isCollapsed">Users</span>
+      </NuxtLink>
+
+      <NuxtLink 
+        to="/admin/customers" 
+        class="flex items-center gap-3 px-6 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline"
+        active-class="bg-brand-orange text-navy"
+      >
+        <span class="text-xl">👥</span>
+        <span v-if="!isCollapsed">Customers</span>
+      </NuxtLink>
+
+      <NuxtLink 
+        to="/admin/settings" 
+        class="flex items-center gap-3 px-6 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline"
+        active-class="bg-brand-orange text-navy"
+      >
+        <span class="text-xl">⚙️</span>
+        <span v-if="!isCollapsed">Settings</span>
+      </NuxtLink>
     </nav>
 
+    <div v-if="user" class="p-4 bg-slate-50 rounded-lg">
+      <p class="font-semibold text-slate-800">Logged in as: {{ user.email }}</p>
+      <p class="text-xs text-slate-500">User ID: {{ user.UID }}</p>
+    </div>
+
     <!-- Logout Button -->
-    <div class="sidebar-bottom">
-      <button class="logout-btn" @click="showLogoutConfirm">
-        <span class="icon">🚪</span>
+    <div class="p-5 border-t border-slate-700/60 mt-auto">
+      <button 
+        @click="showLogoutConfirm"
+        class="w-full flex items-center gap-3 px-4 py-3 bg-white/10 hover:bg-red-600 text-white rounded-lg transition-colors cursor-pointer text-base no-underline"
+      >
+        <span class="text-xl">🚪</span>
         <span v-if="!isCollapsed">Logout</span>
       </button>
     </div>
-
-    <!-- Toggle Button -->
-    <!-- <button class="toggle-btn" @click="toggleSidebar">
-      {{ isCollapsed ? '→' : '←' }}
-    </button> -->
   </aside>
 
   <!-- Logout Modal -->
-  <div v-if="showLogoutModal" class="logout-modal" @click.self="showLogoutModal = false">
-    <div class="modal-content">
-      <h3>Logout?</h3>
-      <p>Are you sure you want to logout from the admin panel?</p>
-      <div class="modal-buttons">
-        <button class="btn-cancel" @click="showLogoutModal = false">Cancel</button>
-        <button class="btn-logout" @click="logout">Yes, Logout</button>
+  <div 
+    v-if="showLogoutModal" 
+    @click.self="showLogoutModal = false"
+    class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
+  >
+    <div class="bg-white p-8 rounded-2xl max-w-sm w-full text-center shadow-2xl border border-slate-100">
+      <h3 class="text-navy text-xl font-bold mb-2">Logout?</h3>
+      <p class="text-slate-600 mb-6 text-sm">Are you sure you want to logout from the admin panel?</p>
+      
+      <div class="flex gap-3 justify-center">
+        <button 
+          @click="showLogoutModal = false"
+          class="px-6 py-2.5 bg-slate-500 hover:bg-slate-600 text-white font-semibold rounded-lg transition-colors cursor-pointer"
+        >
+          Cancel
+        </button>
+        <button 
+          @click="logout"
+          class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors cursor-pointer"
+        >
+          Yes, Logout
+        </button>
       </div>
     </div>
   </div>
-
 </template>
 
 <script setup lang="ts">
+const supabase = useSupabaseClient()
+const user = useSupabaseUser()
+
 const isCollapsed = ref(false)
-
-const toggleSidebar = () => {
-  isCollapsed.value = !isCollapsed.value
-}
-
 const showLogoutModal = ref(false)
 
 const showLogoutConfirm = () => {
   showLogoutModal.value = true
 }
 
-const logout = () => {
-  // if (confirm('Logout from admin panel?')) {
-    const tokenCookie = useCookie('auth_token')
-    tokenCookie.value = null
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    navigateTo('/login')
-    showLogoutModal.value = false
-  // }
+const logout = async () => {
+  await supabase.auth.signOut()
+  showLogoutModal.value = false
+  navigateTo('/login')
 }
 </script>
-
-<style scoped>
-.admin-sidebar {
-  width: 260px;
-  background: #0c2340;
-  color: white;
-  min-height: 100vh;
-  padding: 20px 0;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-}
-
-.admin-sidebar.collapsed {
-  width: 70px;
-  min-width: 70px;
-}
-
-.toggle-btn {
-  position: absolute;
-  top: 20px;
-  right: -12px;
-  background: #F49322;
-  color: #0c2340;
-  border: none;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 1.1rem;
-  z-index: 10;
-}
-
-.admin-logo {
-    max-height: 80px;
-    width: auto;
-    display: block;
-    margin: 30px auto;
-}
-
-.sidebar-nav {
-  flex: 1;
-}
-
-.sidebar-nav .nav-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 24px;
-  color: white;
-  text-decoration: none;
-  font-size: 1.05rem;
-  transition: all 0.3s;
-}
-
-.sidebar-nav .nav-item:hover,
-.sidebar-nav .nav-item.router-link-active {
-  background: #F49322;
-  color: #0c2340;
-}
-
-/* Submenu */
-.has-submenu {
-  position: relative;
-}
-
-.has-submenu:hover .submenu {
-  display: block;
-}
-
-.submenu {
-  display: none;
-  position: absolute;
-  left: 100%;
-  top: 0;
-  background: #1e3a5f;
-  min-width: 200px;
-  border-radius: 6px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-  z-index: 1000;
-  padding: 8px 0;
-}
-
-.submenu a {
-  display: block;
-  padding: 12px 24px;
-  color: white;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.submenu a:hover {
-  background: #F49322;
-  color: #0c2340;
-}
-
-.sidebar-bottom {
-  padding: 20px;
-  border-top: 1px solid #1e3a5f;
-  margin-top: auto;
-}
-
-
-.logout-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
-.modal-content {
-  background: white;
-  padding: 32px;
-  border-radius: 16px;
-  text-align: center;
-  max-width: 380px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-}
-
-.modal-content h3 {
-  margin-bottom: 16px;
-  color: #0c2340;
-}
-
-.modal-content p {
-  margin-bottom: 24px;
-  color: #555;
-}
-
-.modal-buttons {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-
-.modal-buttons button {
-  padding: 12px 28px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-cancel {
-  background: #6b7280;
-  color: white;
-  border: none;
-}
-
-.btn-logout {
-  background: #ef4444;
-  color: white;
-  border: none;
-}
-
-.logout-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 20px;
-  background: rgba(255,255,255,0.1);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.05rem;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.logout-btn:hover {
-  background: #ef4444;
-}
-</style>

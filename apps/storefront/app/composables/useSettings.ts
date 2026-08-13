@@ -1,7 +1,20 @@
-export const useSettings = () => {
-  const config = useRuntimeConfig()
+export interface SiteSettings {
+  contact_email?: string
+  contact_phone?: string
+  contact_phone_display?: string
+  contact_address?: string
+  social_facebook?: string
+  social_instagram?: string
+  social_x?: string
+  social_youtube?: string
+  social_pinterest?: string
+  [key: string]: any
+}
 
-  const settings = useState('site-settings', () => ({
+export const useSettings = () => {
+  const supabase = useSupabaseClient()
+
+  const settings = useState<SiteSettings>('site-settings', () => ({
     contact_email: '',
     contact_phone: '+19412221012',
     contact_phone_display: '(941) 222-1012',
@@ -15,12 +28,28 @@ export const useSettings = () => {
 
   const loadSettings = async () => {
     try {
-      const res: any = await $fetch('/settings/public', {
-        baseURL: config.public.apiBase
-      })
-      settings.value = { ...settings.value, ...res }
+      // Cast table query to any to prevent TypeScript 'never' generic errors
+      const { data, error } = await (supabase.from('settings') as any)
+        .select('*')
+
+      if (error) throw error
+
+      if (data) {
+        // If stored as key-value pairs in rows [{ key: 'contact_email', value: '...' }]
+        if (Array.isArray(data) && data.length > 0 && 'key' in data[0]) {
+          const formatted = data.reduce((acc: Record<string, any>, row: any) => {
+            acc[row.key] = row.value
+            return acc
+          }, {})
+          settings.value = { ...settings.value, ...formatted }
+        } 
+        // If stored as a single settings record row
+        else if (Array.isArray(data) && data.length > 0) {
+          settings.value = { ...settings.value, ...data[0] }
+        }
+      }
     } catch (e) {
-      console.error('Failed to load settings', e)
+      console.error('Failed to load settings from Supabase:', e)
     }
   }
 

@@ -12,8 +12,18 @@
         COMPARE WHAT’S INCLUDED IN EACH PLAN
       </p>
 
+      <!-- Loading State -->
+      <div v-if="loading" class="text-center py-10 text-white font-semibold">
+        Loading holiday packages...
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="error" class="text-center py-10 text-red-400 font-semibold">
+        {{ error }}
+      </div>
+
       <!-- Compare Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-[30px] items-stretch max-lg:max-w-[420px] max-lg:mx-auto">
+      <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-[30px] items-stretch max-lg:max-w-[420px] max-lg:mx-auto">
         <div 
           v-for="pkg in packageProducts" 
           :key="pkg.id"
@@ -37,27 +47,30 @@
           <!-- Package Body / Inclusions -->
           <div class="bg-white rounded-b-[70px] pt-[24px] px-[20px] pb-[60px] flex-1 bg-[url('/Images/LV.png')] bg-no-repeat bg-[position:50%] bg-cover">
             <div class="flex flex-col gap-[16px] w-full">
-              <template v-for="(variation, vIndex) in pkg.variations" :key="vIndex">
-                <div
-                  v-for="(option, oIndex) in variation.options"
-                  :key="`${vIndex}-${oIndex}`"
-                  class="flex items-center gap-[16px] w-full"
-                >
-                  <div class="w-[56px] h-[56px] rounded-full border-3 border-brand-orange overflow-hidden shrink-0 bg-white flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.1)]">
-                    <img
-                      :src="getImageUrl(option.image_url)"
-                      :alt="option.name"
-                      class="w-full h-full object-cover"
-                      @error="handleImgError"
-                    >
+              <template v-if="pkg.variations && pkg.variations.length">
+                <template v-for="(variation, vIndex) in pkg.variations" :key="vIndex">
+                  <div
+                    v-for="(option, oIndex) in variation.options"
+                    :key="`${vIndex}-${oIndex}`"
+                    class="flex items-center gap-[16px] w-full"
+                  >
+                    <div class="w-[56px] h-[56px] rounded-full border-3 border-brand-orange overflow-hidden shrink-0 bg-white flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.1)]">
+                      <img
+                        :src="getImageUrl(option.image_url)"
+                        :alt="option.name"
+                        class="w-full h-full object-cover"
+                        @error="handleImgError"
+                      >
+                    </div>
+                    <div>
+                      <strong class="text-[0.95rem] text-[#0c2340] font-extrabold leading-[1.3] block">
+                        {{ option.name }}
+                      </strong>
+                    </div>
                   </div>
-                  <div>
-                    <strong class="text-[0.95rem] text-[#0c2340] font-extrabold leading-[1.3] block">
-                      {{ option.name }}
-                    </strong>
-                  </div>
-                </div>
+                </template>
               </template>
+              <p v-else class="text-center text-gray-500 py-4 mb-0">No inclusions listed.</p>
             </div>
           </div>
 
@@ -79,56 +92,75 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 
-const config = useRuntimeConfig()
+interface PackageOption {
+  name: string
+  image_url?: string
+}
 
-const packages = ref<Array<{
-  id: number;
-  name: string;
-  description: string;
-  slug: string;
-  event_date_from: string;
-  event_date_to: string;
-  is_popular: boolean;
-  is_package: boolean;  
-  package_data: string;    
-  price: number;  
-  color: string;
-  image_url: string | null;
-  created_at?: string;
-  variations: Array<{
-    name: string;
-    options: Array<{
-      name: string;
-      image_url: string;
-    }>;
-  }>;
-}>>([])
+interface PackageVariation {
+  name: string
+  options: PackageOption[]
+}
 
-onMounted(async () => {
+interface PackageProduct {
+  id: string | number
+  name: string
+  description?: string
+  slug?: string
+  event_date_from?: string
+  event_date_to?: string
+  is_popular?: boolean
+  is_package?: boolean
+  package_data?: string
+  price: number | string
+  color?: string
+  image_url?: string | null
+  created_at?: string
+  variations?: PackageVariation[]
+}
+
+const supabase = useSupabaseClient()
+
+const packages = ref<PackageProduct[]>([])
+const loading = ref(true)
+const error = ref<string | null>(null)
+
+const fetchPackages = async () => {
+  loading.value = true
+  error.value = null
+
   try {
-    const res: any = await $fetch('/products', {
-      baseURL: config.public.apiBase,
-      params: {
-        is_package: true,
-        status: 'publish'
-      }
-    })
-    packages.value = res.data || res || []
-  } catch (error) {
-    console.error('Failed to load packages:', error)
+    const { data, error: sbError } = await (supabase.from('products') as any)
+      .select(`
+        *,
+        variations(*)
+      `)
+      .eq('is_package', true)
+      .order('created_at', { ascending: true })
+
+    if (sbError) throw sbError
+
+    packages.value = (data as PackageProduct[] || []).filter(
+      (p) => String(p.package_data) === 'holiday-lighting-package-programs'
+    )
+  } catch (err: any) {
+    console.error('Failed to load packages from Supabase:', err)
+    error.value = err.message || 'Failed to load packages.'
+  } finally {
+    loading.value = false
   }
+}
+
+onMounted(() => {
+  fetchPackages()
 })
 
-const packageProducts = computed(() => 
-  packages.value
-    .filter(p => p.is_package && p.package_data === 'holiday-lighting-package-programs')
-    .sort((a, b) => a.id - b.id)
-)
+const packageProducts = computed(() => packages.value)
 
 const getImageUrl = (url?: string | null) => {
   if (!url) return '/Images/placeholder.jpg'
   if (url.startsWith('http')) return url
-  return `${config.public.imageBase.replace(/\/$/, '')}/${url.replace(/^\//, '')}`
+  return `${useRuntimeConfig().public.supabase.url}/storage/v1/object/public/${url.replace(/^\//, '')}`
 }
 
 const handleImgError = (e: Event) => {
@@ -136,7 +168,7 @@ const handleImgError = (e: Event) => {
   if (img) img.src = '/Images/placeholder.jpg'
 }
 
-const selectPackage = async (pkg: any) => {
+const selectPackage = async (pkg: PackageProduct) => {
   navigateTo(`/products/${pkg.id}`)
 }
 
@@ -155,7 +187,6 @@ const getPackageButtonText = (pkg: { name: string; id?: string | number }) => {
   if (name.includes('jolly')) return 'Get Jolly'
   if (name.includes('merry')) return 'Make It Merry'
 
-  // Fallback for any other package name
   return `Choose ${pkg.name}`
 }
 </script>

@@ -3,17 +3,27 @@
     <div class="container mx-auto px-4">
       <!-- Section Header -->
       <div class="text-center mb-10">
-        <h2 v-fade class="text-navy uppercase font-bold text-2xl sm:text-3xl lg:text-4xl max-sm:text-[1.125rem] max-sm:leading-[1.3]">
+        <h2 class="text-navy uppercase font-bold text-2xl sm:text-3xl lg:text-4xl max-sm:text-[1.125rem] max-sm:leading-[1.3]">
           Festive Express makes<br>professional <span class="text-brand-orange">holiday lighting</span> simple.
         </h2>
-        <p v-fade class="text-black max-w-[80%] mx-auto leading-[1.3] text-xl max-sm:text-[0.95rem] mt-2">
+        <p class="text-black max-w-[80%] mx-auto leading-[1.3] text-xl max-sm:text-[0.95rem] mt-2">
           Choose one of three fixed packages.<br>
           Pay once. Pick your install date and take-down date. We handle the rest.
         </p>
       </div>
 
+      <!-- Loading State -->
+      <div v-if="loading" class="text-center py-10 text-navy font-semibold">
+        Loading holiday packages...
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="error" class="text-center py-10 text-red-500 font-semibold">
+        {{ error }}
+      </div>
+
       <!-- Package Cards Row -->
-      <div class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] max-sm:grid-cols-1 gap-8 max-sm:gap-12 justify-items-center mb-12">
+      <div v-else class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] max-sm:grid-cols-1 gap-8 max-sm:gap-12 justify-items-center mb-12">
         <div
           v-for="pkg in packageProducts"
           :key="pkg.id"
@@ -119,7 +129,7 @@
         </h4>
         <NuxtLink 
           to="/packages" 
-          class="relative overflow-hidden border-2 border-navy inline-block font-semibold px-6 py-3 rounded-lg bg-brand-orange text-white animate-[festive-express-animation-pulse-grow_0.5s_linear_infinite_alternate] after:content-[''] after:absolute after:-top-1/2 after:-left-[150%] after:w-[200%] after:h-[200%] after:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] after:rotate-[25deg] after:pointer-events-none after:animate-[glossyShineContinuous_3s_linear_infinite]"
+          class="relative overflow-hidden border-2 border-navy inline-block font-semibold px-6 py-3 rounded-lg bg-brand-orange text-white animate-[festive-express-animation-pulse-grow_0.5s_linear_infinite_alternate] after:content-[''] after:absolute after:-top-1/2 after:-left-[150%] after:w-[200%] after:h-[200%] after:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255)_80%)] after:rotate-[25deg] after:pointer-events-none after:animate-[glossyShineContinuous_3s_linear_infinite]"
         >
           Which Package Fits Your Home?
         </NuxtLink>
@@ -146,43 +156,72 @@ interface PackageProduct {
   image_url: string | null
   is_package?: boolean
   package_data?: string
+  status?: string
   created_at?: string
   variations?: PackageVariation[]
 }
 
+// 1. Initialize Supabase Client (uses NUXT_PUBLIC_SUPABASE_URL automatically)
+const supabase = useSupabaseClient()
+
 const packages = ref<PackageProduct[]>([])
+const loading = ref(true)
+const error = ref<string | null>(null)
 const openTooltipId = ref<number | null>(null)
 
 const BASE = '/Images/Holiday-Lighting-Package'
 
-onMounted(async () => {
+// 2. Fetch packages directly using Supabase client
+const fetchPackages = async () => {
+  loading.value = true
+  error.value = null
+
   try {
-    const res: any = await $fetch('/products?is_package=true', {
-      baseURL: useRuntimeConfig().public.apiBase,
-      params: { status: 'publish' },
+    // Join variations table using relational syntax
+    const { data, error: sbError } = await (supabase.from('products') as any)
+      .select(`
+        *,
+        variations(*)
+      `)
+      .eq('is_package', true)
+      .order('created_at', { ascending: true })
+
+    if (sbError) throw sbError
+
+    // Filter array in JS to prevent string/JSON column type mismatches
+    packages.value = (data as PackageProduct[] || []).filter(
+      (p) => String(p.package_data) === 'holiday-lighting-package-programs'
+    )
+  } catch (err: any) {
+    console.error('Error fetching packages from Supabase:', err)
+    error.value = err.message || 'Failed to load packages.'
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchPackages()
+
+  // Close tooltips on outside click
+  if (process.client) {
+    window.addEventListener('click', () => {
+      openTooltipId.value = null
     })
-    packages.value = res.data || res || []
-  } catch (error) {
-    console.error('Failed to load packages:', error)
   }
 })
 
-const packageProducts = computed(() =>
-  packages.value
-    .filter((p) => p.is_package && p.package_data === 'holiday-lighting-package-programs')
-    .sort(
-      (a, b) =>
-        new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime()
-    )
-)
+const packageProducts = computed(() => packages.value)
 
 const selectPackage = (pkg: PackageProduct) => {
   navigateTo(`/products/${pkg.id}`)
 }
 
+// 3. Construct Supabase Storage image URLs using NUXT_PUBLIC_SUPABASE_URL
 const getImageUrl = (url: string | null | undefined) => {
   if (!url) return '/Images/placeholder.png'
-  return `${useRuntimeConfig().public.imageBase}/${url}`
+  if (url.startsWith('http')) return url
+  return `${useRuntimeConfig().public.supabase.url}/storage/v1/object/public/${url}`
 }
 
 const getPackageTitleImage = (name: string) => {
@@ -204,5 +243,15 @@ const getPackageIcon = (name: string) => {
 .btn-inclusions:hover {
   border-color: var(--orange, #ff7a00) !important;
   background: rgba(244, 147, 33, 0.15) !important;
+}
+
+@keyframes glossyShineContinuous {
+  0% { transform: translateX(-100%) rotate(25deg); }
+  100% { transform: translateX(200%) rotate(25deg); }
+}
+
+@keyframes festive-express-animation-pulse-grow {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.04); }
 }
 </style>

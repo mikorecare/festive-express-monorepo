@@ -1,20 +1,45 @@
-export const useCart = () => {
-  const config = useRuntimeConfig()
+export interface Product {
+  id: string
+  name: string
+  price: number | string
+  image_url?: string
+}
 
-  // Shared across all components
-  const cartItems = useState<any[]>('cartItems', () => [])
+export interface CartItem {
+  id: number | string
+  product_id: string | number
+  quantity: number
+  is_package?: boolean
+  options?: Record<string, any> | null
+  price?: number | string
+  product?: Product
+}
+
+export const useCart = () => {
+  const supabase = useSupabaseClient()
+
+  const cartItems = useState<CartItem[]>('cartItems', () => [])
   const cartTotal = useState<number>('cartTotal', () => 0)
   const cartCount = useState<number>('cartCount', () => 0)
 
   const loadCart = async () => {
     try {
-      const res: any = await $fetch('/cart', {
-        baseURL: config.public.apiBase
-      })
+      const { data, error } = await (supabase.from('cart_items') as any)
+        .select(`
+          *,
+          product:products(*)
+        `)
 
-      cartItems.value = res.items || []
-      cartTotal.value = Number(res.total) || 0
-      cartCount.value = Number(res.count) || 0
+      if (error) throw error
+
+      const items = (data as CartItem[]) || []
+      cartItems.value = items
+
+      cartCount.value = items.reduce((sum, item) => sum + (Number(item.quantity) || 1), 0)
+      cartTotal.value = items.reduce((sum, item) => {
+        const itemPrice = Number(item.price) || Number(item.product?.price) || 0
+        return sum + itemPrice * (Number(item.quantity) || 1)
+      }, 0)
     } catch (error) {
       console.error('Failed to load cart:', error)
       cartItems.value = []
@@ -24,24 +49,22 @@ export const useCart = () => {
   }
 
   const addToCart = async (
-    productId: number,
+    productId: string | number,
     quantity: number = 1,
     isPackage: boolean = false,
     options?: Record<string, any>
   ) => {
     try {
-      await $fetch('/cart/add', {
-        baseURL: config.public.apiBase,
-        method: 'POST',
-        body: {
-          product_id: productId,
-          quantity,
-          is_package: isPackage,
-          options: options || null
-        }
+      const { error } = await (supabase.from('cart_items') as any).insert({
+        product_id: productId,
+        quantity,
+        is_package: isPackage,
+        options: options || null
       })
 
-      await loadCart() // ← refresh shared state
+      if (error) throw error
+
+      await loadCart()
       return true
     } catch (error) {
       console.error('Add to cart failed:', error)
@@ -49,36 +72,48 @@ export const useCart = () => {
     }
   }
 
-  const removeFromCart = async (itemId: number) => {
-    await $fetch(`/cart/${itemId}`, {
-      baseURL: config.public.apiBase,
-      method: 'DELETE'
-    })
-    await loadCart()
+  const removeFromCart = async (itemId: string | number) => {
+    try {
+      const { error } = await (supabase.from('cart_items') as any)
+        .delete()
+        .eq('id', itemId)
+
+      if (error) throw error
+
+      await loadCart()
+    } catch (error) {
+      console.error('Remove from cart failed:', error)
+    }
   }
 
   const clearCart = async () => {
     try {
-      await $fetch('/cart/clear', {
-        baseURL: config.public.apiBase,
-        method: 'DELETE'
-      })
+      const { error } = await (supabase.from('cart_items') as any)
+        .delete()
+        .neq('id', 0)
+
+      if (error) throw error
     } catch (e) {
-      console.error(e)
+      console.error('Clear cart failed:', e)
     }
 
-    // Reset shared state immediately
     cartItems.value = []
     cartTotal.value = 0
     cartCount.value = 0
   }
 
-  const updateCartItemQty = async (id: number | string, quantity: number) => {
-    await $fetch(`/cart/${id}`, {
-      baseURL: config.public.apiBase,
-      method: 'PUT',
-      body: { quantity },
-    })
+  const updateCartItemQty = async (id: string | number, quantity: number) => {
+    try {
+      const { error } = await (supabase.from('cart_items') as any)
+        .update({ quantity })
+        .eq('id', id)
+
+      if (error) throw error
+
+      await loadCart()
+    } catch (error) {
+      console.error('Update cart quantity failed:', error)
+    }
   }
 
   return {

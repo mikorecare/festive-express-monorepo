@@ -3,14 +3,43 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
+  // Enforce Single Page Application (Client-Side Rendering) mode for all routes
+  ssr: false,
+
+  routeRules: {
+    '/**': { ssr: false }
+  },
+
   modules: ['@vueuse/nuxt',
+    '@nuxtjs/tailwindcss',
+    '@nuxtjs/supabase',
 
   ],
 
+  supabase: {
+    redirect: true,
+    redirectOptions: {
+      login: '/login',
+      callback: '/confirm',
+      exclude: ['/login'], // Protects every route except /login
+    },
+    cookieOptions: {
+      maxAge: 60 * 60 * 8,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    }
+  },
+
   runtimeConfig: {
+    // public: {
+    //   apiBase: 'http://localhost:8000/api',   // Change when deploying
+    //   imageBase: 'http://localhost:8000'
+    // }
+    supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY,
     public: {
-      apiBase: 'http://localhost:8000/api',   // Change when deploying
-      imageBase: 'http://localhost:8000'
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseKey: process.env.SUPABASE_KEY,
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://api.yourdomain.com'
     }
   },
 
