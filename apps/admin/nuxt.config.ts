@@ -39,7 +39,8 @@ export default defineNuxtConfig({
     public: {
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseKey: process.env.SUPABASE_KEY,
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://api.yourdomain.com'
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://api.yourdomain.com',
+      storageBucket: process.env.NUXT_PUBLIC_STORAGE_BUCKET || 'Products',
     }
   },
 

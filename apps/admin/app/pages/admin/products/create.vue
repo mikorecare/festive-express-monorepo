@@ -1,7 +1,7 @@
 <template>
   <div class="create-product-page">
     <div class="page-header">
-      <h1>Add New Product</h1>
+      <h1 class="text-2xl font-bold text-[#0c2340]">Add New Product</h1>
       <div class="header-actions">
         <button class="btn-secondary" @click="$router.back()">Cancel</button>
         <!-- <button class="btn-primary" @click="saveProduct">Publish Product</button> -->

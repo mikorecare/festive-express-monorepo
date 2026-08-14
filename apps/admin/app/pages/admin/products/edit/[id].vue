@@ -177,7 +177,7 @@
                     <!-- Image Preview -->
                     <img 
                       v-if="option.image_url" 
-                      :src="getImageUrl(option.image_url)" 
+                      :src="getImageUrl(option.image_url, 'variations')" 
                       class="w-8 h-8 object-cover rounded-md border border-gray-300 shrink-0"
                     />
                     
@@ -294,9 +294,13 @@ interface Category {
   slug?: string
 }
 
+const config = useRuntimeConfig()
 const route = useRoute()
 const productId = route.params.id
 const supabase = useSupabaseClient()
+const supabaseUrl = config.public.supabaseUrl
+const bucket = config.public.storageBucket || 'Products'
+
 const { showToast } = useToast()
 
 const isSaving = ref(false)
@@ -340,33 +344,93 @@ const handleDrop = (e: DragEvent) => {
   }
 }
 
-const getImageUrl = (url?: string | null) => {
+// const getImageUrl = (url?: string | null) => {
+//   if (!url) return '/Images/placeholder.jpg'
+//   if (url.startsWith('http')) return url
+//   return `${useRuntimeConfig().public.supabase.url}/storage/v1/object/public/${url.replace(/^\//, '')}`
+// }
+
+const getImageUrl = (
+  url?: string | null,
+  folder: '' | 'variations' = ''
+) => {
   if (!url) return '/Images/placeholder.jpg'
+
+  // already full URL
   if (url.startsWith('http')) return url
-  return `${useRuntimeConfig().public.supabase.url}/storage/v1/object/public/${url.replace(/^\//, '')}`
+
+  let path = url
+    .replace(/^\//, '')
+    .replace(/^products\//i, '')
+    .replace(/^Products\//i, '')
+    .replace(/^variations\//i, '')
+
+  // if DB already stored "variations/xxx.webp"
+  if (url.toLowerCase().includes('variations/')) {
+    path = url
+      .replace(/^\//, '')
+      .replace(/^products\//i, '')
+      .replace(/^Products\//i, '')
+    return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`
+  }
+
+  const prefix = folder ? `${folder}/` : ''
+  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${prefix}${path}`
 }
 
+// const uploadOptionImage = async (vIndex: number, oIndex: number, e: Event) => {
+//   const file = (e.target as HTMLInputElement).files?.[0]
+//   if (!file) return
+
+//   try {
+//     const fileExt = file.name.split('.').pop()
+//     const fileName = `variations/${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`
+
+//     const { error: uploadErr } = await supabase.storage
+//       .from('Products')
+//       .upload(fileName, file, { upsert: true })
+
+//     if (uploadErr) throw uploadErr
+
+//     if (product.value.variations?.[vIndex]?.options?.[oIndex]) {
+//       product.value.variations[vIndex].options[oIndex].image_url = `products/${fileName}`
+//     }
+//     showToast('Option image uploaded', 'success')
+//   } catch (error: any) {
+//     console.error('Failed to upload option image:', error)
+//     showToast(error.message || 'Failed to upload option image', 'error')
+//   }
+// }
 const uploadOptionImage = async (vIndex: number, oIndex: number, e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
 
   try {
+    const config = useRuntimeConfig()
+    const bucket = config.public.storageBucket || 'Products'
+
     const fileExt = file.name.split('.').pop()
     const fileName = `variations/${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`
 
     const { error: uploadErr } = await supabase.storage
-      .from('Products')
-      .upload(fileName, file, { upsert: true })
+      .from(bucket)
+      .upload(fileName, file, {
+        upsert: true,
+        contentType: file.type,
+      })
 
     if (uploadErr) throw uploadErr
 
+    // Save path relative to bucket only (includes variations/)
     if (product.value.variations?.[vIndex]?.options?.[oIndex]) {
-      product.value.variations[vIndex].options[oIndex].image_url = `products/${fileName}`
+      product.value.variations[vIndex].options[oIndex].image_url = fileName
+      // → "variations/1786-abc.jpg"
     }
+
     showToast('Option image uploaded', 'success')
   } catch (error: any) {
     console.error('Failed to upload option image:', error)
-    showToast(error.message || 'Failed to upload option image', 'error')
+    showToast(error?.message || 'Failed to upload option image', 'error')
   }
 }
 
@@ -379,18 +443,46 @@ const updateProduct = async () => {
   isSaving.value = true
 
   try {
+    // let finalImageUrl = product.value.image_url
+
+    // if (imageFile.value) {
+    //   const fileExt = imageFile.value.name.split('.').pop()
+    //   const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`
+
+    //   const { error: uploadErr } = await supabase.storage
+    //     .from('Products')
+    //     .upload(fileName, imageFile.value, { upsert: true })
+
+    //   if (uploadErr) throw uploadErr
+    //   finalImageUrl = `products/${fileName}`
+    // }
+
     let finalImageUrl = product.value.image_url
 
     if (imageFile.value) {
       const fileExt = imageFile.value.name.split('.').pop()
-      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`
+      // matches your style: 1785938191_JoyPhoto.webp
+      const baseName = imageFile.value.name
+        .replace(/\.[^/.]+$/, '')
+        .replace(/[^a-zA-Z0-9_-]/g, '_')
+      const fileName = `${Date.now()}_${baseName}.${fileExt}`
 
       const { error: uploadErr } = await supabase.storage
         .from('Products')
-        .upload(fileName, imageFile.value, { upsert: true })
+        .upload(fileName, imageFile.value, {
+          upsert: true,
+          contentType: imageFile.value.type,
+        })
 
       if (uploadErr) throw uploadErr
-      finalImageUrl = `products/${fileName}`
+
+      // Option A — store only the object path (recommended)
+      finalImageUrl = fileName
+      // e.g. "1786622799859_JoyPhoto.webp"
+
+      // Option B — store full public URL
+      // const { data } = supabase.storage.from('Products').getPublicUrl(fileName)
+      // finalImageUrl = data.publicUrl
     }
 
     const { error: updateErr } = await (supabase.from('products') as any)

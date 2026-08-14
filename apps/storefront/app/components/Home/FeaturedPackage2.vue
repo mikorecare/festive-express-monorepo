@@ -91,6 +91,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+const config = useRuntimeConfig()
 
 interface PackageOption {
   name: string
@@ -157,15 +158,38 @@ onMounted(() => {
 
 const packageProducts = computed(() => packages.value)
 
-const getImageUrl = (url?: string | null) => {
-  if (!url) return '/Images/placeholder.jpg'
+// const getImageUrl = (url?: string | null) => {
+//   if (!url) return '/Images/placeholder.png'
+//   if (url.startsWith('http')) return url
+//   return `${useRuntimeConfig().public.supabase.url}/storage/v1/object/public/${url.replace(/^\//, '')}`
+// }
+const getImageUrl = (url: string | null | undefined) => {
+  if (!url) return '/Images/placeholder.png'
+
+  // already absolute
   if (url.startsWith('http')) return url
-  return `${useRuntimeConfig().public.supabase.url}/storage/v1/object/public/${url.replace(/^\//, '')}`
+
+  // strip accidental prefixes from older data
+  const path = url
+    .replace(/^\//, '')
+    .replace(/^products\//i, '')
+    .replace(/^Products\//i, '')
+
+  const supabaseUrl =
+    config.public.supabaseUrl ||
+    config.public.supabase?.url ||
+    ''
+
+  const bucket = (config.public.storageBucket as string) || 'Products'
+
+  // path may be "file.webp" or "variations/file.webp"
+  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`
 }
+
 
 const handleImgError = (e: Event) => {
   const img = e.target as HTMLImageElement
-  if (img) img.src = '/Images/placeholder.jpg'
+  if (img) img.src = '/Images/placeholder.png'
 }
 
 const selectPackage = async (pkg: PackageProduct) => {

@@ -38,6 +38,7 @@
           to="/admin/products" 
           class="flex items-center gap-3 px-6 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline"
           active-class="bg-brand-orange text-navy"
+          :class="{ 'bg-brand-orange text-navy': isProductsSection }"
         >
           <span class="text-xl">🛍️</span>
           <span v-if="!isCollapsed">Products</span>
@@ -47,9 +48,13 @@
         <div class="hidden group-hover:block absolute left-full top-0 bg-slate-800 min-w-52 rounded-md shadow-xl z-50 py-2 border border-slate-700">
           <NuxtLink to="/admin/products" class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline">All Products</NuxtLink>
           <NuxtLink to="/admin/products/create" class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline">Add New Product</NuxtLink>
+          <NuxtLink to="/admin/products/packages" class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline">Package Programs</NuxtLink>
+          <NuxtLink to="/admin/products/package-skus" class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline">Package SKUs</NuxtLink>
+          <NuxtLink to="/admin/products/inclusions" class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline">Inclusion Items</NuxtLink>
+
           <NuxtLink to="/admin/products/categories" class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline">Categories</NuxtLink>
-          <NuxtLink to="/admin/package-categories" class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline">Package Categories</NuxtLink>
-          <NuxtLink to="/admin/products/attributes" class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline">Attributes</NuxtLink>
+          <!-- <NuxtLink to="/admin/package-categories" class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline">Package Categories</NuxtLink>
+          <NuxtLink to="/admin/products/attributes" class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline">Attributes</NuxtLink> -->
         </div>
       </div>
 
@@ -127,6 +132,7 @@
 </template>
 
 <script setup lang="ts">
+const route = useRoute()
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 
@@ -142,4 +148,9 @@ const logout = async () => {
   showLogoutModal.value = false
   navigateTo('/login')
 }
+
+const isProductsSection = computed(() =>
+  ['/admin/products', '/admin/packages', '/admin/package-skus', '/admin/inclusions']
+    .some((p) => route.path.startsWith(p))
+)
 </script>

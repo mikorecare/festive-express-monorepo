@@ -336,13 +336,30 @@ const clearSearch = () => {
 }
 
 // Image Handling
-const getImageUrl = (url: string | null) => {
+// const getImageUrl = (url: string | null) => {
+//   if (!url) return '/Images/placeholder.png'
+//   if (url.startsWith('http')) return url
+//   // Public URL builder for Supabase storage bucket named 'products'
+//   const { data } = supabase.storage.from('Products').getPublicUrl(url)
+//   return data.publicUrl
+// }
+
+const getImageUrl = (url: string | null | undefined) => {
   if (!url) return '/Images/placeholder.png'
+
+  // already a full URL
   if (url.startsWith('http')) return url
-  // Public URL builder for Supabase storage bucket named 'products'
-  const { data } = supabase.storage.from('products').getPublicUrl(url)
+
+  // strip accidental prefixes if old rows have them
+  const path = url
+    .replace(/^products\//i, '')
+    .replace(/^Products\//i, '')
+
+  const { data } = supabase.storage.from('Products').getPublicUrl(path)
   return data.publicUrl
+  // → https://phwcfiukyiexdvtccopt.supabase.co/storage/v1/object/public/Products/1786622799859_JoyPhoto.webp
 }
+
 
 const handleImageError = (e: Event) => {
   const img = e.target as HTMLImageElement

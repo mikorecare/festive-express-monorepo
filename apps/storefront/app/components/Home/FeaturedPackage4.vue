@@ -139,6 +139,8 @@
 </template>
 
 <script setup lang="ts">
+const config = useRuntimeConfig()
+
 interface PackageOption {
   name: string
   image_url?: string
@@ -218,10 +220,33 @@ const selectPackage = (pkg: PackageProduct) => {
 }
 
 // 3. Construct Supabase Storage image URLs using NUXT_PUBLIC_SUPABASE_URL
+// const getImageUrl = (url: string | null | undefined) => {
+//   if (!url) return '/Images/placeholder.png'
+//   if (url.startsWith('http')) return url
+//   return `${useRuntimeConfig().public.supabase.url}/storage/v1/object/public/${url}`
+// }
+
 const getImageUrl = (url: string | null | undefined) => {
   if (!url) return '/Images/placeholder.png'
+
+  // already absolute
   if (url.startsWith('http')) return url
-  return `${useRuntimeConfig().public.supabase.url}/storage/v1/object/public/${url}`
+
+  // strip accidental prefixes from older data
+  const path = url
+    .replace(/^\//, '')
+    .replace(/^products\//i, '')
+    .replace(/^Products\//i, '')
+
+  const supabaseUrl =
+    config.public.supabaseUrl ||
+    config.public.supabase?.url ||
+    ''
+
+  const bucket = (config.public.storageBucket as string) || 'Products'
+
+  // path may be "file.webp" or "variations/file.webp"
+  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`
 }
 
 const getPackageTitleImage = (name: string) => {

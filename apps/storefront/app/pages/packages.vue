@@ -450,46 +450,52 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { toast } from 'sonner'
 
 const config = useRuntimeConfig()
+const supabase = useSupabaseClient()
+const db = supabase as any
 const { addToCart } = useCart()
+
+interface PackageOption {
+  name: string
+  image_url?: string | null
+}
+
+interface PackageVariation {
+  id?: number
+  name: string
+  options: PackageOption[]
+}
 
 interface PackageProduct {
   id: number
   name: string
-  description: string
-  price: number
+  description: string | null
+  price: number | string
   stock: number
   image_url: string | null
-  variations: Array<{
-    name: string
-    options: Array<{
-      name: string
-      image_url: string
-    }>
-  }>
+  is_package?: boolean
+  variations: PackageVariation[]
 }
 
 const packages = ref<PackageProduct[]>([])
 const loading = ref(true)
-
 const selectedColors = ref<Record<number, string>>({})
 const activeInclusions = ref<Record<number, string | null>>({})
 const activeLightboxImage = ref<string | null>(null)
+const addingToCartId = ref<number | null>(null)
 
 const colors = [
   { name: 'Warm White', hex: '#f5e8c7' },
   { name: 'Pure White', hex: '#f8f9fa' },
-  { name: 'Champagne', hex: '#f0e4d2' }
+  { name: 'Champagne', hex: '#f0e4d2' },
 ]
 
 useHead({
-  title: 'Holiday Lighting Packages - Festive Express'
+  title: 'Holiday Lighting Packages - Festive Express',
 })
 
-// Hotspots Definition
 type Hotspot = {
   key: string
   label: string
@@ -500,54 +506,12 @@ type Hotspot = {
 }
 
 const allHotspots: Hotspot[] = [
-  {
-    key: 'c9',
-    label: 'C-9 Roofline Lights',
-    top: '32%',
-    left: '72%',
-    thumb: '/Images/Holiday-Lighting-Package/c9lights.png',
-    packages: ['joy', 'jolly', 'merry']
-  },
-  {
-    key: 'wreath',
-    label: '24" Mixed Noble Wreath',
-    top: '33%',
-    left: '55%',
-    thumb: '/Images/Holiday-Lighting-Package/mixed-noble-wreath.png',
-    packages: ['jolly', 'merry']
-  },
-  {
-    key: 'bow',
-    label: '12" Velvet Red Bow',
-    top: '30%',
-    left: '57%',
-    thumb: '/Images/Holiday-Lighting-Package/velvet-red-bow.png',
-    packages: ['jolly', 'merry']
-  },
-  {
-    key: 'ground',
-    label: 'Ground Stake Lights',
-    top: '83%',
-    left: '45%',
-    thumb: '/Images/Holiday-Lighting-Package/ground-lights.png',
-    packages: ['jolly', 'merry']
-  },
-  {
-    key: 'minis',
-    label: '5mm Mini Lights',
-    top: '62%',
-    left: '88%',
-    thumb: '/Images/Holiday-Lighting-Package/5mm-minis.png',
-    packages: ['merry']
-  },
-  {
-    key: 'bursts',
-    label: 'Light Bursts',
-    top: '71%',
-    left: '66%',
-    thumb: '/Images/Holiday-Lighting-Package/light-bursts.png',
-    packages: ['merry']
-  }
+  { key: 'c9', label: 'C-9 Roofline Lights', top: '32%', left: '72%', thumb: '/Images/Holiday-Lighting-Package/c9lights.png', packages: ['joy', 'jolly', 'merry'] },
+  { key: 'wreath', label: '24" Mixed Noble Wreath', top: '33%', left: '55%', thumb: '/Images/Holiday-Lighting-Package/mixed-noble-wreath.png', packages: ['jolly', 'merry'] },
+  { key: 'bow', label: '12" Velvet Red Bow', top: '30%', left: '57%', thumb: '/Images/Holiday-Lighting-Package/velvet-red-bow.png', packages: ['jolly', 'merry'] },
+  { key: 'ground', label: 'Ground Stake Lights', top: '83%', left: '45%', thumb: '/Images/Holiday-Lighting-Package/ground-lights.png', packages: ['jolly', 'merry'] },
+  { key: 'minis', label: '5mm Mini Lights', top: '62%', left: '88%', thumb: '/Images/Holiday-Lighting-Package/5mm-minis.png', packages: ['merry'] },
+  { key: 'bursts', label: 'Light Bursts', top: '71%', left: '66%', thumb: '/Images/Holiday-Lighting-Package/light-bursts.png', packages: ['merry'] },
 ]
 
 const getPackageSlug = (name: string) => {
@@ -557,25 +521,30 @@ const getPackageSlug = (name: string) => {
   return 'joy'
 }
 
-// Ensures correct display order: Joy -> Jolly -> Merry
 const orderedPackages = computed(() => {
   const order = ['joy', 'jolly', 'merry']
-  return [...packages.value].sort((a, b) => {
-    return order.indexOf(getPackageSlug(a.name)) - order.indexOf(getPackageSlug(b.name))
-  })
+  return [...packages.value].sort(
+    (a, b) => order.indexOf(getPackageSlug(a.name)) - order.indexOf(getPackageSlug(b.name))
+  )
 })
 
-const getBadgeText = (name: string) => {
-  const slug = getPackageSlug(name)
-  if (slug === 'joy') return 'STANDARD PACKAGE'
-  if (slug === 'jolly') return 'MOST POPULAR PACKAGE'
-  if (slug === 'merry') return 'PREMIUM PACKAGE'
-  return 'FEATURED PACKAGE'
-}
-
+/** Supabase Storage public URL — no apiBase / imageBase Laravel */
 const getImageUrl = (url: string | null | undefined) => {
-  if (!url) return '/Images/Colors/default-house.jpg'
-  return `${config.public.imageBase.replace(/\/$/, '')}/${url.replace(/^\//, '')}`
+  if (!url) return '/Images/placeholder.png'
+  if (url.startsWith('http') || url.startsWith('/')) return url
+
+  const path = url
+    .replace(/^\//, '')
+    .replace(/^products\//i, '')
+    .replace(/^Products\//i, '')
+
+  const supabaseUrl =
+    (config.public.supabaseUrl as string) ||
+    (config.public.supabase as any)?.url ||
+    ''
+  const bucket = (config.public.storageBucket as string) || 'Products'
+
+  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`
 }
 
 const handleImageError = (e: Event) => {
@@ -583,109 +552,29 @@ const handleImageError = (e: Event) => {
   if (img) img.src = '/Images/Colors/default-house.jpg'
 }
 
+const handlePreviewError = (e: Event, pkg: PackageProduct) => {
+  const img = e.target as HTMLImageElement
+  if (!img) return
+  img.src = pkg.image_url
+    ? getImageUrl(pkg.image_url)
+    : '/Images/Colors/default-house.jpg'
+}
+
+/** Static color mockups in /public (OK) */
 const getColorImageUrl = (pkgName: string, colorName?: string) => {
-  const packageSlug = getPackageSlug(pkgName).charAt(0).toUpperCase() + getPackageSlug(pkgName).slice(1)
+  const packageSlug =
+    getPackageSlug(pkgName).charAt(0).toUpperCase() + getPackageSlug(pkgName).slice(1)
   const colorSlug = (colorName || 'Warm White')
     .trim()
     .split(/\s+/)
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join('-')
-  
   return `/Images/Colors/${packageSlug}-${colorSlug}.jpg`
 }
 
-const getHotspotsForPackage = (pkgName: string) => {
-  const slug = getPackageSlug(pkgName)
-  return allHotspots.filter(s => s.packages.includes(slug))
-}
-
-const getActiveSpot = (pkgId: number, pkgName: string) => {
-  const key = activeInclusions.value[pkgId]
-  if (!key) return null
-  return getHotspotsForPackage(pkgName).find(s => s.key === key) || null
-}
-
-const activateHotspot = (pkgId: number, key: string) => {
-  if (activeInclusions.value[pkgId] === key) {
-    activeInclusions.value[pkgId] = null
-  } else {
-    activeInclusions.value[pkgId] = key
-  }
-}
-
-const highlightInclusion = (pkgId: number, optionName: string) => {
-  const n = optionName.toLowerCase()
-  let key: string | null = null
-  if (n.includes('c-9') || n.includes('roofline')) key = 'c9'
-  else if (n.includes('wreath')) key = 'wreath'
-  else if (n.includes('bow')) key = 'bow'
-  else if (n.includes('ground') || n.includes('stake')) key = 'ground'
-  else if (n.includes('mini')) key = 'minis'
-  else if (n.includes('burst')) key = 'bursts'
-
-  activeInclusions.value[pkgId] = key
-}
-
-const openLightbox = (pkg: PackageProduct) => {
-  activeLightboxImage.value = getColorImageUrl(pkg.name, selectedColors.value[pkg.id])
-  document.body.style.overflow = 'hidden'
-}
-
-const closeLightbox = () => {
-  activeLightboxImage.value = null
-  document.body.style.overflow = ''
-}
-
-// Track loading state per package ID
-const addingToCartId = ref<number | null>(null)
-
-const addToCartHandler = async (pkg: PackageProduct) => {
-  if (addingToCartId.value === pkg.id) return
-  
-  addingToCartId.value = pkg.id
-  const color = selectedColors.value[pkg.id] || 'Warm White'
-  
-  try {
-    await addToCart(pkg.id, 1, true, { c9_color: color })
-    toast.success('Added to cart!', {
-      description: `${pkg.name} (${color})`
-    })
-  } catch (error) {
-    console.error('Failed to add to cart:', error)
-  } finally {
-    addingToCartId.value = null
-  }
-}
-
-onMounted(async () => {
-  try {
-    const res: any = await $fetch('/products?type=packages', {
-      baseURL: config.public.apiBase
-    })
-    
-    const allProducts: PackageProduct[] = res?.data || res || []
-    packages.value = allProducts.filter(p => 
-      ['joy', 'jolly', 'merry'].some(k => p.name.toLowerCase().includes(k))
-    )
-
-    packages.value.forEach(pkg => {
-      selectedColors.value[pkg.id] = 'Warm White'
-      activeInclusions.value[pkg.id] = null
-    })
-  } catch (error) {
-    console.error('Failed to load package programs:', error)
-  } finally {
-    loading.value = false
-  }
-
-  const onKey = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') closeLightbox()
-  }
-  window.addEventListener('keydown', onKey)
-  onUnmounted(() => window.removeEventListener('keydown', onKey))
-})
-
 const BASE = '/Images/Holiday-Lighting-Package'
+
+/** Fallback only when product.image_url is empty */
 const getPackageTitleImage = (name: string) => {
   const n = name.toLowerCase()
   if (n.includes('jolly')) return `${BASE}/Jolly.png`
@@ -700,11 +589,134 @@ const getPackageIcon = (name: string) => {
   return `${BASE}/Icon1.png`
 }
 
-const scrollToSpecs = () => {
-  const el = document.getElementById('product-specs')
-  if (el) {
-    el.scrollIntoView({ behavior: 'smooth' })
+const getHotspotsForPackage = (pkgName: string) => {
+  const slug = getPackageSlug(pkgName)
+  return allHotspots.filter((s) => s.packages.includes(slug))
+}
+
+const getActiveSpot = (pkgId: number, pkgName: string) => {
+  const key = activeInclusions.value[pkgId]
+  if (!key) return null
+  return getHotspotsForPackage(pkgName).find((s) => s.key === key) || null
+}
+
+const activateHotspot = (pkgId: number, key: string) => {
+  activeInclusions.value[pkgId] =
+    activeInclusions.value[pkgId] === key ? null : key
+}
+
+const highlightInclusion = (pkgId: number, optionName: string) => {
+  const n = (optionName || '').toLowerCase()
+  let key: string | null = null
+  if (n.includes('c-9') || n.includes('roofline')) key = 'c9'
+  else if (n.includes('wreath')) key = 'wreath'
+  else if (n.includes('bow')) key = 'bow'
+  else if (n.includes('ground') || n.includes('stake')) key = 'ground'
+  else if (n.includes('mini')) key = 'minis'
+  else if (n.includes('burst')) key = 'bursts'
+  activeInclusions.value[pkgId] = key
+}
+
+const openLightbox = (pkg: PackageProduct) => {
+  activeLightboxImage.value = getColorImageUrl(
+    pkg.name,
+    selectedColors.value[pkg.id]
+  )
+  if (import.meta.client) document.body.style.overflow = 'hidden'
+}
+
+const closeLightbox = () => {
+  activeLightboxImage.value = null
+  if (import.meta.client) document.body.style.overflow = ''
+}
+
+const addToCartHandler = async (pkg: PackageProduct) => {
+  if (addingToCartId.value === pkg.id) return
+  addingToCartId.value = pkg.id
+  const color = selectedColors.value[pkg.id] || 'Warm White'
+  try {
+    await addToCart(pkg.id, 1, true, { c9_color: color })
+    toast.success('Added to cart!', {
+      description: `${pkg.name} (${color})`,
+    })
+  } catch (error) {
+    console.error('Failed to add to cart:', error)
+    toast.error('Could not add to cart')
+  } finally {
+    addingToCartId.value = null
   }
 }
+
+const parseOptions = (options: unknown): PackageOption[] => {
+  if (!options) return []
+  if (typeof options === 'string') {
+    try {
+      const parsed = JSON.parse(options)
+      return Array.isArray(parsed) ? parsed : []
+    } catch {
+      return []
+    }
+  }
+  return Array.isArray(options) ? (options as PackageOption[]) : []
+}
+
+const normalizePackages = (rows: any[]): PackageProduct[] =>
+  rows.map((p) => ({
+    ...p,
+    variations: (p.variations || []).map((v: any) => ({
+      ...v,
+      options: parseOptions(v.options),
+    })),
+  }))
+
+/** Same source as fetchPackages — products + is_package */
+const loadPackages = async () => {
+  loading.value = true
+  try {
+    const { data, error } = await db
+      .from('products')
+      .select(
+        `
+        id,
+        name,
+        description,
+        price,
+        stock,
+        image_url,
+        is_package,
+        variations (*)
+      `
+      )
+      .eq('is_package', true)
+      .order('created_at', { ascending: true })
+
+    if (error) throw error
+
+    packages.value = normalizePackages(data || [])
+
+    packages.value.forEach((pkg) => {
+      selectedColors.value[pkg.id] = 'Warm White'
+      activeInclusions.value[pkg.id] = null
+    })
+  } catch (error) {
+    console.error('Failed to load package programs:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+const scrollToSpecs = () => {
+  document.getElementById('product-specs')?.scrollIntoView({ behavior: 'smooth' })
+}
+
+onMounted(async () => {
+  await loadPackages()
+
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') closeLightbox()
+  }
+  window.addEventListener('keydown', onKey)
+  onUnmounted(() => window.removeEventListener('keydown', onKey))
+})
 </script>
 
