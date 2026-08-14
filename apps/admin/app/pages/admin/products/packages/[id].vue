@@ -94,7 +94,7 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div>
+          <!-- <div>
             <label class="block text-sm font-semibold text-slate-700 mb-1.5">Title image URL / path</label>
             <input v-model="form.title_image_url" type="text" class="field" placeholder="packages/joy-title.png" />
             <img
@@ -113,7 +113,71 @@
               alt=""
               class="mt-3 h-12 object-contain"
             />
+          </div> -->
+          <!-- Title image -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Title image</label>
+            <div
+              class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center cursor-pointer hover:border-[#F49322]"
+              @click="titleFileInput?.click()"
+            >
+              <img
+                v-if="titlePreviewUrl || form.title_image_url"
+                :src="titlePreviewUrl || getImageUrl(form.title_image_url)"
+                alt=""
+                class="mx-auto max-h-24 object-contain mb-2"
+              />
+              <p class="text-sm text-slate-500">
+                {{ form.title_image_url || titlePreviewUrl ? 'Click to replace' : 'Click to upload title image' }}
+              </p>
+            </div>
+            <input
+              ref="titleFileInput"
+              type="file"
+              accept="image/*"
+              class="hidden"
+              @change="onTitleFileChange"
+            />
+            <input
+              v-model="form.title_image_url"
+              type="text"
+              class="field mt-2"
+              placeholder="Or paste path / URL (packages/...)"
+            />
           </div>
+
+          <!-- Icon -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Icon</label>
+            <div
+              class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center cursor-pointer hover:border-[#F49322]"
+              @click="iconFileInput?.click()"
+            >
+              <img
+                v-if="iconPreviewUrl || form.icon_url"
+                :src="iconPreviewUrl || getImageUrl(form.icon_url)"
+                alt=""
+                class="mx-auto max-h-16 object-contain mb-2"
+              />
+              <p class="text-sm text-slate-500">
+                {{ form.icon_url || iconPreviewUrl ? 'Click to replace' : 'Click to upload icon' }}
+              </p>
+            </div>
+            <input
+              ref="iconFileInput"
+              type="file"
+              accept="image/*"
+              class="hidden"
+              @change="onIconFileChange"
+            />
+            <input
+              v-model="form.icon_url"
+              type="text"
+              class="field mt-2"
+              placeholder="Or paste path / URL (packages/...)"
+            />
+          </div>
+
         </div>
       </div>
 
@@ -269,6 +333,16 @@ const load = async () => {
 }
 
 const saveDetails = async () => {
+  const title_image_url = await uploadToPackages(
+    titleImageFile.value,
+    form.value.title_image_url
+  )
+
+  const icon_url = await uploadToPackages(
+    iconImageFile.value,
+    form.value.icon_url
+  )
+  
   const payload = {
     name: form.value.name,
     slug: form.value.slug,
@@ -277,8 +351,8 @@ const saveDetails = async () => {
     sort_order: form.value.sort_order,
     is_popular: form.value.is_popular,
     is_active: form.value.is_active,
-    title_image_url: form.value.title_image_url || null,
-    icon_url: form.value.icon_url || null,
+    title_image_url: title_image_url,
+    icon_url: icon_url,
     updated_at: new Date().toISOString(),
   }
 
@@ -292,6 +366,20 @@ const saveDetails = async () => {
     .single()
 
   console.log('Update result', { data, error })
+
+  // after successful save:
+  form.value.title_image_url = title_image_url || ''
+  form.value.icon_url = icon_url || ''
+  titleImageFile.value = null
+  iconImageFile.value = null
+  if (titlePreviewUrl.value) {
+    URL.revokeObjectURL(titlePreviewUrl.value)
+    titlePreviewUrl.value = null
+  }
+  if (iconPreviewUrl.value) {
+    URL.revokeObjectURL(iconPreviewUrl.value)
+    iconPreviewUrl.value = null
+  }
 
   if (error) throw error
   if (!data) throw new Error('No row updated (check id / RLS)')
@@ -354,6 +442,47 @@ const toggleInclusion = (itemId: string, checked: boolean) => {
 const setQuantity = (itemId: string, quantity: number) => {
   const row = ensureInclusion(itemId)
   row.quantity = Number.isFinite(quantity) && quantity > 0 ? quantity : 1
+}
+
+//
+const titleFileInput = ref<HTMLInputElement | null>(null)
+const iconFileInput = ref<HTMLInputElement | null>(null)
+const titleImageFile = ref<File | null>(null)
+const iconImageFile = ref<File | null>(null)
+const titlePreviewUrl = ref<string | null>(null)
+const iconPreviewUrl = ref<string | null>(null)
+
+const onTitleFileChange = (e: Event) => {
+  const file = (e.target as HTMLInputElement).files?.[0] || null
+  titleImageFile.value = file
+  if (titlePreviewUrl.value) URL.revokeObjectURL(titlePreviewUrl.value)
+  titlePreviewUrl.value = file ? URL.createObjectURL(file) : null
+}
+
+const onIconFileChange = (e: Event) => {
+  const file = (e.target as HTMLInputElement).files?.[0] || null
+  iconImageFile.value = file
+  if (iconPreviewUrl.value) URL.revokeObjectURL(iconPreviewUrl.value)
+  iconPreviewUrl.value = file ? URL.createObjectURL(file) : null
+}
+
+const uploadToPackages = async (
+  file: File | null,
+  existingPath: string
+): Promise<string | null> => {
+  if (!file) return existingPath?.trim() || null
+
+  const ext = (file.name.split('.').pop() || 'png').toLowerCase()
+  const path = `packages/${Date.now()}_${Math.random().toString(36).slice(2, 10)}.${ext}`
+  const bucket = (config.public.storageBucket as string) || 'Products'
+
+  const { error } = await supabase.storage.from(bucket).upload(path, file, {
+    cacheControl: '3600',
+    upsert: true,
+    contentType: file.type || `image/${ext}`,
+  })
+  if (error) throw error
+  return path // e.g. packages/1786....png
 }
 
 onMounted(load)

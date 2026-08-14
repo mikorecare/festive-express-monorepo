@@ -7,7 +7,7 @@
           Festive Express makes<br>professional <span class="text-brand-orange">holiday lighting</span> simple.
         </h2>
         <p class="text-black max-w-[80%] mx-auto leading-[1.3] text-xl max-sm:text-[0.95rem] mt-2">
-          Choose one of three fixed packages.<br>
+          Choose one of three fixed lease packages.<br>
           Pay once. Pick your install date and take-down date. We handle the rest.
         </p>
       </div>

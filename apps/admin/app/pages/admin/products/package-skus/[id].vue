@@ -54,10 +54,31 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
         <div>
           <label class="block text-sm font-semibold text-slate-700 mb-1.5">Color</label>
-          <select v-model="form.color_label" class="field">
+          <!-- <select v-model="form.color_label" class="field">
             <option value="">Select color</option>
             <option v-for="c in colorOptions" :key="c" :value="c">{{ c }}</option>
+          </select> -->
+          <select
+            v-model="form.color_key"
+            class="field"
+            @change="
+              form.color_label =
+                colors.find((c) => c.color_key === form.color_key)?.color_label || ''
+            "
+          >
+            <option value="">Select color</option>
+            <option v-for="c in colors" :key="c.color_key" :value="c.color_key">
+              {{ c.color_label }}
+            </option>
           </select>
+
+          <!-- optional preview -->
+          <div
+            v-if="form.color_key"
+            class="mt-2 w-8 h-8 rounded-full border border-slate-300"
+            :style="swatchStyle(form.color_key)"
+          />
+
         </div>
         <div>
           <label class="block text-sm font-semibold text-slate-700 mb-1.5">Price ($)</label>
@@ -127,7 +148,6 @@ const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
   else console.log(msg)
 }
 
-const colorOptions = ['Warm White', 'Pure White', 'Champagne', 'Multi', 'Candy Cane']
 const packages = ref<PackageRow[]>([])
 const loading = ref(true)
 const saving = ref(false)
@@ -139,6 +159,7 @@ const form = ref({
   name: '',
   sku: '',
   package_id: '',
+  color_key: '',
   color_label: '',
   price: 0,
   stock: 0,
@@ -185,7 +206,7 @@ const load = async () => {
       db.from('packages').select('id, name').order('sort_order', { ascending: true }),
       db
         .from('products')
-        .select('id, name, sku, price, stock, status, description, image_url, color_label, package_id, is_package')
+        .select('id, name, sku, price, stock, status, description, image_url, color_key, color_label, package_id, is_package')
         .eq('id', id.value)
         .limit(1),
     ])
@@ -201,6 +222,7 @@ const load = async () => {
       name: row.name || '',
       sku: row.sku || '',
       package_id: row.package_id != null ? String(row.package_id) : '',
+      color_key: row.color_key || '',
       color_label: row.color_label || '',
       price: Number(row.price) || 0,
       stock: Number(row.stock) || 0,
@@ -234,6 +256,7 @@ const saveSku = async () => {
       name: form.value.name.trim(),
       sku: form.value.sku.trim() || null,
       package_id: form.value.package_id,
+      color_key: form.value.color_key || null,
       color_label: form.value.color_label || null,
       price: Number(form.value.price) || 0,
       stock: Number(form.value.stock) || 0,
@@ -271,7 +294,12 @@ const saveSku = async () => {
   }
 }
 
-onMounted(load)
+const { colors, loadColors, swatchStyle } = useProductColors()
+
+onMounted(async () => {
+  await load()
+  await loadColors()
+})
 </script>
 
 <style scoped>

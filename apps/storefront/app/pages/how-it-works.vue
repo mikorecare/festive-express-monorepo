@@ -55,7 +55,7 @@ const steps = [
   },
   {
     title: "Pay the set price",
-    description: "One clear package price — no hidden fees or surprise quotes."
+    description: "One clear lease package price — no hidden fees or surprise quotes."
   },
   {
     title: "Choose install + take-down dates",

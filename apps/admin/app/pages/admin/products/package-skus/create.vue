@@ -50,10 +50,31 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
         <div>
           <label class="block text-sm font-semibold text-slate-700 mb-1.5">Color</label>
-          <select v-model="form.color" class="field">
+          <!-- <select v-model="form.color" class="field">
             <option value="">Select color</option>
             <option v-for="c in colorOptions" :key="c" :value="c">{{ c }}</option>
+          </select> -->
+
+          <select
+            v-model="form.color_key"
+            class="field"
+            @change="
+              form.color_label =
+                colors.find((c) => c.color_key === form.color_key)?.color_label || ''
+            "
+          >
+            <option value="">Select color</option>
+            <option v-for="c in colors" :key="c.color_key" :value="c.color_key">
+              {{ c.color_label }}
+            </option>
           </select>
+
+          <!-- optional preview -->
+          <div
+            v-if="form.color_key"
+            class="mt-2 w-8 h-8 rounded-full border border-slate-300"
+            :style="swatchStyle(form.color_key)"
+          />
         </div>
         <div>
           <label class="block text-sm font-semibold text-slate-700 mb-1.5">Price ($)</label>
@@ -104,7 +125,7 @@
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
 
-type PackageRow = { id: string | number; name: string; base_price?: number | string | null }
+type PackageRow = { id: string | number; name: string; price?: number | string | null }
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -121,7 +142,6 @@ const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
   else console.log(msg)
 }
 
-const colorOptions = ['Warm White', 'Pure White', 'Champagne', 'Multi', 'Cool White']
 const packages = ref<PackageRow[]>([])
 const saving = ref(false)
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -132,7 +152,8 @@ const form = ref({
   name: '',
   sku: '',
   package_id: String(route.query.package_id || ''),
-  color: '',
+  color_key: '',
+  color_label: '',
   price: 0,
   stock: 0,
   status: 'publish',
@@ -174,16 +195,16 @@ const uploadImage = async (): Promise<string | null> => {
 const loadPackages = async () => {
   const { data, error } = await db
     .from('packages')
-    .select('id, name, base_price')
+    .select('id, name, price')
     .order('sort_order', { ascending: true })
   if (error) throw error
   packages.value = data || []
 
-  // prefill price from package base_price when package chosen from query
+  // prefill price from package price when package chosen from query
   if (form.value.package_id) {
     const p = packages.value.find((x) => String(x.id) === form.value.package_id)
-    if (p?.base_price != null && !form.value.price) {
-      form.value.price = Number(p.base_price) || 0
+    if (p?.price != null && !form.value.price) {
+      form.value.price = Number(p.price) || 0
     }
   }
 }
@@ -192,7 +213,7 @@ watch(
   () => form.value.package_id,
   (id) => {
     const p = packages.value.find((x) => String(x.id) === String(id))
-    if (p?.base_price != null) form.value.price = Number(p.base_price) || 0
+    if (p?.price != null) form.value.price = Number(p.price) || 0
   }
 )
 
@@ -214,7 +235,8 @@ const saveSku = async () => {
       name: form.value.name.trim(),
       sku: form.value.sku.trim() || null,
       package_id: form.value.package_id,
-      color: form.value.color || null,
+      color_key: form.value.color_key || null,
+      color_label: form.value.color_label || null,
       price: Number(form.value.price) || 0,
       stock: Number(form.value.stock) || 0,
       status: form.value.status || 'draft',
@@ -238,7 +260,12 @@ const saveSku = async () => {
   }
 }
 
-onMounted(loadPackages)
+const { colors, loadColors, swatchStyle } = useProductColors()
+
+onMounted(async () => {
+  await loadPackages()
+  await loadColors()
+})
 </script>
 
 <style scoped>

@@ -35,13 +35,25 @@ export default defineNuxtConfig({
     //   apiBase: 'http://localhost:8000/api',   // Change when deploying
     //   imageBase: 'http://localhost:8000'
     // }
+
+    // Private keys (only available server-side)
+    azureClientId: process.env.AZURE_CLIENT_ID,
+    azureTenantId: process.env.AZURE_TENANT_ID,
+    azureClientSecret: process.env.AZURE_CLIENT_SECRET,
+    azureRedirectUri: process.env.AZURE_REDIRECT_URI,
+
     supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY,
+    
+    // Public keys exposed to client
     public: {
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseKey: process.env.SUPABASE_KEY,
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://api.yourdomain.com',
       storageBucket: process.env.NUXT_PUBLIC_STORAGE_BUCKET || 'Products',
-    }
+
+      azureClientId: process.env.AZURE_CLIENT_ID,
+    },
+
   },
 
   css: [

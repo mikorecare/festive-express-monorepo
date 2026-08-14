@@ -1,0 +1,22 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalEnv": [
+    "AZURE_CLIENT_ID",
+    "AZURE_TENANT_ID",
+    "AZURE_CLIENT_SECRET",
+    "AZURE_REDIRECT_URI",
+    "SUPABASE_URL",
+    "SUPABASE_KEY",
+    "NODE_ENV"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".nuxt/**", ".output/**", "dist/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

@@ -35,6 +35,41 @@
           >
             {{ isLoading ? 'Logging in...' : 'Login' }}
           </button>
+
+          <!-- <a 
+            href="/api/auth/azure" 
+            class="flex items-center justify-center gap-3 w-full py-3 px-4 bg-[#2f2f2f] hover:bg-black text-white font-medium rounded-lg transition-colors no-underline"
+          >
+            <svg class="w-5 h-5" viewBox="0 0 23 23">
+              <path fill="#f35325" d="M1 1h10v10H1z"/>
+              <path fill="#81bc06" d="M12 1h10v10H12z"/>
+              <path fill="#05a6f0" d="M1 12h10v10H1z"/>
+              <path fill="#ffba08" d="M12 12h10v10H12z"/>
+            </svg>
+            Sign in with Microsoft
+          </a> -->
+
+          <!-- Divider -->
+          <div class="relative flex py-2 items-center">
+            <div class="flex-grow border-t border-slate-200"></div>
+            <span class="flex-shrink mx-4 text-slate-400 text-xs font-semibold uppercase">Or continue with</span>
+            <div class="flex-grow border-t border-slate-200"></div>
+          </div>
+
+          <NuxtLink 
+            href="/api/auth/azure/azure" 
+            external
+            class="flex items-center justify-center gap-3 w-full py-3 px-4 bg-[#2f2f2f] hover:bg-black text-white font-medium rounded-lg transition-colors no-underline"
+          >
+            <svg class="w-5 h-5" viewBox="0 0 23 23">
+              <path fill="#f35325" d="M1 1h10v10H1z"/>
+              <path fill="#81bc06" d="M12 1h10v10H1z"/>
+              <path fill="#05a6f0" d="M1 12h10v10H1z"/>
+              <path fill="#ffba08" d="M12 12h10v10H1z"/>
+            </svg>
+            Sign in with Microsoft
+          </NuxtLink>
+
         </form>
 
         <div v-if="error" class="mt-4 text-red-500 text-sm font-medium bg-red-50 p-3 rounded-lg border border-red-100">
@@ -66,7 +101,7 @@ const login = async () => {
   error.value = ''
 
   try {
-    const { error: authError } = await supabase.auth.signInWithPassword({
+    const { data, error: authError } = await supabase.auth.signInWithPassword({
       email: form.value.email,
       password: form.value.password,
       // email: email.value,
@@ -76,6 +111,15 @@ const login = async () => {
     if (authError) {
       error.value = authError.message
       return
+    }
+
+    // Set the auth token cookie so your middleware recognizes the user
+    if (data.session) {
+      const token = useCookie('auth_token', {
+        maxAge: 60 * 60 * 8, // 8 hours
+        path: '/'
+      })
+      token.value = data.session.access_token
     }
 
     navigateTo('/admin')
