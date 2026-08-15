@@ -10,7 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@festive-express/shared": "*",
+    "@festive-express/shared": "file:../../packages/shared",
     "@heroicons/vue": "^2.2.0",
     "@nuxtjs/supabase": "^2.0.10",
     "@vueuse/nuxt": "^14.3.0",
