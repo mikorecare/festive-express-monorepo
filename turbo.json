@@ -7,7 +7,7 @@
     "AZURE_REDIRECT_URI",
     "SUPABASE_URL",
     "SUPABASE_KEY",
-    "SUPABASE_SERVICE_KEY",
+    "NUXT_SUPABASE_SECRET_KEY",
     "NODE_ENV",
     "NITRO_PRESET",
     "NUXT_PUBLIC_API_BASE",
@@ -24,7 +24,7 @@
         "AZURE_REDIRECT_URI",
         "SUPABASE_URL",
         "SUPABASE_KEY",
-        "SUPABASE_SERVICE_KEY",
+        "NUXT_SUPABASE_SECRET_KEY",
         "NODE_ENV"
       ]
     },
@@ -38,7 +38,7 @@
         "AZURE_REDIRECT_URI",
         "SUPABASE_URL",
         "SUPABASE_KEY",
-        "SUPABASE_SERVICE_KEY",
+        "NUXT_SUPABASE_SECRET_KEY",
         "NODE_ENV"
       ]
     },
@@ -51,7 +51,7 @@
         "AZURE_REDIRECT_URI",
         "SUPABASE_URL",
         "SUPABASE_KEY",
-        "SUPABASE_SERVICE_KEY",
+        "NUXT_SUPABASE_SECRET_KEY",
         "NODE_ENV"
       ]
     }

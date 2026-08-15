@@ -43,7 +43,7 @@ export default defineNuxtConfig({
     azureClientSecret: process.env.AZURE_CLIENT_SECRET,
     azureRedirectUri: process.env.AZURE_REDIRECT_URI,
 
-    supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY,
+    supabaseServiceKey: process.env.NUXT_SUPABASE_SECRET_KEY,
 
     // Public keys exposed to client
     public: {
