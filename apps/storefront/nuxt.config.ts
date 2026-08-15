@@ -2,7 +2,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
-  ssr: true, // Default in Nuxt - Server-Side Rendering
+  ssr: true,
 
   css: [
     'bootstrap/dist/css/bootstrap.min.css',
@@ -57,20 +57,32 @@ export default defineNuxtConfig({
     }
   },
 
+  vite: {
+    esbuild: {
+      drop: process.env.NODE_ENV === 'production' ? ['console'] : []
+    }
+  },
+
   nitro: {
+    minify: true,
+    compressPublicAssets: true,
+    esbuild: {
+      options: {
+        drop: process.env.NODE_ENV === 'production' ? ['console'] : []
+      }
+    },
     routeRules: {
       '/**': {
         headers: {
-          // Security Headers
           'Content-Security-Policy': [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
-            "img-src 'self' data: https: blob: https://*.supabase.co https://*.googleapis.com https://*.gstatic.com",
+            "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://embeddable-widgets.pages.dev https://us-assets.i.posthog.com https://*.posthog.com",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://embeddable-widgets.pages.dev",
+            "img-src 'self' data: https: blob: https://*.supabase.co https://*.googleapis.com https://*.gstatic.com https://*.posthog.com",
             "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com",
-            "connect-src 'self' https: wss: https://*.supabase.co",
+            "connect-src 'self' https: wss: https://*.supabase.co https://embeddable-widgets.pages.dev https://*.posthog.com https://us-assets.i.posthog.com",
             "frame-ancestors 'self'",
-            "frame-src 'self' https://*.google.com",
+            "frame-src 'self' https://*.google.com https://embeddable-widgets.pages.dev",
             "object-src 'none'",
             "base-uri 'self'",
             "form-action 'self'",
