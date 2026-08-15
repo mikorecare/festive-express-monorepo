@@ -14,7 +14,8 @@
     "build": "dotenv -e .env -- turbo run build",
     "build:admin": "turbo run build --filter=admin",
     "build:storefront": "turbo run build --filter=storefront",
-    "clean": "git clean -Xdf node_modules"
+    "clean": "git clean -Xdf node_modules",
+    "vercel-build": "turbo run build --filter=storefront"
   },
   "devDependencies": {
     "dotenv-cli": "^7.4.4",

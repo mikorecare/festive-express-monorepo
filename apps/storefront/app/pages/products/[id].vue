@@ -566,7 +566,7 @@ const selectedVariations = ref<Record<number, string>>({})
 
 const packageProducts = ref<any[]>([])
 
-import { toast } from 'sonner'
+import { toast } from 'vue-sonner'
 
 const colors = [
   { name: 'Warm White', hex: '#f5e8c7' },

@@ -450,7 +450,7 @@
 </template>
 
 <script setup lang="ts">
-import { toast } from 'sonner'
+import { toast } from 'vue-sonner'
 
 const config = useRuntimeConfig()
 const supabase = useSupabaseClient()

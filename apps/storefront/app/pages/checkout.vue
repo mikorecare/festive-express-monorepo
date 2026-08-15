@@ -236,7 +236,7 @@ const isPaying = ref(false)
 
 const isSubmitting = ref(false)
 
-import { toast } from 'sonner'
+import { toast } from 'vue-sonner'
 
 const form = ref({
   billing_first_name: '',
