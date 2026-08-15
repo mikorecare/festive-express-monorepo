@@ -6,11 +6,10 @@
     "build": "nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "preview": "nuxt preview"
   },
   "dependencies": {
-    "@festive-express/shared": "*",
+    "@festive-express/shared": "file:../../packages/shared",
     "@nuxtjs/supabase": "^2.0.10",
     "@nuxtjs/tailwindcss": "^6.14.0",
     "bootstrap": "^5.3.8",

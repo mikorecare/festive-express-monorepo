@@ -209,7 +209,7 @@
 </template>
 
 <script setup lang="ts">
-interface Column {
+export interface Column {
   key: string;
   label: string;
   sortable?: boolean;

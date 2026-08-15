@@ -186,12 +186,13 @@ import {
   ArrowDownTrayIcon,
   ExclamationTriangleIcon,
 } from "@heroicons/vue/24/outline";
+import type { Column } from "~/components/FestiveTable.vue";
 
 const { getOrders, deleteOrder: apiDeleteOrder } = useOrders();
 const { showToast } = useToast();
 const supabase = useSupabaseClient();
 
-const columns = [
+const columns: Column[] = [
   { key: "order_number", label: "Order ID", sortable: true },
   { key: "customer", label: "Customer", sortable: true },
   { key: "created_at", label: "Date", type: "date", sortable: true },

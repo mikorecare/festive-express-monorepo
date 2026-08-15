@@ -194,7 +194,7 @@
 
 <script setup lang="ts">
 import { PlusIcon, ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
-
+import type { Column } from "~/components/FestiveTable.vue";
 type PackageRow = { id: string | number; name: string };
 type SkuRow = {
   id: string | number;
@@ -213,7 +213,7 @@ const router = useRouter();
 const config = useRuntimeConfig();
 const supabase = useSupabaseClient();
 
-const columns = [
+const columns: Column[] = [
   { key: "image_url", label: "Image" },
   { key: "name", label: "Name", sortable: true },
   { key: "sku", label: "SKU" },

@@ -1,7 +1,8 @@
+import { defineNuxtConfig } from 'nuxt/config'
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-
   ssr: true,
 
   css: [
@@ -13,7 +14,6 @@ export default defineNuxtConfig({
   app: {
     head: {
       titleTemplate: '%s - Festive Lighting Pros Express',
-
       link: [
         { rel: 'icon', type: 'image/x-icon', href: 'Images/favicon.png' },
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap' },
@@ -27,7 +27,6 @@ export default defineNuxtConfig({
           defer: true
         },
       ],
-
       meta: [
         { name: 'description', content: 'Premium festive lighting solutions' },
         { charset: 'utf-8' },
@@ -74,20 +73,6 @@ export default defineNuxtConfig({
     routeRules: {
       '/**': {
         headers: {
-          'Content-Security-Policy': [
-            "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://embeddable-widgets.pages.dev https://us-assets.i.posthog.com https://*.posthog.com",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://embeddable-widgets.pages.dev",
-            "img-src 'self' data: https: blob: https://*.supabase.co https://*.googleapis.com https://*.gstatic.com https://*.posthog.com",
-            "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com",
-            "connect-src 'self' https: wss: https://*.supabase.co https://embeddable-widgets.pages.dev https://*.posthog.com https://us-assets.i.posthog.com",
-            "frame-ancestors 'self'",
-            "frame-src 'self' https://*.google.com https://embeddable-widgets.pages.dev",
-            "object-src 'none'",
-            "base-uri 'self'",
-            "form-action 'self'",
-            "upgrade-insecure-requests",
-          ].join('; '),
           'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
           'X-Frame-Options': 'SAMEORIGIN',
           'X-Content-Type-Options': 'nosniff',

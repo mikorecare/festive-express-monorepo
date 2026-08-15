@@ -83,6 +83,7 @@
 </template>
 
 <script setup lang="ts">
+import type { Column } from "~/components/FestiveTable.vue";
 type PackageRow = {
   id: string | number;
   name: string;
@@ -95,7 +96,7 @@ type PackageRow = {
 
 const supabase = useSupabaseClient();
 
-const columns = [
+const columns: Column[] = [
   { key: "sort_order", label: "Order", align: "center" },
   { key: "name", label: "Name", sortable: true },
   { key: "slug", label: "Slug" },
