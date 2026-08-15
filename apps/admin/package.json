@@ -13,6 +13,7 @@
     "@festive-express/shared": "file:../../packages/shared",
     "@heroicons/vue": "^2.2.0",
     "@nuxtjs/supabase": "^2.0.10",
+    "@nuxtjs/tailwindcss": "^6.14.0",
     "@vueuse/nuxt": "^14.3.0",
     "bootstrap": "^5.3.8",
     "nuxt": "^4.4.8",
