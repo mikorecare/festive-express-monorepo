@@ -148,7 +148,7 @@
                 </small>
                 <small class="d-block text-muted">Professional Installation</small>
               </div>
-              <span class="font-weight-bold font-color-orange">${{ Number(item.price * item.quantity).toFixed(2) }}</span>
+              <span class="font-weight-bold font-color-orange">${{ Number(item.price || 0 * item.quantity).toFixed(2) }}</span>
             </div>
 
             <hr>
