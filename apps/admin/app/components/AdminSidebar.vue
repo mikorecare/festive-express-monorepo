@@ -1,10 +1,10 @@
 <template>
   <aside
-    class="bg-navy text-white min-h-screen flex flex-col flex-shrink-0 relative transition-all duration-300"
+    class="bg-navy font-poppins text-white h-screen flex flex-col flex-shrink-0 sticky top-0 overflow-hidden transition-all duration-300"
     :class="[isCollapsed ? 'w-18' : 'w-64']"
   >
     <!-- Logo -->
-    <div class="p-6 flex items-center justify-center">
+    <div class="p-6 flex items-center justify-center flex-shrink-0">
       <img
         src="/Images/FLP-Express-Transparent.PNG"
         alt="FLP Admin"
@@ -12,149 +12,203 @@
       />
     </div>
 
-    <!-- Navigation -->
-    <nav class="flex-1 space-y-1">
+    <!-- Navigation - Scrollable -->
+    <nav class="flex-1 overflow-y-auto px-2 space-y-1">
       <NuxtLink
         to="/admin"
-        class="flex items-center gap-3 px-6 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline"
+        class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg"
         active-class="bg-brand-orange text-navy no-underline"
       >
-        <span class="text-xl">📊</span>
+        <ChartBarIcon class="h-5 w-5" />
         <span v-if="!isCollapsed">Dashboard</span>
       </NuxtLink>
 
       <NuxtLink
         to="/admin/orders"
-        class="flex items-center gap-3 px-6 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline"
+        class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg"
         active-class="bg-brand-orange text-navy"
       >
-        <span class="text-xl">📦</span>
+        <ShoppingBagIcon class="h-5 w-5" />
         <span v-if="!isCollapsed">Orders</span>
       </NuxtLink>
 
-      <!-- Submenu Item -->
-      <div class="relative group">
-        <NuxtLink
-          to="/admin/products"
-          class="flex items-center gap-3 px-6 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline"
-          active-class="bg-brand-orange text-navy"
+      <!-- Products with Submenu -->
+      <div class="relative">
+        <div
+          @click="toggleProducts"
+          class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg cursor-pointer select-none"
           :class="{ 'bg-brand-orange text-navy': isProductsSection }"
         >
-          <span class="text-xl">🛍️</span>
-          <span v-if="!isCollapsed">Products</span>
-        </NuxtLink>
+          <CubeIcon class="h-5 w-5" />
+          <span v-if="!isCollapsed" class="flex-1">Products</span>
+          <span
+            v-if="!isCollapsed"
+            class="text-xs transition-transform duration-300"
+            :class="{ 'rotate-180': isProductsOpen }"
+          >
+            ▼
+          </span>
+        </div>
 
-        <!-- Submenu Flyout -->
+        <!-- Submenu with smooth animation -->
         <div
-          class="hidden group-hover:block absolute left-full top-0 bg-slate-800 min-w-52 rounded-md shadow-xl z-50 py-2 border border-slate-700"
+          v-if="!isCollapsed"
+          class="ml-4 mt-1 space-y-1 border-l-2 border-brand-orange/30 pl-3 overflow-hidden transition-all duration-300 ease-in-out"
+          :class="isProductsOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'"
         >
           <NuxtLink
             to="/admin/products"
-            class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline"
-            >All Products</NuxtLink
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path === '/admin/products'
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
           >
+            All Products
+          </NuxtLink>
           <NuxtLink
             to="/admin/products/create"
-            class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline"
-            >Add New Product</NuxtLink
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path === '/admin/products/create'
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
           >
+            Add New Product
+          </NuxtLink>
           <NuxtLink
             to="/admin/products/packages"
-            class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline"
-            >Package Programs</NuxtLink
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path === '/admin/products/packages'
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
           >
+            Package Programs
+          </NuxtLink>
           <NuxtLink
             to="/admin/products/package-skus"
-            class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline"
-            >Package SKUs</NuxtLink
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path === '/admin/products/package-skus'
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
           >
+            Package SKUs
+          </NuxtLink>
           <NuxtLink
             to="/admin/products/inclusions"
-            class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline"
-            >Inclusion Items</NuxtLink
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path === '/admin/products/inclusions'
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
           >
-
+            Inclusion Items
+          </NuxtLink>
           <NuxtLink
             to="/admin/products/categories"
-            class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline"
-            >Categories</NuxtLink
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path === '/admin/products/categories'
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
           >
-          <!-- <NuxtLink to="/admin/package-categories" class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline">Package Categories</NuxtLink>
-          <NuxtLink to="/admin/products/attributes" class="block px-6 py-2.5 text-white hover:bg-brand-orange hover:text-navy transition-colors whitespace-nowrap no-underline">Attributes</NuxtLink> -->
+            Categories
+          </NuxtLink>
         </div>
       </div>
 
       <NuxtLink
         to="/admin/users"
-        class="flex items-center gap-3 px-6 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline"
+        class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg"
         active-class="bg-brand-orange text-navy"
       >
-        <span class="text-xl">👤</span>
+        <UserIcon class="h-5 w-5" />
         <span v-if="!isCollapsed">Users</span>
       </NuxtLink>
 
       <NuxtLink
         to="/admin/customers"
-        class="flex items-center gap-3 px-6 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline"
+        class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg"
         active-class="bg-brand-orange text-navy"
       >
-        <span class="text-xl">👥</span>
+        <UsersIcon class="h-5 w-5" />
         <span v-if="!isCollapsed">Customers</span>
       </NuxtLink>
 
       <NuxtLink
         to="/admin/settings"
-        class="flex items-center gap-3 px-6 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline"
+        class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg"
         active-class="bg-brand-orange text-navy"
       >
-        <span class="text-xl">⚙️</span>
+        <Cog6ToothIcon class="h-5 w-5" />
         <span v-if="!isCollapsed">Settings</span>
       </NuxtLink>
     </nav>
 
-    <div v-if="user" class="p-4 bg-slate-50 rounded-lg">
-      <p class="font-semibold text-slate-800">Logged in as: {{ user.email }}</p>
-      <p class="text-xs text-slate-500">User ID: {{ user.UID }}</p>
+    <!-- User Info -->
+    <div
+      v-if="user"
+      class="flex-shrink-0 px-4 py-3 bg-slate-800/50 mx-3 rounded-lg mb-2"
+    >
+      <p class="font-semibold text-sm text-white truncate">{{ user.email }}</p>
+      <p class="text-xs text-slate-400 truncate">
+        ID: {{ user.UID?.substring(0, 8) }}
+      </p>
     </div>
 
-    <!-- Logout Button -->
-    <div class="p-5 border-t border-slate-700/60 mt-auto">
+    <!-- Logout Button - Fixed at bottom -->
+    <div class="flex-shrink-0 p-4 border-t border-slate-700/60">
       <button
         @click="showLogoutConfirm"
-        class="w-full flex items-center gap-3 px-4 py-3 bg-white/10 hover:bg-red-600 text-white rounded-lg transition-colors cursor-pointer text-base no-underline"
+        class="w-full flex items-center gap-3 px-4 py-2 bg-white/10 hover:bg-red-600 text-white rounded-lg transition-colors cursor-pointer text-base no-underline"
       >
-        <span class="text-xl">🚪</span>
+        <ArrowRightOnRectangleIcon class="h-5 w-5" />
         <span v-if="!isCollapsed">Logout</span>
       </button>
     </div>
   </aside>
 
-  <!-- Logout Modal -->
+  <!-- Logout Confirmation Modal -->
   <div
     v-if="showLogoutModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
     @click.self="showLogoutModal = false"
-    class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
   >
-    <div
-      class="bg-white p-8 rounded-2xl max-w-sm w-full text-center shadow-2xl border border-slate-100"
-    >
-      <h3 class="text-navy text-xl font-bold mb-2">Logout?</h3>
-      <p class="text-slate-600 mb-6 text-sm">
-        Are you sure you want to logout from the admin panel?
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+      <div class="flex items-center gap-3 mb-4">
+        <div
+          class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center"
+        >
+          <ArrowRightOnRectangleIcon class="h-5 w-5 text-red-600" />
+        </div>
+        <h3 class="text-lg font-bold text-navy">Confirm Logout</h3>
+      </div>
+      <p class="text-slate-600 text-sm mb-6">
+        Are you sure you want to logout? You will need to sign in again to
+        access the admin panel.
       </p>
-
-      <div class="flex gap-3 justify-center">
+      <div class="flex justify-end gap-2">
         <button
+          type="button"
+          class="px-4 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
           @click="showLogoutModal = false"
-          class="px-6 py-2.5 bg-slate-500 hover:bg-slate-600 text-white font-semibold rounded-lg transition-colors cursor-pointer"
         >
           Cancel
         </button>
         <button
+          type="button"
+          class="px-4 py-2 rounded-lg bg-red-500 text-white text-sm font-semibold hover:bg-red-600 transition-colors"
           @click="logout"
-          class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors cursor-pointer"
         >
-          Yes, Logout
+          Logout
         </button>
       </div>
     </div>
@@ -163,6 +217,15 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import {
+  ChartBarIcon,
+  ShoppingBagIcon,
+  CubeIcon,
+  UsersIcon,
+  UserIcon,
+  Cog6ToothIcon,
+  ArrowRightOnRectangleIcon,
+} from "@heroicons/vue/24/outline";
 
 const route = useRoute();
 const supabase = useSupabaseClient();
@@ -170,6 +233,11 @@ const user = useSupabaseUser();
 
 const isCollapsed = ref(false);
 const showLogoutModal = ref(false);
+const isProductsOpen = ref(true);
+
+const toggleProducts = () => {
+  isProductsOpen.value = !isProductsOpen.value;
+};
 
 const showLogoutConfirm = () => {
   showLogoutModal.value = true;

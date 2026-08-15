@@ -6,6 +6,14 @@
   box-sizing: border-box;
 }
 
+.font-poppins {
+  font-family: 'Poppins', sans-serif;
+}
+
+.font-raleway {
+  font-family: 'Raleway', sans-serif;
+}
+
 body {
   font-family: 'Poppins', system-ui, sans-serif;
   background: #f8fafc;

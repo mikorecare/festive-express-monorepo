@@ -1,412 +1,330 @@
 <template>
-  <div>
-    <div class="page-header">
-      <h1>Orders Management</h1>
-      <button class="export-btn">Export Orders</button>
-    </div>
-
-    <!-- Search & Filters -->
-    <div class="filters-bar">
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input 
-          type="text" 
-          placeholder="Search orders by number, customer name, or email..." 
-          v-model="searchTerm"
-          @input="debounceSearch"
-        >
-        <button v-if="searchTerm" @click="clearSearch" class="clear-btn">×</button>
+  <div class="p-6 space-y-6 bg-slate-50 min-h-screen">
+    <!-- Page Header -->
+    <div
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+    >
+      <div>
+        <h1 class="text-2xl font-bold text-navy">Orders Management</h1>
+        <p class="text-slate-500 text-sm">View and manage customer orders</p>
       </div>
-
-      <select v-model="statusFilter" @change="loadOrders" class="filter-select">
-        <option value="">All Status</option>
-        <option value="pending">Pending</option>
-        <option value="processing">Processing</option>
-        <option value="on-hold">On Hold</option>
-        <option value="completed">Completed</option>
-        <option value="cancelled">Cancelled</option>
-        <option value="refunded">Refunded</option>
-      </select>
+      <button
+        class="px-4 py-2 bg-navy text-white rounded-lg hover:bg-navy/90 transition-colors text-sm font-medium shadow-sm flex items-center gap-2"
+      >
+        <ArrowDownTrayIcon class="h-4 w-4" />
+        Export Orders
+      </button>
     </div>
 
-    <table class="orders-table">
-      <thead>
-        <tr>
-          <th>Order ID</th>
-          <th>Customer</th>
-          <th>Date</th>
-          <th>Total</th>
-          <th>Status</th>
-          <th>Install Date</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-if="paginatedOrders.length === 0">
-          <td colspan="8" class="no-data">
-            No Orders Found
-          </td>
-        </tr>
-        <tr v-else v-for="order in paginatedOrders" :key="order.id">
-          <td>#{{ order.order_number }}</td>
-          <td>
-            <div>{{ order.billing_first_name }} {{ order.billing_last_name }}</div>
-            <small>{{ order.billing_email }}</small>
-          </td>
-          <td>{{ formatDate(order.created_at) }}</td>
-          <td><strong>${{ Number(order.total).toFixed(2) }}</strong></td>
-          <td>
-            <span :class="['status-badge', order.status]">{{ order.status }}</span>
-          </td>
-          <td>
-              {{ order.confirmed_install_date 
-                  ? formatDate(order.confirmed_install_date) 
-                  : order.preferred_install_date 
-                    ? formatDate(order.preferred_install_date) + ' (preferred)'
-                    : '—' }}
-            </td>
-          <td class="actions">
-            <button class="btn-view" @click="viewOrder(order.id)">View</button>
-            <button v-if="isSuperAdmin" class="delete-btn" @click="showDeleteConfirm(order)">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <!-- Pagination -->
-    <div class="pagination" v-if="totalPages > 1">
-      <button @click="prevPage" :disabled="currentPage === 1" class="page-btn">Previous</button>
-      <span class="page-info">Page {{ currentPage }} of {{ totalPages }}</span>
-      <button @click="nextPage" :disabled="currentPage === totalPages" class="page-btn">Next</button>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div v-if="showModal" class="delete-modal-overlay" @click.self="cancelDelete">
-      <div class="delete-modal">
-        <h3>🗑️ Confirm Delete</h3>
-        <p>Are you sure you want to delete Order?</p>
-        <p v-if="orderToDelete" class="product-name">{{ orderToDelete.order_number }}</p>
-        <p class="warning-text">This action cannot be undone.</p>
-
-        <p class="confirm-hint">
-          Type <strong>DELETE</strong> to confirm:
-        </p>
-        <input
-          v-model="deleteConfirmText"
-          type="text"
-          class="confirm-input"
-          placeholder="DELETE"
-          autocomplete="off"
+    <!-- FestiveTable -->
+    <FestiveTable
+      :columns="columns"
+      :data="orders"
+      :loading="isLoading"
+      :server-pagination="true"
+      :total-items="totalItems"
+      :current-page="currentPage"
+      :items-per-page="itemsPerPage"
+      search-placeholder="Search by order number or customer..."
+      :search-fields="[
+        'order_number',
+        'billing_first_name',
+        'billing_last_name',
+        'billing_email',
+      ]"
+      row-key="id"
+      @page-change="onPageChange"
+      @search="onSearch"
+    >
+      <template #filters>
+        <select
+          v-model="statusFilter"
+          @change="applyFilters"
+          class="w-full sm:w-48 px-3 py-2.5 border border-slate-200 rounded-lg bg-slate-50 text-slate-800 text-sm focus:ring-2 focus:ring-brand-orange focus:outline-none focus:bg-white transition-all"
         >
-        
-        <div class="modal-actions">
-          <button class="btn-cancel" @click="cancelDelete">Cancel</button>
-          <button class="btn-confirm-delete" :disabled="deleteConfirmText !== 'DELETE'" @click="executeDelete">Yes, Delete Order</button>
+          <option value="">All Status</option>
+          <option value="pending">Pending</option>
+          <option value="processing">Processing</option>
+          <option value="on-hold">On Hold</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+          <option value="refunded">Refunded</option>
+        </select>
+      </template>
+
+      <template #cell-order_number="{ item }">
+        <span class="font-semibold text-navy">#{{ item.order_number }}</span>
+      </template>
+
+      <template #cell-customer="{ item }">
+        <div>
+          <div class="font-medium text-slate-900">
+            {{ item.billing_first_name }} {{ item.billing_last_name }}
+          </div>
+          <div class="text-xs text-slate-400">{{ item.billing_email }}</div>
+        </div>
+      </template>
+
+      <template #cell-status="{ item }">
+        <span
+          :class="{
+            'bg-amber-100 text-amber-700': item.status === 'pending',
+            'bg-blue-100 text-blue-700': item.status === 'processing',
+            'bg-indigo-100 text-indigo-700': item.status === 'on-hold',
+            'bg-emerald-100 text-emerald-700': item.status === 'completed',
+            'bg-rose-100 text-rose-700': item.status === 'cancelled',
+            'bg-purple-100 text-purple-700': item.status === 'refunded',
+            'bg-slate-100 text-slate-600': ![
+              'pending',
+              'processing',
+              'on-hold',
+              'completed',
+              'cancelled',
+              'refunded',
+            ].includes(item.status),
+          }"
+          class="px-2.5 py-1 rounded-full text-xs font-medium capitalize"
+        >
+          {{ item.status }}
+        </span>
+      </template>
+
+      <template #cell-install_date="{ item }">
+        <span class="text-sm text-slate-600">
+          {{
+            item.confirmed_install_date
+              ? formatDate(item.confirmed_install_date)
+              : item.preferred_install_date
+                ? formatDate(item.preferred_install_date) + " (preferred)"
+                : "—"
+          }}
+        </span>
+      </template>
+
+      <template #cell-total="{ item }">
+        <span class="font-semibold text-navy"
+          >${{ Number(item.total).toFixed(2) }}</span
+        >
+      </template>
+
+      <template #cell-actions="{ item }">
+        <div class="space-x-2">
+          <button
+            @click="viewOrder(item.id)"
+            class="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white rounded-md text-xs font-medium transition-colors"
+          >
+            View
+          </button>
+          <button
+            v-if="isSuperAdmin"
+            @click="showDeleteConfirm(item)"
+            class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-md text-xs font-medium transition-colors"
+          >
+            Delete
+          </button>
+        </div>
+      </template>
+    </FestiveTable>
+
+    <!-- Delete Modal -->
+    <div
+      v-if="showModal"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+    >
+      <div class="bg-white rounded-xl p-6 max-w-md w-full shadow-xl">
+        <div class="flex items-center gap-3 mb-4">
+          <div
+            class="w-10 h-10 bg-rose-100 rounded-full flex items-center justify-center"
+          >
+            <ExclamationTriangleIcon class="h-5 w-5 text-rose-600" />
+          </div>
+          <h3 class="text-lg font-bold text-slate-900">Confirm Delete</h3>
+        </div>
+        <p class="text-sm text-slate-600 mb-2">
+          Are you sure you want to delete Order
+          <strong class="text-slate-900"
+            >#{{ orderToDelete?.order_number }}</strong
+          >?
+        </p>
+        <p class="text-sm text-rose-600 mb-4">This action cannot be undone.</p>
+
+        <div class="space-y-2 mb-4">
+          <label class="block text-xs font-medium text-slate-500"
+            >Type <strong class="text-rose-600">DELETE</strong> to
+            confirm:</label
+          >
+          <input
+            v-model="deleteConfirmText"
+            type="text"
+            placeholder="DELETE"
+            class="w-full px-3 py-2 border border-slate-200 rounded-lg bg-slate-50 text-center font-mono text-slate-900 focus:ring-2 focus:ring-rose-500 focus:outline-none focus:bg-white transition-all"
+          />
+        </div>
+
+        <div class="flex items-center justify-end gap-3">
+          <button
+            @click="cancelDelete"
+            class="px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            @click="executeDelete"
+            :disabled="deleteConfirmText !== 'DELETE'"
+            class="px-4 py-2 bg-rose-600 text-white rounded-lg text-sm font-medium hover:bg-rose-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Yes, Delete Order
+          </button>
         </div>
       </div>
     </div>
-    
   </div>
 </template>
 
 <script setup lang="ts">
-// definePageMeta({
-//   middleware: 'auth'
-// })
+import {
+  ArrowDownTrayIcon,
+  ExclamationTriangleIcon,
+} from "@heroicons/vue/24/outline";
 
-const config = useRuntimeConfig()
+const { getOrders, deleteOrder: apiDeleteOrder } = useOrders();
+const { showToast } = useToast();
+const supabase = useSupabaseClient();
 
-const { getOrders, deleteOrder: apiDeleteOrder } = useOrders()
+const columns = [
+  { key: "order_number", label: "Order ID", sortable: true },
+  { key: "customer", label: "Customer", sortable: true },
+  { key: "created_at", label: "Date", type: "date", sortable: true },
+  { key: "total", label: "Total", align: "right" },
+  { key: "status", label: "Status" },
+  { key: "install_date", label: "Install Date" },
+  { key: "actions", label: "Actions", align: "right" },
+];
 
-const orders = ref<Array<{
-  id: number;
-  order_number: string;
-  billing_first_name?: string;
-  billing_last_name?: string;
-  billing_email?: string;
-  total: number;
-  status: string;
-  created_at: string;
-  confirmed_install_date?: string;
-  preferred_install_date?: string;
-  date?: string;
-}>>([])
-const statusFilter = ref('')
-const currentPage = ref(1)
-const itemsPerPage = 10
-const totalPages = computed(() => Math.ceil(orders.value.length / itemsPerPage))
-const totalOrders = ref(0)
-const searchTerm = ref('')
-const { showToast } = useToast()
-const showModal = ref(false)
-const orderToDelete = ref<any>(null)
-const deleteConfirmText = ref('')
+const orders = ref<any[]>([]);
+const isLoading = ref(true);
+const statusFilter = ref("");
+const searchQuery = ref("");
+const currentUser = ref<{ role?: string } | null>(null);
+const isSuperAdmin = computed(() => currentUser.value?.role === "super_admin");
+const showModal = ref(false);
+const orderToDelete = ref<any>(null);
+const deleteConfirmText = ref("");
 
-
-const paginatedOrders = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage
-  return orders.value.slice(start, start + itemsPerPage)
-})
+// Pagination
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
+const totalItems = ref(0);
 
 const loadOrders = async () => {
+  isLoading.value = true;
   try {
-    const res: any = await getOrders()   // Call without params first
+    let query = supabase
+      .from("orders")
+      .select("*", { count: "exact" })
+      .order("created_at", { ascending: false });
 
-    let filtered = res.data || res || []
-
-    // Client-side search
-    if (searchTerm.value) {
-      const term = searchTerm.value.toLowerCase()
-      filtered = filtered.filter((o: any) => 
-        o.order_number?.toLowerCase().includes(term) || 
-        (o.billing_first_name + ' ' + o.billing_last_name).toLowerCase().includes(term) ||
-        o.billing_email?.toLowerCase().includes(term)
-      )
-    }
-
-    // Client-side status filter
+    // Status filter
     if (statusFilter.value) {
-      filtered = filtered.filter((o: any) => o.status === statusFilter.value)
+      query = query.eq("status", statusFilter.value);
     }
 
-    orders.value = filtered
+    // Search
+    if (searchQuery.value) {
+      query = query.or(
+        `order_number.ilike.%${searchQuery.value}%,` +
+          `billing_first_name.ilike.%${searchQuery.value}%,` +
+          `billing_last_name.ilike.%${searchQuery.value}%,` +
+          `billing_email.ilike.%${searchQuery.value}%`,
+      );
+    }
+
+    // Pagination
+    const from = (currentPage.value - 1) * itemsPerPage.value;
+    const to = from + itemsPerPage.value - 1;
+    query = query.range(from, to);
+
+    const { data, error, count } = await query;
+    if (error) throw error;
+
+    orders.value = data || [];
+    totalItems.value = count || 0;
   } catch (error) {
-    console.error('Failed to load orders:', error)
-    orders.value = []
+    console.error("Failed to load orders:", error);
+    orders.value = [];
+    totalItems.value = 0;
+  } finally {
+    isLoading.value = false;
   }
-}
+};
 
-// DELETE
-const currentUser = ref<{ role?: string } | null>(null)
+const onSearch = (query: string) => {
+  searchQuery.value = query;
+  currentPage.value = 1;
+  loadOrders();
+};
 
-const isSuperAdmin = computed(() => {
-  return currentUser.value?.role === 'super_admin'
-})
+const applyFilters = () => {
+  currentPage.value = 1;
+  loadOrders();
+};
 
-const showDeleteConfirm = (order: any) => {
-  if (!isSuperAdmin.value) return
-  orderToDelete.value = order
-  deleteConfirmText.value = ''
-  showModal.value = true
-}
-
-const cancelDelete = () => {
-  showModal.value = false
-  orderToDelete.value = null
-  deleteConfirmText.value = ''
-}
-
-const executeDelete = async () => {
-  if (!orderToDelete.value || !isSuperAdmin.value) return
-  if (deleteConfirmText.value !== 'DELETE') return
-
-  const orderNumber = orderToDelete.value.order_number
-  const orderId = orderToDelete.value.id
-
-  try {
-    await apiDeleteOrder(orderId)
-
-    showToast(`✅ Order ${orderNumber} deleted successfully!`)
-
-    showModal.value = false
-    orderToDelete.value = null
-
-    await loadOrders()
-  } catch (error: any) {
-    console.error(error)
-    showToast(error?.data?.message || '❌ Failed to delete order', 'error')
-  }
-}
-// DELETE
+const onPageChange = (page: number) => {
+  currentPage.value = page;
+  loadOrders();
+};
 
 const formatDate = (date: string) => {
-  if (!date) return '—'
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
-}
+  if (!date) return "—";
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
 
 const viewOrder = (id: number) => {
-  navigateTo(`/admin/orders/${id}`)
-}
+  navigateTo(`/admin/orders/${id}`);
+};
 
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    currentPage.value++
-    loadOrders()
+const showDeleteConfirm = (order: any) => {
+  if (!isSuperAdmin.value) return;
+  orderToDelete.value = order;
+  deleteConfirmText.value = "";
+  showModal.value = true;
+};
+
+const cancelDelete = () => {
+  showModal.value = false;
+  orderToDelete.value = null;
+  deleteConfirmText.value = "";
+};
+
+const executeDelete = async () => {
+  if (!orderToDelete.value || !isSuperAdmin.value) return;
+  if (deleteConfirmText.value !== "DELETE") return;
+
+  try {
+    await apiDeleteOrder(orderToDelete.value.id);
+    showToast(
+      `Order #${orderToDelete.value.order_number} deleted successfully!`,
+    );
+    showModal.value = false;
+    orderToDelete.value = null;
+    await loadOrders();
+  } catch (error: any) {
+    console.error(error);
+    showToast(error?.data?.message || "Failed to delete order", "error");
   }
-}
-
-const prevPage = () => {
-  if (currentPage.value > 1) {
-    currentPage.value--
-    loadOrders()
-  }
-}
-
-// Search
-const debounceSearch = debounce(() => {
-  currentPage.value = 1
-  loadOrders()
-}, 500)
-
-const clearSearch = () => {
-  searchTerm.value = ''
-  currentPage.value = 1
-  loadOrders()
-}
-
-function debounce(func: Function, wait: number) {
-  let timeout: ReturnType<typeof setTimeout>
-  return (...args: any[]) => {
-    clearTimeout(timeout)
-    timeout = setTimeout(() => func(...args), wait)
-  }
-}
+};
 
 onMounted(async () => {
   try {
-    const saved = localStorage.getItem('user')
-    if (saved) currentUser.value = JSON.parse(saved)
+    const saved = localStorage.getItem("user");
+    if (saved) currentUser.value = JSON.parse(saved);
   } catch {
-    currentUser.value = null
+    currentUser.value = null;
   }
-
-  await loadOrders()  
-})
-
+  await loadOrders();
+});
 </script>
-
-<style scoped>
-.table-wrapper {
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.06);
-}
-
-.orders-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.orders-table th {
-  background: #0c2340;
-  color: white;
-  padding: 16px;
-  text-align: left;
-  font-weight: 600;
-}
-
-.orders-table td {
-  padding: 16px;
-  border-bottom: 1px solid #eee;
-}
-
-
-.btn-view, .btn-edit {
-  padding: 6px 14px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  margin-right: 6px;
-}
-
-.btn-view { background: #3b82f6; color: white; }
-.btn-edit { background: #F49322; color: white; }
-
-.delete-btn {
-  background: #ef4444;        /* Red color */
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-}
-
-.delete-btn:hover {
-  background: #dc2626;
-}
-
-
-/* Delete Modal */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
-.modal-content {
-  background: white;
-  padding: 32px;
-  border-radius: 16px;
-  text-align: center;
-  max-width: 420px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-}
-
-.modal-content h3 {
-  margin-bottom: 16px;
-  color: #0c2340;
-}
-
-.warning-text {
-  color: #ef4444;
-  margin: 16px 0;
-}
-
-.modal-buttons {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  margin-top: 24px;
-}
-
-.btn-secondary, .btn-delete {
-  padding: 12px 28px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.confirm-hint {
-  margin: 16px 0 8px;
-  font-size: 0.9rem;
-  color: #64748b;
-}
-
-.confirm-input {
-  width: 100%;
-  padding: 10px 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 1rem;
-  text-align: center;
-}
-
-.confirm-input:focus {
-  outline: none;
-  border-color: #ef4444;
-}
-
-.delete-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* End Delete Modal */
-
-</style>
