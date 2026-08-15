@@ -4,12 +4,13 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   // Enforce Single Page Application (Client-Side Rendering) mode for all routes
-  ssr: false,
+  ssr: true,
 
   routeRules: {
-    '/**': { ssr: false }
+    '/admin/**': { ssr: false },
+    '/login': { ssr: false },
+    '/confirm': { ssr: false },
   },
-
   modules: ['@vueuse/nuxt',
     '@nuxtjs/tailwindcss',
     '@nuxtjs/supabase',
@@ -17,11 +18,11 @@ export default defineNuxtConfig({
   ],
 
   supabase: {
-    redirect: true,
+    redirect: false,
     redirectOptions: {
       login: '/login',
       callback: '/confirm',
-      exclude: ['/login'], // Protects every route except /login
+      exclude: ['/login'],
     },
     cookieOptions: {
       maxAge: 60 * 60 * 8,
@@ -43,7 +44,7 @@ export default defineNuxtConfig({
     azureRedirectUri: process.env.AZURE_REDIRECT_URI,
 
     supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY,
-    
+
     // Public keys exposed to client
     public: {
       supabaseUrl: process.env.SUPABASE_URL,
@@ -57,11 +58,11 @@ export default defineNuxtConfig({
   },
 
   css: [
-      'bootstrap/dist/css/bootstrap.min.css',
-      '~/assets/css/main.css'
-      
-      // 'sonner/dist/index.css'
-    ],
+    'bootstrap/dist/css/bootstrap.min.css',
+    '~/assets/css/main.css'
+
+    // 'sonner/dist/index.css'
+  ],
   app: {
     head: {
       title: 'FLP Express Admin',

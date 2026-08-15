@@ -123,7 +123,7 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ middleware: 'auth' })
+// definePageMeta({ middleware: 'auth' })
 
 type PackageRow = { id: string | number; name: string; price?: number | string | null }
 

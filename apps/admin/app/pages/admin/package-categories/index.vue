@@ -44,9 +44,9 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  middleware: 'auth'
-})
+// definePageMeta({
+//   middleware: 'auth'
+// })
 
 const config = useRuntimeConfig()
 const categories = ref<Array<{

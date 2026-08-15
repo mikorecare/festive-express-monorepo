@@ -89,9 +89,9 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  middleware: 'auth',
-})
+// definePageMeta({
+//   middleware: 'auth',
+// })
 
 type SettingsForm = {
   contact_email: string

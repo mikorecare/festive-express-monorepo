@@ -1,62 +1,121 @@
+import { createClient } from '@supabase/supabase-js'
+
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const config = useRuntimeConfig()
 
   const code = query.code as string
+  const error = query.error as string
+
+  if (error) {
+    return sendRedirect(event, `/login?error=${encodeURIComponent(error)}`)
+  }
+
   if (!code) {
-    throw createError({ statusCode: 400, statusMessage: 'Authorization code missing' })
+    return sendRedirect(event, '/login?error=no_code')
   }
 
   try {
-    const tokenUrl = `https://login.microsoftonline.com/${config.azureTenantId as string}/oauth2/v2.0/token`
-    
-    // Explicitly cast runtimeConfig keys as strings
-    const bodyParams = new URLSearchParams({
-      client_id: (config.azureClientId as string) || '',
-      client_secret: (config.azureClientSecret as string) || '',
-      code: code,
-      redirect_uri: (config.azureRedirectUri as string) || '',
-      grant_type: 'authorization_code',
+    const tokenResponse = await $fetch<any>(
+      `https://login.microsoftonline.com/${config.azureTenantId}/oauth2/v2.0/token`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          client_id: config.azureClientId as string,
+          client_secret: config.azureClientSecret as string,
+          code: code,
+          redirect_uri: config.azureRedirectUri as string,
+          grant_type: 'authorization_code',
+        }),
+      }
+    )
+
+    const supabase = createClient(
+      config.public.supabaseUrl as string,
+      config.public.supabaseKey as string
+    )
+
+    const { data: authData, error: signInError } = await supabase.auth.signInWithIdToken({
+      provider: 'azure',
+      token: tokenResponse.id_token,
+      access_token: tokenResponse.access_token,
     })
 
-    const tokenResponse = await $fetch<any>(tokenUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: bodyParams.toString(),
-    })
-
-    const userProfile = await $fetch<any>('https://graph.microsoft.com/v1.0/me', {
-      headers: {
-        Authorization: `Bearer ${tokenResponse.access_token}`,
-      },
-    })
-
-    const sessionData = {
-      id: userProfile.id,
-      name: userProfile.displayName,
-      email: userProfile.mail || userProfile.userPrincipalName,
-      accessToken: tokenResponse.access_token,
+    if (signInError) {
+      console.error('Sign in error:', signInError)
+      return sendRedirect(event, `/login?error=${encodeURIComponent(signInError.message)}`)
     }
 
-    setCookie(event, 'admin_session', JSON.stringify(sessionData), {
+    const { data: { session } } = await supabase.auth.getSession()
+
+    if (!session) {
+      return sendRedirect(event, '/login?error=no_session')
+    }
+
+    setCookie(event, 'sb-access-token', session.access_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: false,
       sameSite: 'lax',
-      maxAge: 60 * 60 * 8, // 8 hours
+      maxAge: 60 * 60 * 8,
+      path: '/'
     })
+
+    setCookie(event, 'sb-refresh-token', session.refresh_token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 30,
+      path: '/'
+    })
+
+    setCookie(event, 'sb-auth', 'true', {
+      httpOnly: false,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 8,
+      path: '/'
+    })
+
+    try {
+      const supabaseAdmin = createClient(
+        config.public.supabaseUrl as string,
+        config.supabaseServiceKey as string
+      )
+
+      const userProfile = await $fetch<any>('https://graph.microsoft.com/v1.0/me', {
+        headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+      })
+
+      const email = userProfile.mail || userProfile.userPrincipalName || authData.user.email
+      const displayName = userProfile.displayName || ''
+
+      const { data: existing } = await supabaseAdmin
+        .from('user_profiles')
+        .select('*')
+        .eq('id', authData.user.id)
+        .maybeSingle()
+
+      if (!existing) {
+        await supabaseAdmin
+          .from('user_profiles')
+          .insert({
+            id: authData.user.id,
+            email: email,
+            display_name: displayName,
+            role: 'manager',
+            is_active: true,
+            created_at: new Date().toISOString()
+          })
+      }
+    } catch (profileError) {
+      console.error('Profile error:', profileError)
+    }
 
     return sendRedirect(event, '/admin')
 
   } catch (error: any) {
-    // console.error('Azure Login Error:', error)
-    // return sendRedirect(event, '/login?error=azure_login_failed')
-
-    // Extract Microsoft's exact response error or falling back to the error message
-    const errorDescription = error?.data?.error_description || error?.data?.error || error?.message || 'unknown_error'
-    
-    console.error('--- AZURE OAUTH ERROR ---', error?.data || error)
-
-    // Pass the raw error to the URL query string
-    return sendRedirect(event, `/login?error=${encodeURIComponent(errorDescription)}`)
+    console.error('Callback error:', error)
+    return sendRedirect(event, `/login?error=${encodeURIComponent(error.message || 'Authentication failed')}`)
   }
 })

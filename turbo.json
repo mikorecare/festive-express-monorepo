@@ -7,16 +7,53 @@
     "AZURE_REDIRECT_URI",
     "SUPABASE_URL",
     "SUPABASE_KEY",
-    "NODE_ENV"
+    "SUPABASE_SERVICE_KEY",
+    "NODE_ENV",
+    "NITRO_PRESET",
+    "NUXT_PUBLIC_API_BASE",
+    "NUXT_PUBLIC_STORAGE_BUCKET"
   ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".nuxt/**", ".output/**", "dist/**"]
+      "outputs": [".nuxt/**", ".output/**", "dist/**"],
+      "env": [
+        "AZURE_CLIENT_ID",
+        "AZURE_TENANT_ID",
+        "AZURE_CLIENT_SECRET",
+        "AZURE_REDIRECT_URI",
+        "SUPABASE_URL",
+        "SUPABASE_KEY",
+        "SUPABASE_SERVICE_KEY",
+        "NODE_ENV"
+      ]
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": [
+        "AZURE_CLIENT_ID",
+        "AZURE_TENANT_ID",
+        "AZURE_CLIENT_SECRET",
+        "AZURE_REDIRECT_URI",
+        "SUPABASE_URL",
+        "SUPABASE_KEY",
+        "SUPABASE_SERVICE_KEY",
+        "NODE_ENV"
+      ]
+    },
+    "preview": {
+      "dependsOn": ["build"],
+      "env": [
+        "AZURE_CLIENT_ID",
+        "AZURE_TENANT_ID",
+        "AZURE_CLIENT_SECRET",
+        "AZURE_REDIRECT_URI",
+        "SUPABASE_URL",
+        "SUPABASE_KEY",
+        "SUPABASE_SERVICE_KEY",
+        "NODE_ENV"
+      ]
     }
   }
 }
