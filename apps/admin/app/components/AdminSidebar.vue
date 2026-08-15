@@ -6,7 +6,7 @@
     <!-- Logo -->
     <div class="p-6 flex items-center justify-center flex-shrink-0">
       <img
-        src="/Images/FLP-Express-Transparent.PNG"
+        src="/Images/FLP-Express-Transparent.png"
         alt="FLP Admin"
         class="max-h-20 w-auto my-4 block"
       />
