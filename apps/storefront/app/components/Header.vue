@@ -2,7 +2,8 @@
   <header class="sticky top-0 z-[9999] w-full shadow-md">
     <!-- Top Bar -->
     <div class="bg-[#0c2340] text-white py-2.5 text-base font-semibold">
-      <div class="container mx-auto px-4">
+      <!-- Use max-w-7xl and mx-auto instead of container -->
+      <div class="w-full px-4 mx-auto max-w-7xl">
         <!-- Mobile: stacked, Desktop: inline -->
         <div
           class="flex flex-col md:flex-row items-center justify-between gap-1 md:gap-0"
@@ -86,7 +87,8 @@
 
     <!-- Main Header -->
     <div class="bg-white py-3 md:py-4 transition-all duration-300 w-full">
-      <div class="container mx-auto px-4">
+      <!-- Use max-w-7xl and mx-auto instead of container -->
+      <div class="w-full px-4 mx-auto max-w-7xl">
         <div
           class="flex items-center justify-between gap-2.5 md:gap-8 flex-nowrap"
         >
