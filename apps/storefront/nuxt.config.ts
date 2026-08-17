@@ -1,3 +1,5 @@
+// nuxt.config.ts
+
 import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
@@ -82,6 +84,7 @@ export default defineNuxtConfig({
           'Cross-Origin-Embedder-Policy': 'credentialless',
           'Cross-Origin-Opener-Policy': 'same-origin',
           'X-Powered-By': 'Festive Express',
+          'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://embeddable-widgets.pages.dev https://us-assets.i.posthog.com https://*.posthog.com blob:; worker-src 'self' blob: https://embeddable-widgets.pages.dev; connect-src 'self' https://embeddable-widgets.pages.dev https://*.posthog.com https://us-assets.i.posthog.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://embeddable-widgets.pages.dev; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https://*.posthog.com; frame-src 'self' https://embeddable-widgets.pages.dev;"
         }
       },
       '/api/**': {
