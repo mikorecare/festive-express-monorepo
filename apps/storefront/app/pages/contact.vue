@@ -5,7 +5,7 @@
       <div class="hero-overlay">
         <div class="container">
           <div class="hero-content">
-            <h1 v-fade>CONTACT US</h1>
+            <h1 v-fade>Contact Us</h1>
             <p v-fade class="breadcrumb">HOME / CONTACT US</p>
           </div>
         </div>
@@ -22,7 +22,7 @@
             SPEAK WITH OUR LIGHTING & DECOR EXPERTS TODAY
           </h2>
           <p class="text-lg leading-relaxed text-slate-600 mb-10">
-            Have a question about your order or need help choosing the right lighting? Our Festive Express experts are ready to assist you with fast, friendly support—contact us today!
+            Have a question about your order or need help choose the right package? Our Festive Express experts are ready to assist you with fast, friendly support – contact us today. 
           </p>
 
           <div class="flex flex-col gap-5">
@@ -50,7 +50,7 @@
         <div>
           <h3 class="text-2xl font-bold text-navy mb-3">Let’s connect today.</h3>
           <p class="mb-[30px] text-slate-600">
-            We’re here to guide you—whether you’re choosing products, planning a display, or just need expert advice to light up your next project.
+            We’re here to guide you – help select the right lease package, provide more details about the lights, installation, etc. 
           </p>
 
           <form @submit.prevent="submitForm" class="flex flex-col gap-5">

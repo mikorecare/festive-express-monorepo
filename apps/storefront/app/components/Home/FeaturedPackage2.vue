@@ -8,8 +8,11 @@
       <h2 v-fade class="text-center font-black text-white tracking-wider drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] text-2xl sm:text-3xl lg:text-4xl max-sm:text-[1.2rem] max-sm:leading-[1.3] uppercase">
         CHOOSE YOUR <span class="text-brand-orange">HOLIDAY</span> PACKAGE
       </h2>
-      <p v-fade class="text-center text-[#e2e8f0] mb-[50px] text-[1.15rem] font-bold tracking-[0.5px] uppercase max-w-[50%] max-sm:max-w-[80%] mx-auto leading-[1.3] max-sm:text-[0.95rem] mt-2 fade-up is-visible">
+      <p v-fade class="text-center text-[#e2e8f0] mb-[10px] text-[1.15rem] font-bold tracking-[0.5px] uppercase max-w-[50%] max-sm:max-w-[80%] mx-auto leading-[1.3] max-sm:text-[0.95rem] mt-2 fade-up is-visible">
         COMPARE WHAT’S INCLUDED IN EACH PLAN
+      </p>
+      <p v-fade class="text-center text-[#e2e8f0] mb-[50px] text-[0.8rem] font-bold tracking-[0.5px] uppercase max-w-[50%] max-sm:max-w-[80%] mx-auto leading-[1.3] max-sm:text-[0.65rem] mt-2 fade-up is-visible">
+        <p>(Each package is a lease for one season.)</p>
       </p>
 
       <!-- Loading State -->

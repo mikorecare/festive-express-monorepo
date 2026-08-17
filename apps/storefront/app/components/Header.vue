@@ -10,7 +10,7 @@
         >
           <!-- Social Icons (Top on mobile, Left on desktop) -->
           <div
-            class="flex gap-3 md:gap-4 justify-center md:justify-start w-full md:w-auto order-1 md:order-1"
+            class="hidden flex gap-3 md:gap-4 justify-center md:justify-start w-full md:w-auto order-1 md:order-1"
           >
             <a
               v-if="settings.social_facebook"

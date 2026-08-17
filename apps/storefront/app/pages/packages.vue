@@ -6,7 +6,7 @@
         <div class="container mx-auto px-4 h-full flex items-center justify-center min-h-[200px]">
           <div class="hero-content text-center max-w-2xl mx-auto">
             <h1 v-fade class="text-3xl md:text-5xl tracking-tight text-white mb-4">
-              Holiday Lighting Package Programs
+              <span class="text-brand-orange">Holiday Lighting</span> Package Programs
             </h1>
             <p v-fade class="text-base md:text-lg text-slate-200">
               Choose the perfect package for your home
@@ -44,7 +44,7 @@
             </h2>
           </div>
           <div class="package-price text-3xl md:text-4xl font-extrabold text-[#F49322]">
-            ${{ formatPrice(selectedPrice(pkg)) }}
+            ${{ Math.round(Number(selectedPrice(pkg)) || 0) }}
           </div>
         </div>
 
@@ -569,11 +569,6 @@ const HOTSPOT_LAYOUT: Record<string, { top: string; left: string; match?: string
     { top: '62%', left: '88%', match: 'minis' }, // or 'mini'
     { top: '71%', left: '66%', match: 'bursts' },
   ],
-}
-
-const formatPrice = (v: number | string | null | undefined) => {
-  const n = typeof v === 'string' ? parseFloat(v) : Number(v)
-  return Number.isFinite(n) ? n.toFixed(2) : '0.00'
 }
 
 const getImageUrl = (url?: string | null) => {

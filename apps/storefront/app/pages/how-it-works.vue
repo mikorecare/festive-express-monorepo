@@ -5,7 +5,7 @@
       <div class="hero-overlay">
         <div class="container">
           <div class="hero-content">
-            <h1 v-fade>HOW IT WORKS</h1>
+            <h1 v-fade class="">How It Works</h1>
             <p v-fade class="breadcrumb">HOME / HOW IT WORKS</p>
           </div>
         </div>
@@ -51,11 +51,11 @@ import { ref, onMounted, onUnmounted } from 'vue'
 const steps = [
   {
     title: "Pick your package",
-    description: "Choose Joy, Jolly, or Merry based on your home size and the look you want."
+    description: "Choose Joy, Jolly, or Merry based on the look you want."
   },
   {
     title: "Pay the set price",
-    description: "One clear lease package price — no hidden fees or surprise quotes."
+    description: "One clear lease price for one season – no hidden fees or surprises. "
   },
   {
     title: "Choose install + take-down dates",
@@ -63,7 +63,7 @@ const steps = [
   },
   {
     title: "We Review & Confirm Details",
-    description: "Our team reviews your order to ensure everything is sized correctly and ready for installation. If we have questions or need clarification, we'll contact you before scheduling."
+    description: "Our team reviews your order to ensure everything checks out. Lease package, payment, install/takedown dates. If we have any questions or need clarification, we’ll contact you before installation."
   },
   {
     title: "Professional Installation",

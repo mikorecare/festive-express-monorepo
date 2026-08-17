@@ -18,6 +18,18 @@
   }
 }
 
+@font-face {
+  font-family: 'Trelasty Bettany';
+  src: url('/fonts/Trelasty Bettany.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-trelasty {
+  font-family: 'Trelasty Bettany', cursive;
+}
+
 /* Custom container override */
 .container {
   max-width: 1400px !important;
