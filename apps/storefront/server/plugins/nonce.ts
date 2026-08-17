@@ -1,4 +1,3 @@
-
 export default defineNitroPlugin((nitroApp) => {
     nitroApp.hooks.hook('render:html', (html, { event }) => {
         const nonce = event.context?.nonce
@@ -6,16 +5,30 @@ export default defineNitroPlugin((nitroApp) => {
         if (!nonce) return
 
         const addNonceToScripts = (chunk: string) => {
-            let result = chunk.replace(/<script(?![^>]*\bnonce\b)/g, `<script nonce="${nonce}"`)
+            if (typeof chunk !== 'string') return chunk
 
-            result = result.replace(/<script(?![^>]*\bnonce\b)(?![\s\S]*?src=)/g, `<script nonce="${nonce}"`)
+            chunk = chunk.replace(
+                /<script\s+([^>]*?)src=/g,
+                `<script nonce="${nonce}" $1src=`
+            )
 
-            return result
+            chunk = chunk.replace(
+                /<script(?!\s+[^>]*?src=)(?!\s+[^>]*?nonce=)([^>]*)>/g,
+                `<script nonce="${nonce}" $1>`
+            )
+
+            chunk = chunk.replace(
+                /<script\s+([^>]*?)(?<!nonce=)(?<!nonce\s)>/g,
+                `<script nonce="${nonce}" $1>`
+            )
+
+            return chunk
         }
 
         if (Array.isArray(html.head)) {
             html.head = html.head.map(addNonceToScripts)
         }
+
         if (Array.isArray(html.body)) {
             html.body = html.body.map(addNonceToScripts)
         }

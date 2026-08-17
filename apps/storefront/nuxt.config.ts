@@ -70,6 +70,8 @@ export default defineNuxtConfig({
         drop: process.env.NODE_ENV === 'production' ? ['console'] : []
       }
     },
+
+    plugins: ['~/server/plugins/nonce.ts'],
     routeRules: {
       '/**': {
         headers: {
