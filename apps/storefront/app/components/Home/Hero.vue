@@ -19,8 +19,8 @@
       <!-- Main Glassmorphic Card -->
       <div class="hero-card relative w-full max-w-[460px] bg-[#161c30]/50 backdrop-blur-md rounded-2xl p-11 px-8 shadow-[0_10px_30px_rgba(0,0,0,0.4)] text-white text-center border border-white/12 overflow-hidden before:content-[''] before:absolute before:-top-1/2 before:-left-[150%] before:w-[200%] before:h-[200%] before:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] before:rotate-[25deg] before:pointer-events-none before:animate-[glossyShineContinuous_3s_linear_infinite]">
         <h1 class="text-4xl font-extrabold leading-[1.15] mb-4 tracking-wide text-white">
-          HOLIDAY MAGIC<br>
-          <span class="highlight text-[#f7941d]">FULLY INSTALLED</span>
+          RENT THE MAGIC<br>
+          <span class="highlight text-[#f7941d]">ENJOY THE SEASON</span>
         </h1>
 
         <p class="tagline text-[1.1rem] font-semibold leading-[1.35] mb-7 text-slate-200">

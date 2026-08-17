@@ -39,8 +39,8 @@
                 :alt="pkg.name"
               >
             </div>
-            <div class="text-[2.2rem] font-black text-white ml-3">
-              ${{ Number(pkg.price).toLocaleString() }}
+            <div class="text-[1.5rem] font-black text-white ml-3">
+              ${{ Math.round(Number(pkg.price) || 0) }} / season
             </div>
           </div>
 

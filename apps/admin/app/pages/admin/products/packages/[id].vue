@@ -93,6 +93,52 @@
           </div>
         </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <!-- Featured / card image -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1.5">
+              Featured image (card)
+            </label>
+            <div
+              class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center cursor-pointer hover:border-[#F49322]"
+              @click="imageFileInput?.click()"
+            >
+              <img
+                v-if="imagePreviewUrl || form.image_url"
+                :src="imagePreviewUrl || getImageUrl(form.image_url)"
+                alt=""
+                class="mx-auto max-h-32 w-full object-cover rounded-lg mb-2"
+              />
+              <p class="text-sm text-slate-500">
+                {{ form.image_url || imagePreviewUrl ? 'Click to replace' : 'Click to upload featured image' }}
+              </p>
+            </div>
+            <input
+              ref="imageFileInput"
+              type="file"
+              accept="image/*"
+              class="hidden"
+              @change="onImageFileChange"
+            />
+            <input
+              v-model="form.image_url"
+              type="text"
+              class="field mt-2"
+              placeholder="Or paste path (packages/...)"
+            />
+          </div>
+
+          <!-- Title image (existing) -->
+          <div>
+            <!-- ... your title upload block ... -->
+          </div>
+
+          <!-- Icon (existing) -->
+          <div>
+            <!-- ... your icon upload block ... -->
+          </div>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
           <!-- <div>
             <label class="block text-sm font-semibold text-slate-700 mb-1.5">Title image URL / path</label>
@@ -257,6 +303,7 @@ const form = ref({
   sort_order: 0,
   is_popular: false,
   is_active: true,
+  image_url: '',
   title_image_url: '',
   icon_url: '',
 })
@@ -306,6 +353,7 @@ const load = async () => {
       sort_order: Number(pkg.sort_order) || 0,
       is_popular: !!pkg.is_popular,
       is_active: pkg.is_active !== false,
+      image_url: pkg.image_url || '',
       title_image_url: pkg.title_image_url || '',
       icon_url: pkg.icon_url || '',
     }
@@ -333,6 +381,11 @@ const load = async () => {
 }
 
 const saveDetails = async () => {
+  const image_url = await uploadToPackages(
+    imageFile.value,
+    form.value.image_url
+  )
+
   const title_image_url = await uploadToPackages(
     titleImageFile.value,
     form.value.title_image_url
@@ -351,6 +404,7 @@ const saveDetails = async () => {
     sort_order: form.value.sort_order,
     is_popular: form.value.is_popular,
     is_active: form.value.is_active,
+    image_url: image_url,
     title_image_url: title_image_url,
     icon_url: icon_url,
     updated_at: new Date().toISOString(),
@@ -370,8 +424,16 @@ const saveDetails = async () => {
   // after successful save:
   form.value.title_image_url = title_image_url || ''
   form.value.icon_url = icon_url || ''
+
+  imageFile.value = null
   titleImageFile.value = null
   iconImageFile.value = null
+
+  if (imagePreviewUrl.value) {
+    URL.revokeObjectURL(imagePreviewUrl.value)
+    imagePreviewUrl.value = null
+  }
+
   if (titlePreviewUrl.value) {
     URL.revokeObjectURL(titlePreviewUrl.value)
     titlePreviewUrl.value = null
@@ -445,12 +507,24 @@ const setQuantity = (itemId: string, quantity: number) => {
 }
 
 //
+const imageFileInput = ref<HTMLInputElement | null>(null)
 const titleFileInput = ref<HTMLInputElement | null>(null)
 const iconFileInput = ref<HTMLInputElement | null>(null)
+
+const imageFile = ref<File | null>(null)
 const titleImageFile = ref<File | null>(null)
 const iconImageFile = ref<File | null>(null)
+
+const imagePreviewUrl = ref<string | null>(null)  
 const titlePreviewUrl = ref<string | null>(null)
 const iconPreviewUrl = ref<string | null>(null)
+
+const onImageFileChange = (e: Event) => {
+  const file = (e.target as HTMLInputElement).files?.[0] || null
+  imageFile.value = file
+  if (imagePreviewUrl.value) URL.revokeObjectURL(imagePreviewUrl.value)
+  imagePreviewUrl.value = file ? URL.createObjectURL(file) : null
+}  
 
 const onTitleFileChange = (e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0] || null

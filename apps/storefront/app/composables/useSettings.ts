@@ -16,8 +16,8 @@ export const useSettings = () => {
 
   const settings = useState<SiteSettings>('site-settings', () => ({
     contact_email: '',
-    contact_phone: '+19412221012',
-    contact_phone_display: '(941) 222-1012',
+    contact_phone: '',
+    contact_phone_display: '',
     contact_address: '',
     social_facebook: '',
     social_instagram: '',

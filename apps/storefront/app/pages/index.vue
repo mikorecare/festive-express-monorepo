@@ -3,9 +3,9 @@
     <HomeHero />
     <!-- <HomeCollections /> -->
     <!-- <HomeFeaturedBundles /> -->
-    <!-- <HomeFeaturedPackage />  With Indoor -->
+    <HomeFeaturedPackage /> <!-- NEW Indoor Only Joy, Jolly, Merry -->
     <!-- <HomeFeaturedPackage3 /> -->  <!-- Without Indoor -->
-    <HomeFeaturedPackage4 /> <!-- NEW Indoor Only Joy, Jolly, Merry -->
+    <!-- <HomeFeaturedPackage4 /> With Indoor -->
     <!-- <HomePatrioticDecor />
     <HomeSeasonalSale />
     <HomeHalloweenDecor /> -->

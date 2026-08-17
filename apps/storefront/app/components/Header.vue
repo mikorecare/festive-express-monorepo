@@ -87,7 +87,7 @@
 
           <!-- Right actions -->
           <div class="flex items-center gap-3 shrink-0">
-            <a href="tel:9412394722" class="contact-box btn-secondary-2">
+            <a :href="`tel:${String(settings.contact_phone || '').replace(/[^\d+]/g, '')}`" class="contact-box btn-secondary-2">
               <span class="phone-icon"><i class="fas fa-phone"></i></span>
               <div class="contact-text">
                 <div class="call-now">CALL US NOW!</div>
@@ -121,7 +121,7 @@
             <li><NuxtLink to="/how-it-works" class="block py-3 px-1 text-[#0c2340] no-underline font-semibold border-b border-gray-200 hover:text-[#F49322]" @click="mobileOpen = false">How It Works</NuxtLink></li>
             <li><NuxtLink to="/contact" class="block py-3 px-1 text-[#0c2340] no-underline font-semibold border-b border-gray-200 hover:text-[#F49322]" @click="mobileOpen = false">Contact Us</NuxtLink></li>
           </ul>
-          <a href="tel:9412394722" class="mobile-call" @click="mobileOpen = false">
+          <a :href="`tel:${String(settings.contact_phone || '').replace(/[^\d+]/g, '')}`" class="mobile-call" @click="mobileOpen = false">
             <i class="fas fa-phone-alt"></i> {{ settings.contact_phone_display || '(941) 239-4722' }}
           </a>
         </nav>

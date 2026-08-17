@@ -1,517 +1,412 @@
 <template>
-  <section class="featured-bundles">
-    <div class="container">
-      <div class="section-header">
-        <span class="badge"></span>
-        <h2 class="section-title">Holiday Package Programs</h2>
-        <p class="subtitle">Choose the perfect package for your home</p>
+  <section class="py-[70px] bg-white scroll-mt-[110px] bg-[url('/Images/LV.png')] bg-no-repeat bg-[position:50%] bg-cover" id="packages">
+    <div class="container mx-auto px-4">
+      <!-- Section Header -->
+      <div class="text-center mb-10">
+        <h2 class="text-navy uppercase font-bold text-2xl sm:text-3xl lg:text-4xl max-sm:text-[1.125rem] max-sm:leading-[1.3]">
+          Festive Express makes<br>professional <span class="text-brand-orange">holiday lighting</span> simple.
+        </h2>
+        <p class="text-black max-w-[80%] mx-auto leading-[1.3] text-xl max-sm:text-[0.95rem] mt-2">
+          Choose one of three fixed lease packages.<br>
+          Pay once. Pick your install date and take-down date. We handle the rest.
+        </p>
       </div>
 
-      <div class="packages-page">
-        <div class="container">
-          
-          <!-- <div class="packages-grid">
-            <div 
-              v-for="pkg in packageProducts" 
-              :key="pkg.id" 
-              class="package-card"
-              :class="{ popular: pkg.is_popular }"
-            >
-              <div v-if="pkg.is_popular" class="popular-badge">POPULAR</div>
-              
-              <h3 class="package-header" :class="pkg.name.toLowerCase()" :style="{ color: pkg.color }">{{ pkg.name }}</h3>
-              <img 
-                :src="getImageUrl(pkg.image_url)" 
-                alt=""
-                class="package-image"
+      <!-- Loading State -->
+      <div v-if="loading" class="text-center py-10 text-navy font-semibold">
+        Loading holiday packages...
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="error" class="text-center py-10 text-red-500 font-semibold">
+        {{ error }}
+      </div>
+
+      <!-- Package Cards Row -->
+      <div v-else class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] max-sm:grid-cols-1 gap-8 max-sm:gap-12 justify-items-center mb-12">
+        <div
+          v-for="pkg in packageProducts"
+          :key="pkg.id"
+          class="w-full max-w-[340px] rounded-[28px] overflow-visible shadow-[0_14px_36px_rgba(28,45,91,0.28)]"
+        >
+          <!-- Card Top -->
+          <div class="relative p-3 pb-0">
+            <div class="rounded-[22px] border-4 border-brand-orange overflow-hidden relative leading-none">
+              <img
+                :src="getImageUrl(pkg.image_url)"
+                :alt="pkg.name"
+                class="w-full h-[200px] object-cover block"
               >
-              <div class="price"><sup>$</sup>{{ pkg.price }}</div>
-               <p class="description">{{ pkg.description }}</p> -->
-              <!-- <p class="description" v-html="pkg.description.replace(/\n/g, '<br>')"></p> -->
-
-              <!-- Dynamic Description with Green Check -->
-              <!-- <div class="description">
-                <div v-for="(line, index) in getPackageDescription(pkg)" :key="index" class="feature-line">
-                  <span class="check-icon">✔</span>
-                  {{ line }}
-                </div>
-              </div>
-
-              <button @click="selectPackage(pkg)" class="btn-primary">
-                Select {{ pkg.name }}
-              </button>
-            </div> -->
-          <!-- </div>   -->
-
-          <div class="packages-grid">
-            <!-- Left: Package Products -->
-            <div class="left-column">
-              <h2 class="column-title">Holiday Lighting Packages</h2>
-
-              <div class="grid md:grid-cols-2 gap-8">
-                <!-- Joy -->
-                <div v-for="pkg in packageProducts" 
-                  :key="pkg.id" 
-                  class="package-card"
-                  :class="{ popular: pkg.is_popular }">
-                  <div class="image-wrapper">
-                    <img 
-                    :src="getImageUrl(pkg.image_url)" 
-                    alt=""
-                    class="package-image"
-                  >
-                    <div 
-                      class="badge" 
-                      :class="{
-                        'standard': pkg.name.toLowerCase() === 'joy',
-                        'popular': pkg.name.toLowerCase() === 'jolly',
-                        'premium': pkg.name.toLowerCase() === 'merry'
-                      }"
-                    >
-                      {{ getBadgeText(pkg.name) }}
-                    </div>
-
-                    
-
-                  </div>
-                  <div class="packages-info">
-                    <h3 class="text-3xl font-bold">{{ pkg.name }}</h3>
-                    <div class="d-flex align-items-center justify-content-between">
-                      <div class="price"><sup>$</sup>{{ pkg.price }}</div>
-                      
-                      <div class="description-tooltip ml-2 mr-2">
-                        <button class="tooltip-trigger select-btn-border">View Features</button>
-                        <div class="tooltip-content">
-                          <div v-for="(variation, vIndex) in pkg.variations" :key="vIndex" class="variation-group">
-                            <strong>{{ variation.name }}:</strong>
-                            <div v-for="(option, oIndex) in variation.options" :key="oIndex" class="feature-line">
-                              <!-- <span class="check-icon">✔</span> -->
-                              <img 
-                                v-if="option.image_url" 
-                                :src="getImageUrl(option.image_url)" 
-                                class="option-preview"
-                              >
-                              {{ option.name }}
-                              
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <button @click="selectPackage(pkg)" class="select-btn">Select Package</button>
-                    </div>
-                  
-
-                  </div>
-                </div>
-              </div>
+              <!-- Glossy Shine Overlay -->
+              <div class="absolute -top-1/2 -left-[150%] w-[200%] h-[200%] bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] rotate-[25deg] pointer-events-none animate-[glossyShineContinuous_3s_linear_infinite]"></div>
             </div>
 
-            <!-- Right: Holiday Indoor Package -->
-            <div class="right-column">
-              <h2 class="column-title indoor-package">Holiday Indoor Packages</h2>
-              <span>Pricing based on 3-year lease programs</span>
+            <img
+              class="absolute left-[45px] max-sm:left-5 -bottom-[38px] max-sm:-bottom-[28px] h-[72px] max-sm:h-[56px] w-auto z-[2] pointer-events-none drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)]"
+              :src="getPackageTitleImage(pkg)"
+              :alt="pkg.name"
+            >
 
-              <!-- Indoor Packages -->
-              <div>
-                <div class="grid-view mt-4">
-                  <div v-for="pkg in holidayIndoorPackage" :key="pkg.name" class="indoor-card">
-                    <div class="icon-circle">
-                      <!-- <span class="text-4xl">{{ pkg.icon }}</span> -->
-                       <img 
-                        :src="getImageUrl(pkg.image_url)" 
-                        alt=""
-                        class="featured-image"
-                      >
-                    </div>
-                    <h4 class="text-xl font-semibold mt-6">{{ pkg.name }}</h4>
-                    <div class="price text-3xl font-bold mt-2"><sup>$</sup>{{ pkg.price }}</div>
-                    <button @click="selectPackage(pkg)" class="select-btn mb-3">Select Package</button>
-
-                    <div class="description-tooltip">
-                      <button class="tooltip-trigger select-btn-border">View Features</button>
-                      <div class="tooltip-content">
-                        <div v-for="(variation, vIndex) in pkg.variations" :key="vIndex" class="variation-group">
-                          <strong>{{ variation.name }}:</strong>
-                          <div v-for="(option, oIndex) in variation.options" :key="oIndex" class="feature-line">
-                            <span v-if="!option.image_url" class="check-icon">✔</span>
-                            <img 
-                              v-if="option.image_url" 
-                              :src="getImageUrl(option.image_url)" 
-                              class="option-preview"
-                            >
-                            {{ option.name }}
-                            
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-
-                  <!-- Custom Package (static) -->
-                  <div class="indoor-card custom-card">
-                    <div class="icon-circle">
-                      <img 
-                        src="/Images/wreathxtree.png" 
-                        alt="Custom Package"
-                        class="featured-image"
-                      >
-                    </div>
-                    <h4 class="text-xl font-semibold mt-6">Custom Package</h4>
-                    <!-- <div class="price text-3xl font-bold mt-2">Quote</div> --><br><br>
-                    <button @click="navigateTo('/contact')" class="select-btn mb-3">Request Quote</button>
-
-                    <div class="description-tooltip">
-                      <button class="tooltip-trigger select-btn-border">View Features</button>
-                      <div class="tooltip-content">
-                        <div class="feature-line"><span class="check-icon">✔</span> Fully customized design</div>
-                        <div class="feature-line"><span class="check-icon">✔</span> Mix any lights & décor</div>
-                        <div class="feature-line"><span class="check-icon">✔</span> Sized for your property</div>
-                        <div class="feature-line"><span class="check-icon">✔</span> Free consultation</div>
-                      </div>
-                    </div>
-                  </div>
-
-      
-
-                </div>
-              </div>
-
+            <div class="absolute right-[16px] max-sm:right-3 -bottom-[30px] max-sm:-bottom-[24px] w-[76px] h-[76px] max-sm:w-[64px] max-sm:h-[64px] rounded-full bg-brand-orange flex items-center justify-center z-[3] shadow-[0_6px_16px_rgba(244,147,33,0.45)]" aria-hidden="true">
+              <img
+                class="absolute -left-[46px] top-[7px] w-[100px] h-[100px] object-contain -z-10"
+                :src="starburstSrc"
+                alt=""
+              >
+              <img
+                class="w-[76px] h-[76px] max-sm:w-[64px] max-sm:h-[64px] object-contain"
+                :src="getPackageIcon(pkg)"
+                alt=""
+              >
             </div>
           </div>
-          
 
+          <!-- Card Panel -->
+          <div class="flex items-end justify-between gap-3 pb-[22px] pt-[140px] max-sm:pt-[100px] -mt-[90px] max-sm:-mt-[70px] rounded-[28px] bg-navy max-sm:flex-wrap max-sm:gap-2.5 px-[18px] max-sm:px-[14px]">
+            <!-- Tooltip Action Button -->
+            <div class="relative">
+              <button
+                type="button"
+                class="btn-inclusions flex flex-col items-center justify-center gap-1.5 bg-transparent border-2 border-white/90 rounded-xl text-white text-[0.75rem] max-sm:text-[0.72rem] font-semibold leading-[1.25] text-center py-3 px-4 max-sm:py-2.5 max-sm:px-3 cursor-pointer transition-colors duration-200"
+                @click.stop="openTooltipId = openTooltipId === pkg.id ? null : pkg.id"
+              >
+                <i class="fas fa-gift text-[1.4rem] text-brand-orange"></i>
+                <span class="block text-center">Explore Package<br>Details</span>
+              </button>
+
+              <!-- Tooltip Content -->
+              <!-- <div
+                class="absolute top-full left-0 bg-white border border-gray-300 rounded-xl p-3.5 w-[280px] max-w-[90vw] shadow-[0_10px_25px_rgba(28,45,91,0.15)] opacity-0 invisible transition-all duration-250 z-30 mt-2 text-left text-navy"
+                :class="{ '!opacity-100 !visible': openTooltipId === pkg.id }"
+              >
+                <template v-if="pkg.variations?.length">
+                  <div
+                    v-for="(variation, vIndex) in pkg.variations"
+                    :key="vIndex"
+                    class="mb-2 last:mb-0"
+                  >
+                    <strong class="block mb-1">{{ variation.name }}:</strong>
+                    <div
+                      v-for="(option, oIndex) in variation.options"
+                      :key="oIndex"
+                      class="flex items-center gap-2.5 py-1.5 border-b border-gray-300 text-sm last:border-b-0"
+                    >
+                      <img
+                        v-if="option.image_url"
+                        :src="getImageUrl(option.image_url)"
+                        class="w-10 h-10 object-cover rounded-md"
+                        alt=""
+                      >
+                      {{ option.name }}
+                    </div>
+                  </div>
+                </template>
+                <p v-else class="mb-0">No inclusions listed.</p>
+              </div> -->
+
+              <div
+                class="absolute top-full left-0 bg-white border border-gray-300 rounded-xl p-3.5 w-[280px] max-w-[90vw] shadow-[0_10px_25px_rgba(28,45,91,0.15)] opacity-0 invisible transition-all duration-250 z-30 mt-2 text-left text-navy"
+                :class="{ '!opacity-100 !visible': openTooltipId === pkg.id }"
+                @click.stop
+              >
+                <template v-if="inclusionsFor(pkg).filter((r) => r.is_included).length">
+                  <div
+                    v-for="(row, i) in inclusionsFor(pkg).filter((r) => r.is_included)"
+                    :key="i"
+                    class="flex items-center gap-2.5 py-1.5 border-b border-gray-300 text-sm last:border-b-0"
+                  >
+                    <img
+                      v-if="row.image_url"
+                      :src="getImageUrl(row.image_url)"
+                      class="w-8 h-8 object-contain flex-shrink-0"
+                      alt=""
+                    >
+                    <span>{{ row.name }}</span>
+                  </div>
+                </template>
+                <p v-else class="mb-0">No inclusions listed.</p>
+              </div>
+
+
+            </div>
+
+            <!-- Price & Cart Actions -->
+            <div class="flex flex-col items-end gap-2.5">
+              <!-- <div class="text-[1.45rem] max-sm:text-[1.4rem] font-extrabold text-white">${{ Math.round(Number(pkg.price) || 0) }} / season</div> -->
+              <div class="text-[1rem] max-sm:text-[1rem] font-extrabold text-white">${{ Math.round(Number(pkg.price) || 0) }} / season</div>
+              <button
+                type="button"
+                class="w-12 h-12 border-none rounded-xl bg-brand-orange text-white cursor-pointer flex items-center justify-center transition-colors duration-200 hover:bg-[#ff890b] hover:animate-[festive-express-animation-pulse-grow_0.3s_linear_infinite_alternate]"
+                :aria-label="`Select ${pkg.name}`"
+                @click="selectPackage(pkg)"
+              >
+                <i class="fas fa-shopping-cart text-[1.2rem] text-white"></i>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-
+      <!-- Footer Note -->
+      <div class="text-center mt-6 mb-4">
+        <h4 class="text-black font-medium leading-[1.3] max-w-[80%] mx-auto mb-5 text-lg">
+          Every package is professionally installed, maintained through the season,
+          and taken down when you’re ready. You simply enjoy the holidays.
+        </h4>
+        <NuxtLink 
+          to="/packages" 
+          class="relative overflow-hidden border-2 border-navy inline-block font-semibold px-6 py-3 rounded-lg bg-brand-orange text-white animate-[festive-express-animation-pulse-grow_0.5s_linear_infinite_alternate] after:content-[''] after:absolute after:-top-1/2 after:-left-[150%] after:w-[200%] after:h-[200%] after:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255)_80%)] after:rotate-[25deg] after:pointer-events-none after:animate-[glossyShineContinuous_3s_linear_infinite]"
+        >
+          Which Package Fits Your Home?
+        </NuxtLink>
+      </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-const packages = ref<Array<{
-  id: number;
-  name: string;
-  description: string;
-  slug: string;
-  event_date_from: string;
-  event_date_to: string;
-  is_popular: boolean;
-  is_package: boolean;  
-  package_data: string;    
-  price: number;  
-  color: string;
-  image_url: string | null;
-  variations: Array<{
-    name: string;
-    options: Array<{
-      name: string;
-      image_url: string;
-    }>;
-  }>;
-}>>([])
+const config = useRuntimeConfig()
+const supabase = useSupabaseClient()
 
-onMounted(async () => {
+/** New packages table shape */
+interface PackageRow {
+  id: number
+  name: string
+  slug: string
+  price: number | string
+  description?: string | null
+  max_roofline_ft?: number | null
+  features?: string[] | null
+  is_popular?: boolean
+  color?: string | null
+  image_url?: string | null
+  title_image_url?: string | null
+  icon_url?: string | null
+  sort_order?: number | null
+  created_at?: string
+}
+
+const packages = ref<PackageRow[]>([])
+const loading = ref(true)
+const error = ref<string | null>(null)
+const openTooltipId = ref<number | null>(null)
+
+const BASE = '/Images/Holiday-Lighting-Package'
+const starburstSrc = '/Images/Holiday-Lighting-Package/starburst.png'
+
+interface InclusionItem {
+  id?: number
+  name?: string
+  image_url?: string | null
+}
+
+interface PackageInclusionRow {
+  id?: number
+  package_id?: number
+  is_included?: boolean
+  inclusion_item_id?: number
+  // if Supabase embeds as object or array depending on FK
+  inclusion_items?: InclusionItem | InclusionItem[] | null
+  // sometimes named inclusion_item (singular)
+  inclusion_item?: InclusionItem | null
+}
+
+interface PackageRow {
+  id: number
+  name: string
+  slug: string
+  price: number | string
+  image_url?: string | null
+  title_image_url?: string | null
+  icon_url?: string | null
+  features?: string[] | null
+  package_inclusions?: PackageInclusionRow[] | null
+  // alternate relation name
+  inclusions?: PackageInclusionRow[] | null
+}
+
+const fetchPackages = async () => {
+  loading.value = true
+  error.value = null
+
   try {
-    const res: any = await $fetch('/products?is_package=true', {
-      baseURL: useRuntimeConfig().public.apiBase,
-      params: {
-        status: 'publish'
-      }
+    const { data, error: sbError } = await (supabase.from('packages') as any)
+      .select(`
+        *,
+        package_inclusions (
+          id,
+          is_included,
+          inclusion_items (
+            id,
+            name,
+            image_url
+          )
+        )
+      `)
+      .order('sort_order', { ascending: true })
+      .order('id', { ascending: true })
+
+    if (sbError) throw sbError
+    packages.value = (data as PackageRow[]) || []
+  } catch (err: any) {
+    console.error(err)
+    error.value = err.message || 'Failed to load packages.'
+  } finally {
+    loading.value = false
+  }
+}
+
+type InclusionDisplay = {
+  name: string
+  image_url: string | null
+  is_included: boolean
+}
+
+/** All rows for a package (with is_included) */
+const inclusionsFor = (pkg: PackageRow): InclusionDisplay[] => {
+  const rows = pkg.package_inclusions || pkg.inclusions || []
+  const mapped: InclusionDisplay[] = []
+
+  for (const row of rows) {
+    const item = Array.isArray(row.inclusion_items)
+      ? row.inclusion_items[0]
+      : row.inclusion_items || row.inclusion_item
+
+    if (!item?.name) continue
+
+    mapped.push({
+      name: item.name,
+      image_url: item.image_url ?? null,
+      is_included: row.is_included === true,
     })
-    packages.value = res.data || res || []
-  } catch (error) {
-    console.error('Failed to load packages:', error)
+  }
+
+  return mapped
+}
+
+onMounted(() => {
+  fetchPackages()
+
+  if (import.meta.client) {
+    window.addEventListener('click', () => {
+      openTooltipId.value = null
+    })
   }
 })
 
-const packageProducts = computed(() => 
-  // packages.value.filter(p => p.is_package && p.package_data === 'holiday-lighting-package-programs')
-  packages.value
-    .filter((p: any) => p.is_package && p.package_data === 'holiday-lighting-package-programs')
-    .sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-)
+/** Keep same name used in template */
+const packageProducts = computed(() => packages.value)
 
-const holidayIndoorPackage = computed(() => 
-  // packages.value.filter(p => p.is_package && p.package_data === 'holiday-indoor-packages')
-  packages.value
-    .filter((p: any) => p.is_package && p.package_data === 'holiday-indoor-packages')
-    .sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
-)
-
-const selectPackage = async (pkg: any) => {
-  navigateTo(`/products/${pkg.id}`)
+/** Cart / detail: use slug (packages page) */
+const selectPackage = (pkg: PackageRow) => {
+  navigateTo(`/packages?package=${pkg.slug}`)
+  // or: navigateTo(`/checkout?package=${pkg.slug}`)
 }
 
-const getImageUrl = (url: string | null) => {
-  if (!url) return '/Images/placeholder.png'
-  return `${useRuntimeConfig().public.imageBase}/${url}`
+// const getImageUrl = (url: string | null | undefined) => {
+  
+//   if (!url) return '/Images/placeholder.png'
+//   if (url.startsWith('http') || url.startsWith('/')) return url
+
+//   const path = url
+//     .replace(/^\//, '')
+//     .replace(/^products\//i, '')
+//     .replace(/^Products\//i, '')
+//     .replace(/^packages\//i, '')
+
+//   const supabaseUrl =
+//     (config.public as any).supabaseUrl ||
+//     (config.public as any).supabase?.url ||
+//     ''
+
+//   const bucket = ((config.public as any).storageBucket as string) || 'Products'
+
+//   return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`
+// }
+
+const getImageUrl = (url: string | null | undefined) => {
+  if (url == null || String(url).trim() === '') {
+    return '/Images/placeholder.png'
+  }
+
+  const raw = String(url).trim()
+
+  if (raw.startsWith('http://') || raw.startsWith('https://')) return raw
+  if (raw.startsWith('/Images/') || raw.startsWith('/images/')) return raw
+
+  // keep folder names: packages/Icon1.png → Products/packages/Icon1.png
+  const path = raw.replace(/^\/+/, '').replace(/^products\//i, '')
+
+  const supabaseUrl =
+    (config.public as any).supabaseUrl ||
+    (config.public as any).supabase?.url ||
+    ''
+
+  const bucket =
+    ((config.public as any).storageBucket as string) || 'Products'
+
+  if (!supabaseUrl) return '/Images/placeholder.png'
+
+  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`
 }
 
-const getBadgeText = (name: string) => {
-  const n = name.toLowerCase()
-  if (n.includes('joy')) return 'STANDARD'
-  if (n.includes('jolly')) return 'POPULAR'
-  if (n.includes('merry')) return 'PREMIUM'
-  return 'PACKAGE'
+const getPackageTitleImage = (pkg: PackageRow) => {
+  if (pkg.title_image_url) return getImageUrl(pkg.title_image_url)
+  const n = pkg.name.toLowerCase()
+  if (n.includes('jolly')) return `${BASE}/Jolly.png`
+  if (n.includes('merry')) return `${BASE}/Merry.png`
+  return `${BASE}/Joy.png`
 }
 
+const getPackageIcon = (pkg: PackageRow) => {
+  if (pkg.icon_url) return getImageUrl(pkg.icon_url)
+  const n = pkg.name.toLowerCase()
+  if (n.includes('jolly')) return `${BASE}/Icon2.png`
+  if (n.includes('merry')) return `${BASE}/Icon3.png`
+  return `${BASE}/Icon1.png`
+}
+
+/** features may be string[] or JSON string from DB */
+type FeatureItem = { name: string; image_url?: string | null }
+
+const getFeatures = (pkg: PackageRow): FeatureItem[] => {
+  const f = pkg.features as unknown
+  if (!f) return []
+
+  let list: unknown = f
+  if (typeof f === 'string') {
+    try {
+      list = JSON.parse(f)
+    } catch {
+      return []
+    }
+  }
+  if (!Array.isArray(list)) return []
+
+  return list.map((item) => {
+    if (typeof item === 'string') return { name: item, image_url: null }
+    if (item && typeof item === 'object' && 'name' in item) {
+      const o = item as FeatureItem
+      return { name: String(o.name), image_url: o.image_url ?? null }
+    }
+    return { name: String(item), image_url: null }
+  })
+}
 </script>
 
 <style scoped>
-.featured-bundles {
-  padding: 70px 0;
-  background: white;
+.btn-inclusions:hover {
+  border-color: var(--orange, #ff7a00) !important;
+  background: rgba(244, 147, 33, 0.15) !important;
 }
 
-.section-header {
-  text-align: center;
-  margin-bottom: 50px;
+@keyframes glossyShineContinuous {
+  0% { transform: translateX(-100%) rotate(25deg); }
+  100% { transform: translateX(200%) rotate(25deg); }
 }
 
-.column-title{
-  padding-left: 1rem;
-  border-left: 4px solid rgb(253 153 35);
-  margin-bottom: 2rem;
-}
-.indoor-package{
-  margin-bottom: 1rem !important;
-}
-
-
-.section-title {
-  font-size: 2.5rem;
-  color: #0c2340;
-  margin-bottom: 12px;
-}
-
-.subtitle {
-  color: #555;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.packages-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-  gap: 30px;
-  margin-top: 50px;
-}
-
-.package-card {
-  background: white;
-  border-radius: 12px;
-  /* padding: 30px; */
-  padding-bottom: 40px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-  transition: transform 0.3s;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  /* height: 100%; */
-  margin-bottom: 20px;
-}
-
-.packages-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-}
-
-.image-wrapper {
-  position: relative;
-  /* height: 260px; */
-}
-
-
-.packages-card img {
-  width: 100%;
-  height: 240px;
-  object-fit: cover;
-}
-
-.package-image {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-  /* margin: 20px 0; */
-}
-
-.packages-info {
-  padding: 24px;
-}
-
-.packages-info h3 {
-  font-size: 20px;
-  line-height: 28px;
-  font-weight: 600;
-}
-
-.package-header {
-  font-size: 1.6rem;
-  font-weight: 700;
-  /* padding: 12px 0; */
-  text-align: center;
-  border-bottom: 2px solid #eee;
-  margin-bottom: 20px;
-  padding: 30px 0;
-  background: #ff890b;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px; 
-  text-align: center;  
-  color: white;
-}
-
-/* .joy { color: #166534; }
-.jolly { color: #92400e; }
-.merry { color: #991b1b; } */
-
-.description {
-  color: #fff;
-  font-size: 0.97rem;
-  line-height: 2.8;
-  margin-bottom: 18px;
-  flex: 1;
-  max-width: 90%; /* Not full width */
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.description-tooltip {
-  position: relative;
-  display: inline-block;
-  /* margin-bottom: 24px; */
-  text-align: center;
-}
-
-.tooltip-trigger {
-  /* background: #f1f5f9;
-  color: #0c2340;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 8px; */
-  cursor: pointer;
-  /* font-size: 0.9rem; */
-}
-
-.tooltip-content {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 16px;
-  width: 380px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-  z-index: 10;
-  margin-bottom: 8px;
-}
-
-.description-tooltip:hover .tooltip-content {
-  opacity: 1;
-  visibility: visible;
-}
-
-.feature-line {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.check-icon {
-  color: #10b981;
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-img.option-preview{width: 50px;}
-
-.price {
-  font-size: 2.5rem;
-  font-weight: 800;
-  /* margin: 12px 0 24px; */
-  color: #f59e0b;
-}
-.price sup{font-size: .5em; top: -0.7em;}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .packages-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Indoor Cards */
-.indoor-card {
-  background: white;
-  padding: 32px 24px;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  transition: all 0.3s;
-}
-
-.indoor-card:hover {
-  transform: translateY(-8px);
-}
-
-.icon-circle {
-  width: 80px;
-  height: 80px;
-  background-color: rgb(229 238 255);
-  border-radius: 50%;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;           /* Important */
-  padding: 8px;               /* Optional padding */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-.featured-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;        /* Keeps aspect ratio, fits inside */
-  border-radius: 50%;
-}
-
-.indoor-select-btn {
-  margin-top: 24px;
-  width: 100%;
-  padding: 12px;
-  border: 2px solid #f59e0b;
-  color: #f59e0b;
-  border-radius: 9999px;
-  font-weight: 600;
-}
-
-.indoor-select-btn:hover {
-  background: #f59e0b;
-  color: white;
-}
-
-.right-column{
-  background-color: rgb(26 43 72 / 0.05);
-  border-color: rgb(26 43 72 / 0.1);
-  border-width: 1px;
-  border-radius: 16px;
-  padding: 2rem;
-  border-style: solid;
-  box-sizing: border-box;
-}
-.right-column .grid-view{
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  display: grid;
+@keyframes festive-express-animation-pulse-grow {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.04); }
 }
 </style>
