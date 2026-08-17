@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-[#101518] text-white pt-5 border-t-5 border-white">
+  <footer class="bg-[#101518] text-white pt-5">
     <div class="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-7xl">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-5">
         <!-- Logo -->
@@ -20,7 +20,7 @@
           </h4>
           <p class="text-slate-300 mb-2.5">packages@festive.express</p>
           <p class="text-slate-300 mb-2.5">
-            ☎ {{ settings.contact_phone_display || "(941) 239-4722" }}
+            {{ settings.contact_phone_display || "(941) 239-4722" }}
           </p>
         </div>
 
@@ -89,13 +89,17 @@
     <!-- Bottom Bar Section -->
     <div class="bg-white py-4 px-4 sm:px-6 lg:px-8">
       <div
-        class="w-full mx-auto max-w-7xl pt-4 border-t border-[#1f3a5c] flex flex-wrap justify-between items-center gap-[15px] text-slate-400 text-[0.95rem]"
+        class="w-full mx-auto max-w-7xl  flex flex-wrap justify-between items-center gap-[15px] text-slate-400 text-[0.95rem]"
       >
-        <div class="text-navy text-base">
+        <div
+          class="text-navy text-base w-full sm:w-auto text-center sm:text-left"
+        >
           Copyright © 2026 Festive Express. All Rights Reserved.
         </div>
 
-        <div class="payment-methods max-w-[200px] sm:max-w-none">
+        <div
+          class="payment-methods w-full sm:w-auto flex justify-center sm:justify-end max-w-[200px] sm:max-w-none mx-auto sm:mx-0"
+        >
           <img
             src="/Images/checkout.png"
             alt="Payment Method"

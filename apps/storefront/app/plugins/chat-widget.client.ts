@@ -1,5 +1,3 @@
-// plugins/chat-widget.client.ts
-
 declare global {
   interface Window {
     ChatWidget?: {
@@ -14,6 +12,10 @@ export default defineNuxtPlugin(() => {
       {
         rel: 'stylesheet',
         href: 'https://embeddable-widgets.pages.dev/chat-widget.css'
+      },
+      {
+        rel: 'stylesheet',
+        href: '/css/chat-widget.css'
       }
     ],
     script: [
