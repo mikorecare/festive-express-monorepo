@@ -1,6 +1,6 @@
 <template>
   <footer class="bg-[#101518] text-white pt-5 border-t-5 border-white">
-    <div class="container">
+    <div class="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-7xl">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-5">
         <!-- Logo -->
         <div>
@@ -87,15 +87,15 @@
     </div>
 
     <!-- Bottom Bar Section -->
-    <div class="bg-white pb-[25px]">
+    <div class="bg-white py-4 px-4 sm:px-6 lg:px-8">
       <div
-        class="container pt-4 border-t border-[#1f3a5c] flex flex-wrap justify-between items-center gap-[15px] text-slate-400 text-[0.95rem]"
+        class="w-full mx-auto max-w-7xl pt-4 border-t border-[#1f3a5c] flex flex-wrap justify-between items-center gap-[15px] text-slate-400 text-[0.95rem]"
       >
         <div class="text-navy text-base">
           Copyright © 2026 Festive Express. All Rights Reserved.
         </div>
 
-        <div class="payment-methods">
+        <div class="payment-methods max-w-[200px] sm:max-w-none">
           <img
             src="/Images/checkout.png"
             alt="Payment Method"
