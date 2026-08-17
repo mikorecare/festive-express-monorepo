@@ -3,64 +3,83 @@
     <!-- Top Bar -->
     <div class="bg-[#0c2340] text-white py-2.5 text-base font-semibold">
       <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 items-center gap-2 md:gap-0 text-center">
-          <!-- Social Icons (Left) -->
-          <div class="flex gap-4 justify-center md:justify-start md:ml-6 order-1 md:order-2">
+        <!-- Mobile: stacked, Desktop: inline -->
+        <div
+          class="flex flex-col md:flex-row items-center justify-between gap-1 md:gap-0"
+        >
+          <!-- Social Icons (Top on mobile, Left on desktop) -->
+          <div
+            class="flex gap-3 md:gap-4 justify-center md:justify-start w-full md:w-auto order-1 md:order-1"
+          >
             <a
               v-if="settings.social_facebook"
               :href="settings.social_facebook"
               target="_blank"
               rel="noopener"
-              class="text-white text-[1.25rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49322] hover:-translate-y-1"
+              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49322] hover:-translate-y-1"
               aria-label="Facebook"
-            ><i class="fab fa-facebook"></i></a>
+              ><i class="fab fa-facebook"></i
+            ></a>
             <a
               v-if="settings.social_instagram"
               :href="settings.social_instagram"
               target="_blank"
               rel="noopener"
-              class="text-white text-[1.25rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49322] hover:-translate-y-1"
+              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49322] hover:-translate-y-1"
               aria-label="Instagram"
-            ><i class="fab fa-instagram"></i></a>
+              ><i class="fab fa-instagram"></i
+            ></a>
             <a
               v-if="settings.social_x"
               :href="settings.social_x"
               target="_blank"
               rel="noopener"
-              class="text-white text-[1.25rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49322] hover:-translate-y-1"
+              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49322] hover:-translate-y-1"
               aria-label="X"
-            ><i class="fab fa-x-twitter"></i></a>
+              ><i class="fab fa-x-twitter"></i
+            ></a>
             <a
               v-if="settings.social_youtube"
               :href="settings.social_youtube"
               target="_blank"
               rel="noopener"
-              class="text-white text-[1.25rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49322] hover:-translate-y-1"
+              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49322] hover:-translate-y-1"
               aria-label="YouTube"
-            ><i class="fab fa-youtube"></i></a>
+              ><i class="fab fa-youtube"></i
+            ></a>
             <a
               v-if="settings.social_pinterest"
               :href="settings.social_pinterest"
               target="_blank"
               rel="noopener"
-              class="text-white text-[1.25rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49322] hover:-translate-y-1"
+              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49322] hover:-translate-y-1"
               aria-label="Pinterest"
-            ><i class="fab fa-pinterest-p"></i></a>
+              ><i class="fab fa-pinterest-p"></i
+            ></a>
           </div>
 
-          <!-- Welcome Message (Centered) -->
-          <div class="welcome order-2 md:order-1 text-xs sm:text-sm md:text-base mx-auto">
+          <!-- Welcome Message (Below icons on mobile, Centered on desktop) -->
+          <div
+            class="welcome text-[0.7rem] sm:text-sm md:text-base text-center md:flex-1 order-2 md:order-2"
+          >
             Welcome to
             <span class="highlight">
               <span class="brand-text">Festive Express</span>
-              <svg class="underline-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 150" preserveAspectRatio="none">
-                <path d="M7.7,145.6C109,125,299.9,116.2,401,121.3c42.1,2.2,87.6,11.8,87.3,25.7" />
+              <svg
+                class="underline-svg"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 500 150"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M7.7,145.6C109,125,299.9,116.2,401,121.3c42.1,2.2,87.6,11.8,87.3,25.7"
+                />
               </svg>
             </span>
           </div>
 
-          <!-- Spacer div to keep grid center mathematically aligned -->
-          <div class="hidden md:block order-3"></div>
+          <!-- Empty div to balance the layout (desktop only) -->
+          <div class="hidden md:block shrink-0 w-[180px] order-3"></div>
         </div>
       </div>
     </div>
@@ -68,30 +87,72 @@
     <!-- Main Header -->
     <div class="bg-white py-3 md:py-4 transition-all duration-300 w-full">
       <div class="container mx-auto px-4">
-        <div class="flex items-center justify-between gap-2.5 md:gap-8 flex-nowrap">
+        <div
+          class="flex items-center justify-between gap-2.5 md:gap-8 flex-nowrap"
+        >
           <!-- Logo -->
-          <NuxtLink to="/" class="flex flex-col items-start md:items-center gap-1 text-transparent">
-            <img src="/Images/FE-Logo.png" alt="FLP Express Logo" class="max-h-[42px] sm:max-h-[48px] lg:max-h-[70px]">
-            <p class="m-0 text-[0.75rem] md:text-base text-[#1d3156] font-semibold text-center">Rent • Relax • Celebrate</p>
+          <NuxtLink
+            to="/"
+            class="flex flex-col items-start md:items-center gap-1 text-transparent shrink-0"
+          >
+            <img
+              src="/Images/FE-Logo.png"
+              alt="FLP Express Logo"
+              class="max-h-[42px] sm:max-h-[48px] lg:max-h-[70px]"
+            />
+            <p
+              class="m-0 text-[0.75rem] md:text-base text-[#1d3156] font-semibold text-center"
+            >
+              Rent • Relax • Celebrate
+            </p>
           </NuxtLink>
 
           <!-- Desktop nav -->
-          <nav class="hidden md:block">
-            <ul class="flex gap-4 lg:gap-8 list-none p-0 m-0">
-              <li><NuxtLink to="/" class="text-[#1a2b4a] no-underline px-2.5 lg:px-4 py-2 font-medium transition-colors hover:text-[#ff7a00]">Home</NuxtLink></li>
-              <li><NuxtLink to="/packages" class="text-[#1a2b4a] no-underline px-2.5 lg:px-4 py-2 font-medium transition-colors hover:text-[#ff7a00]">Packages</NuxtLink></li>
-              <li><NuxtLink to="/how-it-works" class="text-[#1a2b4a] no-underline px-2.5 lg:px-4 py-2 font-medium transition-colors hover:text-[#ff7a00]">How It Works</NuxtLink></li>
-              <li><NuxtLink to="/contact" class="text-[#1a2b4a] no-underline px-2.5 lg:px-4 py-2 font-medium transition-colors hover:text-[#ff7a00]">Contact Us</NuxtLink></li>
+          <nav class="hidden md:block flex-1">
+            <ul class="flex justify-center gap-4 lg:gap-8 list-none p-0 m-0">
+              <li>
+                <NuxtLink
+                  to="/"
+                  class="text-[#1a2b4a] no-underline px-2.5 lg:px-4 py-2 font-medium transition-colors hover:text-[#ff7a00]"
+                  >Home</NuxtLink
+                >
+              </li>
+              <li>
+                <NuxtLink
+                  to="/packages"
+                  class="text-[#1a2b4a] no-underline px-2.5 lg:px-4 py-2 font-medium transition-colors hover:text-[#ff7a00]"
+                  >Packages</NuxtLink
+                >
+              </li>
+              <li>
+                <NuxtLink
+                  to="/how-it-works"
+                  class="text-[#1a2b4a] no-underline px-2.5 lg:px-4 py-2 font-medium transition-colors hover:text-[#ff7a00]"
+                  >How It Works</NuxtLink
+                >
+              </li>
+              <li>
+                <NuxtLink
+                  to="/contact"
+                  class="text-[#1a2b4a] no-underline px-2.5 lg:px-4 py-2 font-medium transition-colors hover:text-[#ff7a00]"
+                  >Contact Us</NuxtLink
+                >
+              </li>
             </ul>
           </nav>
 
           <!-- Right actions -->
           <div class="flex items-center gap-3 shrink-0">
-            <a :href="`tel:${String(settings.contact_phone || '').replace(/[^\d+]/g, '')}`" class="contact-box btn-secondary-2">
+            <a
+              :href="`tel:${String(settings.contact_phone || '').replace(/[^\d+]/g, '')}`"
+              class="contact-box btn-secondary-2"
+            >
               <span class="phone-icon"><i class="fas fa-phone"></i></span>
               <div class="contact-text">
                 <div class="call-now">CALL US NOW!</div>
-                <div class="phone-number">{{ settings.contact_phone_display || '(941) 239-4722' }}</div>
+                <div class="phone-number">
+                  {{ settings.contact_phone_display || "(941) 239-4722" }}
+                </div>
               </div>
             </a>
 
@@ -111,18 +172,51 @@
         </div>
 
         <!-- Mobile nav -->
-        <nav 
+        <nav
           class="md:hidden overflow-hidden transition-[max-height] duration-300 ease-in-out"
           :class="mobileOpen ? 'max-h-[420px]' : 'max-h-0'"
         >
           <ul class="list-none m-0 pt-3 pb-2 px-0">
-            <li><NuxtLink to="/" class="block py-3 px-1 text-[#0c2340] no-underline font-semibold border-b border-gray-200 hover:text-[#F49322]" @click="mobileOpen = false">Home</NuxtLink></li>
-            <li><NuxtLink to="/packages" class="block py-3 px-1 text-[#0c2340] no-underline font-semibold border-b border-gray-200 hover:text-[#F49322]" @click="mobileOpen = false">Packages</NuxtLink></li>
-            <li><NuxtLink to="/how-it-works" class="block py-3 px-1 text-[#0c2340] no-underline font-semibold border-b border-gray-200 hover:text-[#F49322]" @click="mobileOpen = false">How It Works</NuxtLink></li>
-            <li><NuxtLink to="/contact" class="block py-3 px-1 text-[#0c2340] no-underline font-semibold border-b border-gray-200 hover:text-[#F49322]" @click="mobileOpen = false">Contact Us</NuxtLink></li>
+            <li>
+              <NuxtLink
+                to="/"
+                class="block py-3 px-1 text-[#0c2340] no-underline font-semibold border-b border-gray-200 hover:text-[#F49322]"
+                @click="mobileOpen = false"
+                >Home</NuxtLink
+              >
+            </li>
+            <li>
+              <NuxtLink
+                to="/packages"
+                class="block py-3 px-1 text-[#0c2340] no-underline font-semibold border-b border-gray-200 hover:text-[#F49322]"
+                @click="mobileOpen = false"
+                >Packages</NuxtLink
+              >
+            </li>
+            <li>
+              <NuxtLink
+                to="/how-it-works"
+                class="block py-3 px-1 text-[#0c2340] no-underline font-semibold border-b border-gray-200 hover:text-[#F49322]"
+                @click="mobileOpen = false"
+                >How It Works</NuxtLink
+              >
+            </li>
+            <li>
+              <NuxtLink
+                to="/contact"
+                class="block py-3 px-1 text-[#0c2340] no-underline font-semibold border-b border-gray-200 hover:text-[#F49322]"
+                @click="mobileOpen = false"
+                >Contact Us</NuxtLink
+              >
+            </li>
           </ul>
-          <a :href="`tel:${String(settings.contact_phone || '').replace(/[^\d+]/g, '')}`" class="mobile-call" @click="mobileOpen = false">
-            <i class="fas fa-phone-alt"></i> {{ settings.contact_phone_display || '(941) 239-4722' }}
+          <a
+            :href="`tel:${String(settings.contact_phone || '').replace(/[^\d+]/g, '')}`"
+            class="mobile-call"
+            @click="mobileOpen = false"
+          >
+            <i class="fas fa-phone-alt"></i>
+            {{ settings.contact_phone_display || "(941) 239-4722" }}
           </a>
         </nav>
       </div>
@@ -131,32 +225,35 @@
 </template>
 
 <script setup lang="ts">
-const { settings, loadSettings, telHref } = useSettings()
+const { settings, loadSettings, telHref } = useSettings();
 
-const mobileOpen = ref(false)
+const mobileOpen = ref(false);
 
-const { cartTotal, cartCount, loadCart } = useCart()
+const { cartTotal, cartCount, loadCart } = useCart();
 
-const router = useRouter()
-const route = useRoute()
+const router = useRouter();
+const route = useRoute();
 
 const scrollTo = async (id: string) => {
-  if (route.path !== '/') {
-    await navigateTo({ path: '/', hash: `#${id}` })
+  if (route.path !== "/") {
+    await navigateTo({ path: "/", hash: `#${id}` });
   }
-  await nextTick()
-  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
-}
+  await nextTick();
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+};
 
 onMounted(() => {
-  loadCart()
-  loadSettings()
-})
+  loadCart();
+  loadSettings();
+});
 
 // Close menu on route change
-watch(() => route.fullPath, () => {
-  mobileOpen.value = false
-})
+watch(
+  () => route.fullPath,
+  () => {
+    mobileOpen.value = false;
+  },
+);
 </script>
 
 <style scoped>
@@ -198,18 +295,36 @@ watch(() => route.fullPath, () => {
 }
 
 @keyframes pulseText {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.03); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
 }
 
 @keyframes drawLine {
-  0% { stroke-dashoffset: 800; }
-  25% { stroke-dashoffset: 0; }
-  70% { stroke-dashoffset: 0; }
-  80% { stroke-dashoffset: 0; opacity: 1; }
-  100% { stroke-dashoffset: 800; opacity: 0.6; }
+  0% {
+    stroke-dashoffset: 800;
+  }
+  25% {
+    stroke-dashoffset: 0;
+  }
+  70% {
+    stroke-dashoffset: 0;
+  }
+  80% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 800;
+    opacity: 0.6;
+  }
 }
 
+/* Contact Box Styles */
 .contact-box {
   display: flex;
   align-items: center;
@@ -247,28 +362,34 @@ watch(() => route.fullPath, () => {
   font-family: inherit;
   background: linear-gradient(180deg, #ff890b 0%, #ff890b 50%, #ff890b 100%);
   border: none;
-  box-shadow: 
+  box-shadow:
     0 6px 12px rgba(0, 0, 0, 0.35),
     inset 0 2px 3px rgba(255, 255, 255, 0.6);
   position: relative;
   overflow: hidden;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .contact-box.btn-secondary-2::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 2px;
   left: 6px;
   right: 6px;
   height: 45%;
   border-radius: 40px 40px 20px 20px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.05) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
   pointer-events: none;
 }
 
 .contact-box.btn-secondary-2::after {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   left: -150%;
@@ -289,7 +410,7 @@ watch(() => route.fullPath, () => {
 
 .contact-box.btn-secondary-2:hover {
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     0 8px 16px rgba(0, 0, 0, 0.4),
     inset 0 2px 4px rgba(255, 255, 255, 0.8);
 }
@@ -347,20 +468,38 @@ watch(() => route.fullPath, () => {
 
 /* Mobile adjustments for contact button */
 @media (max-width: 768px) {
-  .contact-box .contact-text { 
-    display: none; 
+  .contact-box .contact-text {
+    display: none;
   }
-  .contact-box { 
-    padding: 8px; 
-    border-radius: 50%; 
-    background: rgba(12, 35, 64, 0.08); 
+  .contact-box {
+    padding: 8px;
+    border-radius: 50%;
+    background: rgba(12, 35, 64, 0.08);
   }
-  .contact-box .phone-icon { 
-    font-size: 1.15rem; 
+  .contact-box .phone-icon {
+    font-size: 1.15rem;
   }
-  .underline-svg { 
-    height: 12px; 
-    bottom: -4px; 
+  .underline-svg {
+    height: 12px;
+    bottom: -4px;
+  }
+}
+
+@keyframes glossyShineContinuous {
+  0% {
+    transform: rotate(25deg) translateX(-100%);
+  }
+  100% {
+    transform: rotate(25deg) translateX(100%);
+  }
+}
+
+@keyframes festive-express-animation-pulse-grow {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.05);
   }
 }
 </style>
