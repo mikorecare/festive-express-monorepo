@@ -52,7 +52,7 @@
         <div class="horizontal-layout grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <!-- Left: image + hotspots + colors -->
           <div class="media-column lg:col-span-7 flex flex-col bg-white rounded-xl shadow-sm border border-slate-100">
-            <div class="image-wrapper relative bg-slate-100 group" @click="openLightbox(pkg)">
+            <div class="image-wrapper relative bg-slate-100 group" @click.stop="onPackageImageClick(pkg)">
               <img
                 :src="selectedImage(pkg)"
                 :alt="pkg.name"
@@ -97,16 +97,34 @@
                 />
               </button>
 
+              <!-- Click outside to close -->
+              <div
+                v-if="getActiveSpot(pkg)"
+                class="fixed inset-0 z-30"
+                aria-hidden="true"
+                @click.stop="activeHotspot[String(pkg.id)] = null"
+              />
+
               <!-- Hotspot popup -->
               <div
                 v-if="getActiveSpot(pkg)"
-                class="hotspot-popup absolute z-40 w-44 bg-white rounded-xl shadow-2xl border border-slate-100 overflow-hidden -translate-x-1/2 -translate-y-[110%]"
+                class="hotspot-popup absolute z-40 w-44 rounded-xl shadow-2xl border border-slate-100 overflow-hidden -translate-x-1/2 -translate-y-[110%]"
                 :style="{
                   top: getActiveSpot(pkg)?.top,
                   left: getActiveSpot(pkg)?.left,
                 }"
                 @click.stop
               >
+                <!-- Glossy shine -->
+                <div
+                  class="pointer-events-none absolute inset-0 overflow-hidden rounded-xl"
+                  aria-hidden="true"
+                >
+                  <div
+                    class="absolute -top-1/2 -left-[150%] w-[200%] h-[200%] bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.45)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] rotate-[25deg] animate-[glossyShineContinuous_3s_linear_infinite]"
+                  />
+                </div>
+                
                 <button
                   type="button"
                   class="absolute top-1.5 right-1.5 z-10 w-5 h-5 rounded-full bg-slate-900 text-white text-xs flex items-center justify-center opacity-80 hover:bg-[#F49322]"
@@ -116,7 +134,7 @@
                 </button>
                 <div
                   v-if="getActiveSpot(pkg)?.thumb"
-                  class="w-full h-24 bg-slate-100 p-2 flex items-center justify-center"
+                  class="w-full h-24 p-2 flex items-center justify-center"
                 >
                   <img
                     :src="getActiveSpot(pkg)?.thumb"
@@ -125,11 +143,12 @@
                   />
                 </div>
                 <div class="p-2.5 text-center">
-                  <h4 class="text-xs font-bold text-slate-900 leading-tight">
+                  <h4 class="text-xs font-bold text-white-900 leading-tight">
                     {{ getActiveSpot(pkg)?.label }}
                   </h4>
                 </div>
               </div>
+
             </div>
 
             <!-- C-9 colors from SKUs -->
@@ -762,6 +781,16 @@ const openLightbox = (pkg: PackageRow) => {
 const closeLightbox = () => {
   activeLightboxImage.value = null
   if (import.meta.client) document.body.style.overflow = ''
+}
+
+const onPackageImageClick = (pkg: PackageRow) => {
+  // Hotspot open → close it, do NOT open lightbox
+  if (getActiveSpot(pkg)) {
+    activeHotspot.value[String(pkg.id)] = null
+    return
+  }
+  // No hotspot → open lightbox
+  openLightbox(pkg)
 }
 
 

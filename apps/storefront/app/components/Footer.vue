@@ -18,7 +18,7 @@
           >
             CONTACT US
           </h4>
-          <p class="text-slate-300 mb-2.5">packages@festive.express</p>
+          <p class="text-slate-300 mb-2.5">{{ settings.contact_email }}</p>
           <p class="text-slate-300 mb-2.5">
             {{ settings.contact_phone_display || "(941) 239-4722" }}
           </p>

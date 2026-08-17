@@ -30,17 +30,16 @@
               <div class="text-3xl shrink-0">✉️</div>
               <div class="text-slate-700 leading-normal">
                 <strong class="text-navy font-semibold">Contact Us</strong><br>
-                Call us: <span class="font-semibold text-brand-orange">(941) 239-4722</span><br>
-                packages@festive.express
+                Call us: <span class="font-semibold text-brand-orange">{{ settings.contact_phone_display || "(941) 239-4722" }}</span><br>
+                {{ settings.contact_email }}
               </div>
             </div>
 
             <div class="bg-slate-50 p-3.5 rounded-xl flex items-center gap-4.5 border border-slate-100">
               <div class="text-3xl shrink-0">🕒</div>
-              <div class="text-slate-700 leading-normal">
+              <div class="text-slate-700 leading-normal whitespace-pre-line">
                 <strong class="text-navy font-semibold">Opening Hours</strong><br>
-                Mon - Sat: 7:00 am - 8:00 pm<br>
-                Sunday: 8:00 am - 6:00 pm
+                  {{ settings.opening_hours }}
               </div>
             </div>
           </div>
@@ -112,6 +111,8 @@
 useHead({
   title: 'Contact Us - Festive Express'
 })
+
+const { settings, loadSettings, telHref } = useSettings();
 
 const form = ref({
   firstName: '',

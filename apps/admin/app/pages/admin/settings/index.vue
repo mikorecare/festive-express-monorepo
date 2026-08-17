@@ -62,6 +62,20 @@
             placeholder="Sarasota, FL"
           />
         </div>
+
+        <div class="mb-1">
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">
+            Opening hours
+          </label>
+          <textarea
+            v-model="form.opening_hours"
+            rows="3"
+            class="field"
+            placeholder="Mon - Sat: 7:00 am - 8:00 pm&#10;Sunday: 8:00 am - 6:00 pm"
+          />
+          <p class="text-xs text-slate-400 mt-1">Shown on contact / footer</p>
+        </div>
+
       </div>
 
       <!-- Social -->
@@ -98,6 +112,8 @@ type SettingsForm = {
   contact_phone: string
   contact_phone_display: string
   contact_address: string
+  opening_hours: string
+
   social_facebook: string
   social_instagram: string
   social_x: string
@@ -121,6 +137,8 @@ const SETTING_KEYS: (keyof SettingsForm)[] = [
   'contact_phone',
   'contact_phone_display',
   'contact_address',
+  'opening_hours',
+  
   'social_facebook',
   'social_instagram',
   'social_x',
@@ -142,6 +160,8 @@ const form = ref<SettingsForm>({
   contact_phone: '',
   contact_phone_display: '',
   contact_address: '',
+  opening_hours: '',
+  
   social_facebook: '',
   social_instagram: '',
   social_x: '',
@@ -162,6 +182,8 @@ const emptyForm = (): SettingsForm => ({
   contact_phone: '',
   contact_phone_display: '',
   contact_address: '',
+  opening_hours: '',
+
   social_facebook: '',
   social_instagram: '',
   social_x: '',

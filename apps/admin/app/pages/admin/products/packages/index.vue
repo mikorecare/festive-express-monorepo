@@ -26,6 +26,23 @@
       :show-toolbar="false"
       @page-change="onPageChange"
     >
+      <template #cell-image_url="{ item }">
+        <div class="flex justify-center">
+          <img
+            v-if="item.image_url"
+            :src="getImageUrl(item.image_url)"
+            :alt="item.name"
+            class="w-14 h-14 object-cover rounded-lg border border-slate-200"
+          />
+          <span
+            v-else
+            class="w-14 h-14 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-xs text-slate-400"
+          >
+            —
+          </span>
+        </div>
+      </template>
+
       <template #cell-name="{ item }">
         <span class="font-semibold text-navy">{{ item.name }}</span>
       </template>
@@ -84,6 +101,8 @@
 
 <script setup lang="ts">
 import type { Column } from "~/components/FestiveTable.vue";
+const config = useRuntimeConfig()
+
 type PackageRow = {
   id: string | number;
   name: string;
@@ -92,12 +111,14 @@ type PackageRow = {
   sort_order?: number | null;
   is_popular?: boolean;
   is_active?: boolean;
+  image_url?: string | null
 };
 
 const supabase = useSupabaseClient();
 
 const columns: Column[] = [
   { key: "sort_order", label: "Order", align: "center" },
+  { key: 'image_url', label: 'Image', align: 'center' },
   { key: "name", label: "Name", sortable: true },
   { key: "slug", label: "Slug" },
   { key: "price", label: "Base Price", align: "right" },
@@ -125,7 +146,7 @@ const loadPackages = async () => {
 
     const { data, error, count } = await supabase
       .from("packages")
-      .select("id, name, slug, price, sort_order, is_popular, is_active", {
+      .select("id, name, slug, price, sort_order, is_popular, is_active, image_url", {
         count: "exact",
       })
       .order("sort_order", { ascending: true })
@@ -147,6 +168,18 @@ const onPageChange = (page: number) => {
   currentPage.value = page;
   loadPackages();
 };
+
+const getImageUrl = (url?: string | null) => {
+  if (!url) return ''
+  if (url.startsWith('http') || url.startsWith('/')) return url
+  const path = url.replace(/^\/+/, '')
+  const supabaseUrl =
+    (config.public as any).supabaseUrl ||
+    (config.public as any).supabase?.url ||
+    ''
+  const bucket = ((config.public as any).storageBucket as string) || 'Products'
+  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`
+}
 
 onMounted(loadPackages);
 </script>

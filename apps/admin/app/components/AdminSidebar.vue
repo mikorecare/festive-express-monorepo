@@ -159,9 +159,9 @@
       class="flex-shrink-0 px-4 py-3 bg-slate-800/50 mx-3 rounded-lg mb-2"
     >
       <p class="font-semibold text-sm text-white truncate">{{ user.email }}</p>
-      <p class="text-xs text-slate-400 truncate">
+      <!-- <p class="text-xs text-slate-400 truncate">
         ID: {{ user.UID?.substring(0, 8) }}
-      </p>
+      </p> -->
     </div>
 
     <!-- Logout Button - Fixed at bottom -->
