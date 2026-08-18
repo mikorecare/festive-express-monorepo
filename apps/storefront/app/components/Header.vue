@@ -59,7 +59,6 @@
             ></a>
           </div>
 
-          <!-- Welcome Message (Below icons on mobile, Centered on desktop) -->
           <div
             class="welcome text-[0.7rem] sm:text-sm md:text-base text-center md:flex-1 order-2 md:order-2"
           >
