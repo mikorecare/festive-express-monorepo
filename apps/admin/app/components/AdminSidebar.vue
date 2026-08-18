@@ -143,6 +143,79 @@
         <span v-if="!isCollapsed">Customers</span>
       </NuxtLink>
 
+      <!-- Configuration with Submenu -->
+      <div class="relative">
+        <div
+          @click="toggleConfiguration"
+          class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg cursor-pointer select-none"
+          :class="{ 'bg-brand-orange text-navy': isConfigurationSection }"
+        >
+          <WrenchScrewdriverIcon class="h-5 w-5" />
+          <span v-if="!isCollapsed" class="flex-1">Configuration</span>
+          <span
+            v-if="!isCollapsed"
+            class="text-xs transition-transform duration-300"
+            :class="{ 'rotate-180': isConfigurationOpen }"
+          >
+            ▼
+          </span>
+        </div>
+
+        <div
+          v-if="!isCollapsed"
+          class="ml-4 mt-1 space-y-1 border-l-2 border-brand-orange/30 pl-3 overflow-hidden transition-all duration-300 ease-in-out"
+          :class="isConfigurationOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'"
+        >
+          <NuxtLink
+            to="/admin/configuration/how-it-works"
+            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path.startsWith('/admin/configuration/how-it-works')
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
+          >
+            How It Works
+          </NuxtLink>
+
+          <NuxtLink
+            to="/admin/configuration/about-us"
+            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path.startsWith('/admin/configuration/about-us')
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
+          >
+            About Us
+          </NuxtLink>
+
+          <NuxtLink
+            to="/admin/configuration/privacy-policy"
+            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path.startsWith('/admin/configuration/privacy-policy')
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
+          >
+            Privacy Policy
+          </NuxtLink>
+
+          <NuxtLink
+            to="/admin/configuration/terms-of-use"
+            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path.startsWith('/admin/configuration/terms-of-use')
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
+          >
+            Terms of Use
+          </NuxtLink>
+        </div>
+      </div>
+
       <NuxtLink
         to="/admin/settings"
         class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg"
@@ -225,6 +298,9 @@ import {
   UserIcon,
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
+
+  WrenchScrewdriverIcon,
+
 } from "@heroicons/vue/24/outline";
 
 const route = useRoute();
@@ -263,4 +339,16 @@ const isProductsSection = computed(() =>
     "/admin/inclusions",
   ].some((p) => route.path.startsWith(p)),
 );
+
+
+const isConfigurationOpen = ref(false); // closed by default
+
+const toggleConfiguration = () => {
+  isConfigurationOpen.value = !isConfigurationOpen.value;
+};
+
+const isConfigurationSection = computed(() =>
+  route.path.startsWith("/admin/configuration"),
+);
+
 </script>

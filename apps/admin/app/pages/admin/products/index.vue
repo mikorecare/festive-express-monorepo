@@ -216,7 +216,7 @@ const loadProducts = async () => {
     let query = supabase
       .from("products")
       .select("*, categories(id, name)", { count: "exact" })
-      .order("id", { ascending: false })
+      .order("created_at", { ascending: false })
       .range(
         (currentPage.value - 1) * itemsPerPage.value,
         currentPage.value * itemsPerPage.value - 1,

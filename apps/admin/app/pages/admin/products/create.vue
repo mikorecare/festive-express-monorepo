@@ -1,186 +1,282 @@
 <template>
-  <div class="create-product-page">
-    <div class="page-header">
-      <h1 class="text-2xl font-bold text-[#0c2340]">Add New Product</h1>
-      <div class="header-actions">
-        <button class="btn-secondary" @click="$router.back()">Cancel</button>
-        <!-- <button class="btn-primary" @click="saveProduct">Publish Product</button> -->
-        <button class="btn-primary" :disabled="isSaving" @click="saveProduct">
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Add New Product</h1>
+        <p class="text-sm text-gray-500 mt-1">Create product details and variations</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button
+          type="button"
+          class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+          @click="$router.back()"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="px-5 py-2 bg-brand-orange hover:bg-orange-600 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          :disabled="isSaving"
+          @click="saveProduct"
+        >
           {{ isSaving ? 'Publishing...' : 'Publish Product' }}
         </button>
       </div>
     </div>
 
-    <div class="form-grid">
+    <!-- Main Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Main Form -->
-      <div class="main-form">
-        <div class="form-section">
-          <label class="form-label">Product Name <span class="required">*</span></label>
-          <input v-model="product.name" type="text" placeholder="Enter Product Name" required>
-        </div>
-
-        <div class="form-section">
-          <label class="form-label">Description</label>
-          <textarea v-model="product.description" rows="6" placeholder="Write detailed product description..."></textarea>
-        </div>
-
-        <div class="form-row">
-          <div class="form-section">
-            <label class="form-label">Price ($)</label>
-            <input v-model="product.price" type="number" step="0.01" placeholder="0.00">
+      <div class="lg:col-span-2 space-y-6">
+        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6">
+          <!-- Name -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-2">
+              Product Name <span class="text-red-500">*</span>
+            </label>
+            <input
+              v-model="product.name"
+              type="text"
+              placeholder="e.g. American Flag Waving LED Patriotic Metal Frame"
+              class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 text-sm"
+              required
+            >
           </div>
-          <div class="form-section">
-            <label class="form-label">Stock Quantity</label>
-            <input v-model="product.stock" type="number" placeholder="0">
-          </div>
-        </div>
 
-        <div class="form-row">
-          <div class="form-section">
-            <label class="form-label">SKU</label>
-            <input v-model="product.sku" type="text" placeholder="FLP-XPRS-001">
-            <button type="button" @click="generateSKU" class="btn-generate">Auto Generate SKU</button>
+          <!-- Description -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-2">Description</label>
+            <textarea
+              v-model="product.description"
+              rows="5"
+              placeholder="Write detailed product description..."
+              class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 text-sm"
+            />
           </div>
-          <!-- <div class="form-section">
-            <label class="form-label">Category</label>
-            <select v-model="product.category">
-              <option value="">Select Category</option>
-              <option value="Patriotic">Patriotic</option>
-              <option value="Roofline">Roofline Lighting</option>
-              <option value="Ground">Ground & Shrub</option>
-              <option value="Wreath">Wreaths & Garlands</option>
-              <option value="Tree">Tree Lighting</option>
-            </select>
-          </div> -->
 
-          <div class="form-section">
-            <label class="form-label">Category</label>
-            <select v-model="product.category_id" required>
-              <option value="">Select Category</option>
-              <option 
-                v-for="cat in categories" 
-                :key="cat.id" 
-                :value="cat.id"
+          <!-- Price & Stock -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-gray-800 mb-2">Price ($)</label>
+              <input
+                v-model="product.price"
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 text-sm"
               >
-                {{ cat.name }}
-              </option>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-800 mb-2">Stock Quantity</label>
+              <input
+                v-model="product.stock"
+                type="number"
+                placeholder="0"
+                class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 text-sm"
+              >
+            </div>
+          </div>
+
+          <!-- SKU & Category -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-gray-800 mb-2">SKU</label>
+              <div class="flex gap-2">
+                <input
+                  v-model="product.sku"
+                  type="text"
+                  placeholder="FLP-XPRS-001"
+                  class="flex-1 px-3.5 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 text-sm"
+                >
+                <button
+                  type="button"
+                  class="px-3 py-2 text-xs font-semibold border border-gray-300 rounded-lg hover:bg-gray-50 whitespace-nowrap"
+                  @click="generateSKU"
+                >
+                  Auto SKU
+                </button>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-800 mb-2">Category</label>
+              <select
+                v-model="product.category_id"
+                class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 text-sm bg-white"
+              >
+                <option :value="null">Select Category</option>
+                <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+                  {{ cat.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Status -->
+          <div>
+            <label class="block text-sm font-semibold text-gray-800 mb-2">Status</label>
+            <select
+              v-model="product.status"
+              class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 text-sm bg-white"
+            >
+              <option value="publish">Published</option>
+              <option value="draft">Draft</option>
             </select>
           </div>
 
-        </div>
+          <!-- Variations -->
+          <div class="pt-4 border-t border-gray-200">
+            <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+              <input
+                v-model="product.has_variations"
+                type="checkbox"
+                class="w-4 h-4 text-brand-orange rounded border-gray-300 focus:ring-brand-orange"
+              >
+              <span class="text-sm font-semibold text-gray-800">
+                This product has variations (Color, Size, etc.)
+              </span>
+            </label>
 
-
-        <div class="form-section">
-          <label class="form-label">Status</label>
-          <select v-model="product.status">
-            <option value="publish">Published</option>
-            <option value="draft">Draft</option>
-          </select>
-          
-        </div>
-
-        <!-- Has Variations -->
-        <div class="form-section mt-4 variations">
-          <label class="checkbox-label">
-            <input class="hasVariations w-auto" type="checkbox" v-model="product.has_variations">
-            This product has variations (Color, Size, etc.)
-          </label>
-
-          <!-- Variations Section -->
-          <div v-if="product.has_variations" class="variations-section">
-            <label class="form-label">Variations</label>
-            
-            <div v-for="(variation, vIndex) in product.variations" :key="vIndex" class="variation-group mb-5">
-              <div class="variation-header">
-                <input 
-                  v-model="variation.name" 
-                  placeholder="Variation Name (e.g. Color)" 
-                  class="variation-name"
-                >
-                <button type="button" @click="removeVariation(vIndex)" class="remove-variation-btn">Remove</button>
-              </div>
-              
-              <div class="options-list">
-                <div v-for="(option, oIndex) in variation.options" :key="oIndex" class="option-row">
-                  <input 
-                    v-model="option.name" 
-                    placeholder="Option (e.g. Warm White)"
-                    class="option-input variation-input"
+            <div v-if="product.has_variations" class="mt-4 space-y-4">
+              <div
+                v-for="(variation, vIndex) in product.variations"
+                :key="vIndex"
+                class="p-4 bg-gray-50 border border-gray-200 rounded-lg space-y-3"
+              >
+                <div class="flex items-center gap-3">
+                  <input
+                    v-model="variation.name"
+                    placeholder="Variation Name (e.g. Color)"
+                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-brand-orange text-sm bg-white"
                   >
-                  
-                  <input 
-                    type="file" 
-                    @change="uploadOptionImage(vIndex, oIndex, $event)" 
-                    accept="image/*"
-                    class="option-image-input"
+                  <button
+                    type="button"
+                    class="px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded-lg transition-colors"
+                    @click="removeVariation(vIndex)"
                   >
-                  
-                  <img 
-                    v-if="option.image_url" 
-                    :src="getImageUrl(option.image_url)" 
-                    class="option-preview"
-                  >
-                  
-                  <button type="button" @click="removeOption(vIndex, oIndex)" class="remove-btn">×</button>
+                    Remove Group
+                  </button>
                 </div>
+
+                <div class="space-y-2">
+                  <div
+                    v-for="(option, oIndex) in variation.options"
+                    :key="oIndex"
+                    class="flex items-center gap-2"
+                  >
+                    <input
+                      v-model="option.name"
+                      type="text"
+                      placeholder="Option (e.g. Warm White)"
+                      class="flex-1 min-w-[180px] px-3.5 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-brand-orange text-sm bg-white"
+                    >
+                    <input
+                      type="file"
+                      accept="image/*"
+                      class="w-auto max-w-[220px] text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-gray-200 file:text-gray-700 hover:file:bg-gray-300 cursor-pointer shrink-0"
+                      @change="uploadOptionImage(vIndex, oIndex, $event)"
+                    >
+                    <img
+                      v-if="option.image_url"
+                      :src="getImageUrl(option.image_url, 'variations')"
+                      class="w-8 h-8 object-cover rounded-md border border-gray-300 shrink-0"
+                      alt=""
+                    >
+                    <button
+                      type="button"
+                      class="w-7 h-7 flex items-center justify-center bg-red-100 text-red-600 rounded-full hover:bg-red-200 text-sm font-bold shrink-0 transition-colors"
+                      @click="removeOption(vIndex, oIndex)"
+                    >
+                      ×
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  class="text-xs font-medium text-brand-orange hover:underline pt-1 inline-block"
+                  @click="addOption(vIndex)"
+                >
+                  + Add Option
+                </button>
               </div>
 
-              <button type="button" @click="addOption(vIndex)" class="add-option-btn">
-                + Add Option
+              <button
+                type="button"
+                class="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-sm font-medium text-gray-600 hover:border-brand-orange hover:text-brand-orange transition-colors"
+                @click="addVariation"
+              >
+                + Add New Variation Group
               </button>
             </div>
-
-            <button type="button" @click="addVariation" class="add-variation-btn">
-              + Add New Variation
-            </button>
           </div>
 
-          <!- Package ->
-          <div class="form-section mt-3">
-            <label class="checkbox-label">
-              <input type="checkbox" class="w-auto" v-model="product.is_package">
-              This is a Package
-            </label>
-          </div>
-
-          <!-- Package Type (only show if is_package is true) -->
-          <div v-if="product.is_package" class="form-section">
-            <label class="form-label">Package Type</label>
-            <select v-model="product.package_data" class="form-select">
-              <option value="">Select Package</option>
-              <option 
-                v-for="pkg in availablePackages" 
-                :key="pkg.id" 
-                :value="pkg.slug"
+          <!-- Package -->
+          <div class="pt-4 border-t border-gray-200 space-y-4">
+            <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+              <input
+                v-model="product.is_package"
+                type="checkbox"
+                class="w-4 h-4 text-brand-orange rounded border-gray-300 focus:ring-brand-orange"
               >
-                {{ pkg.package_title }}
-              </option>
-            </select>
+              <span class="text-sm font-semibold text-gray-800">This is a Package</span>
+            </label>
+
+            <div v-if="product.is_package">
+              <label class="block text-sm font-semibold text-gray-800 mb-2">Package Type</label>
+              <select
+                v-model="product.package_data"
+                class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:border-brand-orange focus:ring-2 focus:ring-brand-orange/20 text-sm bg-white"
+              >
+                <option value="">Select Package Program</option>
+                <option
+                  v-for="pkg in availablePackages"
+                  :key="pkg.id"
+                  :value="pkg.slug || pkg.package_slug"
+                >
+                  {{ pkg.package_title || pkg.name }}
+                </option>
+              </select>
+            </div>
           </div>
         </div>
-        
       </div>
 
       <!-- Sidebar -->
-      <div class="sidebar">
-        <div class="sidebar-box">
-          <label class="form-label">Featured Image</label>
-          <div class="image-upload-area" @click="triggerFileInput" @drop="handleDrop" @dragover.prevent>
-            <input ref="fileInput" type="file" accept="image/*" @change="handleImageUpload" hidden>
-            <div v-if="imagePreview" class="image-preview">
-              <img :src="imagePreview" alt="Preview">
+      <div class="space-y-6">
+        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+          <label class="block text-sm font-semibold text-gray-800">Featured Image</label>
+
+          <div
+            class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:border-brand-orange transition-colors min-h-[220px] flex flex-col items-center justify-center bg-gray-50"
+            @click="triggerFileInput"
+            @drop="handleDrop"
+            @dragover.prevent
+          >
+            <input
+              ref="fileInput"
+              type="file"
+              accept="image/*"
+              class="hidden"
+              @change="handleImageUpload"
+            >
+
+            <div v-if="imagePreview" class="relative group w-full">
+              <img
+                :src="imagePreview"
+                alt="Preview"
+                class="w-full h-48 object-cover rounded-lg border border-gray-200"
+              >
+              <div class="absolute inset-0 bg-black/40 rounded-lg opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-semibold transition-opacity">
+                Click to Replace Image
+              </div>
             </div>
-            <div v-else class="upload-placeholder">
-              <span>📸</span>
-              <p>Click or drag image here</p>
+
+            <div v-else class="space-y-2 py-4">
+              <div class="text-3xl">📷</div>
+              <p class="text-xs text-gray-500 font-medium">Click or drag featured image here</p>
             </div>
           </div>
-        </div>
-
-        <div class="sidebar-box">
-          <label class="form-label">Gallery Images (Optional)</label>
-          <input type="file" multiple accept="image/*" @change="handleGalleryUpload">
-          <small>Hold Ctrl/Cmd to select multiple</small>
         </div>
       </div>
     </div>
@@ -188,204 +284,121 @@
 </template>
 
 <script setup lang="ts">
-const { showToast } = useToast()
+interface VariationOption {
+  name: string
+  image_url?: string
+}
+
+interface ProductVariation {
+  name: string
+  options: VariationOption[]
+}
+
+interface Category {
+  id: number | string
+  name: string
+  slug?: string
+}
 
 const config = useRuntimeConfig()
+const supabase = useSupabaseClient()
+const supabaseUrl = config.public.supabaseUrl
+const bucket = config.public.storageBucket || 'Products'
+const { showToast } = useToast()
+
+const isSaving = ref(false)
+const imageFile = ref<File | null>(null)
+const imagePreview = ref<string | null>(null)
+const fileInput = ref<HTMLInputElement | null>(null)
+const categories = ref<Category[]>([])
+const availablePackages = ref<any[]>([])
 
 const product = ref({
   name: '',
   description: '',
-  price: null,
-  stock: null,
+  price: null as number | null,
+  stock: null as number | null,
   sku: '',
-  category_id: '',
+  category_id: null as number | string | null,
   status: 'publish',
   image_url: '',
-  gallery: [] as string[],
   has_variations: false,
   variations: [
-    { 
-      name: '', 
-      options: [
-        { name: '', image_url: '' }
-      ] 
-    }
-  ],
-  is_package: false,           // ← Add this
+    { name: '', options: [{ name: '', image_url: '' }] },
+  ] as ProductVariation[],
+  is_package: false,
   package_data: '',
 })
 
-const imageFile = ref<File | null>(null)
-const imagePreview = ref<string | null>(null)
-const fileInput = ref<HTMLInputElement | null>(null)
-const isSaving = ref(false)
-const categories = ref<Array<{ id: number; name: string }>>([])
+const generateSKU = () => {
+  product.value.sku = `FLP-XPRS-${Date.now().toString().slice(-6)}`
+}
 
 const triggerFileInput = () => fileInput.value?.click()
 
-const generateSKU = () => {
-  const timestamp = Date.now().toString().slice(-6)
-  product.value.sku = `FLP-XPRS-${timestamp}`
-}
-
-const availablePackages = ref<Array<{
-  id: number;
-  package_title: string;
-  slug: string;
-}>>([])
-
 const handleImageUpload = (e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0]
-  if (file) {
-    imageFile.value = file
-    imagePreview.value = URL.createObjectURL(file)
-  }
-}
-
-const handleGalleryUpload = (e: Event) => {
-  const files = (e.target as HTMLInputElement).files
-  if (files) {
-    console.log(`${files.length} gallery images selected`)
-    // TODO: Handle multiple files for gallery
-    showToast(`${files.length} gallery images selected`, 'success')
-  }
-  console.log('Gallery uploaded')
+  if (!file) return
+  imageFile.value = file
+  imagePreview.value = URL.createObjectURL(file)
 }
 
 const handleDrop = (e: DragEvent) => {
   e.preventDefault()
-  const file = e.dataTransfer?.files[0]
-  if (file) {
-    imageFile.value = file
-    imagePreview.value = URL.createObjectURL(file)
-  }
+  const file = e.dataTransfer?.files?.[0]
+  if (!file) return
+  imageFile.value = file
+  imagePreview.value = URL.createObjectURL(file)
 }
 
-const getImageUrl = (url: string | null | undefined) => {
-  if (!url) return '/Images/placeholder.png'
-  return `${useRuntimeConfig().public.imageBase}/${url}`
+const getImageUrl = (url?: string | null, folder: '' | 'variations' = '') => {
+  if (!url) return '/Images/placeholder.jpg'
+  if (url.startsWith('http')) return url
+
+  let path = url
+    .replace(/^\//, '')
+    .replace(/^products\//i, '')
+    .replace(/^Products\//i, '')
+    .replace(/^variations\//i, '')
+
+  if (url.toLowerCase().includes('variations/')) {
+    path = url
+      .replace(/^\//, '')
+      .replace(/^products\//i, '')
+      .replace(/^Products\//i, '')
+    return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`
+  }
+
+  const prefix = folder ? `${folder}/` : ''
+  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${prefix}${path}`
 }
 
 const uploadOptionImage = async (vIndex: number, oIndex: number, e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) return
 
-  const formData = new FormData()
-  formData.append('image', file)
-
   try {
-    const res: any = await $fetch('/upload/option-image', {
-      baseURL: useRuntimeConfig().public.apiBase,
-      method: 'POST',
-      body: formData
-    })
+    const fileExt = file.name.split('.').pop()
+    const fileName = `variations/${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`
 
-    // Safe assignment
-    if (product.value?.variations?.[vIndex]?.options?.[oIndex]) {
-      product.value.variations[vIndex].options[oIndex].image_url = res.path
+    const { error: uploadErr } = await supabase.storage
+      .from(bucket)
+      .upload(fileName, file, { upsert: true, contentType: file.type })
+
+    if (uploadErr) throw uploadErr
+
+    if (product.value.variations?.[vIndex]?.options?.[oIndex]) {
+      product.value.variations[vIndex].options[oIndex].image_url = fileName
     }
-  } catch (error) {
-    console.error('Failed to upload option image:', error)
-  }
-}
-
-const saveProduct = async () => {
-  if (!product.value.name?.trim()) {
-    showToast('Product name is required!', 'error')
-    return
-  }
-
-  isSaving.value = true
-
-  try {
-    const formData = new FormData()
-    formData.append('name', product.value.name)
-    formData.append('description', product.value.description || '')
-    formData.append('price', String(product.value.price || '0'))
-    formData.append('stock', String(product.value.stock || '0'))
-    formData.append('sku', product.value.sku || '')
-    formData.append('category_id', String(product.value.category_id || ''))
-    formData.append('status', product.value.status)
-    formData.append('has_variations', product.value.has_variations ? '1' : '0')
-    formData.append('is_package', product.value.is_package ? '1' : '0')
-    formData.append('package_data', product.value.package_data || '')
-
-    if (imageFile.value) {
-      formData.append('image', imageFile.value)
-    }
-
-    if (product.value.has_variations && product.value.variations) {
-      formData.append('variations', JSON.stringify(product.value.variations))
-    }
-
-    // Token for auth:sanctum
-    const token =
-      useCookie('auth_token').value ||
-      (import.meta.client ? localStorage.getItem('token') : null)
-
-    console.log('TOKEN:', token)
-
-    if (!token) {
-      showToast('Please login again', 'error')
-      navigateTo('/login')
-      return
-    }
-
-    const response = await $fetch('/products', {
-      baseURL: config.public.apiBase,
-      method: 'POST',
-      body: formData,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json'
-        // Do NOT set Content-Type — browser sets multipart boundary for FormData
-      }
-    })
-
-    showToast('✅ Product published successfully!', 'success')
-    resetForm()
-    navigateTo('/admin/products')
+    showToast('Option image uploaded', 'success')
   } catch (error: any) {
     console.error(error)
-    showToast(error.data?.message || 'Failed to save product', 'error')
-  } finally {
-    isSaving.value = false
+    showToast(error?.message || 'Failed to upload option image', 'error')
   }
 }
 
-const resetForm = () => {
-  product.value = {
-    name: '',
-    description: '',
-    price: null,
-    stock: null,
-    sku: '',
-    category_id: '',
-    status: 'publish',
-    image_url: '',
-    gallery: [],
-    has_variations: false,
-    variations: [
-      { 
-        name: '', 
-        options: [
-          { name: '', image_url: '' }
-        ] 
-      }
-    ],
-    is_package: false,
-    package_data: ''
-  }
-  imageFile.value = null
-  imagePreview.value = null
-}
-
-// Variations
 const addVariation = () => {
-  product.value.variations.push({ 
-    name: '', 
-    options: [{ name: '', image_url: '' }] 
-  })
+  product.value.variations.push({ name: '', options: [{ name: '', image_url: '' }] })
 }
 
 const removeVariation = (vIndex: number) => {
@@ -395,234 +408,99 @@ const removeVariation = (vIndex: number) => {
 }
 
 const addOption = (vIndex: number) => {
-  if (product.value.variations[vIndex]) {
-    product.value.variations[vIndex].options.push({ name: '', image_url: '' })
-  }
+  product.value.variations[vIndex]?.options.push({ name: '', image_url: '' })
 }
 
 const removeOption = (vIndex: number, oIndex: number) => {
-  if (product.value.variations[vIndex] && product.value.variations[vIndex].options.length > 1) {
-    product.value.variations[vIndex].options.splice(oIndex, 1)
+  const opts = product.value.variations[vIndex]?.options
+  if (opts && opts.length > 1) opts.splice(oIndex, 1)
+}
+
+const saveProduct = async () => {
+  if (!product.value.name?.trim()) {
+    showToast('Product name is required', 'error')
+    return
+  }
+
+  isSaving.value = true
+  try {
+    let finalImageUrl = product.value.image_url
+
+    if (imageFile.value) {
+      const fileExt = imageFile.value.name.split('.').pop()
+      const baseName = imageFile.value.name
+        .replace(/\.[^/.]+$/, '')
+        .replace(/[^a-zA-Z0-9_-]/g, '_')
+      const fileName = `${Date.now()}_${baseName}.${fileExt}`
+
+      const { error: uploadErr } = await supabase.storage
+        .from(bucket)
+        .upload(fileName, imageFile.value, {
+          upsert: true,
+          contentType: imageFile.value.type,
+        })
+
+      if (uploadErr) throw uploadErr
+      finalImageUrl = fileName
+    }
+
+    const { data: created, error: insertErr } = await (supabase.from('products') as any)
+      .insert({
+        name: product.value.name,
+        description: product.value.description,
+        price: product.value.price || 0,
+        stock: product.value.stock || 0,
+        sku: product.value.sku,
+        category_id: product.value.category_id,
+        status: product.value.status,
+        image_url: finalImageUrl || null,
+        has_variations: product.value.has_variations,
+        is_package: product.value.is_package,
+        package_data: product.value.package_data || null,
+        is_active: true,
+      })
+      .select('id')
+      .single()
+
+    if (insertErr) throw insertErr
+
+    const newId = created?.id
+
+    if (product.value.has_variations && newId) {
+      for (const v of product.value.variations) {
+        if (!v.name?.trim()) continue
+        const { error: vErr } = await (supabase.from('variations') as any).insert({
+          product_id: newId,
+          name: v.name,
+          options: v.options,
+        })
+        if (vErr) throw vErr
+      }
+    }
+
+    showToast('✅ Product published successfully!', 'success')
+    navigateTo('/admin/products')
+  } catch (error: any) {
+    console.error('Create product failed:', error)
+    showToast(error?.message || 'Failed to save product', 'error')
+  } finally {
+    isSaving.value = false
   }
 }
 
-// Initialize variations if empty
 onMounted(async () => {
-  if (product.value.variations.length === 0) {
-    product.value.variations = [{ 
-      name: '', 
-      options: [{ name: '', image_url: '' }] 
-    }]
-  }
-
-  // Load categories
   try {
-    const res: any = await $fetch('/categories', {
-      baseURL: config.public.apiBase
-    })
-    categories.value = res.data || res || []
-  } catch (error) {
-    console.error('Failed to load categories:', error)
+    const { data: catData } = await (supabase.from('categories') as any).select('*')
+    categories.value = catData || []
+  } catch (e) {
+    console.error('Failed to load categories:', e)
   }
 
-  // Load Packages
   try {
-    const res2: any = await $fetch('/package-categories', {
-      baseURL: useRuntimeConfig().public.apiBase
-    })
-    availablePackages.value = res2.data || res2
-  } catch (error) {
-    console.error('Failed to load packages:', error)
+    const { data: pkgData } = await (supabase.from('package_categories') as any).select('*')
+    availablePackages.value = pkgData || []
+  } catch (e) {
+    console.error('Failed to load package categories:', e)
   }
-
 })
-
 </script>
-
-<style scoped>
-/* Labels - Smaller & Consistent */
-.form-label {
-  display: block;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 8px;
-  margin-top: 10px;
-}
-
-.required { color: #e74c3c; }
-
-/* Form Elements */
-.form-section input,
-.form-section textarea,
-.form-section select {
-  width: 100%;
-  padding: 11px 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 1rem;
-}
-
-.form-section input:focus,
-.form-section textarea:focus,
-.form-section select:focus {
-  outline: none;
-  border-color: #F49322;
-  box-shadow: 0 0 0 3px rgba(244, 147, 34, 0.15);
-}
-
-/* Rest of styles remain clean */
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 40px;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.status-options {
-  display: flex;
-  gap: 20px;
-}
-
-.status-options label {
-  cursor: pointer;
-  font-size: 0.98rem;
-}
-
-/* Sidebar & Buttons */
-.btn-primary {
-  background: #F49322;
-  color: white;
-  border: none;
-  padding: 12px 32px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-primary:hover { background: #e07f1c; }
-
-.btn-secondary {
-  background: #6b7280;
-  color: white;
-  border: none;
-  padding: 12px 28px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-right: 10px;
-}
-
-.sidebar-box {
-  background: white;
-  padding: 24px;
-  border-radius: 12px;
-  margin-bottom: 24px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.image-upload-area {
-  border: 2px dashed #d1d5db;
-  border-radius: 12px;
-  padding: 40px 20px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.image-upload-area:hover {
-  border-color: #F49322;
-}
-.image-preview{width: 304px;
-    min-width: 304px;}
-.image-preview img{width: 100%;}    
-
-/* Variations */
-.variations label{    align-items: center;
-    vertical-align: middle;
-    display: flex;
-    gap: 10px;}
-.variation-header {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.variation-name {
-  flex: 1;
-}
-
-.remove-variation-btn {
-  background: #ef4444;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.option-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
-  align-items: center;
-}
-
-.option-input {
-  flex: 1;
-}
-
-.variation-input, .option-image-input{
-  width: auto !important;
-}
-
-img.option-preview {
-    width: 50px;
-}
-
-.remove-btn {
-  background: #ef4444;
-  color: white;
-  border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.add-option-btn, .add-variation-btn {
-  background: #F49322;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 8px;
-}
-
-.submit-btn {
-  background: #0c2340;
-  color: white;
-  padding: 16px 50px;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  margin-top: 40px;
-}
-
-</style>

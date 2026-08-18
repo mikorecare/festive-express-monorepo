@@ -12,7 +12,7 @@
         COMPARE WHAT’S INCLUDED IN EACH PLAN
       </p>
       <p v-fade class="text-center text-[#e2e8f0] mb-[50px] text-[0.8rem] font-bold tracking-[0.5px] uppercase max-w-[50%] max-sm:max-w-[80%] mx-auto leading-[1.3] max-sm:text-[0.65rem] mt-2 fade-up is-visible">
-        <p>(Each package is a lease for one season.)</p>
+        <p>(Each package is a lease for one season)</p>
       </p>
 
       <!-- Loading State -->

@@ -4,8 +4,10 @@
       <div class="hero-overlay">
         <div class="container">
           <div class="hero-content">
-            <h1 v-fade>About Festive Express</h1>
-            <p v-fade class="breadcrumb">Our story and mission to simplify holiday lighting</p>
+            <h1 v-fade>About <span class="text-brand-orange">Festive Express</span></h1>
+            <p v-fade class="breadcrumb">
+              {{ data?.subtitle || '' }}
+            </p>
           </div>
         </div>
       </div>
@@ -14,43 +16,35 @@
     <!-- About Us Content Section -->
     <section class="bg-white text-slate-800 py-20">
       <div class="container flex flex-col lg:flex-row items-center gap-10 lg:gap-12">
-        
         <!-- Content Left -->
         <div class="flex-1">
-          <h2 class="text-3xl lg:text-4xl font-extrabold text-navy mb-5 leading-tight">
-            Bringing Joy Back to the Holidays
-          </h2>
-          <p class="text-[1.25rem] font-semibold text-brand-orange mb-4">
-            Festive Express, created by Festive Lighting Pros, is simplicity itself.
-          </p>
-          <p class="text-[1.05rem] leading-relaxed text-slate-600 mb-4">
-            We believe the holidays should feel joyful, not overwhelming. That’s why we designed three clear, fixed-price packages with everything included — lights, décor, installation, and seasonal maintenance. You choose the package that fits your home, select your dates, and we take care of the rest.
-          </p>
-          <p class="text-[1.05rem] leading-relaxed text-slate-600 mb-4">
-            No custom quotes. No surprise fees. No climbing ladders in December. Just beautiful, professionally installed holiday lights that make your home shine so you can focus on what actually matters: family, friends, and the season itself.
-          </p>
-          <p class="text-[1.05rem] leading-relaxed font-semibold text-navy border-l-4 border-brand-orange pl-4 mt-6">
-            Festive Express is a partnership with Festive Lighting Pros, the team known for high-quality outdoor lighting installations across Florida. Same expertise. Same standards. Made simpler.
-          </p>
+          <div
+            v-if="descriptionHtml"
+            class="about-body"
+            v-html="descriptionHtml"
+          />
         </div>
 
         <!-- Image Right -->
         <div class="flex-1 flex justify-center w-full">
-          <div class="about-image relative w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] rounded-full -rotate-12 border-[10px] border-brand-orange shadow-[0_15px_25px_rgba(0,0,0,0.2),0_5px_10px_rgba(0,0,0,0.1)] overflow-hidden will-change-transform">
-            <img 
-              src="/Images/Gallery/Festive-Images-14.webp" 
-              alt="Festive Express Holiday Lighting" 
+          <div
+            v-if="sideImage"
+            class="about-image relative w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] rounded-full -rotate-12 border-[10px] border-brand-orange shadow-[0_15px_25px_rgba(0,0,0,0.2),0_5px_10px_rgba(0,0,0,0.1)] overflow-hidden will-change-transform"
+          >
+            <img
+              :src="sideImage"
+              alt="Festive Express Holiday Lighting"
               class="w-full h-full object-cover rotate-12 scale-110 origin-center pointer-events-none"
             />
-            <!-- Continuous Glossy Shine Overlay -->
-            <div class="absolute -top-[50%] -left-[150%] w-[200%] h-[200%] bg-gradient-to-r from-transparent via-white/30 to-transparent rotate-[25deg] pointer-events-none animate-shine" />
+            <div
+              class="absolute -top-[50%] -left-[150%] w-[200%] h-[200%] bg-gradient-to-r from-transparent via-white/30 to-transparent rotate-[25deg] pointer-events-none animate-shine"
+            />
           </div>
         </div>
-
       </div>
     </section>
 
-    <HomeFeaturedPackage4 />
+    <HomeFeaturedPackage2 />
   </div>
 </template>
 
@@ -58,9 +52,78 @@
 useHead({
   title: 'About Festive Express'
 })
+
+type AboutUsContent = {
+  id?: string
+  banner_image_url?: string | null
+  title?: string | null
+  subtitle?: string | null
+  description?: string | null
+  description_image_url?: string | null
+}
+
+const supabase = useSupabaseClient()
+const data = ref<AboutUsContent | null>(null)
+
+const descriptionHtml = computed(() => data.value?.description || '')
+const sideImage = computed(
+  () =>
+    data.value?.description_image_url ||
+    '/Images/Gallery/Festive-Images-14.webp'
+)
+
+// Optional: use CMS title for hero instead — comment above and use:
+// const heroParts = computed(() => {
+//   const t = (data.value?.title || 'About Festive Express').trim().split(/\s+/)
+//   if (t.length < 2) return { rest: '', last: t[0] || 'About' }
+//   return { rest: t.slice(0, -1).join(' '), last: t[t.length - 1] }
+// })
+
+const load = async () => {
+  try {
+    const { data: row, error } = await supabase
+      .from('about_us')
+      .select('*')
+      .eq('is_active', true)
+      .limit(1)
+      .maybeSingle()
+
+    if (error) throw error
+    data.value = (row ?? null) as AboutUsContent | null
+  } catch (e) {
+    console.error(e)
+    data.value = null
+  }
+}
+
+onMounted(load)
 </script>
 
 <style scoped>
+.about-body :deep(p) {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #475569;
+  margin-bottom: 1rem;
+}
+
+.about-body :deep(p strong),
+.about-body :deep(.intro-orange) {
+  color: #f49322;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.about-body :deep(blockquote),
+.about-body :deep(.about-quote) {
+  border-left: 4px solid #f49322;
+  padding-left: 1rem;
+  margin-top: 1.5rem;
+  color: #0c2340;
+  font-weight: 600;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
 .about-image {
   flex: 1;
   display: flex;

@@ -5,8 +5,8 @@
       <div class="hero-overlay">
         <div class="container">
           <div class="hero-content">
-            <h1 v-fade class="">How It Works</h1>
-            <p v-fade class="breadcrumb">HOME / HOW IT WORKS</p>
+            <h1 v-fade class="">How It <span class="text-brand-orange">Works</span></h1>
+            <p v-fade class="breadcrumb">{{ data?.subtitle }}</p>
           </div>
         </div>
       </div>
@@ -15,7 +15,7 @@
     <!-- Main Content -->
     <!-- Timeline -->
     <div class="page-main-section container">
-      <div class="timeline">
+      <div class="timeline" v-if="steps.length">
         <div 
           v-for="(step, index) in steps" 
           :key="index"
@@ -24,17 +24,26 @@
         >
           <div class="timeline-dot"></div>
           <div class="timeline-content">
-            <h3>Step {{ index + 1 }}: {{ step.title }}</h3>
+            <h3>{{ step.title }}</h3>
             <p>{{ step.description }}</p>
           </div>
         </div>
       </div>
 
+
       <div class="mt-5">
-        <h4 class="text-center">
+        <!-- <h4 class="text-center">
           That’s it. One decision. Zero hassle. All the magic.<br><br>
           Powered by the same team behind Festive Lighting Pros — Florida’s trusted illumineers who create professional holiday displays year after year.
-        </h4>
+        </h4> -->
+
+        <div
+          v-if="footerHtml"
+          class="footer-description"
+          v-html="footerHtml"
+        />
+
+        
       </div>
     </div>
 
@@ -46,54 +55,45 @@
 useHead({
   title: 'How It Works - Festive Express'
 })
-import { ref, onMounted, onUnmounted } from 'vue'
 
-const steps = [
-  {
-    title: "Pick your package",
-    description: "Choose Joy, Jolly, or Merry based on the look you want."
-  },
-  {
-    title: "Pay the set price",
-    description: "One clear lease price for one season – no hidden fees or surprises. "
-  },
-  {
-    title: "Choose install + take-down dates",
-    description: "Select when we install and when we remove the lights so it fits your schedule."
-  },
-  {
-    title: "We Review & Confirm Details",
-    description: "Our team reviews your order to ensure everything checks out. Lease package, payment, install/takedown dates. If we have any questions or need clarification, we’ll contact you before installation."
-  },
-  {
-    title: "Professional Installation",
-    description: "Our trained technicians arrive on your scheduled date and professionally install your lighting and décor using safe, non-invasive methods."
-  },
-  {
-    title: "Enjoy the Season",
-    description: "Sit back and enjoy a beautifully decorated property—no ladders, no stress, no maintenance."
-  }
-]
+type HowItWorksContent = {
+  id?: string
+  banner_image_url?: string | null
+  title?: string | null
+  subtitle?: string | null
+  steps?: { title: string; description: string }[] | null
+  footer_description?: string | null
+}
+
+const supabase = useSupabaseClient()
+const data = ref<HowItWorksContent | null>(null)
+const steps = computed(() => data.value?.steps ?? [])
+const footerHtml = computed(() => data.value?.footer_description || '')
 
 const visibleSteps = ref(new Set<number>())
 const activeStep = ref(0)
 
-// onMounted(() => {
-//   const observer = new IntersectionObserver((entries) => {
-//     entries.forEach(entry => {
-//       if (entry.isIntersecting) {
-//         const index = parseInt(entry.target.getAttribute('data-index') || '0')
-//         visibleSteps.value.add(index)
-//       }
-//     })
-//   }, { threshold: 0.6 })
+const load = async () => {
+  try {
+    const { data: row, error } = await supabase
+      .from('how_it_works')
+      .select('*')
+      .eq('is_active', true)
+      .limit(1)
+      .maybeSingle()
 
-//   document.querySelectorAll('.timeline-item').forEach((el, index) => {
-//     el.setAttribute('data-index', index.toString())
-//     observer.observe(el)
-//   })
-// })
-onMounted(() => {
+    if (error) throw error
+    data.value = (row ?? null) as HowItWorksContent | null
+  } catch (e) {
+    console.error(e)
+    data.value = null
+  }
+}
+
+onMounted(async () => {
+  await load()
+  await nextTick() // wait for timeline items to render
+
   const items = Array.from(document.querySelectorAll('.timeline-item'))
   if (!items.length) return
 
@@ -114,8 +114,6 @@ onMounted(() => {
     })
 
     activeStep.value = bestIndex
-
-    // optional: fill all steps up to the active one
     visibleSteps.value = new Set(
       Array.from({ length: bestIndex + 1 }, (_, i) => i)
     )
@@ -130,7 +128,6 @@ onMounted(() => {
     window.removeEventListener('resize', updateActive)
   })
 })
-
 </script>
 
 <style scoped>

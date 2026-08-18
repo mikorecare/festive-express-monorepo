@@ -4,8 +4,8 @@
       <div class="hero-overlay">
         <div class="container">
           <div class="hero-content">
-            <h1>PRIVACY POLICY</h1>
-            <p class="breadcrumb">HOME / PRIVACY POLICY</p>
+            <h1><span class="text-brand-orange">Privacy</span> Policy</h1>
+            <p class="breadcrumb"></p>
           </div>
         </div>
       </div>

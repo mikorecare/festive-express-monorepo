@@ -4,8 +4,8 @@
       <div class="hero-overlay">
         <div class="container">
           <div class="hero-content">
-            <h1>TERMS OF USE</h1>
-            <p class="breadcrumb">HOME / TERMS OF USE</p>
+            <h1><span class="text-brand-orange">Terms</span> of Use</h1>
+            <p class="breadcrumb"></p>
           </div>
         </div>
       </div>

@@ -241,7 +241,7 @@
               <p class="m-0 text-xs sm:text-sm text-blue-800 flex items-start gap-2.5 leading-relaxed">
                 <span class="flex-shrink-0">ℹ</span>
                 Includes commercial-grade LEDs, custom fit sizing, professional installation,
-                maintenance, and seasonal removal.
+                maintenance and removal.
               </p>
             </div>
 
