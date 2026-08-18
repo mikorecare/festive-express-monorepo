@@ -268,8 +268,6 @@ const onMoveComplete = () => {
         transform: `scaleX(${scaleX}) scale(${imageScale})`,
       }"
     >
-      <!-- Test shadow behind image -->
-      <div class="festivo-test-shadow"></div>
       <img :src="currentImageSrc" alt="Festivo Mascot" class="festivo-img" />
     </div>
   </div>
@@ -293,8 +291,6 @@ const onMoveComplete = () => {
 }
 
 .festivo-scale-wrapper {
-  position: relative;
-  display: inline-block;
   transform-origin: center;
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
@@ -308,23 +304,13 @@ const onMoveComplete = () => {
   height: 110px;
   object-fit: contain;
   image-rendering: auto;
-  display: block;
-  position: relative;
-  z-index: 1;
 }
 
-.festivo-test-shadow {
-  position: absolute;
-  bottom: -20px;
-  transform: translateX(-20%);
-  transform: translateY(30%);
-  width: 100px;
-  height: 40px;
-  background: rgba(0,0,0,1);
-  border-radius: 50%;
-  filter: blur(10px);
-  opacity: 0.8;
-  z-index: 0;
-  pointer-events: none;
+.opacity-0 {
+  opacity: 0;
+}
+
+.opacity-100 {
+  opacity: 1;
 }
 </style>
