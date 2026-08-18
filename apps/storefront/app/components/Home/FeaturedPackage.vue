@@ -40,14 +40,16 @@
         v-else
         class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] max-sm:grid-cols-1 gap-8 max-sm:gap-12 justify-items-center mb-12"
       >
-        <HomeFestivoAnimation
-          ref="festivoRef"
-          :targetRect="activeCardRect"
-          :config="festivoConfig"
-          initialState="talk"
-          :useJump="false"
-          :disableShrink="false"
-        />
+        <ClientOnly>
+          <HomeFestivoAnimation
+            ref="festivoRef"
+            :targetRect="activeCardRect"
+            :config="festivoConfig"
+            initialState="talk"
+            :useJump="false"
+            :disableShrink="false"
+          />
+        </ClientOnly>
         <div
           v-for="pkg in packageProducts"
           :key="pkg.id"

@@ -25,15 +25,17 @@
     </section>
 
     <section class="py-12 md:py-16 bg-white relative">
-      <FestivoAnimation
-        ref="festivoRef"
-        :targetRect="activeCardRect"
-        :config="festivoConfig"
-        initialState="talk"
-        :useJump="true"
-        :forceScaleX="1"
-        :disableShrink="true"
-      />
+      <ClientOnly>
+        <FestivoAnimation
+          ref="festivoRef"
+          :targetRect="activeCardRect"
+          :config="festivoConfig"
+          initialState="talk"
+          :useJump="true"
+          :forceScaleX="1"
+          :disableShrink="true"
+        />
+      </ClientOnly>
 
       <div v-if="loading" class="text-center py-20 text-slate-500">
         Loading packages...
