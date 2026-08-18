@@ -29,6 +29,7 @@ const imageScale = ref(1);
 const isOnCard = ref(false);
 const isTalking = ref(false);
 const isInterrupted = ref(false);
+const isClient = ref(false);
 
 const interruptCurrentAnimation = () => {
   if (mascot.value) {
@@ -85,6 +86,8 @@ defineExpose({
 });
 
 onMounted(() => {
+  isClient.value = true;
+
   const instance = new Festivo(
     props.config || {},
     props.initialState || "talk",
@@ -136,17 +139,19 @@ onMounted(() => {
     instance.cleanup();
   });
 
-  nextTick(() => {
-    const initialX = -(window.scrollX + window.innerWidth) + 150;
-    const initialY = window.scrollY + window.innerHeight - 300;
+  if (typeof window !== "undefined") {
+    nextTick(() => {
+      const initialX = -(window.scrollX + window.innerWidth) + 150;
+      const initialY = window.scrollY + window.innerHeight - 300;
 
-    instance.position = { x: initialX, y: initialY };
-    instance.isVisible = true;
+      instance.position = { x: initialX, y: initialY };
+      instance.isVisible = true;
 
-    position.value = instance.position;
-    isVisible.value = instance.isVisible;
-    triggerRef(mascot);
-  });
+      position.value = instance.position;
+      isVisible.value = instance.isVisible;
+      triggerRef(mascot);
+    });
+  }
 });
 
 const updateScaleBasedOnState = () => {
@@ -240,3 +245,72 @@ const onMoveComplete = () => {
   }
 };
 </script>
+
+<template>
+  <div
+    v-if="isClient"
+    class="festivo-mascot-wrapper"
+    :class="{
+      'opacity-0': !isVisible,
+      'opacity-100': isVisible,
+      jumping: isJumping,
+      'on-card': isOnCard,
+      talking: isTalking,
+    }"
+    :style="{
+      transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
+    }"
+    @transitionend="onMoveComplete"
+  >
+    <div
+      class="festivo-scale-wrapper"
+      :style="{
+        transform: `scaleX(${scaleX}) scale(${imageScale})`,
+      }"
+    >
+      <img :src="currentImageSrc" alt="Festivo Mascot" class="festivo-img" />
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.festivo-mascot-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  pointer-events: none;
+  transition:
+    transform 2s cubic-bezier(0.25, 1, 0.5, 1),
+    opacity 0.3s ease;
+  will-change: transform, opacity;
+}
+
+.festivo-mascot-wrapper.jumping {
+  transition: none !important;
+}
+
+.festivo-scale-wrapper {
+  transform-origin: center;
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.festivo-mascot-wrapper.on-card.talking .festivo-scale-wrapper {
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.festivo-img {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  image-rendering: auto;
+}
+
+.opacity-0 {
+  opacity: 0;
+}
+
+.opacity-100 {
+  opacity: 1;
+}
+</style>
