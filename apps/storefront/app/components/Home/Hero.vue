@@ -111,7 +111,7 @@ const updateParallax = () => {
   const clampedOffset = Math.max(-0.4, Math.min(0.4, offset));
   const maxShiftBg = 150;
   const shiftBg = clampedOffset * maxShiftBg;
-  const maxShiftFamily = 70;
+  const maxShiftFamily = 100;
   const shiftFamily = clampedOffset * maxShiftFamily;
 
   bgOffset.value = shiftBg;
