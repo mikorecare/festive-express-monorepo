@@ -1222,30 +1222,77 @@ const load = async () => {
 };
 
 /** Add cart item = product SKU id */
+// const addPackageSku = async (pkg: PackageRow) => {
+//   const sku = selectedSku(pkg);
+//   if (!sku) return;
+//   addingId.value = sku.id;
+//   try {
+//     if (cart?.addToCart) {
+//       const ok = await cart.addToCart(sku.id, 1, true);
+//       if (ok) {
+//         await navigateTo("/checkout");
+//         return;
+//       }
+//     }
+//     await navigateTo({
+//       path: "/checkout",
+//       query: {
+//         product_id: String(sku.id),
+//         package: pkg.slug,
+//         color: sku.color_key || "",
+//       },
+//     });
+//   } finally {
+//     addingId.value = null;
+//   }
+// };
+
+const cartModal = reactive({
+  open: false,
+  type: 'success' as 'success' | 'error',
+  title: '',
+  message: '',
+})
+
+const openCartModal = (
+  type: 'success' | 'error',
+  title: string,
+  message: string
+) => {
+  cartModal.type = type
+  cartModal.title = title
+  cartModal.message = message
+  cartModal.open = true
+}
+
+/** Add selected package color/SKU to cart — no redirect */
 const addPackageSku = async (pkg: PackageRow) => {
-  const sku = selectedSku(pkg);
-  if (!sku) return;
-  addingId.value = sku.id;
-  try {
-    if (cart?.addToCart) {
-      const ok = await cart.addToCart(sku.id, 1, true);
-      if (ok) {
-        await navigateTo("/checkout");
-        return;
-      }
-    }
-    await navigateTo({
-      path: "/checkout",
-      query: {
-        product_id: String(sku.id),
-        package: pkg.slug,
-        color: sku.color_key || "",
-      },
-    });
-  } finally {
-    addingId.value = null;
+  const sku = selectedSku(pkg)
+  if (!sku) {
+    openCartModal('error', 'Select an option', 'Please choose a color before adding to cart.')
+    return
   }
-};
+
+  addingId.value = sku.id
+  try {
+    if (!cart?.addToCart) {
+      openCartModal('error', 'Cart unavailable', 'Please try again in a moment.')
+      return
+    }
+
+    const ok = await cart.addToCart(sku.id, 1, true)
+    if (ok) {
+      await cart.loadCart?.()
+      openCartModal('success', 'Added to cart', `${pkg.name || 'Package'} was added to your cart.`)
+    } else {
+      openCartModal('error', 'Could not add', 'Something went wrong. Please try again.')
+    }
+  } catch (e: any) {
+    openCartModal('error', 'Could not add', e?.message || 'Something went wrong.')
+  } finally {
+    addingId.value = null
+  }
+}
 
 const { colors, loadColors, swatchStyle, byKey } = useProductColors();
 

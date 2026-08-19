@@ -32,11 +32,6 @@
 
 
       <div class="mt-5">
-        <!-- <h4 class="text-center">
-          That’s it. One decision. Zero hassle. All the magic.<br><br>
-          Powered by the same team behind Festive Lighting Pros — Florida’s trusted illumineers who create professional holiday displays year after year.
-        </h4> -->
-
         <div
           v-if="footerHtml"
           class="footer-description"

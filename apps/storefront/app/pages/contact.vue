@@ -109,7 +109,7 @@
 
 <script setup lang="ts">
 useHead({
-  title: 'Contact Us - Festive Express'
+  title: 'Contact Us'
 })
 
 const { settings, loadSettings, telHref } = useSettings();

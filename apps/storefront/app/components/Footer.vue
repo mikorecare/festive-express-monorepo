@@ -6,7 +6,7 @@
         <div>
           <img
             src="/Images/FE-Logo.png"
-            alt="Festive Lighting Pros"
+            alt="Festive Express"
             class="h-auto w-3/4"
           />
         </div>

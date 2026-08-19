@@ -51,7 +51,7 @@
                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">
                     Title <span class="text-rose-500">*</span>
                 </label>
-                <input v-model="form.title" type="text" required class="field" />
+                <input v-model="form.title" type="text" required class="field" placeholder="Write your title here" />
                 </div>
                 <div>
                 <label class="block text-sm font-semibold text-slate-700 mb-1.5">Subtitle</label>
@@ -59,7 +59,7 @@
                     v-model="form.subtitle"
                     type="text"
                     class="field"
-                    placeholder="About Us"
+                    placeholder="Write your subtitle here"
                 />
                 </div>
             </div>
@@ -71,42 +71,7 @@
             <p class="text-slate-500 text-sm">
             Matches left column: orange intro, body text, quote block. Use the toolbar for bold, color, alignment.
             </p>
-
-            <div class="flex flex-wrap items-center gap-2 p-2 border border-slate-200 rounded-lg bg-slate-50">
-                <button type="button" class="toolbar-btn" @click="format('bold')"><strong>B</strong></button>
-                <button type="button" class="toolbar-btn" @click="format('italic')"><em>I</em></button>
-                <span class="w-px h-5 bg-slate-300" />
-                <button type="button" class="toolbar-btn" @click="format('justifyLeft')">Left</button>
-                <button type="button" class="toolbar-btn" @click="format('justifyCenter')">Center</button>
-                <button type="button" class="toolbar-btn" @click="format('justifyRight')">Right</button>
-                <span class="w-px h-5 bg-slate-300" />
-                <select class="toolbar-select" @change="setFontSize(($event.target as HTMLSelectElement).value)">
-                    <option value="">Size</option>
-                    <option value="2">Small</option>
-                    <option value="3">Normal</option>
-                    <option value="4">Large</option>
-                    <option value="5">XL</option>
-                </select>
-                <input type="color" class="w-9 h-9 rounded border border-slate-200 cursor-pointer" @input="setColor(($event.target as HTMLInputElement).value)" />
-                <button type="button" class="toolbar-btn" title="Orange intro style" @click="applyOrangeIntro">Orange intro</button>
-                <button
-                    type="button"
-                    class="toolbar-btn"
-                    :class="{ 'is-active': isQuoteActive }"
-                    title="Quote block"
-                    @mousedown.prevent
-                    @click="applyQuote"
-                    >
-                    Quote block
-                </button>
-            </div>
-
-            <div
-            ref="descEditor"
-            class="field min-h-[220px] bg-white focus:outline-none"
-            contenteditable="true"
-            @input="onDescInput"
-            />
+            <RichTextEditor v-model="form.description" placeholder="Write detailed description…" />
         </div>
 
       <!-- Description image -->
