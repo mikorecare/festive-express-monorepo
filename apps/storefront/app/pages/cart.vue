@@ -1,320 +1,334 @@
 <template>
-  <div class="cart-page">
-    <section class="page-hero snow-bg">
+  <div class="min-h-screen bg-[#e7e7e7] pb-10">
+    <!-- Hero -->
+    <section class="page-hero snow-bg relative">
       <div class="hero-overlay">
-        <div class="container">
-          <div class="hero-content">
-            <h1 class="text-uppercase">Your Cart</h1>
-            <p class="breadcrumb">Review your holiday package selection and secure your installation date.</p>
-            <!-- <span class="item-count">
-              ({{ cartCount }} {{ cartCount === 1 ? 'item' : 'items' }})
-            </span> -->
+        <div class="container mx-auto max-w-[1280px] px-5">
+          <div class="hero-content py-12 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold uppercase text-white">Your Cart</h1>
+            <p class="mt-2 text-white/90 max-w-xl mx-auto">
+              Review your holiday package selection and secure your installation date.
+            </p>
           </div>
         </div>
       </div>
     </section>
 
-    <div class="container py-5">
-      <div class="row g-4">
-        <!-- Left: Cart Items -->
-        <div class="col-lg-8">
-          <div class="cart-title-section d-flex justify-content-between align-items-center mb-4">
-            <h1 class="cart-title mb-0">
+    <div class="container mx-auto max-w-[1280px] px-5 py-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Left: items -->
+        <div class="lg:col-span-8">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-gray-400 pb-4 mb-6">
+            <h2 class="text-2xl font-bold text-[#0c2340] m-0">
               Shopping Bag
-              <span class="item-count">({{ cartCount }} {{ cartCount === 1 ? 'item' : 'items' }})</span>
-            </h1>
-            <span class="ready-text">Ready for installation</span>
+              <span class="text-base font-medium text-gray-500">
+                ({{ cartCount }} {{ cartCount === 1 ? 'item' : 'items' }})
+              </span>
+            </h2>
+            <span class="text-sm text-gray-400">Ready for installation</span>
           </div>
 
-          <div v-if="cartItems.length === 0" class="empty-cart">
-            <p>Your cart is empty.</p>
-            <NuxtLink to="/packages" class="btn-primary">Browse Packages</NuxtLink>
-          </div>
-
-          <div v-else class="cart-items">
-            <div 
-              v-for="item in cartItems" 
-              :key="item.id" 
-              class="cart-item"
+          <!-- Empty -->
+          <div
+            v-if="!loading && cartItems.length === 0"
+            class="bg-white rounded-2xl p-12 text-center shadow-sm"
+          >
+            <p class="text-gray-500 text-lg mb-6">Your cart is empty.</p>
+            <NuxtLink
+              to="/packages"
+              class="inline-block bg-[#F49322] hover:bg-[#0c2340] text-white font-semibold px-8 py-3 rounded-lg transition"
             >
-              <div class="item-image">
-                <img 
-                  :src="getImageUrl(item.product?.image_url)" 
-                  :alt="item.product?.name"
+              Browse Packages
+            </NuxtLink>
+          </div>
+
+          <div v-else-if="loading" class="bg-white rounded-2xl p-12 text-center text-gray-500">
+            Loading cart…
+          </div>
+
+          <!-- Items -->
+          <div v-else class="space-y-4">
+            <div
+              v-for="item in cartItems"
+              :key="item.id"
+              class="flex flex-col sm:flex-row gap-5 bg-white rounded-2xl p-6 shadow-sm"
+            >
+              <div class="w-full sm:w-[100px] h-[100px] shrink-0 rounded-xl overflow-hidden bg-gray-100">
+                <img
+                  :src="getImageUrl(item.product?.image_url)"
+                  :alt="item.product?.name || 'Product'"
+                  class="w-full h-full object-cover"
                   @error="handleImageError"
                 >
               </div>
 
-              <div class="item-details">
-                <!-- <span 
-                  class="item-badge"
-                  :class="item.is_package ? 'package' : 'addon'"
-                >
-                  {{ item.is_package ? 'PACKAGE' : 'ADD-ON' }}
-                </span> -->
+              <div class="flex-1 min-w-0">
+                <h3 class="text-lg font-bold text-[#0c2340] mb-2">
+                  {{ item.product?.name || 'Product' }}
+                </h3>
 
-                <!-- <span 
-                  class="item-badge" 
-                      :class="{
-                        'standard': item.product?.name?.toLowerCase() === 'joy',
-                        'popular': item.product?.name?.toLowerCase() === 'jolly',
-                        'premium': item.product?.name?.toLowerCase() === 'merry',
-                        'new': item.product?.name?.toLowerCase().includes('new'),
-                        'best-seller': item.product?.name?.toLowerCase().includes('best'),
-                        'limited': item.product?.name?.toLowerCase().includes('limited'),
-                        'exclusive': item.product?.name?.toLowerCase().includes('exclusive'),
-                        'featured': !['joy','jolly','merry'].some(n => item.product?.name?.toLowerCase().includes(n))
-                      }"
-                    >
-                      {{ getBadgeText(item.product?.name) }}
-                </span> -->
-
-                <h3 class="item-name">{{ item.product?.name || item.name }}</h3>
-
-                <!-- Options (e.g. C-9 color) -->
-                <div v-if="item.options?.c9_color" class="item-option">
-                  <span class="dot"></span>
+                <div v-if="item.options?.c9_color" class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                  <span class="w-2 h-2 rounded-full bg-[#F49322]" />
                   Selected: {{ item.options.c9_color }} LEDs
                 </div>
 
-                <!-- Indoor: design theme -->
-                <div v-if="item.options?.design_name" class="item-option">
-                  <span class="dot"></span>
+                <div v-if="item.options?.design_name" class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                  <span class="w-2 h-2 rounded-full bg-[#F49322]" />
                   Design: {{ item.options.design_name }}
                 </div>
 
-                <!-- Indoor: a la carte -->
-                <div
-                  v-if="item.options?.alacarte?.length"
-                  class="item-features"
-                >
-                  <div
-                    v-for="(line, i) in item.options.alacarte"
-                    :key="i"
-                  >
-                    <i class="fas fa-check"></i>
+                <div v-if="item.options?.alacarte?.length" class="text-sm text-gray-500 mb-3 space-y-1">
+                  <div v-for="(line, i) in item.options.alacarte" :key="i">
+                    <i class="fas fa-check text-emerald-500 mr-1" />
                     {{ line.group }} – {{ line.label }}
                     <template v-if="line.lights"> + lights</template>
                     (${{ (Number(line.price) + Number(line.lights_price || 0)).toFixed(2) }})
                   </div>
                 </div>
-                
 
-                <div v-if="item.is_package && !item.options?.alacarte?.length" class="item-features">
-                  <div><i class="fas fa-check"></i> Custom-fit installation</div>
-                  <div><i class="fas fa-check"></i> 24-hour repair guarantee</div>
-                </div>
-
-                <div class="item-actions"> <!-- v-if="!item.is_package" -->
-                  <div class="qty-controls">
-                    <button @click="updateQty(item, item.quantity - 1)">−</button>
-                    <span>{{ item.quantity }}</span>
-                    <button @click="updateQty(item, item.quantity + 1)">+</button>
+                <div class="flex items-center gap-4 mt-3">
+                  <div class="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+                    <button
+                      type="button"
+                      class="w-9 h-9 bg-gray-50 hover:bg-gray-100 text-lg"
+                      :disabled="updatingId === item.id"
+                      @click="updateQty(item, Number(item.quantity) - 1)"
+                    >
+                      −
+                    </button>
+                    <span class="w-10 text-center font-semibold">{{ item.quantity }}</span>
+                    <button
+                      type="button"
+                      class="w-9 h-9 bg-gray-50 hover:bg-gray-100 text-lg"
+                      :disabled="updatingId === item.id"
+                      @click="updateQty(item, Number(item.quantity) + 1)"
+                    >
+                      +
+                    </button>
                   </div>
-                  <!-- <button class="remove-btn" @click="removeItem(item.id)">
-                    <i class="fas fa-trash-alt"></i> Remove
-                  </button> -->
                 </div>
               </div>
 
-              <div class="item-right">
-                <div class="item-price">
-                  ${{ Number(item.price).toFixed(2) }}
+              <div class="flex sm:flex-col justify-between items-end sm:min-w-[110px]">
+                <div class="text-xl font-bold text-[#0c2340] whitespace-nowrap">
+                  ${{ lineTotal(item).toFixed(2) }}
                 </div>
-
-                <!-- Optional breakdown -->
-                <div
-                  v-if="item.options?.alacarte_total > 0"
-                  class="item-option"
+                <button
+                  type="button"
+                  class="text-red-500 text-sm hover:underline mt-2"
+                  :disabled="updatingId === item.id"
+                  @click="removeItem(item.id)"
                 >
-                  <span class="dot"></span>
-                  Incl. a la carte <span class="font-weight-bold">${{ Number(item.options.alacarte_total).toFixed(2) }}</span>
-                </div>
-                
-                <button class="remove-btn" @click="removeItem(item.id)">
-                  <i class="fas fa-trash-alt"></i> Remove
+                  <i class="fas fa-trash-alt mr-1" /> Remove
                 </button>
               </div>
             </div>
-              
           </div>
         </div>
 
-        <!-- Right: Order Summary -->
-        <div class="col-lg-4">
-          <div class="order-summary">
-            <h3>Order Summary</h3>
+        <!-- Right: summary -->
+        <div class="lg:col-span-4">
+          <div class="bg-white rounded-2xl p-7 shadow-sm sticky top-24">
+            <h3 class="text-xl font-bold text-[#0c2340] mb-5">Order Summary</h3>
 
-            <div class="summary-row">
+            <div class="flex justify-between text-gray-500 mb-3">
               <span>Subtotal</span>
-              <span class="font-weight-bold">${{ cartTotal.toFixed(2) }}</span>
+              <span class="font-semibold text-gray-800">${{ subtotal.toFixed(2) }}</span>
             </div>
-            <!-- Optional: sum of all a la carte in cart -->
-            <div class="summary-row" v-if="alacarteCartTotal > 0">
+
+            <div v-if="alacarteCartTotal > 0" class="flex justify-between text-gray-500 mb-3">
               <span>A la carte</span>
-              <span class="font-weight-bold">${{ alacarteCartTotal.toFixed(2) }}</span>
+              <span class="font-semibold text-gray-800">${{ alacarteCartTotal.toFixed(2) }}</span>
             </div>
-            <div class="summary-row">
+
+            <div class="flex justify-between text-gray-500 mb-3">
               <span>Estimated Tax (FL)</span>
-              <span class="font-weight-bold">${{ estimatedTax.toFixed(2) }}</span>
+              <span class="font-semibold text-gray-800">${{ estimatedTax.toFixed(2) }}</span>
             </div>
-            <!-- <div class="summary-row">
-              <span>Installation Deposit</span>
-              <span class="font-weight-bold">${{ installDeposit.toFixed(2) }}</span>
-            </div> -->
 
-            <div class="summary-total">
+            <div class="flex justify-between items-end border-t border-gray-200 pt-4 mt-4 mb-6">
               <div>
-                <strong>Total</strong>
-          
+                <strong class="text-[#0c2340]">Total</strong>
               </div>
-              <div class="total-amount">${{ grandTotal.toFixed(2) }}
-                <small>PRICING INCLUDES REMOVAL & STORAGE</small>
-              </div>
-            </div>
-
-            
-            <div class="promo-box">
-              <label>PROMO CODE</label>
-              <div class="promo-input">
-                <input v-model="promoCode" type="text" placeholder="GIFT2025">
-                <button @click="applyPromo">Apply</button>
+              <div class="text-right">
+                <div class="text-3xl font-extrabold text-[#F49322]">
+                  ${{ grandTotal.toFixed(2) }}
+                </div>
+                <small class="block text-xs text-gray-400 mt-1 font-medium">
+                  PRICING INCLUDES REMOVAL & STORAGE
+                </small>
               </div>
             </div>
 
-            <!-- <NuxtLink to="/checkout" class="btn-checkout"
-              :class="{ 'disabled-link': !cartItems.length }"
-  :aria-disabled="!cartItems.length"
-  @click.prevent="!cartItems.length && $event.preventDefault()"
-            >
-              Proceed to Checkout <i class="fas fa-arrow-right"></i>
-            </NuxtLink> -->
+            <div class="mb-5">
+              <label class="text-xs font-bold text-gray-400 tracking-wide">PROMO CODE</label>
+              <div class="flex mt-2">
+                <input
+                  v-model="promoCode"
+                  type="text"
+                  placeholder="GIFT2025"
+                  class="flex-1 border border-gray-200 border-r-0 rounded-l-lg px-3 py-2.5 outline-none focus:border-[#0c2340]"
+                >
+                <button
+                  type="button"
+                  class="bg-[#0c2340] text-white px-4 rounded-r-lg font-semibold hover:bg-[#F49322] transition"
+                  @click="applyPromo"
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
 
             <button
-                type="button"
-                class="btn-checkout"
-                :disabled="!cartItems.length"
-                @click="handleCheckout"
-              >
-                Proceed to Checkout <i class="fas fa-arrow-right"></i>
-              </button>
+              type="button"
+              class="btn-checkout relative w-full text-center text-white font-bold py-4 rounded-xl border-2 border-[#0c2340] transition disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
+              :disabled="!cartItems.length || loading"
+              @click="handleCheckout"
+            >
+              Proceed to Checkout <i class="fas fa-arrow-right ml-1" />
+              <!-- Glossy Shine Overlay -->
+              <div
+                class="absolute -top-1/2 -left-[150%] w-[200%] h-[200%] bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] rotate-[25deg] pointer-events-none animate-[glossyShineContinuous_3s_linear_infinite]"
+              ></div>
+            </button>
 
-            <p class="checkout-note">
+            <p class="text-xs text-gray-400 text-center mt-3.5 leading-relaxed">
               A representative will contact you within 24 hours to schedule your specific installation date.
             </p>
           </div>
         </div>
       </div>
 
-      <!-- Trust badges -->
-      <div class="trust-row mt-5">
-        <div class="trust-item">
-          <i class="fas fa-lock"></i>
+      <!-- Trust -->
+      <div class="flex flex-wrap justify-center gap-10 md:gap-14 mt-12">
+        <div class="flex items-center gap-3 text-[#0c2340]">
+          <i class="fas fa-lock text-2xl text-[#F49322]" />
           <div>
-            <strong>Secure Checkout</strong>
-            <small>256-bit SSL encrypted payments</small>
+            <strong class="block text-sm">Secure Checkout</strong>
+            <small class="text-gray-400 text-xs">256-bit SSL encrypted payments</small>
           </div>
         </div>
-        <div class="trust-item">
-          <i class="fas fa-tools"></i>
+        <div class="flex items-center gap-3 text-[#0c2340]">
+          <i class="fas fa-tools text-2xl text-[#F49322]" />
           <div>
-            <strong>Premium Install</strong>
-            <small>CLIPA-certified professionals</small>
+            <strong class="block text-sm">Premium Install</strong>
+            <small class="text-gray-400 text-xs">CLIPA-certified professionals</small>
           </div>
         </div>
-        <div class="trust-item">
-          <i class="fas fa-headset"></i>
+        <div class="flex items-center gap-3 text-[#0c2340]">
+          <i class="fas fa-headset text-2xl text-[#F49322]" />
           <div>
-            <strong>Worry-Free</strong>
-            <small>Season-long maintenance included</small>
+            <strong class="block text-sm">Worry-Free</strong>
+            <small class="text-gray-400 text-xs">Season-long maintenance included</small>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 useHead({
-  title: computed(() => {
-    return 'Cart - Festive Express'
-  })
+  title: 'Cart',
 })
+
 const config = useRuntimeConfig()
+const supabase = useSupabaseClient()
 const FL_TAX_RATE = Number(config.public.flTaxRate) || 0.07
-const { cartTotal, cartCount, cartItems, loadCart, removeFromCart, updateCartItemQty } = useCart()
 
+const cart = useCart()
+const cartItems = computed(() => cart.cartItems.value)
+const cartCount = computed(() => cart.cartCount.value)
+const cartTotal = computed(() => Number(cart.cartTotal.value || 0))
 
-// Sum of a la carte across all items
-const alacarteCartTotal = computed(() =>
-  cartItems.value.reduce((sum, item) => {
-    return sum + Number(item.options?.alacarte_total || 0)
-  }, 0)
-)
-
+const loading = ref(true)
+const updatingId = ref<string | number | null>(null)
 const promoCode = ref('')
-const estimatedTax = computed(() =>
-  Number(cartTotal.value) * FL_TAX_RATE
-)
-// const installDeposit = ref(250)
 const installDeposit = ref(0)
-const grandTotal = computed(() => 
-  Number(cartTotal.value) + estimatedTax.value + installDeposit.value + alacarteCartTotal.value
+
+const alacarteCartTotal = computed(() =>
+  cartItems.value.reduce(
+    (sum, item) => sum + Number(item.options?.alacarte_total || 0),
+    0
+  )
 )
 
-const getImageUrl = (url: string | undefined) => {
-  if (!url) return '/Images/Colors/default-house.jpg'
-  return `${config.public.imageBase.replace(/\/$/, '')}/${url.replace(/^\//, '')}`
+const subtotal = computed(() => cartTotal.value)
+
+const estimatedTax = computed(() => subtotal.value * FL_TAX_RATE)
+
+const grandTotal = computed(
+  () => subtotal.value + estimatedTax.value + installDeposit.value
+  // alacarte already in line price if stored on item.price — don't double-count
+)
+
+const lineTotal = (item: any) => {
+  const unit = Number(item.price) || Number(item.product?.price) || 0
+  const qty = Number(item.quantity) || 1
+  return unit * qty
+}
+
+// const getImageUrl = (url?: string) => {
+//   if (!url) return '/Images/Colors/default-house.jpg'
+//   if (url.startsWith('http')) return url
+//   const base = String(config.public.imageBase || '').replace(/\/$/, '')
+//   return `${base}/${url.replace(/^\//, '')}`
+// }
+
+const getImageUrl = (url?: string | null) => {
+  if (!url) return '/Images/placeholder-package.jpg'
+
+  // Already absolute, site path, or local preview
+  if (
+    url.startsWith('http://') ||
+    url.startsWith('https://') ||
+    url.startsWith('/') ||
+    url.startsWith('blob:')
+  ) {
+    return url
+  }
+
+  // DB may store "Products/foo.jpg" or "foo.jpg"
+  const path = url
+    .replace(/^\//, '')
+    .replace(/^Products\//i, '')
+
+  const bucket = (config.public.storageBucket as string) || 'Products'
+
+  const { data } = supabase.storage.from(bucket).getPublicUrl(path)
+  return data.publicUrl || '/Images/placeholder-package.jpg'
 }
 
 const handleImageError = (e: Event) => {
   const img = e.target as HTMLImageElement
-  if (img) img.src = '/Images/Colors/placeholder.jpg'
+  if (img) img.src = '/Images/placeholder.png'
 }
 
 const updateQty = async (item: any, qty: number) => {
   if (qty < 1) return
+  updatingId.value = item.id
   try {
-    await updateCartItemQty(item.id, qty)  // cart item id, not product_id
-    await loadCart()
+    await cart.updateCartItemQty(item.id, qty)
   } catch (e) {
     console.error(e)
+  } finally {
+    updatingId.value = null
   }
 }
 
-const removeItem = async (id: number) => {
-  await removeFromCart(id)
+const removeItem = async (id: string | number) => {
+  updatingId.value = id
+  try {
+    await cart.removeFromCart(id)
+  } catch (e) {
+    console.error(e)
+  } finally {
+    updatingId.value = null
+  }
 }
 
 const applyPromo = () => {
-  // placeholder
   alert('Promo applied (demo)')
-}
-
-onMounted(() => loadCart())
-
-
-// Refresh cart after remove
-const removeFromCartHandler = async (id: number) => {
-  await removeFromCart(id)
-  window.location.reload()  // Temporary fix to refresh header
-}
-
-onMounted(loadCart)
-
-const getBadgeText = (name?: string | null) => {
-  const n = name?.toLowerCase() || ''
-  
-  if (n.includes('joy')) return 'STANDARD'
-  if (n.includes('jolly')) return 'POPULAR'
-  if (n.includes('merry')) return 'PREMIUM'
-  if (n.includes('new')) return 'NEW'
-  if (n.includes('best')) return 'BEST SELLER'
-  if (n.includes('limited')) return 'LIMITED'
-  if (n.includes('exclusive')) return 'EXCLUSIVE'
-  
-  return 'FEATURED'
 }
 
 const handleCheckout = () => {
@@ -322,352 +336,8 @@ const handleCheckout = () => {
   navigateTo('/checkout')
 }
 
+onMounted(async () => {
+  await cart.loadCart()
+  loading.value = false
+})
 </script>
-
-<style scoped>
-.cart-page {
-  padding: 0 0 40px;
-  background: #e7e7e7;
-  min-height: 100vh;
-}
-
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 40px;
-}
-
-.cart-title-section{
-  border-bottom: 2px solid #9ca3af;
-  padding-bottom: 15px;
-}
-.cart-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #0c2340;
-}
-
-.item-count {
-  font-weight: 500;
-  color: #6b7280;
-  font-size: 16px;
-}
-
-.ready-text {
-  color: #9ca3af;
-  font-size: 0.9rem;
-}
-
-.cart-item {
-  display: flex;
-  gap: 20px;
-  background: #fff;
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-  align-items: stretch;
-}
-
-.item-image {
-  width: 100px;
-  height: 100px;
-  flex-shrink: 0;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.item-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.item-details {
-  flex: 1;
-}
-
-.item-right {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* price top, remove bottom */
-  align-items: flex-end;
-  min-width: 100px;
-}
-
-.item-badge {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  padding: 3px 10px;
-  border-radius: 4px;
-  margin-bottom: 6px;
-  color: #fff;
-}
-
-.item-badge.package {
-  background: #fff7ed;
-  color: #F49322;
-}
-
-.item-badge.addon {
-  background: #eff6ff;
-  color: #2563eb;
-}
-
-.item-name {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #0c2340;
-  margin-bottom: 6px;
-}
-
-.item-option {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.9rem;
-  color: #6b7280;
-  margin-bottom: 8px;
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  background: #F49322;
-  border-radius: 50%;
-}
-
-.item-features {
-  font-size: 0.85rem;
-  color: #6b7280;
-  margin-bottom: 12px;
-}
-
-.item-features i {
-  color: #10b981;
-  margin-right: 6px;
-}
-
-.item-actions {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.qty-controls {
-  display: flex;
-  align-items: center;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.qty-controls button {
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: #f9fafb;
-  cursor: pointer;
-}
-
-.qty-controls span {
-  width: 40px;
-  text-align: center;
-  font-weight: 600;
-}
-
-.remove-btn {
-  background: none;
-  border: none;
-  color: #ef4444;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-
-.item-price {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #0c2340;
-  white-space: nowrap;
-}
-
-/* Order Summary */
-.order-summary {
-  background: #fff;
-  border-radius: 16px;
-  padding: 28px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-  position: sticky;
-  top: 100px;
-}
-
-.order-summary h3 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #0c2340;
-  margin-bottom: 20px;
-}
-
-.summary-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  color: #6b7280;
-}
-
-.summary-total {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  border-top: 1px solid #e5e7eb;
-  padding-top: 16px;
-  margin: 16px 0 24px;
-}
-
-.summary-total small {
-  display: block;
-  font-size: 0.7rem;
-  color: #9ca3af;
-  margin-top: 2px;
-  font-weight: 500;
-}
-
-.total-amount {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #F49322;
-  text-align: right;
-}
-
-.promo-box label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #9ca3af;
-  letter-spacing: 0.5px;
-}
-
-.promo-input {
-  display: flex;
-  margin-top: 8px;
-  margin-bottom: 20px;
-}
-
-.promo-input input {
-  flex: 1;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px 0 0 8px;
-  padding: 10px 14px;
-  border-right: none;
-}
-
-.promo-input button {
-  background: #0c2340;
-  color: #fff;
-  border: none;
-  padding: 0 18px;
-  border-radius: 0 8px 8px 0;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-checkout {
-  display: block;
-  width: 100%;
-  text-align: center;
-  background: #F49322;
-  color: #fff;
-  padding: 16px;
-  border-radius: 12px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: background 0.3s;
-  border: 2px solid #0c2340;
-
-  position: relative;
-  overflow: hidden;
-}
-
-.btn-checkout::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -150%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    60deg,
-    rgba(255, 255, 255, 0) 20%,
-    rgba(255, 255, 255, 0.08) 40%,
-    rgba(255, 255, 255, 0.35) 50%,
-    rgba(255, 255, 255, 0.08) 60%,
-    rgba(255, 255, 255, 0) 80%
-  );
-  transform: rotate(25deg);
-  pointer-events: none;
-  animation: glossyShineContinuous 3s linear infinite;
-}
-
-.btn-checkout:hover {
-  background: #0c2340;
-  color: #fff;
-}
-
-.checkout-note {
-  font-size: 0.8rem;
-  color: #9ca3af;
-  text-align: center;
-  margin-top: 14px;
-  line-height: 1.5;
-}
-
-/* Trust row */
-.trust-row {
-  display: flex;
-  justify-content: center;
-  gap: 60px;
-  flex-wrap: wrap;
-}
-
-.trust-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: #0c2340;
-}
-
-.trust-item i {
-  font-size: 1.5rem;
-  color: #F49322;
-}
-
-.trust-item strong {
-  display: block;
-  font-size: 0.95rem;
-}
-
-.trust-item small {
-  color: #9ca3af;
-  font-size: 0.8rem;
-}
-
-@media (max-width: 768px) {
-  .cart-item {
-    flex-direction: column;
-  }
-  .item-price {
-    align-self: flex-end;
-  }
-}
-
-
-.btn-checkout:disabled,
-.btn-checkout.disabled-link {
-  opacity: 0.5;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-</style>

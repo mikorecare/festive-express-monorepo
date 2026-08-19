@@ -31,155 +31,116 @@
     </div>
 
     <form v-else class="space-y-6" @submit.prevent="saveContent">
-      <!-- Banner + Titles -->
-      <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-6 space-y-5">
-        <h2 class="text-lg font-bold text-navy">Banner & Titles</h2>
+        <!-- Banner + Titles -->
+        <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-6 space-y-5">
+            <h2 class="text-lg font-bold text-navy">Banner & Titles</h2>
 
-        <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-1.5">Banner Image URL</label>
-          <input
-            v-model="form.banner_image_url"
-            type="text"
-            class="field"
-            placeholder="/Images/how-it-works-banner.jpg or full URL"
-          />
-          <div
-            v-if="form.banner_image_url"
-            class="mt-3 rounded-lg overflow-hidden border border-slate-200 max-h-48 bg-slate-100"
-          >
-            <img
-              :src="form.banner_image_url"
-              alt="Banner preview"
-              class="w-full h-48 object-cover"
-              @error="(e) => ((e.target as HTMLImageElement).style.display = 'none')"
-            />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-1.5">
-              Title <span class="text-rose-500">*</span>
-            </label>
-            <input v-model="form.title" type="text" required class="field" />
-          </div>
-          <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Subtitle</label>
-            <input v-model="form.subtitle" type="text" class="field" placeholder="Rent - Relax - Celebrate" />
-          </div>
-        </div>
-      </div>
-
-      <!-- Steps -->
-      <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-6 space-y-4">
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div>
-            <h2 class="text-lg font-bold text-navy">Steps</h2>
-            <p class="text-slate-500 text-sm">Up to 6 steps. Add or remove as needed.</p>
-          </div>
-          <button
-            type="button"
-            class="px-4 py-2 bg-navy text-white rounded-lg text-sm font-medium hover:bg-slate-800 disabled:opacity-50"
-            :disabled="form.steps.length >= 6"
-            @click="addStep"
-          >
-            + Add Step
-          </button>
-        </div>
-
-        <div
-          v-for="(step, index) in form.steps"
-          :key="index"
-          class="border border-slate-200 rounded-xl p-4 space-y-3 bg-slate-50/50"
-        >
-          <div class="flex items-center justify-between gap-3">
-            <span class="text-xs font-bold uppercase tracking-wide text-brand-orange">
-              Step {{ index + 1 }}
-            </span>
-            <button
-              type="button"
-              class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-md text-xs font-medium disabled:opacity-40"
-              :disabled="form.steps.length <= 1"
-              @click="removeStep(index)"
-            >
-              Remove
-            </button>
-          </div>
-
-          <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Title</label>
+            <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Banner Image URL</label>
             <input
-              v-model="step.title"
-              type="text"
-              class="field"
-              :placeholder="`Step ${index + 1}: Pick your package`"
+                v-model="form.banner_image_url"
+                type="text"
+                class="field"
+                placeholder="/Images/how-it-works-banner.jpg or full URL"
             />
-          </div>
+            <div
+                v-if="form.banner_image_url"
+                class="mt-3 rounded-lg overflow-hidden border border-slate-200 max-h-48 bg-slate-100"
+            >
+                <img
+                :src="form.banner_image_url"
+                alt="Banner preview"
+                class="w-full h-48 object-cover"
+                @error="(e) => ((e.target as HTMLImageElement).style.display = 'none')"
+                />
+            </div>
+            </div>
 
-          <div>
-            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Description</label>
-            <textarea
-              v-model="step.description"
-              rows="3"
-              class="field resize-y"
-              placeholder="Short description for this step..."
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- Footer description (rich text) -->
-      <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-6 space-y-4">
-        <h2 class="text-lg font-bold text-navy">Footer Description</h2>
-        <p class="text-slate-500 text-sm">
-          Supports basic formatting: bold, alignment, font size, and color.
-        </p>
-
-        <!-- Toolbar -->
-        <div class="flex flex-wrap items-center gap-2 p-2 border border-slate-200 rounded-lg bg-slate-50">
-          <button type="button" class="toolbar-btn" title="Bold" @click="format('bold')">
-            <strong>B</strong>
-          </button>
-          <button type="button" class="toolbar-btn" title="Italic" @click="format('italic')">
-            <em>I</em>
-          </button>
-          <span class="w-px h-5 bg-slate-300" />
-          <button type="button" class="toolbar-btn" title="Align left" @click="format('justifyLeft')">
-            Left
-          </button>
-          <button type="button" class="toolbar-btn" title="Align center" @click="format('justifyCenter')">
-            Center
-          </button>
-          <button type="button" class="toolbar-btn" title="Align right" @click="format('justifyRight')">
-            Right
-          </button>
-          <span class="w-px h-5 bg-slate-300" />
-          <select class="toolbar-select" @change="setFontSize(($event.target as HTMLSelectElement).value)">
-            <option value="">Size</option>
-            <option value="2">Small</option>
-            <option value="3">Normal</option>
-            <option value="4">Large</option>
-            <option value="5">XL</option>
-          </select>
-          <input
-            type="color"
-            class="w-9 h-9 rounded border border-slate-200 cursor-pointer bg-white"
-            title="Text color"
-            @input="setColor(($event.target as HTMLInputElement).value)"
-          />
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1.5">
+                Title <span class="text-rose-500">*</span>
+                </label>
+                <input v-model="form.title" type="text" required class="field" placeholder="Write your title here" />
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Subtitle</label>
+                <input v-model="form.subtitle" type="text" class="field" placeholder="Write your subtitle here" />
+            </div>
+            </div>
         </div>
 
-        <div
-          ref="footerEditor"
-          class="field min-h-[140px] bg-white prose prose-sm max-w-none focus:outline-none"
-          contenteditable="true"
-          @input="onFooterInput"
-        />
+        <!-- Steps -->
+        <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+                <h2 class="text-lg font-bold text-navy">Steps</h2>
+                <p class="text-slate-500 text-sm">Up to 6 steps. Add or remove as needed.</p>
+            </div>
+            <button
+                type="button"
+                class="px-4 py-2 bg-navy text-white rounded-lg text-sm font-medium hover:bg-slate-800 disabled:opacity-50"
+                :disabled="form.steps.length >= 6"
+                @click="addStep"
+            >
+                + Add Step
+            </button>
+            </div>
 
-        <p class="text-xs text-slate-400">
-          Preview on storefront will render this HTML as-is.
-        </p>
-      </div>
+            <div
+            v-for="(step, index) in form.steps"
+            :key="index"
+            class="border border-slate-200 rounded-xl p-4 space-y-3 bg-slate-50/50"
+            >
+            <div class="flex items-center justify-between gap-3">
+                <span class="text-xs font-bold uppercase tracking-wide text-brand-orange">
+                Step {{ index + 1 }}
+                </span>
+                <button
+                type="button"
+                class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-md text-xs font-medium disabled:opacity-40"
+                :disabled="form.steps.length <= 1"
+                @click="removeStep(index)"
+                >
+                Remove
+                </button>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Title</label>
+                <input
+                v-model="step.title"
+                type="text"
+                class="field"
+                :placeholder="`Step ${index + 1}: Pick your package`"
+                />
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-1.5">Description</label>
+                <textarea
+                v-model="step.description"
+                rows="3"
+                class="field resize-y"
+                placeholder="Short description for this step..."
+                />
+            </div>
+            </div>
+        </div>
+
+        <!-- Footer description (rich text) -->
+        <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-6 space-y-4">
+            <h2 class="text-lg font-bold text-navy">Footer Description</h2>
+            <p class="text-slate-500 text-sm">
+                Supports basic formatting: bold, alignment, font size, and color.
+            </p>
+            <RichTextEditor v-model="form.footer_description" placeholder="Write detailed description…" />
+
+            <p class="text-xs text-slate-400">
+                Preview on storefront will render this HTML as-is.
+            </p>
+        </div>
+
     </form>
   </div>
 </template>

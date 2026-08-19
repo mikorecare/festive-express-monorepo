@@ -76,6 +76,19 @@
           <p class="text-xs text-slate-400 mt-1">Shown on contact / footer</p>
         </div>
 
+        <div class="mb-1">
+          <label class="block text-sm font-semibold text-slate-700 mb-1.5">
+            Footer copyright text
+          </label>
+          <textarea
+            v-model="form.copyright_text"
+            rows="3"
+            class="field"
+            placeholder="Add Copyright text here.."
+          />
+          <p class="text-xs text-slate-400 mt-1">Shown at the bottom of the storefront footer.</p>
+        </div>
+
       </div>
 
       <!-- Social -->
@@ -113,6 +126,7 @@ type SettingsForm = {
   contact_phone_display: string
   contact_address: string
   opening_hours: string
+  copyright_text: string
 
   social_facebook: string
   social_instagram: string
@@ -138,6 +152,7 @@ const SETTING_KEYS: (keyof SettingsForm)[] = [
   'contact_phone_display',
   'contact_address',
   'opening_hours',
+  'copyright_text',
   
   'social_facebook',
   'social_instagram',
@@ -161,6 +176,7 @@ const form = ref<SettingsForm>({
   contact_phone_display: '',
   contact_address: '',
   opening_hours: '',
+  copyright_text: '',
   
   social_facebook: '',
   social_instagram: '',
@@ -183,6 +199,7 @@ const emptyForm = (): SettingsForm => ({
   contact_phone_display: '',
   contact_address: '',
   opening_hours: '',
+  copyright_text: '',
 
   social_facebook: '',
   social_instagram: '',

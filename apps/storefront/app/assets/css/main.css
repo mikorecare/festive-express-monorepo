@@ -21,8 +21,10 @@
 /* Custom container override */
 .container {
   max-width: 1400px !important;
-  margin: 0 auto;
-  padding: 0 20px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 
@@ -321,6 +323,46 @@
   color: #0c2340;
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(247, 148, 29, 0.5);
+}
+
+.btn-checkout {
+  background: linear-gradient(180deg, #ff890b 0%, #ff890b 50%, #ff890b 100%);
+}
+.btn-checkout:hover {
+  background: #0c2340 !important;
+}
+.btn-checkout::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 45%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  pointer-events: none;
+}
+
+.btn-checkout::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -150%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.08) 60%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
 }
 
 

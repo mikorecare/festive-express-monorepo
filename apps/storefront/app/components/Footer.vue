@@ -6,7 +6,7 @@
         <div>
           <img
             src="/Images/FE-Logo.png"
-            alt="Festive Lighting Pros"
+            alt="Festive Express"
             class="h-auto w-3/4"
           />
         </div>
@@ -18,9 +18,22 @@
           >
             CONTACT US
           </h4>
-          <p class="text-slate-300 mb-2.5">{{ settings.contact_email }}</p>
           <p class="text-slate-300 mb-2.5">
-            {{ settings.contact_phone_display || "(941) 239-4722" }}
+            <a
+              v-if="settings.contact_email"
+              :href="`mailto:${settings.contact_email}`"
+              class="text-slate-300 hover:text-brand-orange transition-colors"
+            >
+              {{ settings.contact_email }}
+            </a>
+            <span v-else>—</span>
+          </p>
+          <p class="text-slate-300 mb-2.5">
+            <a
+              :href="`tel:${String(settings.contact_phone || '').replace(/[^\d+]/g, '')}`"
+              class="contact-box btn-secondary-2 hover:text-brand-orange"
+            >{{ settings.contact_phone_display || "(941) 239-4722" }}
+            </a>
           </p>
         </div>
 
@@ -71,6 +84,12 @@
             Contact Us
           </NuxtLink>
           <NuxtLink
+            to="/faq"
+            class="text-slate-300 hover:text-brand-orange block mb-2.5 transition-colors duration-300"
+          >
+            FAQ
+          </NuxtLink>
+          <NuxtLink
             to="/privacy-policy"
             class="text-slate-300 hover:text-brand-orange block mb-2.5 transition-colors duration-300"
           >
@@ -94,7 +113,7 @@
         <div
           class="text-navy text-base w-full sm:w-auto text-center sm:text-left"
         >
-          Copyright © 2026 Festive Express. All Rights Reserved.
+          {{ settings?.copyright_text || `Copyright © ${new Date().getFullYear()} Festive Express. All Rights Reserved.` }}
         </div>
 
         <div

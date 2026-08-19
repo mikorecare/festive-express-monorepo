@@ -578,7 +578,7 @@ useHead({
   title: computed(() => {
     return product.value?.name 
       ? `${product.value.name}` 
-      : 'Product - Festive Lighting Pros Express'
+      : 'Product - Festive Express'
   })
 })
 

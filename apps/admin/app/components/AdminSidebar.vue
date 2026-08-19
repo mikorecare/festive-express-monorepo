@@ -213,6 +213,18 @@
           >
             Terms of Use
           </NuxtLink>
+
+          <NuxtLink
+            to="/admin/configuration/faq"
+            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path.startsWith('/admin/configuration/faq')
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
+          >
+            FAQ's
+          </NuxtLink>
         </div>
       </div>
 
@@ -341,7 +353,7 @@ const isProductsSection = computed(() =>
 );
 
 
-const isConfigurationOpen = ref(false); // closed by default
+const isConfigurationOpen = ref(true); // closed by default
 
 const toggleConfiguration = () => {
   isConfigurationOpen.value = !isConfigurationOpen.value;

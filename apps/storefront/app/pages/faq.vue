@@ -1,128 +1,155 @@
 <template>
-  <div>
-    <!-- Hero -->
-    <section class="page-hero">
-        <div class="hero-overlay">
-            <div class="container">
-                <div class="hero-content">
-                    <h1>FREQUENTLY ASKED QUESTIONS</h1>
-                    <p class="breadcrumb">HOME / FAQ</p>
-                </div>
-            </div>
+  <div class="faq-page min-h-screen bg-[#f8fafc]">
+    <section class="page-hero snow-bg relative">
+      <div class="hero-overlay">
+        <div class="container mx-auto max-w-[1280px] px-5 py-14 text-center">
+          <h1 class="text-3xl md:text-4xl font-bold uppercase text-white">FAQ</h1>
+          <p class="mt-2 text-white/90 max-w-xl mx-auto">
+            Everything you need to know about Festive Express holiday lighting packages.
+          </p>
         </div>
+      </div>
     </section>
 
-    <div class="page-main-section container">
-        <div class="section-header">
-            <h2 class="section-title">Ordering & Installation FAQS</h2>
-            <p class="subtitle">
-                Have questions? We've gathered the most frequently asked questions about our products, shipping, returns, and more to help you shop with confidence.
-            </p>
-        </div>
-      
+    <div class="container mx-auto max-w-[900px] px-5 py-12">
+      <div v-if="loading" class="text-center text-gray-500 py-16">Loading FAQs…</div>
 
-        <div class="faq-list">
-            <div class="faq-column">
-                <div 
-                v-for="(item, index) in faqsLeft" 
-                :key="index" 
-                class="faq-item"
-                :class="{ active: openIndex === index }"
-                @click="toggleFAQ(index)"
-                >
-                    <div class="faq-question">
-                        {{ item.question }}
-                        <span class="faq-icon">{{ openIndex === index ? '−' : '+' }}</span>
-                    </div>
-                    <div class="faq-answer" v-if="openIndex === index">
-                        {{ item.answer }}
-                    </div>
-                </div>
-            </div>
+      <div v-else class="space-y-10">
+        <section v-for="cat in categories" :key="cat.id">
+          <h2 class="text-2xl font-bold text-[#0c2340] mb-4 border-b-2 border-[#F49322] pb-2">
+            {{ cat.name }}
+          </h2>
 
-            <div class="faq-column">
-                <div 
-                v-for="(item, index) in faqsRight" 
-                :key="index" 
-                class="faq-item"
-                :class="{ active: openIndex === index + faqsLeft.length }"
-                @click="toggleFAQ(index + faqsLeft.length)"
-                >
-                    <div class="faq-question">
-                        {{ item.question }}
-                        <span class="faq-icon">{{ openIndex === index + faqsLeft.length ? '−' : '+' }}</span>
-                    </div>
-                    <div class="faq-answer" v-if="openIndex === index + faqsLeft.length">
-                        {{ item.answer }}
-                    </div>
-                </div>
+          <div class="space-y-2">
+            <div
+              v-for="faq in cat.faqs"
+              :key="faq.id"
+              class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+            >
+              <button
+                type="button"
+                class="w-full flex items-center justify-between gap-4 px-5 py-4 text-left font-semibold text-[#0c2340] hover:bg-orange-50 transition"
+                @click="toggle(faq.id)"
+              >
+                <span>{{ faq.question }}</span>
+                <i
+                  class="fas fa-chevron-down text-[#F49322] transition-transform"
+                  :class="{ 'rotate-180': openId === faq.id }"
+                />
+              </button>
+              <div
+                v-show="openId === faq.id"
+                class="px-5 pb-5 text-gray-600 leading-relaxed whitespace-pre-line border-t border-gray-50"
+              >
+                {{ faq.answer }}
+              </div>
             </div>
-        </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="mt-14 text-center bg-white rounded-2xl p-8 shadow-sm">
+        <p class="text-gray-600 mb-2">Still have questions?</p>
+        <a
+          :href="`tel:${phoneHref}`"
+          class="text-xl font-bold text-[#F49322] hover:text-[#0c2340]"
+        >
+          {{ supportPhone }}
+        </a>
+        <p class="text-sm text-gray-400 mt-2">
+          or email
+          <a :href="`mailto:${supportEmail}`" class="hover:text-[#0c2340]">
+            {{ supportEmail }}
+          </a>
+        </p>
+      </div>
+
     </div>
-
-    <Newsletter />
   </div>
 </template>
 
 <script setup lang="ts">
-const openIndex = ref<number | null>(null)
+useHead({ title: 'FAQ - Festive Express' })
 
-const faqsLeft = [
-  { question: "How does the ordering process work?", answer: "..." },
-  { question: "What measurements do I need before placing an order?", answer: "..." },
-  // ... add more
-]
-
-const faqsRight = [
-  { question: "Will the installation damage my roof?", answer: "..." },
-  // ... add more
-]
-
-const toggleFAQ = (index: number) => {
-  openIndex.value = openIndex.value === index ? null : index
-}
-</script>
-
-<style scoped>
-.faq-list {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
+interface FaqItem {
+  id: number
+  question: string
+  answer: string
+  sort_order: number
 }
 
-.faq-column {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+interface CategoryWithFaqs {
+  id: number
+  name: string
+  sort_order: number
+  faqs: FaqItem[]
 }
 
-.faq-item {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  overflow: hidden;
-  cursor: pointer;
+const supabase = useSupabaseClient()
+const categories = ref<CategoryWithFaqs[]>([])
+const loading = ref(true)
+const openId = ref<number | null>(null)
+
+const toggle = (id: number) => {
+  openId.value = openId.value === id ? null : id
 }
 
-.faq-question {
-  padding: 20px 24px;
-  font-weight: 600;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 1.1rem;
-}
+const supportPhone = ref('')
+const supportEmail = ref('')
+const phoneHref = ref('')
 
-.faq-answer {
-  padding: 0 24px 24px;
-  color: #555;
-  line-height: 1.7;
-}
+const loadSettings = async () => {
+  const { data } = await supabase
+    .from('settings')
+    .select('key, value')
+    .in('key', [
+      'contact_phone_display',
+      'contact_phone',
+      'contact_email',
+    ])
 
-/* Responsive */
-@media (max-width: 768px) {
-  .faq-list {
-    grid-template-columns: 1fr;
+  if (!data?.length) return
+
+  const map = Object.fromEntries(
+    data.map((r: { key: string; value: string }) => [r.key, r.value])
+  )
+
+  if (map.contact_phone_display) {
+    supportPhone.value = map.contact_phone_display
+  }
+  if (map.contact_phone) {
+    phoneHref.value = map.contact_phone
+  }
+  if (map.contact_email) {
+    supportEmail.value = map.contact_email
   }
 }
-</style>
+
+onMounted(async () => {
+  const { data, error } = await supabase
+    .from('faq_categories')
+    .select(`
+      id, name, sort_order,
+      faqs ( id, question, answer, sort_order, is_active )
+    `)
+    .eq('is_active', true)
+    .order('sort_order')
+
+  if (error) {
+    console.error(error)
+    loading.value = false
+    return
+  }
+
+  categories.value = ((data as any[]) || []).map((cat) => ({
+    ...cat,
+    faqs: (cat.faqs || [])
+      .filter((f: any) => f.is_active)
+      .sort((a: any, b: any) => a.sort_order - b.sort_order),
+  }))
+
+  loading.value = false
+
+  await Promise.all([/* loadFaqs... */, loadSettings()])
+})
+</script>

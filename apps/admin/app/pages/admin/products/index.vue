@@ -61,6 +61,16 @@
           <option value="outofstock">Out of Stock</option>
           <option value="lowstock">Low Stock (&lt; 10)</option>
         </select>
+        
+        <select
+          v-model="statusFilter"
+          @change="applyFilters"
+          class="w-full sm:w-48 px-3 py-2.5 border border-slate-200 rounded-lg bg-slate-50 text-slate-800 text-sm focus:ring-2 focus:ring-brand-orange focus:outline-none focus:bg-white transition-all"
+        >
+          <option value="">All Status</option>
+          <option value="publish">Published</option>
+          <option value="draft">Draft</option>
+        </select>
       </template>
 
       <template #cell-image_url="{ item }">
@@ -210,6 +220,8 @@ const itemsPerPage = ref(10);
 const totalItems = ref(0);
 const searchQuery = ref("");
 
+const statusFilter = ref('');
+
 const loadProducts = async () => {
   isLoading.value = true;
   try {
@@ -231,6 +243,10 @@ const loadProducts = async () => {
       query = query.lte("stock", 0);
     } else if (stockFilter.value === "lowstock") {
       query = query.gt("stock", 0).lte("stock", 10);
+    }
+
+    if (statusFilter.value) {
+      query = query.eq('status', statusFilter.value)
     }
 
     if (searchQuery.value) {

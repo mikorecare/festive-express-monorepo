@@ -13,7 +13,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      titleTemplate: '%s - Festive Lighting Pros Express',
+      titleTemplate: '%s - Festive Express',
       link: [
         { rel: 'icon', type: 'image/x-icon', href: 'Images/favicon.png' },
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap' },
