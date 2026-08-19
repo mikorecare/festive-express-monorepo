@@ -155,6 +155,10 @@
                   {{ settings.contact_phone_display || "(941) 239-4722" }}
                 </div>
               </div>
+              <!-- Glossy Shine Overlay -->
+              <div
+                class="absolute -top-1/2 -left-[150%] w-[200%] h-[200%] bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] rotate-[25deg] pointer-events-none animate-[glossyShineContinuous_3s_linear_infinite]"
+              ></div>
             </a>
 
             <!-- Hamburger -->
@@ -406,7 +410,7 @@ watch(
   );
   transform: rotate(25deg);
   pointer-events: none;
-  animation: glossyShineContinuous 3s linear infinite;
+  /* animation: glossyShineContinuous 3s linear infinite; */
 }
 
 .contact-box.btn-secondary-2:hover {
@@ -486,14 +490,14 @@ watch(
   }
 }
 
-@keyframes glossyShineContinuous {
+/* @keyframes glossyShineContinuous {
   0% {
     transform: rotate(25deg) translateX(-100%);
   }
   100% {
     transform: rotate(25deg) translateX(100%);
   }
-}
+} */
 
 @keyframes festive-express-animation-pulse-grow {
   0% {

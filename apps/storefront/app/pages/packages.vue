@@ -287,7 +287,7 @@
               </p>
             </div>
 
-            <button
+            <!-- <button
               type="button"
               class="w-full bg-[#F49322] hover:bg-[#0c2340] text-white font-bold py-4 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
               :disabled="!selectedSku(pkg) || addingId === selectedSku(pkg)?.id"
@@ -295,7 +295,24 @@
             >
               <span v-if="addingId === selectedSku(pkg)?.id">Adding...</span>
               <span v-else>Add {{ pkg.name }} to Cart</span>
+            </button> -->
+            <button
+              type="button"
+              class="w-full bg-[#F49322] hover:bg-[#0c2340] text-white font-bold py-4 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+              :disabled="!selectedSku(pkg)?.id || addingId === selectedSku(pkg)?.id"
+              @click="addPackageSku(pkg)"
+            >
+              <span v-if="addingId === selectedSku(pkg)?.id" class="inline-flex items-center justify-center gap-2">
+                <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                </svg>
+                Adding...
+              </span>
+              <span v-else>Add {{ pkg.name }} to Cart</span>
             </button>
+
+
           </div>
         </div>
       </div>
@@ -886,14 +903,7 @@ const config = useRuntimeConfig();
 const supabase = useSupabaseClient();
 const db = supabase as any;
 
-const cart = (() => {
-  try {
-    // @ts-ignore
-    return useCart?.();
-  } catch {
-    return null;
-  }
-})();
+const cart = useCart()
 
 const loading = ref(true);
 const packages = ref<PackageRow[]>([]);
@@ -982,17 +992,6 @@ const getImageUrl = (url?: string | null) => {
   const path = url.replace(/^\//, "").replace(/^Products\//i, "");
   const bucket = (config.public.storageBucket as string) || "Products";
   return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
-};
-
-const swatchHex = (key?: string | null) => {
-  const map: Record<string, string> = {
-    warm_white: "#f5e6c8",
-    pure_white: "#f8fafc",
-    champagne: "#e8d5a3",
-    multi: "#a78bfa",
-    cool_white: "#e0f2fe",
-  };
-  return map[key || ""] || "#e2e8f0";
 };
 
 const selectedSku = (pkg: PackageRow): SkuRow | null => {
@@ -1254,11 +1253,7 @@ const cartModal = reactive({
   message: '',
 })
 
-const openCartModal = (
-  type: 'success' | 'error',
-  title: string,
-  message: string
-) => {
+const openCartModal = (type: 'success' | 'error', title: string, message: string) => {
   cartModal.type = type
   cartModal.title = title
   cartModal.message = message
@@ -1268,26 +1263,30 @@ const openCartModal = (
 /** Add selected package color/SKU to cart — no redirect */
 const addPackageSku = async (pkg: PackageRow) => {
   const sku = selectedSku(pkg)
-  if (!sku) {
+  if (!sku?.id) {
     openCartModal('error', 'Select an option', 'Please choose a color before adding to cart.')
     return
   }
 
   addingId.value = sku.id
   try {
-    if (!cart?.addToCart) {
-      openCartModal('error', 'Cart unavailable', 'Please try again in a moment.')
-      return
-    }
+    // Match your useCart signature — usually (productId, qty) only
+    const ok = await cart.addToCart(sku.id, 1)
 
-    const ok = await cart.addToCart(sku.id, 1, true)
-    if (ok) {
-      await cart.loadCart?.()
-      openCartModal('success', 'Added to cart', `${pkg.name || 'Package'} was added to your cart.`)
+    if (ok !== false) {
+      if (typeof cart.loadCart === 'function') {
+        await cart.loadCart()
+      }
+      openCartModal(
+        'success',
+        'Added to cart',
+        `${pkg.name || 'Package'} was added to your cart.`
+      )
     } else {
       openCartModal('error', 'Could not add', 'Something went wrong. Please try again.')
     }
   } catch (e: any) {
+    console.error('addPackageSku', e)
     openCartModal('error', 'Could not add', e?.message || 'Something went wrong.')
   } finally {
     addingId.value = null
@@ -1338,6 +1337,9 @@ onMounted(async () => {
   await load();
 
   if (!import.meta.client) return;
+
+  await cart.loadCart()
+  
   const onKey = (e: KeyboardEvent) => {
     if (e.key === "Escape") closeLightbox();
   };
