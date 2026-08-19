@@ -23,7 +23,7 @@
     <!-- Horizontal Scroll Track with Mouse Drag & Touch Support -->
     <div
       ref="trackRef"
-      class="flex items-center gap-[60px] overflow-x-auto scroll-smooth py-5 px-[80px] select-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+      class="flex items-center gap-[60px] overflow-x-auto py-5 px-[80px] select-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       :class="{
         'cursor-grabbing !scroll-auto': isTrackDragging,
         'cursor-grab': !isTrackDragging,
@@ -39,11 +39,7 @@
     >
       <template v-for="(item, index) in timelineItems" :key="item.id || index">
         <!-- Timeline Card -->
-        <div
-          class="flex items-center gap-6 shrink-0 card-entrance"
-          :class="{ 'is-visible': isSectionVisible }"
-          :style="{ animationDelay: index * 0.08 + 's' }"
-        >
+        <div class="flex items-center gap-6 shrink-0">
           <!-- Image Left Layout -->
           <template v-if="item.imagePosition === 'left'">
             <div
@@ -174,7 +170,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from "vue";
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
 
 const sectionRef = ref(null);
 const isSectionVisible = ref(false);
@@ -364,7 +360,6 @@ const isSpinnerDragging = ref(false);
 let trackStartX = 0;
 let trackScrollLeft = 0;
 let animationFrameId = null;
-let scrollTimeout = null;
 
 const blinkPattern = [
   { state: "close", duration: 500 },
@@ -475,14 +470,12 @@ const stopDragAnimation = () => {
 
 // Setup Intersection Observer
 onMounted(() => {
-  // Only set up observer if browser supports it
   if ("IntersectionObserver" in window) {
     intersectionObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             isSectionVisible.value = true;
-            // Once visible, we can disconnect to save resources
             if (intersectionObserver) {
               intersectionObserver.disconnect();
             }
@@ -490,8 +483,8 @@ onMounted(() => {
         });
       },
       {
-        threshold: 0.1, // Trigger when 10% of the section is visible
-        rootMargin: "0px 0px -50px 0px", // Slightly offset to trigger a bit earlier
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
       },
     );
 
@@ -499,7 +492,6 @@ onMounted(() => {
       intersectionObserver.observe(sectionRef.value);
     }
   } else {
-    // Fallback for older browsers - show immediately
     isSectionVisible.value = true;
   }
 
@@ -511,6 +503,10 @@ onMounted(() => {
   window.addEventListener("keydown", handleKeyDown);
 
   startBlinking();
+
+  nextTick(() => {
+    syncSpinnerWithTrack();
+  });
 });
 
 onUnmounted(() => {
@@ -521,10 +517,6 @@ onUnmounted(() => {
 
   if (animationFrameId) {
     cancelAnimationFrame(animationFrameId);
-  }
-
-  if (scrollTimeout) {
-    clearTimeout(scrollTimeout);
   }
 
   stopBlinking();
@@ -544,10 +536,6 @@ onUnmounted(() => {
   window.removeEventListener("keydown", handleKeyDown);
 });
 
-const spinnerRotation = computed(() => {
-  return (scrollProgress.value / 100) * 720;
-});
-
 const syncSpinnerWithTrack = () => {
   if (!trackRef.value) return;
 
@@ -561,13 +549,8 @@ const syncSpinnerWithTrack = () => {
 const onTrackScroll = () => {
   if (!trackRef.value || isSpinnerDragging.value) return;
   if (isTrackDragging.value) return;
-  if (scrollTimeout) {
-    clearTimeout(scrollTimeout);
-  }
 
-  scrollTimeout = setTimeout(() => {
-    syncSpinnerWithTrack();
-  }, 50);
+  syncSpinnerWithTrack();
 };
 
 /* --- TRACK DRAGGING LOGIC --- */
@@ -583,9 +566,6 @@ const startTrackDrag = (e) => {
 
 const stopTrackDrag = () => {
   isTrackDragging.value = false;
-  setTimeout(() => {
-    syncSpinnerWithTrack();
-  }, 50);
   stopDragAnimation();
 };
 
@@ -611,6 +591,7 @@ const onTrackDrag = (e) => {
   }
 };
 
+/* --- SPINNER DRAGGING LOGIC --- */
 const startSpinnerDrag = (e) => {
   isSpinnerDragging.value = true;
   lastDragX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -687,28 +668,6 @@ watch(isSpinnerDragging, (newVal) => {
   50% {
     transform: translateX(25px);
   }
-}
-
-/* Card Entrance Animation */
-@keyframes cardEntrance {
-  0% {
-    opacity: 0;
-    transform: translateY(50px) scale(0.9) rotateX(-5deg);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1) rotateX(0deg);
-  }
-}
-
-.card-entrance {
-  opacity: 0;
-  transform: translateY(50px) scale(0.9);
-  transition: none;
-}
-
-.card-entrance.is-visible {
-  animation: cardEntrance 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 /* Vue Transitions */
