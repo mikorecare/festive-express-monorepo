@@ -187,6 +187,7 @@ let currentDragDirection = 1;
 let winkTimeout = null;
 let isFirstFrame = ref(true);
 let isDragRunning = ref(false);
+let lastScrollLeft = 0;
 
 const timelineItems = ref([
   {
@@ -506,6 +507,9 @@ onMounted(() => {
 
   nextTick(() => {
     syncSpinnerWithTrack();
+    if (trackRef.value) {
+      lastScrollLeft = trackRef.value.scrollLeft;
+    }
   });
 });
 
@@ -550,6 +554,16 @@ const onTrackScroll = () => {
   if (!trackRef.value || isSpinnerDragging.value) return;
   if (isTrackDragging.value) return;
 
+  const currentScrollLeft = trackRef.value.scrollLeft;
+  if (currentScrollLeft > lastScrollLeft) {
+    isFlipped.value = false;
+    currentDragDirection = 1;
+  } else if (currentScrollLeft < lastScrollLeft) {
+    isFlipped.value = true;
+    currentDragDirection = -1;
+  }
+  lastScrollLeft = currentScrollLeft;
+
   syncSpinnerWithTrack();
 };
 
@@ -560,6 +574,7 @@ const startTrackDrag = (e) => {
   const pageX = e.touches ? e.touches[0].pageX : e.pageX;
   trackStartX = pageX - trackRef.value.offsetLeft;
   trackScrollLeft = trackRef.value.scrollLeft;
+  lastScrollLeft = trackRef.value.scrollLeft;
   stopBlinking();
   startDragAnimation(1);
 };
@@ -582,13 +597,15 @@ const onTrackDrag = (e) => {
     scrollProgress.value = (trackRef.value.scrollLeft / maxScroll) * 100;
   }
 
-  if (walk > 0) {
-    currentDragDirection = 1;
+  const currentScrollLeft = trackRef.value.scrollLeft;
+  if (currentScrollLeft > lastScrollLeft) {
     isFlipped.value = false;
-  } else if (walk < 0) {
-    currentDragDirection = -1;
+    currentDragDirection = 1;
+  } else if (currentScrollLeft < lastScrollLeft) {
     isFlipped.value = true;
+    currentDragDirection = -1;
   }
+  lastScrollLeft = currentScrollLeft;
 };
 
 /* --- SPINNER DRAGGING LOGIC --- */
@@ -633,6 +650,9 @@ const onSpinnerDrag = (e) => {
       currentDragDirection = -1;
     }
     lastDragX = clientX;
+    if (trackRef.value) {
+      lastScrollLeft = trackRef.value.scrollLeft;
+    }
   });
 };
 
