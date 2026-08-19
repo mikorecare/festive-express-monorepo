@@ -139,10 +139,8 @@ const bgStyle = computed(() => {
 
 const familyStyle = computed(() => {
   if (isMobile.value) {
-    // Mobile: hidden (v-show=false)
     return {};
   }
-  // Desktop: family layer with parallax
   return {
     backgroundImage: "url('/Images/Banner/family.webp')",
     backgroundPosition: `center ${28 + familyOffset.value}%`,
