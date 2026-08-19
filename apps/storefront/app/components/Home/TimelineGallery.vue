@@ -1,5 +1,6 @@
 <template>
   <section
+    ref="sectionRef"
     class="w-full bg-[#0c1a35] text-white py-20 relative overflow-hidden bg-[url('/Images/LV.png')] bg-no-repeat bg-[position:50%] bg-cover"
   >
     <!-- Timeline Header -->
@@ -18,54 +19,6 @@
         captured over the years.
       </p>
     </div>
-
-    <!-- Interactive Guidance Overlay -->
-    <Transition name="fade">
-      <div
-        v-if="showOverlay"
-        class="absolute inset-0 bg-[#0c1a35]/75 backdrop-blur-sm flex items-center justify-center z-20 cursor-pointer"
-        @click="dismissOverlay"
-        @mousedown="dismissOverlay"
-        @touchstart.passive="dismissOverlay"
-      >
-        <div class="text-center text-white pointer-events-none p-5">
-          <h2
-            class="text-2xl sm:text-3xl font-black tracking-widest mb-2 text-white uppercase"
-          >
-            CLICK &amp; DRAG TO NAVIGATE
-          </h2>
-          <p class="text-base text-[#d1dbe8] mb-6">
-            Move the cursor left and right to view our gallery.
-          </p>
-
-          <!-- Animated Hand Icon -->
-          <div
-            class="flex flex-col items-center gap-2 animate-[slide-hand_1.8s_ease-in-out_infinite]"
-          >
-            <svg
-              class="w-12 h-12 stroke-white"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke-width="2"
-            >
-              <path d="M18 11V6a2 2 0 0 0-4 0v5" />
-              <path d="M14 10V4a2 2 0 0 0-4 0v6" />
-              <path d="M10 10.5V6a2 2 0 0 0-4 0v9" />
-              <path
-                d="M18 11a2 2 0 0 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.8-6.7-2.8l-3.2-3.2a2 2 0 0 1 2.8-2.8l1.1 1.1"
-              />
-            </svg>
-            <div
-              class="flex items-center gap-1.5 text-lg text-[#1cb5a3] font-bold"
-            >
-              <span>&larr;</span>
-              <span>&bull;&bull;&bull;</span>
-              <span>&rarr;</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Transition>
 
     <!-- Horizontal Scroll Track with Mouse Drag & Touch Support -->
     <div
@@ -86,7 +39,11 @@
     >
       <template v-for="(item, index) in timelineItems" :key="item.id || index">
         <!-- Timeline Card -->
-        <div class="flex items-center gap-6 shrink-0">
+        <div
+          class="flex items-center gap-6 shrink-0 card-entrance"
+          :class="{ 'is-visible': isSectionVisible }"
+          :style="{ animationDelay: index * 0.08 + 's' }"
+        >
           <!-- Image Left Layout -->
           <template v-if="item.imagePosition === 'left'">
             <div
@@ -219,6 +176,10 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 
+const sectionRef = ref(null);
+const isSectionVisible = ref(false);
+let intersectionObserver = null;
+
 const currentSpinnerImage = ref("/Images/Festivo/timeline/open.png");
 const isFlipped = ref(false);
 let blinkTimeout = null;
@@ -230,14 +191,6 @@ let currentDragDirection = 1;
 let winkTimeout = null;
 let isFirstFrame = ref(true);
 let isDragRunning = ref(false);
-
-const showOverlay = ref(true);
-
-const dismissOverlay = () => {
-  if (showOverlay.value) {
-    showOverlay.value = false;
-  }
-};
 
 const timelineItems = ref([
   {
@@ -520,7 +473,36 @@ const stopDragAnimation = () => {
   showWinkAndStartBlinking();
 };
 
+// Setup Intersection Observer
 onMounted(() => {
+  // Only set up observer if browser supports it
+  if ("IntersectionObserver" in window) {
+    intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            isSectionVisible.value = true;
+            // Once visible, we can disconnect to save resources
+            if (intersectionObserver) {
+              intersectionObserver.disconnect();
+            }
+          }
+        });
+      },
+      {
+        threshold: 0.1, // Trigger when 10% of the section is visible
+        rootMargin: "0px 0px -50px 0px", // Slightly offset to trigger a bit earlier
+      },
+    );
+
+    if (sectionRef.value) {
+      intersectionObserver.observe(sectionRef.value);
+    }
+  } else {
+    // Fallback for older browsers - show immediately
+    isSectionVisible.value = true;
+  }
+
   window.addEventListener("mousemove", onSpinnerDrag);
   window.addEventListener("mouseup", stopSpinnerDrag);
   window.addEventListener("touchmove", onSpinnerDrag);
@@ -532,6 +514,11 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+  if (intersectionObserver) {
+    intersectionObserver.disconnect();
+    intersectionObserver = null;
+  }
+
   if (animationFrameId) {
     cancelAnimationFrame(animationFrameId);
   }
@@ -572,9 +559,6 @@ const syncSpinnerWithTrack = () => {
 };
 
 const onTrackScroll = () => {
-  if (trackRef.value && trackRef.value.scrollLeft > 0) {
-    dismissOverlay();
-  }
   if (!trackRef.value || isSpinnerDragging.value) return;
   if (isTrackDragging.value) return;
   if (scrollTimeout) {
@@ -588,8 +572,6 @@ const onTrackScroll = () => {
 
 /* --- TRACK DRAGGING LOGIC --- */
 const startTrackDrag = (e) => {
-  dismissOverlay();
-
   if (!trackRef.value) return;
   isTrackDragging.value = true;
   const pageX = e.touches ? e.touches[0].pageX : e.pageX;
@@ -630,7 +612,6 @@ const onTrackDrag = (e) => {
 };
 
 const startSpinnerDrag = (e) => {
-  dismissOverlay();
   isSpinnerDragging.value = true;
   lastDragX = e.touches ? e.touches[0].clientX : e.clientX;
   stopBlinking();
@@ -706,6 +687,28 @@ watch(isSpinnerDragging, (newVal) => {
   50% {
     transform: translateX(25px);
   }
+}
+
+/* Card Entrance Animation */
+@keyframes cardEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(50px) scale(0.9) rotateX(-5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotateX(0deg);
+  }
+}
+
+.card-entrance {
+  opacity: 0;
+  transform: translateY(50px) scale(0.9);
+  transition: none;
+}
+
+.card-entrance.is-visible {
+  animation: cardEntrance 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 /* Vue Transitions */
