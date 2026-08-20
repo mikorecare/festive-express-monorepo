@@ -357,41 +357,57 @@
           </p>
         </div>
 
+        <div v-if="specsLoading" class="text-center text-slate-500 py-10">
+          Loading specifications...
+        </div>
+
         <div
+          v-else-if="!inclusionItems.length"
+          class="text-center text-slate-500 py-10"
+        >
+          No product specifications available.
+        </div>
+
+        <div
+          v-else
           class="product-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          <!-- C-9 Roofline Lights -->
           <div
+            v-for="item in inclusionItems"
+            :key="item.id"
             class="product-card bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden"
           >
             <div
-              class="product-header bg-slate-900 text-white p-5 flex justify-between items-center"
+              class="product-header bg-slate-900 text-white p-5 flex justify-between items-center gap-3"
             >
               <h3 class="text-lg font-bold text-white m-0">
-                C-9 Roofline Lights
+                {{ item.name }}
               </h3>
-              <span
-                class="badge text-xs bg-slate-800 text-slate-200 font-semibold px-2.5 py-1 rounded-md"
-                >Roofline & Trim</span
+              <!-- <span
+                v-if="item.badge"
+                class="badge text-xs bg-slate-800 text-slate-200 font-semibold px-2.5 py-1 rounded-md shrink-0"
               >
+                {{ item.badge }}
+              </span> -->
             </div>
+
             <div class="product-body p-6 flex flex-col flex-grow">
               <p
+                v-if="item.description"
                 class="description text-slate-600 text-sm leading-relaxed mb-4"
               >
-                Professional quality, durability, and energy efficiency.
-                Polystyrene lenses make them ultra-strong, while SMD technology
-                delivers brilliant brightness. These cool-to-the-touch bulbs are
-                built to last season after season.
+                {{ item.description }}
               </p>
+
               <div
+                v-if="colorList(item).length"
                 class="options-tag bg-[#f0f4f8] text-[#0c2340] px-3 py-2 rounded-[6px] text-[0.88rem] mb-5"
               >
-                <strong>Color Options:</strong> Warm White, Pure White,
-                Champagne, Candy Cane, Multicolor
+                <strong>Color Options:</strong>
+                {{ colorList(item).join(", ") }}
               </div>
 
-              <div class="spec-block mb-4">
+              <div v-if="featureList(item).length" class="spec-block mb-4">
                 <h4
                   class="text-base font-bold text-[#0c2340] mb-2.5 pb-0.75 border-b-2 border-[#f49322] inline-block"
                 >
@@ -400,341 +416,16 @@
                 <ul
                   class="list-disc list-inside text-xs text-slate-600 space-y-1.5 p-0 m-0"
                 >
-                  <li>C-9 LED Premium Bulbs with E17 base</li>
-                  <li>SMD LED technology for brilliant light</li>
-                  <li>Diamond-cut pattern facets generating light halos</li>
-                  <li>Average bulb life: 60,000 hours</li>
-                  <li>Nickel base to prevent corrosion</li>
-                  <li>Rated for Indoor & Outdoor use</li>
-                </ul>
-              </div>
-
-              <div class="spec-block mt-auto">
-                <h4
-                  class="text-base font-bold text-[#0c2340] mb-2.5 pb-0.75 border-b-2 border-[#f49322] inline-block"
-                >
-                  Specifications
-                </h4>
-                <div
-                  class="spec-grid grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-lg text-xs text-slate-600"
-                >
-                  <div>
-                    <span class="font-bold text-slate-900">Voltage:</span> 120V
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Watts/Bulb:</span>
-                    0.65W
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Kelvin:</span> 3000K
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Lumens:</span> 37
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Dimmable:</span> Yes
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Diode Count:</span> 3
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 5mm Wide Angle LED String Lights -->
-          <div
-            class="product-card bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden"
-          >
-            <div
-              class="product-header bg-slate-900 text-white p-5 flex justify-between items-center"
-            >
-              <h3 class="text-lg font-bold text-white m-0">
-                5mm Wide Angle LED Lights
-              </h3>
-              <span
-                class="badge text-xs bg-slate-800 text-slate-200 font-semibold px-2.5 py-1 rounded-md"
-                >Commercial Grade</span
-              >
-            </div>
-            <div class="product-body p-6 flex flex-col flex-grow">
-              <p
-                class="description text-slate-600 text-sm leading-relaxed mb-4"
-              >
-                IP67 water-tight string lights engineered for the harshest
-                weather conditions. Features shatterproof acrylic bulbs with
-                non-fading infused color and heavy-duty 20 gauge wire for
-                end-to-end reliability.
-              </p>
-              <div
-                class="options-tag bg-[#f0f4f8] text-[#0c2340] px-3 py-2 rounded-[6px] text-[0.88rem] mb-5"
-              >
-                <strong>Color Options:</strong> Warm White, Pure White,
-                Champagne, Candy Cane, Multicolor
-              </div>
-
-              <div class="spec-block mb-4">
-                <h4
-                  class="text-base font-bold text-[#0c2340] mb-2.5 pb-0.75 border-b-2 border-[#f49322] inline-block"
-                >
-                  Features
-                </h4>
-                <ul
-                  class="list-disc list-inside text-xs text-slate-600 space-y-1.5 p-0 m-0"
-                >
-                  <li>IP67 Rated: Waterproof and dust-tight</li>
-                  <li>Bulb lifespan up to 100,000 hours</li>
-                  <li>ENERGY STAR® certified (Up to 90% energy savings)</li>
-                  <li>Heavy-duty 20 gauge wire with tighter wire twists</li>
-                  <li>Connect up to 432 watts end-to-end</li>
-                  <li>Contractor Pack pre-balled sets for efficient install</li>
-                </ul>
-              </div>
-
-              <div class="spec-block mt-auto">
-                <h4
-                  class="text-base font-bold text-[#0c2340] mb-2.5 pb-0.75 border-b-2 border-[#f49322] inline-block"
-                >
-                  Specifications
-                </h4>
-                <div
-                  class="spec-grid grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-lg text-xs text-slate-600"
-                >
-                  <div>
-                    <span class="font-bold text-slate-900">Spacing:</span> 4"
-                    apart
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Length:</span> 17 ft
-                    total
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Wire:</span> 20 Gauge
-                    Green
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Voltage:</span> 120V
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Color Temp:</span>
-                    3000K
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Rating:</span>
-                    WeatherPRO™ Commercial
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 24" Prelit Wreath -->
-          <div
-            class="product-card bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden"
-          >
-            <div
-              class="product-header bg-slate-900 text-white p-5 flex justify-between items-center"
-            >
-              <h3 class="text-lg font-bold text-white m-0">
-                24” Sequoia Fir Wreath
-              </h3>
-              <span
-                class="badge text-xs bg-slate-800 text-slate-200 font-semibold px-2.5 py-1 rounded-md"
-                >Greenery & Decor</span
-              >
-            </div>
-            <div class="product-body p-6 flex flex-col flex-grow">
-              <p
-                class="description text-slate-600 text-sm leading-relaxed mb-4"
-              >
-                Features 200 PVC tips on a galvanized metal wire frame that will
-                not rust. Flame retardant, non-allergenic, fade- and
-                crush-resistant 2-ply needles maintain a lush, full appearance
-                every season.
-              </p>
-              <div
-                class="options-tag bg-[#f0f4f8] text-[#0c2340] px-3 py-2 rounded-[6px] text-[0.88rem] mb-5"
-              >
-                <strong>Color Options:</strong> Warm White
-              </div>
-
-              <div class="spec-block mb-4">
-                <h4
-                  class="text-base font-bold text-[#0c2340] mb-2.5 pb-0.75 border-b-2 border-[#f49322] inline-block"
-                >
-                  Features
-                </h4>
-                <ul
-                  class="list-disc list-inside text-xs text-slate-600 space-y-1.5 p-0 m-0"
-                >
-                  <li>
-                    Sequoia Fir artificial Christmas wreath with 200 PVC tips
+                  <li v-for="(f, i) in featureList(item)" :key="i">
+                    {{ f }}
                   </li>
-                  <li>Galvanized metal wire frame prevents rust</li>
-                  <li>Flame retardant and non-allergenic materials</li>
-                  <li>Prelit with 50 energy-saving LED lights</li>
-                  <li>UL Listed for quality and safety assurance</li>
                 </ul>
               </div>
 
-              <div class="spec-block mt-auto">
-                <h4
-                  class="text-base font-bold text-[#0c2340] mb-2.5 pb-0.75 border-b-2 border-[#f49322] inline-block"
-                >
-                  Specifications
-                </h4>
-                <div
-                  class="spec-grid grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-lg text-xs text-slate-600"
-                >
-                  <div>
-                    <span class="font-bold text-slate-900">Size:</span> 24"
-                    Outer Diameter
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Inner Dia:</span> 6
-                    in
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Frame Dia:</span> 14
-                    in
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Weight:</span> 6 lbs
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Lights:</span> 50
-                    LEDs
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Rating:</span> Indoor
-                    / Outdoor
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 18" Commercial Bow -->
-          <div
-            class="product-card bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden"
-          >
-            <div
-              class="product-header bg-slate-900 text-white p-5 flex justify-between items-center"
-            >
-              <h3 class="text-lg font-bold text-white m-0">12” Nylon Bow</h3>
-              <span
-                class="badge text-xs bg-slate-800 text-slate-200 font-semibold px-2.5 py-1 rounded-md"
-                >Greenery & Decor</span
-              >
-            </div>
-            <div class="product-body p-6 flex flex-col flex-grow">
-              <p
-                class="description text-slate-600 text-sm leading-relaxed mb-4"
-              >
-                A sturdy, commercial-grade structural bow featuring a durable 3D
-                nylon design in vibrant red with gold trim. Designed to keep its
-                shape and hold securely on large outdoor wreaths all season.
-              </p>
-
-              <div class="spec-block mb-4">
-                <h4
-                  class="text-base font-bold text-[#0c2340] mb-2.5 pb-0.75 border-b-2 border-[#f49322] inline-block"
-                >
-                  Features
-                </h4>
-                <ul
-                  class="list-disc list-inside text-xs text-slate-600 space-y-1.5 p-0 m-0"
-                >
-                  <li>Sturdy commercial-grade 3D nylon design</li>
-                  <li>Red finish with rich gold trim</li>
-                  <li>4-loop structural construction</li>
-                  <li>Indoor / Outdoor weather resistant</li>
-                </ul>
-              </div>
-
-              <div class="spec-block mt-auto">
-                <h4
-                  class="text-base font-bold text-[#0c2340] mb-2.5 pb-0.75 border-b-2 border-[#f49322] inline-block"
-                >
-                  Specifications
-                </h4>
-                <div
-                  class="spec-grid grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-lg text-xs text-slate-600"
-                >
-                  <div>
-                    <span class="font-bold text-slate-900">Color:</span> Red /
-                    Gold Trim
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Loop Count:</span> 4
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Material:</span> 3D
-                    Nylon
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Application:</span>
-                    Wreaths & Displays
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Ground Lights & Stakes -->
-          <div
-            class="product-card bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden"
-          >
-            <div
-              class="product-header bg-slate-900 text-white p-5 flex justify-between items-center"
-            >
-              <h3 class="text-lg font-bold text-white m-0">
-                Ground & Pathway Lights
-              </h3>
-              <span
-                class="badge text-xs bg-slate-800 text-slate-200 font-semibold px-2.5 py-1 rounded-md"
-                >Landscaping</span
-              >
-            </div>
-            <div class="product-body p-6 flex flex-col flex-grow">
-              <p
-                class="description text-slate-600 text-sm leading-relaxed mb-4"
-              >
-                Utilizes the same ultra-bright C-9 bulbs as our roofline
-                displays. Mounted with professional-grade offset stakes
-                engineered to hammer easily into tough soil, keeping walkways
-                straight and secure.
-              </p>
               <div
-                class="options-tag bg-[#f0f4f8] text-[#0c2340] px-3 py-2 rounded-[6px] text-[0.88rem] mb-5"
+                v-if="Object.keys(specMap(item)).length"
+                class="spec-block mt-auto"
               >
-                <strong>Color Options:</strong> Warm White, Pure White,
-                Champagne, Candy Cane, Multicolor
-              </div>
-
-              <div class="spec-block mb-4">
-                <h4
-                  class="text-base font-bold text-[#0c2340] mb-2.5 pb-0.75 border-b-2 border-[#f49322] inline-block"
-                >
-                  Features
-                </h4>
-                <ul
-                  class="list-disc list-inside text-xs text-slate-600 space-y-1.5 p-0 m-0"
-                >
-                  <li>
-                    Manufactured with UV-additive polymers for weather
-                    durability
-                  </li>
-                  <li>
-                    Special offset stake design for easy installation in hard
-                    ground
-                  </li>
-                  <li>Keeps lights upright and perfectly aligned all season</li>
-                  <li>Gives driveways and paths a clean, crisp border</li>
-                </ul>
-              </div>
-
-              <div class="spec-block mt-auto">
                 <h4
                   class="text-base font-bold text-[#0c2340] mb-2.5 pb-0.75 border-b-2 border-[#f49322] inline-block"
                 >
@@ -743,102 +434,9 @@
                 <div
                   class="spec-grid grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-lg text-xs text-slate-600"
                 >
-                  <div>
-                    <span class="font-bold text-slate-900"
-                      >Bulb Compatibility:</span
-                    >
-                    C7, C9
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Bulb Type:</span> C9
-                    LED
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Stake Type:</span>
-                    Heavy Duty Offset
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Application:</span>
-                    Walkways & Driveways
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Light Bursts -->
-          <div
-            class="product-card bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden"
-          >
-            <div
-              class="product-header bg-slate-900 text-white p-5 flex justify-between items-center"
-            >
-              <h3 class="text-lg font-bold text-white m-0">
-                36" LED Light Bursts
-              </h3>
-              <span
-                class="badge text-xs bg-slate-800 text-slate-200 font-semibold px-2.5 py-1 rounded-md"
-                >Landscaping</span
-              >
-            </div>
-            <div class="product-body p-6 flex flex-col flex-grow">
-              <p
-                class="description text-slate-600 text-sm leading-relaxed mb-4"
-              >
-                Natural-looking brown lighted branches with warm white LEDs.
-                Features a 1-in-5 twinkle effect that adds depth, warmth, and
-                organic elegance to garden beds, walkways, or floral
-                arrangements.
-              </p>
-              <div
-                class="options-tag bg-[#f0f4f8] text-[#0c2340] px-3 py-2 rounded-[6px] text-[0.88rem] mb-5"
-              >
-                <strong>Color Options:</strong> Warm White, Pure White,
-                Champagne, Candy Cane, Multicolor
-              </div>
-
-              <div class="spec-block mb-4">
-                <h4
-                  class="text-base font-bold text-[#0c2340] mb-2.5 pb-0.75 border-b-2 border-[#f49322] inline-block"
-                >
-                  Features
-                </h4>
-                <ul
-                  class="list-disc list-inside text-xs text-slate-600 space-y-1.5 p-0 m-0"
-                >
-                  <li>36" brown branches with 140 warm white LED lights</li>
-                  <li>Dynamic 1-in-5 twinkle lighting effect</li>
-                  <li>
-                    Continuous-lit technology (if one light goes out, rest stay
-                    lit)
-                  </li>
-                  <li>Includes mounting ground stakes</li>
-                </ul>
-              </div>
-
-              <div class="spec-block mt-auto">
-                <h4
-                  class="text-base font-bold text-[#0c2340] mb-2.5 pb-0.75 border-b-2 border-[#f49322] inline-block"
-                >
-                  Specifications
-                </h4>
-                <div
-                  class="spec-grid grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-lg text-xs text-slate-600"
-                >
-                  <div>
-                    <span class="font-bold text-slate-900">Height:</span> 36 in
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Quantity:</span> 6
-                    per order
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Lead Wire:</span> 120
-                    in
-                  </div>
-                  <div>
-                    <span class="font-bold text-slate-900">Voltage:</span> Low
-                    Voltage (Transformer)
+                  <div v-for="(val, key) in specMap(item)" :key="key">
+                    <span class="font-bold text-slate-900">{{ key }}:</span>
+                    {{ val }}
                   </div>
                 </div>
               </div>
@@ -941,6 +539,9 @@ const packageRefs = ref<Map<string | number, HTMLElement>>(new Map());
 const imageRefs = ref<Map<string | number, HTMLImageElement>>(new Map());
 const isAnimating = ref(false);
 const observerMap = new WeakMap<HTMLElement, IntersectionObserver>();
+
+const inclusionItems = ref<any[]>([]);
+const specsLoading = ref(true);
 
 const vIntersect = {
   mounted(el: HTMLElement, binding: any) {
@@ -1385,9 +986,66 @@ const scrollToPackage = async () => {
   });
 };
 
+// Specs
+const asArray = (val: unknown): string[] => {
+  if (Array.isArray(val)) return val.map(String);
+  if (typeof val === "string") {
+    try {
+      const p = JSON.parse(val);
+      return Array.isArray(p) ? p.map(String) : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+};
+
+const asObject = (val: unknown): Record<string, string> => {
+  if (val && typeof val === "object" && !Array.isArray(val)) {
+    const out: Record<string, string> = {};
+    for (const [k, v] of Object.entries(val as Record<string, unknown>)) {
+      out[k] = String(v ?? "");
+    }
+    return out;
+  }
+  if (typeof val === "string") {
+    try {
+      return asObject(JSON.parse(val));
+    } catch {
+      return {};
+    }
+  }
+  return {};
+};
+
+const colorList = (item: any) => asArray(item.color_options);
+const featureList = (item: any) => asArray(item.features);
+const specMap = (item: any) => asObject(item.specifications);
+
+const loadInclusionSpecs = async () => {
+  specsLoading.value = true;
+  try {
+    const { data, error } = await supabase
+      .from("inclusion_items")
+      .select(
+        "id, name, slug, description, color_options, features, specifications, sort_order",
+      )
+      .order("sort_order", { ascending: true });
+
+    if (error) throw error;
+    inclusionItems.value = data || [];
+  } catch (e) {
+    console.error(e);
+    inclusionItems.value = [];
+  } finally {
+    specsLoading.value = false;
+  }
+};
+
 onMounted(async () => {
   await loadColors();
   await load();
+  await loadInclusionSpecs();
 
   if (!import.meta.client) return;
 

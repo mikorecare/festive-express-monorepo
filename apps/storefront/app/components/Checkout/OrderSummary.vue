@@ -74,16 +74,27 @@
 
     <ul class="space-y-2 mt-4">
       <li class="flex items-center text-sm text-gray-600">
-        <i class="fas fa-check-circle text-green-500 mr-2"></i> SSL Secure
-        Connection
+        <CheckCircleIcon
+          class="w-5 h-5 text-green-500 mr-2 inline-block"
+          aria-hidden="true"
+        />
+        SSL Secure Connection
+        <!-- <i class="fas fa-check-circle text-green-500 mr-2"></i> SSL Secure
+        Connection -->
       </li>
       <li class="flex items-center text-sm text-gray-600">
-        <i class="fas fa-check-circle text-green-500 mr-2"></i> CLIPA Certified
-        Installers
+        <CheckCircleIcon
+          class="w-5 h-5 text-green-500 mr-2 inline-block"
+          aria-hidden="true"
+        />
+        CLIPA Certified Installers
       </li>
       <li class="flex items-center text-sm text-gray-600">
-        <i class="fas fa-check-circle text-green-500 mr-2"></i> Guaranteed
-        Maintenance
+        <CheckCircleIcon
+          class="w-5 h-5 text-green-500 mr-2 inline-block"
+          aria-hidden="true"
+        />
+        Guaranteed Maintenance
       </li>
     </ul>
 
@@ -102,6 +113,8 @@
 </template>
 
 <script setup lang="ts">
+import { CheckCircleIcon } from "@heroicons/vue/24/solid";
+
 defineProps<{
   cartItems: any[];
   cartTotal: number;
