@@ -47,6 +47,12 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    // PRIVATE — never use public:
+    convergeMerchantId: process.env.CONVERGE_MERCHANT_ID || '',
+    convergeUserId: process.env.CONVERGE_USER_ID || '',
+    convergePin: process.env.CONVERGE_PIN || '',
+    convergeDemo: process.env.CONVERGE_DEMO !== 'false',
+    
     supabaseServiceKey: process.env.NUXT_SUPABASE_SECRET_KEY,
     public: {
       supabaseUrl: process.env.SUPABASE_URL,

@@ -112,6 +112,17 @@
             Inclusion Items
           </NuxtLink>
           <NuxtLink
+            to="/admin/products/promo-codes"
+            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path.startsWith('/admin/products/promo-codes')
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
+          >
+            Promo Codes
+          </NuxtLink>
+          <NuxtLink
             to="/admin/products/categories"
             class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
             :class="

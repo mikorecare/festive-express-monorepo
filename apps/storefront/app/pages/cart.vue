@@ -146,6 +146,11 @@
               <span class="font-semibold text-gray-800">${{ estimatedTax.toFixed(2) }}</span>
             </div>
 
+            <div v-if="appliedPromo" class="flex justify-between text-gray-500 mb-3">
+              <span>Discount ({{ appliedPromo.code }})</span>
+              <span class="font-semibold text-gray-800">−${{ discountAmount(subtotal).toFixed(2) }}</span>
+            </div>
+
             <div class="flex justify-between items-end border-t border-gray-200 pt-4 mt-4 mb-6">
               <div>
                 <strong class="text-[#0c2340]">Total</strong>
@@ -160,7 +165,7 @@
               </div>
             </div>
 
-            <div class="mb-5">
+            <!-- <div class="mb-5">
               <label class="text-xs font-bold text-gray-400 tracking-wide">PROMO CODE</label>
               <div class="flex mt-2">
                 <input
@@ -177,7 +182,43 @@
                   Apply
                 </button>
               </div>
+            </div> -->
+
+            <div class="space-y-2 mb-5">
+              <div class="flex gap-2">
+                <input
+                  v-model="promoCode"
+                  type="text"
+                  placeholder="Promo code"
+                  class="flex-1 border border-slate-200 rounded-lg px-4 py-2.5 text-sm uppercase focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange"
+                  :disabled="!!appliedPromo"
+                  @keyup.enter="applyPromo(subtotal)"
+                >
+
+                <button
+                  v-if="!appliedPromo"
+                  type="button"
+                  class="px-4 py-2 bg-brand-orange text-white rounded-lg text-sm font-medium hover:bg-orange-600 transition"
+                  @click="applyPromo(subtotal)"
+                >
+                  Apply
+                </button>
+                <button
+                  v-else
+                  type="button"
+                  class="px-4 py-2 bg-white border border-slate-200 text-navy rounded-lg text-sm font-medium hover:bg-slate-50 transition"
+                  @click="removePromo"
+                >
+                  Remove
+                </button>
+              </div>
+
+              <p v-if="promoError" class="text-red-500 text-xs">{{ promoError }}</p>
+              <p v-else-if="appliedPromo" class="text-emerald-600 text-sm">
+                {{ appliedPromo.code }} applied (−${{ discountAmount(subtotal).toFixed(2) }})
+              </p>
             </div>
+
 
             <button
               type="button"
@@ -243,7 +284,6 @@ const cartTotal = computed(() => Number(cart.cartTotal.value || 0))
 
 const loading = ref(true)
 const updatingId = ref<string | number | null>(null)
-const promoCode = ref('')
 const installDeposit = ref(0)
 
 const alacarteCartTotal = computed(() =>
@@ -255,11 +295,17 @@ const alacarteCartTotal = computed(() =>
 
 const subtotal = computed(() => cartTotal.value)
 
-const estimatedTax = computed(() => subtotal.value * FL_TAX_RATE)
+const estimatedTax = computed(
+  () => Math.max(0, subtotal.value - promoDiscount.value) * FL_TAX_RATE
+)
 
-const grandTotal = computed(
-  () => subtotal.value + estimatedTax.value + installDeposit.value
-  // alacarte already in line price if stored on item.price — don't double-count
+const promoDiscount = computed(() => discountAmount(subtotal.value))
+
+const grandTotal = computed(() =>
+  Math.max(
+    0,
+    subtotal.value + estimatedTax.value + installDeposit.value - promoDiscount.value
+  )
 )
 
 const lineTotal = (item: any) => {
@@ -327,17 +373,25 @@ const removeItem = async (id: string | number) => {
   }
 }
 
-const applyPromo = () => {
-  alert('Promo applied (demo)')
-}
 
 const handleCheckout = () => {
   if (!cartItems.value.length) return
   navigateTo('/checkout')
 }
 
+const {
+  promoCode,
+  promoError,
+  appliedPromo,
+  discountAmount,
+  applyPromo,
+  removePromo,
+  loadPromo,
+} = usePromo()
+
 onMounted(async () => {
   await cart.loadCart()
+  loadPromo()
   loading.value = false
 })
 </script>
