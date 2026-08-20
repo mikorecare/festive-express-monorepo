@@ -164,7 +164,7 @@
             <!-- Hamburger -->
             <button
               type="button"
-              class="md:hidden flex flex-col justify-center gap-1.25 w-[42px] h-[42px] p-2 border border-[#0c2340] rounded-lg bg-white cursor-pointer"
+              class="md:hidden flex flex-col justify-center gap-1.5 w-[42px] h-[42px] p-2 border border-[#0c2340] rounded-lg bg-white cursor-pointer"
               :aria-expanded="mobileOpen"
               aria-label="Toggle menu"
               @click="mobileOpen = !mobileOpen"

@@ -12,9 +12,12 @@
           Festive Express makes<br />professional
           <span class="text-brand-orange">holiday lighting</span> simple.
         </h2>
-        <p class="text-black max-w-[80%] mx-auto leading-[1.3] text-xl max-sm:text-[0.95rem] mt-2">
-          Choose one of three fixed lease packages*.<br>
-          Pay once. Pick your install date and take-down date. We handle the rest.
+        <p
+          class="text-black max-w-[80%] mx-auto leading-[1.3] text-xl max-sm:text-[0.95rem] mt-2"
+        >
+          Choose one of three fixed rental packages*.<br />
+          Pay once. Pick your install date and take-down date. We handle the
+          rest.
         </p>
       </div>
 
@@ -212,9 +215,10 @@
           Which Package Fits Your Home?
         </NuxtLink> -->
 
-
         <!-- Preview Your Home — burst / C-9 -->
-        <div class="relative isolate my-8 max-lg:my-6 flex flex-col items-center justify-center gap-5 text-center">
+        <div
+          class="relative isolate my-8 max-lg:my-6 flex flex-col items-center justify-center gap-5 text-center"
+        >
           <!-- Glow behind first button -->
           <div
             class="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-44 h-44 rounded-full bg-[#f7941d]/30 blur-2xl"
@@ -262,10 +266,7 @@
           </NuxtLink>
         </div>
 
-        <p>*Each package is a lease for one season. </p>
-
-
-
+        <p>*Each package is a rental for one season.</p>
       </div>
     </div>
   </section>

@@ -49,8 +49,9 @@
 
       <div
         v-for="pkg in packages"
+        :id="`package-${pkg.slug}`"
         :key="pkg.id"
-        class="container mx-auto px-4 max-w-7xl mb-16 last:mb-0"
+        class="container mx-auto px-4 max-w-7xl mb-16 last:mb-0 scroll-mt-48"
         :ref="(el) => setPackageRef(el, pkg.id)"
         @mouseenter="handlePackageFocus(pkg.id)"
       >
@@ -81,8 +82,13 @@
           class="horizontal-layout grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
         >
           <!-- Left: image + hotspots + colors -->
-          <div class="media-column lg:col-span-7 flex flex-col bg-white rounded-xl shadow-sm border border-slate-100">
-            <div class="image-wrapper relative bg-slate-100 group" @click.stop="onPackageImageClick(pkg)">
+          <div
+            class="media-column lg:col-span-7 flex flex-col bg-white rounded-xl shadow-sm border border-slate-100"
+          >
+            <div
+              class="image-wrapper relative bg-slate-100 group"
+              @click.stop="onPackageImageClick(pkg)"
+            >
               <img
                 :ref="(el) => setImageRef(el, pkg.id)"
                 :src="selectedImage(pkg)"
@@ -157,7 +163,7 @@
                     class="absolute -top-1/2 -left-[150%] w-[200%] h-[200%] bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.45)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] rotate-[25deg] animate-[glossyShineContinuous_3s_linear_infinite]"
                   />
                 </div>
-                
+
                 <button
                   type="button"
                   class="absolute top-1.5 right-1.5 z-10 w-5 h-5 rounded-full bg-slate-900 text-white text-xs flex items-center justify-center opacity-80 hover:bg-[#F49322]"
@@ -181,7 +187,6 @@
                   </h4>
                 </div>
               </div>
-
             </div>
 
             <!-- C-9 colors from SKUs -->
@@ -258,9 +263,9 @@
                     class="text-xs font-semibold leading-snug text-slate-700"
                   >
                     {{ row.label_override || row.inclusion_items?.name }}
-                    <template v-if="row.quantity > 1">
+                    <!-- <template v-if="row.quantity > 1">
                       × {{ row.quantity }}</template
-                    >
+                    > -->
                   </span>
                 </li>
               </ul>
@@ -282,8 +287,8 @@
                 class="m-0 text-xs sm:text-sm text-blue-800 flex items-start gap-2.5 leading-relaxed"
               >
                 <span class="flex-shrink-0">ℹ</span>
-                Includes commercial-grade LEDs, custom fit sizing, professional installation,
-                maintenance and removal.
+                Includes commercial-grade LEDs, custom fit sizing, professional
+                installation, maintenance and removal.
               </p>
             </div>
 
@@ -299,20 +304,39 @@
             <button
               type="button"
               class="w-full bg-[#F49322] hover:bg-[#0c2340] text-white font-bold py-4 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
-              :disabled="!selectedSku(pkg)?.id || addingId === selectedSku(pkg)?.id"
+              :disabled="
+                !selectedSku(pkg)?.id || addingId === selectedSku(pkg)?.id
+              "
               @click="addPackageSku(pkg)"
             >
-              <span v-if="addingId === selectedSku(pkg)?.id" class="inline-flex items-center justify-center gap-2">
-                <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+              <span
+                v-if="addingId === selectedSku(pkg)?.id"
+                class="inline-flex items-center justify-center gap-2"
+              >
+                <svg
+                  class="animate-spin h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                  />
+                  <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  />
                 </svg>
                 Adding...
               </span>
               <span v-else>Add {{ pkg.name }} to Cart</span>
             </button>
-
-
           </div>
         </div>
       </div>
@@ -531,7 +555,7 @@
               <div
                 class="options-tag bg-[#f0f4f8] text-[#0c2340] px-3 py-2 rounded-[6px] text-[0.88rem] mb-5"
               >
-                <strong>Color Options:</strong> Pure White
+                <strong>Color Options:</strong> Warm White
               </div>
 
               <div class="spec-block mb-4">
@@ -597,9 +621,7 @@
             <div
               class="product-header bg-slate-900 text-white p-5 flex justify-between items-center"
             >
-              <h3 class="text-lg font-bold text-white m-0">
-                12” Structural Bow
-              </h3>
+              <h3 class="text-lg font-bold text-white m-0">12” Nylon Bow</h3>
               <span
                 class="badge text-xs bg-slate-800 text-slate-200 font-semibold px-2.5 py-1 rounded-md"
                 >Greenery & Decor</span
@@ -903,7 +925,7 @@ const config = useRuntimeConfig();
 const supabase = useSupabaseClient();
 const db = supabase as any;
 
-const cart = useCart()
+const cart = useCart();
 
 const loading = ref(true);
 const packages = ref<PackageRow[]>([]);
@@ -1248,50 +1270,66 @@ const load = async () => {
 
 const cartModal = reactive({
   open: false,
-  type: 'success' as 'success' | 'error',
-  title: '',
-  message: '',
-})
+  type: "success" as "success" | "error",
+  title: "",
+  message: "",
+});
 
-const openCartModal = (type: 'success' | 'error', title: string, message: string) => {
-  cartModal.type = type
-  cartModal.title = title
-  cartModal.message = message
-  cartModal.open = true
-}
+const openCartModal = (
+  type: "success" | "error",
+  title: string,
+  message: string,
+) => {
+  cartModal.type = type;
+  cartModal.title = title;
+  cartModal.message = message;
+  cartModal.open = true;
+};
 
 /** Add selected package color/SKU to cart — no redirect */
 const addPackageSku = async (pkg: PackageRow) => {
-  const sku = selectedSku(pkg)
+  const sku = selectedSku(pkg);
   if (!sku?.id) {
-    openCartModal('error', 'Select an option', 'Please choose a color before adding to cart.')
-    return
+    openCartModal(
+      "error",
+      "Select an option",
+      "Please choose a color before adding to cart.",
+    );
+    return;
   }
 
-  addingId.value = sku.id
+  addingId.value = sku.id;
   try {
     // Match your useCart signature — usually (productId, qty) only
-    const ok = await cart.addToCart(sku.id, 1)
+    const ok = await cart.addToCart(sku.id, 1);
 
     if (ok !== false) {
-      if (typeof cart.loadCart === 'function') {
-        await cart.loadCart()
+      if (typeof cart.loadCart === "function") {
+        await cart.loadCart();
       }
       openCartModal(
-        'success',
-        'Added to cart',
-        `${pkg.name || 'Package'} was added to your cart.`
-      )
+        "success",
+        "Added to cart",
+        `${pkg.name || "Package"} was added to your cart.`,
+      );
     } else {
-      openCartModal('error', 'Could not add', 'Something went wrong. Please try again.')
+      openCartModal(
+        "error",
+        "Could not add",
+        "Something went wrong. Please try again.",
+      );
     }
   } catch (e: any) {
-    console.error('addPackageSku', e)
-    openCartModal('error', 'Could not add', e?.message || 'Something went wrong.')
+    console.error("addPackageSku", e);
+    openCartModal(
+      "error",
+      "Could not add",
+      e?.message || "Something went wrong.",
+    );
   } finally {
-    addingId.value = null
+    addingId.value = null;
   }
-}
+};
 
 const { colors, loadColors, swatchStyle, byKey } = useProductColors();
 
@@ -1317,20 +1355,35 @@ const openLightbox = (pkg: PackageRow) => {
 };
 
 const closeLightbox = () => {
-  activeLightboxImage.value = null
-  if (import.meta.client) document.body.style.overflow = ''
-}
+  activeLightboxImage.value = null;
+  if (import.meta.client) document.body.style.overflow = "";
+};
 
 const onPackageImageClick = (pkg: PackageRow) => {
   // Hotspot open → close it, do NOT open lightbox
   if (getActiveSpot(pkg)) {
-    activeHotspot.value[String(pkg.id)] = null
-    return
+    activeHotspot.value[String(pkg.id)] = null;
+    return;
   }
   // No hotspot → open lightbox
-  openLightbox(pkg)
-}
+  openLightbox(pkg);
+};
 
+const route = useRoute();
+
+const scrollToPackage = async () => {
+  const slug = route.query.package;
+  if (!slug || typeof slug !== "string") return;
+
+  await nextTick();
+  // wait for list to render after fetch
+  requestAnimationFrame(() => {
+    const el = document.getElementById(`package-${slug}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  });
+};
 
 onMounted(async () => {
   await loadColors();
@@ -1338,8 +1391,10 @@ onMounted(async () => {
 
   if (!import.meta.client) return;
 
-  await cart.loadCart()
-  
+  await cart.loadCart();
+
+  await scrollToPackage();
+
   const onKey = (e: KeyboardEvent) => {
     if (e.key === "Escape") closeLightbox();
   };

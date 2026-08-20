@@ -112,6 +112,17 @@
             Inclusion Items
           </NuxtLink>
           <NuxtLink
+            to="/admin/products/colors"
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path === '/admin/products/colors'
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
+          >
+            Colors
+          </NuxtLink>
+          <NuxtLink
             to="/admin/products/promo-codes"
             class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
             :class="
@@ -122,7 +133,7 @@
           >
             Promo Codes
           </NuxtLink>
-          <NuxtLink
+          <!-- <NuxtLink
             to="/admin/products/categories"
             class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
             :class="
@@ -132,7 +143,7 @@
             "
           >
             Categories
-          </NuxtLink>
+          </NuxtLink> -->
         </div>
       </div>
 
@@ -175,7 +186,9 @@
         <div
           v-if="!isCollapsed"
           class="ml-4 mt-1 space-y-1 border-l-2 border-brand-orange/30 pl-3 overflow-hidden transition-all duration-300 ease-in-out"
-          :class="isConfigurationOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'"
+          :class="
+            isConfigurationOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          "
         >
           <NuxtLink
             to="/admin/configuration/how-it-works"
@@ -235,6 +248,17 @@
             "
           >
             FAQ's
+          </NuxtLink>
+          <NuxtLink
+            to="/admin/configuration/gallery"
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path.startsWith('/admin/configuration/gallery')
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
+          >
+            Gallery
           </NuxtLink>
         </div>
       </div>
@@ -321,9 +345,7 @@ import {
   UserIcon,
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
-
   WrenchScrewdriverIcon,
-
 } from "@heroicons/vue/24/outline";
 
 const route = useRoute();
@@ -363,7 +385,6 @@ const isProductsSection = computed(() =>
   ].some((p) => route.path.startsWith(p)),
 );
 
-
 const isConfigurationOpen = ref(true); // closed by default
 
 const toggleConfiguration = () => {
@@ -373,5 +394,4 @@ const toggleConfiguration = () => {
 const isConfigurationSection = computed(() =>
   route.path.startsWith("/admin/configuration"),
 );
-
 </script>
