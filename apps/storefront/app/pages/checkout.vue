@@ -76,7 +76,7 @@
 
 <script setup lang="ts">
 const config = useRuntimeConfig();
-const siteKey = config.public.turnstileSiteKey as string;
+const siteKey = config.public.turnstile.siteKey as string;
 const FL_TAX_RATE = Number(config.public.flTaxRate) || 0.07;
 const { cartItems, cartTotal, loadCart, clearCart } = useCart();
 const { isServiceZip } = useServiceZips();
