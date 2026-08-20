@@ -1,31 +1,53 @@
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event)
+    const body = await readBody(event);
+    const config = useRuntimeConfig();
 
-    const formData = new URLSearchParams()
-    formData.append('ssl_merchant_id', process.env.ELAVON_MERCHANT_ID!)
-    formData.append('ssl_user_id', process.env.ELAVON_USER_ID!)
-    formData.append('ssl_pin', process.env.ELAVON_PIN!)
-    formData.append('ssl_transaction_type', 'ccsale')
-    formData.append('ssl_amount', body.amount)
-    formData.append('ssl_get_token', 'Y')
+    const { amount, first_name, last_name, email, invoice_number } = body;
+
+    const formData = new URLSearchParams();
+    formData.append('ssl_merchant_id', config.elavonAccountId!);
+    formData.append('ssl_user_id', config.elavonUserId!);
+    formData.append('ssl_pin', config.elavonPin!);
+    formData.append('ssl_transaction_type', 'ccsale');
+    formData.append('ssl_amount', amount.toString());
+    formData.append('ssl_first_name', first_name);
+    formData.append('ssl_last_name', last_name);
+    formData.append('ssl_email', email);
+    formData.append('ssl_invoice_number', invoice_number);
+    formData.append('ssl_get_token', 'Y');
 
     try {
+        const responseText = await $fetch<string>(
+            'https://api.demo.convergepay.com/hosted-payments/transaction_token',
+            {
+                method: 'POST',
+                body: formData.toString(),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            }
+        );
 
-        // const responseText = await $fetch<string>('https://demo.convergepay.com/hosted-payments/transaction_token', {
-        //     method: 'POST',
-        //     body: formData.toString(),
-        //     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-        // })
+        const params = new URLSearchParams(responseText);
+        const response = Object.fromEntries(params.entries());
 
-        // const params = new URLSearchParams(responseText)
-        // const token = params.get('ssl_token')
-
-        // if (!token) {
-        //     throw createError({ statusCode: 400, message: 'Elavon Token Handshake Failed' })
-        // }
-
-        return { success: true }
-    } catch (error) {
-        throw createError({ statusCode: 500, message: 'Payment gateway configuration error' })
+        if (response.ssl_result === '0') {
+            return {
+                success: true,
+                token: response.ssl_token,
+                transactionId: response.ssl_txn_id,
+            };
+        } else {
+            throw createError({
+                statusCode: 400,
+                message: response.ssl_result_message || 'Payment initialization failed',
+            });
+        }
+    } catch (error: any) {
+        console.error('Elavon session error:', error);
+        throw createError({
+            statusCode: 500,
+            message: error.message || 'Payment initialization failed',
+        });
     }
-})
+});

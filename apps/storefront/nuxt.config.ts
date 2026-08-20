@@ -55,6 +55,9 @@ export default defineNuxtConfig({
       secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY,
     },
     supabaseServiceKey: process.env.NUXT_SUPABASE_SECRET_KEY,
+    elavonAccountId: process.env.ELAVON_ACCOUNT_ID,
+    elavonUserId: process.env.ELAVON_USER_ID,
+    elavonPin: process.env.ELAVON_PIN,
     public: {
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseKey: process.env.SUPABASE_KEY,

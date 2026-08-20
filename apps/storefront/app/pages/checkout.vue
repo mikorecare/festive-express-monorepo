@@ -107,7 +107,6 @@ const form = ref({
   customer_note: "",
 });
 
-
 const validationErrors = ref({
   billing_first_name: "",
   billing_email: "",
@@ -462,6 +461,90 @@ const validateCheckout = () => {
   return true;
 };
 
+const loadConvergeScript = () => {
+  return new Promise<void>((resolve, reject) => {
+    if ((window as any).PayWithConverge) {
+      resolve();
+      return;
+    }
+
+    const demo = true;
+    const src = demo
+      ? "https://api.demo.convergepay.com/hosted-payments/PayWithConverge.js"
+      : "https://api.convergepay.com/hosted-payments/PayWithConverge.js";
+
+    const s = document.createElement("script");
+    s.src = src;
+    s.async = true;
+    s.crossOrigin = "anonymous";
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error("Failed to load Converge script"));
+    document.head.appendChild(s);
+  });
+};
+
+// const payWithConverge = async () => {
+//   if (!validateCheckout()) return;
+
+//   isPaying.value = true;
+
+//   try {
+//     const nameParts = (form.value.billing_first_name || "").trim().split(" ");
+//     const firstName = nameParts[0] || "";
+//     const lastName = nameParts.slice(1).join(" ") || firstName;
+//     const response: any = await $fetch("/elavon/charge", {
+//       baseURL: config.public.apiBase,
+//       method: "POST",
+//       body: {
+//         amount: grandTotal.value,
+//         card_number: form.value.card_number,
+//         card_expiry: form.value.card_expiry,
+//         card_cvv: form.value.card_cvv,
+//         card_name: form.value.card_name,
+//         billing_first_name: firstName,
+//         billing_last_name: lastName,
+//         billing_email: form.value.billing_email,
+//         billing_phone: form.value.billing_phone,
+//         billing_address: form.value.shipping_address_1,
+//         billing_postcode: form.value.billing_postcode,
+//         turnstileToken: turnstileToken.value,
+//       },
+//     });
+
+//     if (response.success) {
+//       const orderPayload = buildOrderPayload();
+//       orderPayload.transaction_id = response.transactionId;
+//       orderPayload.approval_code = response.approvalCode;
+//       orderPayload.payment_token = response.token || null;
+
+//       const orderResponse: any = await $fetch("/orders", {
+//         baseURL: config.public.apiBase,
+//         method: "POST",
+//         body: orderPayload,
+//       });
+
+//       await clearCart();
+//       toast.success("Payment successful!");
+//       navigateTo(
+//         `/thank-you?order=${orderResponse.order_number || orderResponse.id}`,
+//       );
+//     } else {
+//       throw new Error(response.message || "Payment failed");
+//     }
+//   } catch (error: any) {
+//     console.error("Payment error:", error);
+//     toast.error(
+//       error.data?.message ||
+//         error.message ||
+//         "Payment failed. Please try again.",
+//     );
+//     resetTurnstile();
+//     validateAllFields();
+//   } finally {
+//     isPaying.value = false;
+//   }
+// };
+
 const payWithConverge = async () => {
   if (!validateCheckout()) return;
 
@@ -471,55 +554,73 @@ const payWithConverge = async () => {
     const nameParts = (form.value.billing_first_name || "").trim().split(" ");
     const firstName = nameParts[0] || "";
     const lastName = nameParts.slice(1).join(" ") || firstName;
-    const response: any = await $fetch("/elavon/charge", {
-      baseURL: config.public.apiBase,
+
+    // ✅ Call your server endpoint, not Converge directly
+    const tokenRes: any = await $fetch("/api/elavon/session", {
       method: "POST",
       body: {
         amount: grandTotal.value,
-        card_number: form.value.card_number,
-        card_expiry: form.value.card_expiry,
-        card_cvv: form.value.card_cvv,
-        card_name: form.value.card_name,
-        billing_first_name: firstName,
-        billing_last_name: lastName,
-        billing_email: form.value.billing_email,
-        billing_phone: form.value.billing_phone,
-        billing_address: form.value.shipping_address_1,
-        billing_postcode: form.value.billing_postcode,
-        turnstileToken: turnstileToken.value,
+        first_name: firstName,
+        last_name: lastName,
+        email: form.value.billing_email,
+        invoice_number: `FLP-${Date.now()}`,
       },
     });
 
-    if (response.success) {
-      const orderPayload = buildOrderPayload();
-      orderPayload.transaction_id = response.transactionId;
-      orderPayload.approval_code = response.approvalCode;
-      orderPayload.payment_token = response.token || null;
-
-      const orderResponse: any = await $fetch("/orders", {
-        baseURL: config.public.apiBase,
-        method: "POST",
-        body: orderPayload,
-      });
-
-      await clearCart();
-      toast.success("Payment successful!");
-      navigateTo(
-        `/thank-you?order=${orderResponse.order_number || orderResponse.id}`,
-      );
-    } else {
-      throw new Error(response.message || "Payment failed");
+    if (!tokenRes.success || !tokenRes.token) {
+      throw new Error("Failed to get payment token");
     }
-  } catch (error: any) {
-    console.error("Payment error:", error);
-    toast.error(
-      error.data?.message ||
-        error.message ||
-        "Payment failed. Please try again.",
+
+    await loadConvergeScript();
+
+    (window as any).PayWithConverge.open(
+      { ssl_txn_auth_token: tokenRes.token },
+      {
+        onApproval: async (payment: any) => {
+          try {
+            const orderPayload = buildOrderPayload();
+            orderPayload.transaction_id =
+              payment.ssl_txn_id || tokenRes.transactionId;
+            orderPayload.approval_code = payment.ssl_approval_code;
+
+            const orderResponse: any = await $fetch("/api/orders", {
+              method: "POST",
+              body: orderPayload,
+            });
+
+            await clearCart();
+            toast.success("Payment successful!");
+            navigateTo(
+              `/thank-you?order=${orderResponse.order_number || orderResponse.id}`,
+            );
+          } catch (e: any) {
+            toast.error("Payment OK but order failed — contact support");
+            resetTurnstile();
+          } finally {
+            isPaying.value = false;
+          }
+        },
+        onError: () => {
+          toast.error("Payment error");
+          isPaying.value = false;
+          resetTurnstile();
+        },
+        onCancelled: () => {
+          toast.message("Payment cancelled");
+          isPaying.value = false;
+          resetTurnstile();
+        },
+        onDeclined: () => {
+          toast.error("Card declined");
+          isPaying.value = false;
+          resetTurnstile();
+        },
+      },
     );
-    resetTurnstile();
-  } finally {
+  } catch (error: any) {
+    toast.error(error.message || "Unable to start payment");
     isPaying.value = false;
+    resetTurnstile();
   }
 };
 
