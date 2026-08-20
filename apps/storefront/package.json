@@ -10,8 +10,10 @@
   },
   "dependencies": {
     "@festive-express/shared": "file:../../packages/shared",
+    "@nuxt/scripts": "^1.3.6",
     "@nuxtjs/supabase": "^2.0.10",
     "@nuxtjs/tailwindcss": "^6.14.0",
+    "@nuxtjs/turnstile": "^1.1.3",
     "bootstrap": "^5.3.8",
     "nuxt": "^4.4.8",
     "vue": "^3.5.39",
