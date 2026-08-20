@@ -107,6 +107,7 @@ const form = ref({
   customer_note: "",
 });
 
+
 const validationErrors = ref({
   billing_first_name: "",
   billing_email: "",
@@ -410,26 +411,6 @@ const minDate = computed(() => {
   return d.toISOString().split("T")[0] || "";
 });
 
-const loadConvergeScript = () => {
-  return new Promise<void>((resolve, reject) => {
-    if ((window as any).PayWithConverge) {
-      resolve();
-      return;
-    }
-    const demo = true;
-    const src = demo
-      ? "https://api.demo.convergepay.com/hosted-payments/PayWithConverge.js"
-      : "https://api.convergepay.com/hosted-payments/PayWithConverge.js";
-
-    const s = document.createElement("script");
-    s.src = src;
-    s.async = true;
-    s.onload = () => resolve();
-    s.onerror = () => reject(new Error("Failed to load Converge script"));
-    document.head.appendChild(s);
-  });
-};
-
 const buildOrderPayload = () => {
   const nameParts = (form.value.billing_first_name || "").trim().split(" ");
   const firstName = nameParts[0] || "";
@@ -460,6 +441,9 @@ const buildOrderPayload = () => {
       is_package: item.is_package || false,
     })),
     customer_note: form.value.customer_note || null,
+    transaction_id: null,
+    approval_code: null,
+    payment_token: null,
   };
 };
 
@@ -482,76 +466,60 @@ const payWithConverge = async () => {
   if (!validateCheckout()) return;
 
   isPaying.value = true;
-  try {
-    await loadConvergeScript();
 
+  try {
     const nameParts = (form.value.billing_first_name || "").trim().split(" ");
     const firstName = nameParts[0] || "";
     const lastName = nameParts.slice(1).join(" ") || firstName;
-
-    const tokenRes: any = await $fetch("/converge/token", {
+    const response: any = await $fetch("/elavon/charge", {
       baseURL: config.public.apiBase,
       method: "POST",
       body: {
         amount: grandTotal.value,
-        first_name: firstName,
-        last_name: lastName,
-        email: form.value.billing_email,
-        invoice_number: `FLP-${Date.now()}`,
+        card_number: form.value.card_number,
+        card_expiry: form.value.card_expiry,
+        card_cvv: form.value.card_cvv,
+        card_name: form.value.card_name,
+        billing_first_name: firstName,
+        billing_last_name: lastName,
+        billing_email: form.value.billing_email,
+        billing_phone: form.value.billing_phone,
+        billing_address: form.value.shipping_address_1,
+        billing_postcode: form.value.billing_postcode,
+        turnstileToken: turnstileToken.value,
       },
     });
 
-    (window as any).PayWithConverge.open(
-      { ssl_txn_auth_token: tokenRes.token },
-      {
-        onError: () => {
-          toast.error("Payment error");
-          isPaying.value = false;
-          resetTurnstile();
-        },
-        onCancelled: () => {
-          toast.message("Payment cancelled");
-          isPaying.value = false;
-          resetTurnstile();
-        },
-        onDeclined: () => {
-          toast.error("Card declined");
-          isPaying.value = false;
-          resetTurnstile();
-        },
-        onApproval: async (payment: any) => {
-          try {
-            const response: any = await $fetch("/orders", {
-              baseURL: config.public.apiBase,
-              method: "POST",
-              body: {
-                ...buildOrderPayload(),
-                ssl_txn_id: payment.ssl_txn_id,
-                ssl_approval_code: payment.ssl_approval_code,
-                turnstileToken: turnstileToken.value,
-              },
-            });
+    if (response.success) {
+      const orderPayload = buildOrderPayload();
+      orderPayload.transaction_id = response.transactionId;
+      orderPayload.approval_code = response.approvalCode;
+      orderPayload.payment_token = response.token || null;
 
-            await clearCart();
-            navigateTo(
-              `/thank-you?order=${response.order_number || response.id}`,
-            );
-          } catch (e: any) {
-            toast.error(
-              e.data?.message ||
-                "Payment OK but order failed — contact support",
-            );
-            resetTurnstile();
-          } finally {
-            isPaying.value = false;
-          }
-        },
-      },
+      const orderResponse: any = await $fetch("/orders", {
+        baseURL: config.public.apiBase,
+        method: "POST",
+        body: orderPayload,
+      });
+
+      await clearCart();
+      toast.success("Payment successful!");
+      navigateTo(
+        `/thank-you?order=${orderResponse.order_number || orderResponse.id}`,
+      );
+    } else {
+      throw new Error(response.message || "Payment failed");
+    }
+  } catch (error: any) {
+    console.error("Payment error:", error);
+    toast.error(
+      error.data?.message ||
+        error.message ||
+        "Payment failed. Please try again.",
     );
-  } catch (e: any) {
-    toast.error(e.data?.message || "Unable to start payment");
-    isPaying.value = false;
     resetTurnstile();
+  } finally {
+    isPaying.value = false;
   }
 };
 

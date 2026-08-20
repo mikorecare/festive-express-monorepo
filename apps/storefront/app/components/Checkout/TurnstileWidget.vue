@@ -1,14 +1,7 @@
 <template>
   <div class="mt-4 p-3 bg-gray-50 rounded-lg">
     <div class="flex justify-center min-h-[85px]">
-      <NuxtTurnstile
-        :site-key="siteKey"
-        data-theme="light"
-        size="normal"
-        @success="onSuccess"
-        @error="onError"
-        @expired="onExpired"
-      />
+      <div id="turnstile-container"></div>
     </div>
     <p v-if="errors.turnstile" class="text-red-500 text-sm text-center mt-2">
       {{ errors.turnstile }}
@@ -35,15 +28,41 @@ const emit = defineEmits<{
   (e: "expired"): void;
 }>();
 
-const onSuccess = (token: string) => {
-  emit("success", token);
-};
+onMounted(() => {
+  const renderTurnstile = () => {
+    const container = document.getElementById("turnstile-container");
+    if (!container) return;
+    if (!window.turnstile) {
+      setTimeout(renderTurnstile, 500);
+      return;
+    }
 
-const onError = () => {
-  emit("error");
-};
+    container.innerHTML = "";
+    window.turnstile.render(container, {
+      sitekey: props.siteKey,
+      callback: (token: string) => {
+        emit("success", token);
+      },
+      "error-callback": () => {
+        emit("error");
+      },
+      "expired-callback": () => {
+        emit("expired");
+      },
+      theme: "light",
+      size: "normal",
+    });
+  };
 
-const onExpired = () => {
-  emit("expired");
-};
+  if (!window.turnstile) {
+    const script = document.createElement("script");
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+    script.async = true;
+    script.defer = true;
+    script.onload = renderTurnstile;
+    document.head.appendChild(script);
+  } else {
+    renderTurnstile();
+  }
+});
 </script>

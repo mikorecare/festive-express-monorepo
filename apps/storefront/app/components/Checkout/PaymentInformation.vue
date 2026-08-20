@@ -11,10 +11,7 @@
         <input
           :value="modelValue.card_name"
           @input="
-            $emit('update:modelValue', {
-              ...modelValue,
-              card_name: ($event.target as HTMLInputElement).value,
-            })
+            updateField('card_name', ($event.target as HTMLInputElement).value)
           "
           @blur="$emit('validate', 'card_name')"
           type="text"
@@ -38,7 +35,7 @@
           </span>
           <input
             :value="modelValue.card_number"
-            @input="$emit('formatCardNumber')"
+            @input="handleCardNumberInput"
             @blur="$emit('validate', 'card_number')"
             type="text"
             class="flex-1 px-4 py-2 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
@@ -58,7 +55,7 @@
           >
           <input
             :value="modelValue.card_expiry"
-            @input="$emit('formatExpiry')"
+            @input="handleExpiryInput"
             @blur="$emit('validate', 'card_expiry')"
             type="text"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
@@ -77,10 +74,7 @@
           <input
             :value="modelValue.card_cvv"
             @input="
-              $emit('update:modelValue', {
-                ...modelValue,
-                card_cvv: ($event.target as HTMLInputElement).value,
-              })
+              updateField('card_cvv', ($event.target as HTMLInputElement).value)
             "
             @blur="$emit('validate', 'card_cvv')"
             type="password"
@@ -98,10 +92,10 @@
         <input
           :checked="modelValue.billing_same"
           @change="
-            $emit('update:modelValue', {
-              ...modelValue,
-              billing_same: ($event.target as HTMLInputElement).checked,
-            })
+            updateField(
+              'billing_same',
+              ($event.target as HTMLInputElement).checked,
+            )
           "
           type="checkbox"
           id="billingSame"
@@ -131,15 +125,61 @@ interface ValidationErrors {
   card_cvv: string;
 }
 
-defineProps<{
+const props = defineProps<{
   modelValue: FormData;
   errors: ValidationErrors;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   (e: "update:modelValue", value: FormData): void;
   (e: "validate", field: string): void;
   (e: "formatCardNumber"): void;
   (e: "formatExpiry"): void;
 }>();
+
+const updateField = (field: keyof FormData, value: any) => {
+  emit("update:modelValue", {
+    ...props.modelValue,
+    [field]: value,
+  });
+};
+
+const handleCardNumberInput = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  let value = input.value.replace(/\D/g, "");
+  if (value.length > 16) {
+    value = value.slice(0, 16);
+  }
+
+  const formatted = value.replace(/(.{4})/g, "$1 ").trim();
+  emit("update:modelValue", {
+    ...props.modelValue,
+    card_number: formatted,
+  });
+};
+
+const handleExpiryInput = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  let value = input.value.replace(/\D/g, "");
+  if (value.length > 4) {
+    value = value.slice(0, 4);
+  }
+  if (value.length >= 2) {
+    const month = value.slice(0, 2);
+    const year = value.slice(2);
+    const monthNum = parseInt(month);
+    if (monthNum > 12) {
+      value = "12" + year;
+    }
+    emit("update:modelValue", {
+      ...props.modelValue,
+      card_expiry: month + "/" + year,
+    });
+  } else {
+    emit("update:modelValue", {
+      ...props.modelValue,
+      card_expiry: value,
+    });
+  }
+};
 </script>
