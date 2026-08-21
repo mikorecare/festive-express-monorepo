@@ -1,14 +1,22 @@
 <template>
-  <div class="max-w-5xl mx-auto">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-      <h1 class="text-2xl font-bold text-[#0c2340]">Site Settings</h1>
+  <div class="p-6 space-y-6 bg-slate-50 min-h-screen">
+    <!-- Header -->
+    <div
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+    >
+      <div>
+        <h1 class="text-2xl font-bold text-navy">Site Settings</h1>
+        <p class="text-slate-500 text-sm">
+          Contact, social links, tax rate, and footer content
+        </p>
+      </div>
       <button
         type="button"
         class="inline-flex items-center justify-center rounded-lg bg-[#F49322] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0c2340] disabled:opacity-60 disabled:cursor-not-allowed"
         :disabled="saving || loading"
         @click="saveSettings"
       >
-        {{ saving ? 'Saving...' : 'Save Settings' }}
+        {{ saving ? "Saving..." : "Save Settings" }}
       </button>
     </div>
 
@@ -16,45 +24,57 @@
       Loading settings...
     </div>
 
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       <!-- Contact -->
       <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
         <h2 class="text-lg font-semibold text-[#0c2340] mb-5">Contact Us</h2>
 
         <div class="mb-4">
-          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Email</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5"
+            >Email</label
+          >
           <input
             v-model="form.contact_email"
             type="email"
             class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49322]/30 focus:border-[#F49322]"
             placeholder="info@example.com"
-          >
+          />
         </div>
 
         <div class="mb-4">
-          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Phone (tel link)</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5"
+            >Phone (tel link)</label
+          >
           <input
             v-model="form.contact_phone"
             type="text"
             class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49322]/30 focus:border-[#F49322]"
             placeholder="+19412221012"
-          >
-          <p class="mt-1 text-xs text-slate-500">Used in href="tel:..." — digits preferred</p>
+          />
+          <p class="mt-1 text-xs text-slate-500">
+            Used in href="tel:..." — digits preferred
+          </p>
         </div>
 
         <div class="mb-4">
-          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Phone (display)</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5"
+            >Phone (display)</label
+          >
           <input
             v-model="form.contact_phone_display"
             type="text"
             class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49322]/30 focus:border-[#F49322]"
             placeholder="(941) 222-1012"
-          >
-          <p class="mt-1 text-xs text-slate-500">Shown on “Call Us Now” button</p>
+          />
+          <p class="mt-1 text-xs text-slate-500">
+            Shown on “Call Us Now” button
+          </p>
         </div>
 
         <div class="mb-1">
-          <label class="block text-sm font-semibold text-gray-700 mb-1.5">Address</label>
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5"
+            >Address</label
+          >
           <textarea
             v-model="form.contact_address"
             rows="3"
@@ -86,14 +106,17 @@
             class="field"
             placeholder="Add Copyright text here.."
           />
-          <p class="text-xs text-slate-400 mt-1">Shown at the bottom of the storefront footer.</p>
+          <p class="text-xs text-slate-400 mt-1">
+            Shown at the bottom of the storefront footer.
+          </p>
         </div>
-
       </div>
 
       <!-- Social -->
       <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-        <h2 class="text-lg font-semibold text-[#0c2340] mb-5">Social Media Links</h2>
+        <h2 class="text-lg font-semibold text-[#0c2340] mb-5">
+          Social Media Links
+        </h2>
 
         <div
           v-for="field in socialFields"
@@ -108,7 +131,31 @@
             type="url"
             class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49322]/30 focus:border-[#F49322]"
             :placeholder="field.placeholder"
-          >
+          />
+        </div>
+      </div>
+
+      <!-- Checkout / Tax -->
+      <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <h2 class="text-lg font-semibold text-[#0c2340] mb-5">Checkout</h2>
+
+        <div class="mb-1">
+          <label class="block text-sm font-semibold text-gray-700 mb-1.5">
+            Florida tax rate (%)
+          </label>
+          <input
+            v-model="form.fl_tax_rate"
+            type="number"
+            step="0.01"
+            min="0"
+            max="100"
+            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49322]/30 focus:border-[#F49322]"
+            placeholder="7"
+          />
+          <p class="mt-1 text-xs text-slate-500">
+            Enter percent (e.g. <strong>7</strong> for 7%). Storefront converts
+            to decimal (0.07).
+          </p>
         </div>
       </div>
     </div>
@@ -121,160 +168,200 @@
 // })
 
 type SettingsForm = {
-  contact_email: string
-  contact_phone: string
-  contact_phone_display: string
-  contact_address: string
-  opening_hours: string
-  copyright_text: string
+  contact_email: string;
+  contact_phone: string;
+  contact_phone_display: string;
+  contact_address: string;
+  opening_hours: string;
+  copyright_text: string;
+  fl_tax_rate: string;
 
-  social_facebook: string
-  social_instagram: string
-  social_x: string
-  social_youtube: string
-  social_pinterest: string
-}
+  social_facebook: string;
+  social_instagram: string;
+  social_x: string;
+  social_youtube: string;
+  social_pinterest: string;
+};
 
 type SocialKey = keyof Pick<
   SettingsForm,
-  'social_facebook' | 'social_instagram' | 'social_x' | 'social_youtube' | 'social_pinterest'
->
+  | "social_facebook"
+  | "social_instagram"
+  | "social_x"
+  | "social_youtube"
+  | "social_pinterest"
+>;
 
 type SettingRow = {
-  id?: number
-  key: string
-  value: string | null
-}
+  id?: number;
+  key: string;
+  value: string | null;
+};
 
 const SETTING_KEYS: (keyof SettingsForm)[] = [
-  'contact_email',
-  'contact_phone',
-  'contact_phone_display',
-  'contact_address',
-  'opening_hours',
-  'copyright_text',
-  
-  'social_facebook',
-  'social_instagram',
-  'social_x',
-  'social_youtube',
-  'social_pinterest',
-]
+  "contact_email",
+  "contact_phone",
+  "contact_phone_display",
+  "contact_address",
+  "opening_hours",
+  "copyright_text",
+  "fl_tax_rate",
 
-const supabase = useSupabaseClient()
-const db = supabase as any
-const user = useSupabaseUser()
-const { showToast } = useToast()
+  "social_facebook",
+  "social_instagram",
+  "social_x",
+  "social_youtube",
+  "social_pinterest",
+];
 
-const loading = ref(true)
-const saving = ref(false)
-const initialized = ref(false)
+const supabase = useSupabaseClient();
+const db = supabase as any;
+const user = useSupabaseUser();
+const { showToast } = useToast();
+
+const loading = ref(true);
+const saving = ref(false);
+const initialized = ref(false);
 
 const form = ref<SettingsForm>({
-  contact_email: '',
-  contact_phone: '',
-  contact_phone_display: '',
-  contact_address: '',
-  opening_hours: '',
-  copyright_text: '',
-  
-  social_facebook: '',
-  social_instagram: '',
-  social_x: '',
-  social_youtube: '',
-  social_pinterest: '',
-})
+  contact_email: "",
+  contact_phone: "",
+  contact_phone_display: "",
+  contact_address: "",
+  opening_hours: "",
+  copyright_text: "",
+  fl_tax_rate: "",
+
+  social_facebook: "",
+  social_instagram: "",
+  social_x: "",
+  social_youtube: "",
+  social_pinterest: "",
+});
 
 const socialFields: { key: SocialKey; label: string; placeholder: string }[] = [
-  { key: 'social_facebook', label: 'Facebook', placeholder: 'https://facebook.com/...' },
-  { key: 'social_instagram', label: 'Instagram', placeholder: 'https://instagram.com/...' },
-  { key: 'social_x', label: 'X (Twitter)', placeholder: 'https://x.com/...' },
-  { key: 'social_youtube', label: 'YouTube', placeholder: 'https://youtube.com/...' },
-  { key: 'social_pinterest', label: 'Pinterest', placeholder: 'https://pinterest.com/...' },
-]
+  {
+    key: "social_facebook",
+    label: "Facebook",
+    placeholder: "https://facebook.com/...",
+  },
+  {
+    key: "social_instagram",
+    label: "Instagram",
+    placeholder: "https://instagram.com/...",
+  },
+  { key: "social_x", label: "X (Twitter)", placeholder: "https://x.com/..." },
+  {
+    key: "social_youtube",
+    label: "YouTube",
+    placeholder: "https://youtube.com/...",
+  },
+  {
+    key: "social_pinterest",
+    label: "Pinterest",
+    placeholder: "https://pinterest.com/...",
+  },
+];
 
 const emptyForm = (): SettingsForm => ({
-  contact_email: '',
-  contact_phone: '',
-  contact_phone_display: '',
-  contact_address: '',
-  opening_hours: '',
-  copyright_text: '',
+  contact_email: "",
+  contact_phone: "",
+  contact_phone_display: "",
+  contact_address: "",
+  opening_hours: "",
+  copyright_text: "",
+  fl_tax_rate: "",
 
-  social_facebook: '',
-  social_instagram: '',
-  social_x: '',
-  social_youtube: '',
-  social_pinterest: '',
-})
+  social_facebook: "",
+  social_instagram: "",
+  social_x: "",
+  social_youtube: "",
+  social_pinterest: "",
+});
 
 /** Load all key/value rows → form */
 const loadSettings = async () => {
-  loading.value = true
+  loading.value = true;
   try {
-    const { data, error } = await db
-      .from('settings')
-      .select('id, key, value')
+    const { data, error } = await db.from("settings").select("id, key, value");
 
-    if (error) throw error
+    if (error) throw error;
 
-    const rows = (data || []) as SettingRow[]
-    const next = emptyForm()
+    const rows = (data || []) as SettingRow[];
+    const next = emptyForm();
 
     for (const row of rows) {
-      const k = row.key as keyof SettingsForm
+      const k = row.key as keyof SettingsForm;
       if (SETTING_KEYS.includes(k)) {
-        next[k] = row.value ?? ''
+        next[k] = row.value ?? "";
       }
     }
 
-    form.value = next
+    // Show % in the form (0.07 → 7)
+    if (next.fl_tax_rate) {
+      const n = Number(next.fl_tax_rate);
+      if (!Number.isNaN(n) && n > 0 && n <= 1) {
+        next.fl_tax_rate = String(n * 100);
+      }
+    }
+
+    form.value = next;
   } catch (e: any) {
-    console.error('loadSettings', e)
-    showToast(e?.message || 'Failed to load settings', 'error')
+    console.error("loadSettings", e);
+    showToast(e?.message || "Failed to load settings", "error");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 /** Upsert each key */
 const saveSettings = async () => {
   if (!user.value) {
-    showToast('Please log in.', 'error')
-    return
+    showToast("Please log in.", "error");
+    return;
   }
 
-  saving.value = true
+  saving.value = true;
   try {
-    const rows = SETTING_KEYS.map((key) => ({
-      key,
-      value: form.value[key] ?? '',
-      updated_at: new Date().toISOString(),
-    }))
+    const rows = SETTING_KEYS.map((key) => {
+      let value = form.value[key] ?? "";
+
+      // Percent → decimal for fl_tax_rate (7 → 0.07)
+      if (key === "fl_tax_rate") {
+        const pct = Number(value);
+        value = !Number.isNaN(pct) ? String(pct / 100) : "0.07";
+      }
+
+      return {
+        key,
+        value,
+        updated_at: new Date().toISOString(),
+      };
+    });
 
     const { error } = await db
-      .from('settings')
-      .upsert(rows, { onConflict: 'key' })
+      .from("settings")
+      .upsert(rows, { onConflict: "key" });
 
-    if (error) throw error
+    if (error) throw error;
 
-    showToast('Settings saved', 'success')
+    showToast("Settings saved", "success");
   } catch (e: any) {
-    console.error('saveSettings', e)
-    showToast(e?.message || 'Failed to save settings', 'error')
+    console.error("saveSettings", e);
+    showToast(e?.message || "Failed to save settings", "error");
   } finally {
-    saving.value = false
+    saving.value = false;
   }
-}
+};
 
 // Wait for auth, then load
 watch(
   user,
   async (u) => {
-    if (!u || initialized.value) return
-    initialized.value = true
-    await loadSettings()
+    if (!u || initialized.value) return;
+    initialized.value = true;
+    await loadSettings();
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 </script>

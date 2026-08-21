@@ -80,7 +80,18 @@ useHead({
 });
 const config = useRuntimeConfig();
 const siteKey = config.public.turnstile.siteKey as string;
-const FL_TAX_RATE = Number(config.public.flTaxRate) || 0.07;
+
+const { settings, loadSettings, telHref } = useSettings();
+const FL_TAX_RATE = computed(() => {
+  // Object / map shape: { fl_tax_rate: '0.07', contact_email: '...', ... }
+  const raw =
+    settings.value?.fl_tax_rate ?? (settings.value as any)?.["fl_tax_rate"];
+
+  const n = Number(raw);
+  if (!Number.isNaN(n) && n >= 0) return n;
+  return 0.07;
+});
+
 const { cartItems, cartTotal, loadCart, clearCart } = useCart();
 const { isServiceZip } = useServiceZips();
 
@@ -397,14 +408,23 @@ const alacarteCartTotal = computed(() =>
   }, 0),
 );
 
-const estimatedTax = computed(() => cartTotal.value * FL_TAX_RATE);
-const installDeposit = ref(0);
+const {
+  promoCode,
+  promoError,
+  appliedPromo,
+  discountAmount,
+  applyPromo,
+  removePromo,
+  loadPromo,
+} = usePromo();
+
+const subtotal = computed(() => cartTotal.value);
+const promoDiscount = computed(() => discountAmount(subtotal.value));
+const estimatedTax = computed(
+  () => Math.max(0, subtotal.value - promoDiscount.value) * FL_TAX_RATE.value,
+);
 const grandTotal = computed(
-  () =>
-    Number(cartTotal.value) +
-    estimatedTax.value +
-    installDeposit.value +
-    alacarteCartTotal.value,
+  () => Number(cartTotal.value) + estimatedTax.value + alacarteCartTotal.value,
 );
 
 const minDate = computed(() => {
@@ -628,6 +648,7 @@ const payWithConverge = async () => {
 
 onMounted(async () => {
   await loadCart();
+  loadPromo();
 });
 </script>
 

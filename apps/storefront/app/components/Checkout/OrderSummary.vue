@@ -38,6 +38,12 @@
       <span class="text-gray-600">Estimated Taxes</span>
       <span class="font-bold">${{ estimatedTax.toFixed(2) }}</span>
     </div>
+    <div class="flex justify-between text-sm py-1" v-if="appliedPromo">
+      <span class="text-gray-600">Discount ({{ appliedPromo.code }})</span>
+      <span class="font-bold"
+        >−${{ discountAmount(cartTotal).toFixed(2) }}</span
+      >
+    </div>
 
     <div
       class="flex justify-between items-center mt-3 pt-3 border-t-2 border-navy"
@@ -116,7 +122,18 @@
 <script setup lang="ts">
 import { CheckCircleIcon } from "@heroicons/vue/24/solid";
 
-defineProps<{
+const { settings, loadSettings, telHref } = useSettings();
+const FL_TAX_RATE = computed(() => {
+  // Object / map shape: { fl_tax_rate: '0.07', contact_email: '...', ... }
+  const raw =
+    settings.value?.fl_tax_rate ?? (settings.value as any)?.["fl_tax_rate"];
+
+  const n = Number(raw);
+  if (!Number.isNaN(n) && n >= 0) return n;
+  return 0.07;
+});
+
+const props = defineProps<{
   cartItems: any[];
   cartTotal: number;
   alacarteCartTotal: number;
@@ -131,4 +148,30 @@ defineEmits<{
   (e: "update:paymentMethod", value: string): void;
   (e: "pay"): void;
 }>();
+
+const {
+  promoCode,
+  promoError,
+  appliedPromo,
+  discountAmount,
+  applyPromo,
+  removePromo,
+  loadPromo,
+} = usePromo();
+
+const subtotal = computed(() => Number(props.cartTotal) || 0);
+
+const estimatedTax = computed(
+  () => Math.max(0, subtotal.value - promoDiscount.value) * FL_TAX_RATE.value,
+);
+
+const promoDiscount = computed(() => discountAmount(subtotal.value));
+
+const grandTotal = computed(() =>
+  Math.max(0, subtotal.value + estimatedTax.value - promoDiscount.value),
+);
+
+onMounted(() => {
+  loadSettings();
+});
 </script>

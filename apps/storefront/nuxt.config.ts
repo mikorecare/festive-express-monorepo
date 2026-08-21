@@ -72,7 +72,6 @@ export default defineNuxtConfig({
     public: {
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseKey: process.env.SUPABASE_KEY,
-      flTaxRate: 0.07,
       apiBase:
         process.env.NUXT_PUBLIC_SUPABASE_URL || "http://localhost:3000/api",
     },
