@@ -4,24 +4,26 @@
   >
     <div class="absolute inset-0 z-[-1] pointer-events-none"></div>
 
-    <div class="max-w-[1280px] mx-auto px-5">
+    <div class="max-w-[1280px] mx-auto px-4 sm:px-5">
       <h2
         v-fade
-        class="text-center font-black text-white tracking-wider drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)] text-2xl sm:text-3xl lg:text-4xl max-sm:text-[1.2rem] max-sm:leading-[1.3] uppercase"
+        class="text-center font-black text-white tracking-wide sm:tracking-wider drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] uppercase whitespace-nowrap text-[1.05rem] sm:text-3xl lg:text-4xl leading-tight"
       >
         CHOOSE YOUR <span class="text-brand-orange">HOLIDAY</span> PACKAGE
       </h2>
+
       <p
         v-fade
-        class="text-center text-[#e2e8f0] mb-[10px] text-[1.15rem] font-bold tracking-[0.5px] uppercase max-w-[50%] max-sm:max-w-[80%] mx-auto leading-[1.3] max-sm:text-[0.95rem] mt-2"
+        class="text-center text-white font-bold tracking-[0.4px] uppercase whitespace-nowrap text-[0.72rem] sm:text-[1.15rem] leading-tight mt-2 mb-1 drop-shadow-[0_1px_4px_rgba(0,0,0,0.4)]"
       >
         COMPARE WHAT’S INCLUDED IN EACH PLAN
       </p>
+
       <p
         v-fade
-        class="text-center text-[#e2e8f0] mb-[50px] text-[0.8rem] font-bold tracking-[0.5px] uppercase max-w-[50%] max-sm:max-w-[80%] mx-auto leading-[1.3] max-sm:text-[0.65rem] mt-2"
+        class="text-center text-white/95 font-semibold tracking-[0.3px] uppercase whitespace-nowrap text-[0.68rem] sm:text-[0.8rem] leading-tight mb-10 sm:mb-[50px] drop-shadow-[0_1px_4px_rgba(0,0,0,0.35)]"
       >
-        (Each package is a rental for one season)
+        (Each package is a lease for one season)
       </p>
 
       <div v-if="loading" class="text-center py-10 text-white font-semibold">
@@ -103,10 +105,13 @@
           >
             <button
               type="button"
-              class="w-[85%] bg-brand-orange text-white border-2 border-[#0c2340] rounded-[50px] py-[12px] px-[16px] text-[0.95rem] font-black tracking-[0.5px] uppercase cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-transform duration-200 ease-in-out hover:bg-[#0c2340] hover:text-white hover:-translate-y-[2px] -mt-[30px]"
+              class="group relative overflow-hidden w-[85%] bg-brand-orange text-white border-2 border-[#0c2340] rounded-[50px] py-[12px] px-[16px] text-[0.95rem] font-black tracking-[0.5px] cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out hover:bg-[#0c2340] hover:text-white hover:-translate-y-[2px] -mt-[30px] before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
               @click="selectPackage(pkg)"
             >
-              {{ getPackageButtonText(pkg) }}
+              <span>{{ getPackageButtonPrefix(pkg) }}</span>
+              <span class="text-navy group-hover:text-white transition-colors">
+                {{ getPackageButtonName(pkg) }}
+              </span>
             </button>
           </div>
         </div>
@@ -265,12 +270,20 @@ const getPackageTitleImage = (name: string) => {
   return `${TITLE_BASE}/Joy.png`;
 };
 
-const getPackageButtonText = (pkg: { name: string }) => {
+const getPackageButtonPrefix = (pkg: { name: string }) => {
   const name = pkg.name.toLowerCase();
-  if (name.includes("joy")) return "Choose Joy";
-  if (name.includes("jolly")) return "Get Jolly";
-  if (name.includes("merry")) return "Make It Merry";
-  return `Choose ${pkg.name}`;
+  if (name.includes("joy")) return "Choose ";
+  if (name.includes("jolly")) return "Get ";
+  if (name.includes("merry")) return "Make It ";
+  return "Choose ";
+};
+
+const getPackageButtonName = (pkg: { name: string }) => {
+  const name = pkg.name.toLowerCase();
+  if (name.includes("joy")) return "JOY";
+  if (name.includes("jolly")) return "JOLLY";
+  if (name.includes("merry")) return "MERRY";
+  return pkg.name.toUpperCase();
 };
 
 onMounted(fetchPackages);

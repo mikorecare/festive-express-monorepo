@@ -7,13 +7,13 @@
     <div class="text-center px-5 sm:pb-5 relative z-[2] sm:mb-10">
       <h2
         v-fade
-        class="font-extrabold text-white text-uppercase text-2xl sm:text-3xl lg:text-4xl max-sm:text-[1.2rem] max-sm:leading-[1.3]"
+        class="text-center font-black text-white tracking-wide sm:tracking-wider uppercase text-[1.05rem] sm:text-3xl lg:text-4xl leading-tight"
       >
         Our Wonderful <span class="text-brand-orange">HOLIDAY</span> Stories
       </h2>
       <p
         v-fade
-        class="text-white max-w-[50%] max-sm:max-w-[80%] mx-auto leading-[1.3] text-xl max-sm:text-[0.95rem] mt-2 fade-up is-visible"
+        class="text-center text-white font-bold tracking-[0.4px] text-[0.72rem] sm:text-[1.15rem] leading-tight mt-2 mb-1 max-w-[80%] mx-auto drop-shadow-[0_1px_4px_rgba(0,0,0,0.4)]"
       >
         Journey through our favorite seasonal moments and cherished memories
         captured over the years.

@@ -6,7 +6,7 @@
 @layer base {
   * {
     box-sizing: border-box;
-    font-family: 'Poppins', system-ui, sans-serif;
+    font-family: "Poppins", system-ui, sans-serif;
   }
   html {
     scroll-behavior: smooth;
@@ -14,7 +14,7 @@
   body {
     margin: 0;
     padding: 0;
-    font-family: 'Poppins', system-ui, sans-serif;
+    font-family: "Poppins", system-ui, sans-serif;
   }
 }
 
@@ -26,7 +26,6 @@
   padding-left: 1rem;
   padding-right: 1rem;
 }
-
 
 /* header{
   position: fixed;
@@ -46,8 +45,12 @@
 }
 
 @keyframes glossyShineContinuous {
-  0% { left: -150%; }
-  100% { left: 150%; }
+  0% {
+    left: -150%;
+  }
+  100% {
+    left: 150%;
+  }
 }
 
 @keyframes borderGlowInfinite {
@@ -109,12 +112,12 @@
   animation-iteration-count: infinite;
   animation-direction: alternate;
 }
-  
+
 /* Page Banner Hero Global */
 .page-hero {
   position: relative;
   height: 420px;
-  background-image: url('/Images/Banner/Page-Hero-Cover.webp');
+  background-image: url("/Images/Banner/Page-Hero-Cover.webp");
   background-size: cover;
   background-position: center;
   display: flex;
@@ -176,13 +179,14 @@
     font-size: 1.4rem;
   }
 
-  .section-title{
+  .section-title {
     font-size: 1.5rem !important;
   }
-  .section-sub, .subtitle, .footer-note h4{
+  .section-sub,
+  .subtitle,
+  .footer-note h4 {
     font-size: 0.95rem !important;
   }
-
 }
 /* End Page Hero Global */
 
@@ -214,7 +218,7 @@
 .btn-primary {
   display: block;
   width: 100%;
-  max-width: 320px;           /* Optional: limit max width */
+  max-width: 320px; /* Optional: limit max width */
   margin: 20px auto 0;
   background: #ff890b;
   color: white;
@@ -247,9 +251,9 @@
 .btn-secondary {
   display: block;
   width: auto;
-  max-width: 320px;           /* Optional: limit max width */
+  max-width: 320px; /* Optional: limit max width */
   margin: 0 auto;
-  background: #0c2340 !important; 
+  background: #0c2340 !important;
   color: white !important;
   border: none;
   padding: 16px 32px !important;
@@ -284,7 +288,8 @@
   transform: scale(1.03);
 }
 
-.details-btn, .select-btn {
+.details-btn,
+.select-btn {
   padding: 12px 28px;
   font-size: 1rem;
   font-weight: 600;
@@ -297,7 +302,8 @@
   white-space: nowrap;
 }
 
-.details-btn:hover, .select-btn:hover {
+.details-btn:hover,
+.select-btn:hover {
   background: #d97706;
   color: #fff;
   transform: scale(1.03);
@@ -365,8 +371,6 @@
   pointer-events: none;
 }
 
-
-
 .highlight {
   font-size: inherit;
   font-style: normal;
@@ -379,11 +383,15 @@
 .font-color-orange {
   color: #ff890b !important;
 }
-.font-weight-bold{
+.font-weight-bold {
   font-weight: bold;
 }
-.ml-2{margin-left: .5rem !important;}
-.mr-2{margin-right: .5rem !important;}
+.ml-2 {
+  margin-left: 0.5rem !important;
+}
+.mr-2 {
+  margin-right: 0.5rem !important;
+}
 
 /* Badge */
 .badge {
@@ -399,39 +407,37 @@
 }
 
 .standard {
-  background: #f59e0b;   /* Orange */
+  background: #f59e0b; /* Orange */
 }
 
 .popular {
-  background: #ef4444;   /* Red */
+  background: #ef4444; /* Red */
 }
 
 .premium {
-  background: #8b5cf6;   /* Purple / Violet */
+  background: #8b5cf6; /* Purple / Violet */
 }
 
 .featured {
-  background: #0c2340;   /* Dark Navy */
+  background: #0c2340; /* Dark Navy */
 }
 
 /* New ones */
 .new {
-  background: #10b981;   /* Green */
+  background: #10b981; /* Green */
 }
 
 .best-seller {
-  background: #ff890b;   /* Brand Orange */
+  background: #ff890b; /* Brand Orange */
 }
 
 .limited {
-  background: #dc2626;   /* Strong Red */
+  background: #dc2626; /* Strong Red */
 }
 
 .exclusive {
-  background: #1e3a8a;   /* Deep Blue */
+  background: #1e3a8a; /* Deep Blue */
 }
-
-
 
 /* Global or in the packages component */
 #packages,
@@ -439,8 +445,6 @@
 section[id] {
   scroll-margin-top: 110px; /* adjust to header height */
 }
-
-
 
 /* FOR CHATBOT */
 /* Example override using CSS custom properties or deep targeting */
@@ -473,9 +477,7 @@ iframe#chat-widget-container,
   .desktop-widget {
     display: none !important; /* Hide desktop-widget on mobile/tablet */
   }
-}  
-
-
+}
 
 /* ANIMATIONS */
 /* ==========================================================================
@@ -486,8 +488,9 @@ iframe#chat-widget-container,
 .scroll-animate {
   opacity: 0;
   transform: translateY(35px);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Active state when scrolled into view */
@@ -501,9 +504,10 @@ iframe#chat-widget-container,
   display: inline-block;
   opacity: 0;
   transform: scale(0.85);
-  transition: opacity 0.6s ease 0.3s, 
-              transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s,
-              text-shadow 0.6s ease 0.3s;
+  transition:
+    opacity 0.6s ease 0.3s,
+    transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s,
+    text-shadow 0.6s ease 0.3s;
 }
 
 .scroll-animate.is-visible .highlight {
@@ -511,7 +515,6 @@ iframe#chat-widget-container,
   transform: scale(1);
   text-shadow: 0 0 15px rgba(247, 148, 29, 0.5);
 }
-
 
 /* ==========================================================================
    Global Fade-Up Scroll Utility
@@ -521,8 +524,9 @@ iframe#chat-widget-container,
 .fade-up {
   opacity: 0;
   transform: translateY(40px);
-  transition: opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    opacity 1.4s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1.4s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: opacity, transform;
 }
 
@@ -535,9 +539,12 @@ iframe#chat-widget-container,
 /* Initial State (Off-screen to the right) */
 .fade-left {
   opacity: 0;
-  transform: translateX(60px); /* Positive value pushes it to the right initially */
-  transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), 
-              transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+  transform: translateX(
+    60px
+  ); /* Positive value pushes it to the right initially */
+  transition:
+    opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1),
+    transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
   will-change: opacity, transform;
 }
 
@@ -547,8 +554,8 @@ iframe#chat-widget-container,
   transform: translateX(0);
 }
 
-.hotspot-popup{
-  z-index: 10;
+.hotspot-popup {
+  z-index: 999;
   -webkit-backdrop-filter: blur(12px);
   text-align: center;
   color: #fff;

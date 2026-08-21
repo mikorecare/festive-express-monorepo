@@ -15,9 +15,9 @@
         >
           {{ item.options.c9_color }} LEDs
         </small>
-        <small class="block text-gray-500 text-xs"
+        <!-- <small class="block text-gray-500 text-xs"
           >Professional Installation</small
-        >
+        > -->
       </div>
       <span class="text-orange-500 font-bold text-sm">
         ${{ (Number(item.price || 0) * item.quantity).toFixed(2) }}
@@ -104,7 +104,8 @@
       <div>
         <strong class="block">Early Bird Special</strong>
         <p class="text-sm opacity-90">
-          Book before Oct 31st and get a free Mixed Noble Wreath.
+          Schedule an installation before Oct. 31st, get a free 24" Sequoia Fir
+          Wreath and 12” nylon bow
         </p>
       </div>
       <i class="fas fa-home text-2xl opacity-80"></i>

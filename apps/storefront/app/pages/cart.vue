@@ -6,11 +6,10 @@
         <div class="container mx-auto max-w-[1280px] px-5">
           <div class="hero-content py-12 text-center">
             <h1 class="text-3xl md:text-4xl font-bold uppercase text-white">
-              Your Cart
+              Your <span class="text-brand-orange">Cart</span>
             </h1>
             <p class="mt-2 text-white/90 max-w-xl mx-auto">
-              Review your holiday package selection and secure your installation
-              date.
+              Review your holiday package and secure your installation date.
             </p>
           </div>
         </div>
@@ -25,12 +24,12 @@
             class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-gray-400 pb-4 mb-6"
           >
             <h2 class="text-2xl font-bold text-[#0c2340] m-0">
-              Shopping Bag
+              Shopping Cart
               <span class="text-base font-medium text-gray-500">
                 ({{ cartCount }} {{ cartCount === 1 ? "item" : "items" }})
               </span>
             </h2>
-            <span class="text-sm text-gray-400">Ready for installation</span>
+            <!-- <span class="text-sm text-gray-400">Ready for installation</span> -->
           </div>
 
           <!-- Empty -->
@@ -205,7 +204,7 @@
                   ${{ grandTotal.toFixed(2) }}
                 </div>
                 <small class="block text-xs text-gray-400 mt-1 font-medium">
-                  PRICING INCLUDES REMOVAL & STORAGE
+                  PRICING INCLUDES INSTALLATION AND REMOVAL
                 </small>
               </div>
             </div>

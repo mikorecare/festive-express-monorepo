@@ -14,10 +14,21 @@
               class="text-3xl md:text-5xl tracking-tight text-white mb-4"
             >
               <span class="text-brand-orange">Holiday Lighting</span> Package
-              Programs
             </h1>
+
             <p v-fade class="text-base md:text-lg text-slate-200">
-              Choose the perfect package for your home
+              <template v-if="subtitleParts.length > 1">
+                <span class="md:hidden">
+                  {{ subtitleParts[0] }}<br />
+                  {{ subtitleParts[1] }}
+                </span>
+                <span class="hidden md:inline">
+                  {{ subtitleParts.join(" ") }}
+                </span>
+              </template>
+              <template v-else>
+                {{ subtitleParts[0] }}
+              </template>
             </p>
           </div>
         </div>
@@ -73,7 +84,7 @@
           <div
             class="package-price text-3xl md:text-4xl font-extrabold text-[#F49322]"
           >
-            ${{ Math.round(Number(selectedPrice(pkg)) || 0) }}
+            ${{ Math.round(Number(selectedPrice(pkg)) || 0) }} / season
           </div>
         </div>
 
@@ -303,7 +314,7 @@
             </button> -->
             <button
               type="button"
-              class="w-full bg-[#F49322] hover:bg-[#0c2340] text-white font-bold py-4 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+              class="group relative overflow-hidden w-full bg-[#F49322] hover:bg-[#0c2340] text-white font-bold py-4 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
               :disabled="
                 !selectedSku(pkg)?.id || addingId === selectedSku(pkg)?.id
               "
@@ -335,7 +346,15 @@
                 </svg>
                 Adding...
               </span>
-              <span v-else>Add {{ pkg.name }} to Cart</span>
+              <span v-else>
+                Add
+                <span
+                  class="text-navy font-bold uppercase group-hover:text-white transition-colors"
+                >
+                  {{ pkg.name }}
+                </span>
+                to Cart
+              </span>
             </button>
           </div>
         </div>
@@ -542,6 +561,17 @@ const observerMap = new WeakMap<HTMLElement, IntersectionObserver>();
 
 const inclusionItems = ref<any[]>([]);
 const specsLoading = ref(true);
+
+const settings = ref<{ hero_subtitle?: string } | null>(null);
+const subtitleParts = computed(() => {
+  const raw =
+    settings.value?.hero_subtitle || "Choose the perfect package|for your home";
+
+  return String(raw)
+    .split("|")
+    .map((s) => s.trim())
+    .filter(Boolean);
+});
 
 const vIntersect = {
   mounted(el: HTMLElement, binding: any) {

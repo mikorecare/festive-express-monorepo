@@ -7,13 +7,13 @@
       <!-- Section Header -->
       <div class="text-center mb-10">
         <h2
-          class="text-navy uppercase font-bold text-2xl sm:text-3xl lg:text-4xl max-sm:text-[1.125rem] max-sm:leading-[1.3]"
+          class="text-center font-black text-navy tracking-wide sm:tracking-wider uppercase text-[1.05rem] sm:text-3xl lg:text-4xl leading-tight"
         >
           Festive Express makes<br />professional
           <span class="text-brand-orange">holiday lighting</span> simple.
         </h2>
         <p
-          class="text-black max-w-[80%] mx-auto leading-[1.3] text-xl max-sm:text-[0.95rem] mt-2"
+          class="text-center text-black font-bold tracking-[0.4px] text-[0.72rem] sm:text-[1.15rem] leading-tight mt-2 max-w-[80%] mx-auto"
         >
           Choose one of three fixed rental packages*.<br />
           Pay once. Pick your install date and take-down date. We handle the
@@ -107,7 +107,11 @@
                 class="btn-inclusions flex flex-col items-center justify-center gap-1.5 bg-transparent border-2 border-white/90 rounded-xl text-white text-[0.75rem] max-sm:text-[0.72rem] font-semibold leading-[1.25] text-center py-3 px-4 max-sm:py-2.5 max-sm:px-3 cursor-pointer transition-colors duration-200"
                 @click.stop="handleExploreClick(pkg.id, $event)"
               >
-                <i class="fas fa-gift text-[1.4rem] text-brand-orange"></i>
+                <!-- <i class="fas fa-gift text-[1.4rem] text-brand-orange"></i> -->
+                <GiftIcon
+                  class="w-6 h-6 text-brand-orange"
+                  aria-hidden="true"
+                />
                 <span class="block text-center"
                   >Explore Package<br />Details</span
                 >
@@ -185,7 +189,8 @@
                 :aria-label="`Select ${pkg.name}`"
                 @click="selectPackage(pkg)"
               >
-                <i class="fas fa-shopping-cart text-[1.2rem] text-white"></i>
+                <!-- <i class="fas fa-shopping-cart text-[1.2rem] text-white"></i> -->
+                <ShoppingCartIcon class="w-7 h-7" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -195,7 +200,7 @@
       <!-- Footer Note -->
       <div class="text-center mt-6 mb-4">
         <h4
-          class="text-black font-medium leading-[1.3] max-w-[80%] mx-auto mb-5 text-lg"
+          class="text-black font-medium leading-[1.3] max-w-[80%] mx-auto mb-5 text-sm sm:text-base md:text-lg text-center"
         >
           Every package is professionally installed, maintained through the
           season, and taken down when you’re ready. You simply enjoy the
@@ -278,6 +283,8 @@ const supabase = useSupabaseClient();
 import { ref, onMounted, computed, nextTick } from "vue";
 import HomeFestivoAnimation from "./FestivoAnimation.vue";
 import type { FestivoConfig } from "./Festivo";
+
+import { ShoppingCartIcon, GiftIcon } from "@heroicons/vue/24/outline";
 
 /** New packages table shape */
 interface PackageRow {

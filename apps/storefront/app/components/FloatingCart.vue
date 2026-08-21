@@ -25,7 +25,7 @@
             class="relative flex items-center justify-center bg-[#ff890b] text-white w-[54px] h-[54px] rounded-full flex-shrink-0 overflow-visible transition-colors duration-300 group-hover:bg-[#e07a0a]"
           >
             <!-- <i class="fas fa-shopping-cart text-[1.2rem]"></i> -->
-            <ShoppingBagIcon class="w-7 h-7" aria-hidden="true" />
+            <ShoppingCartIcon class="w-7 h-7" aria-hidden="true" />
             <span
               class="absolute -top-1 -right-1 z-10 bg-white text-[#172a50] text-[0.8rem] font-extrabold w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 border-[#ff890b] shadow-[0_2px_5px_rgba(0,0,0,0.25)]"
             >
@@ -41,7 +41,7 @@
 <script setup lang="ts">
 const cart = useCart();
 
-import { ShoppingBagIcon } from "@heroicons/vue/24/outline";
+import { ShoppingCartIcon } from "@heroicons/vue/24/outline";
 
 const displayTotal = computed(() =>
   Number(cart.cartTotal.value || 0).toFixed(2),
