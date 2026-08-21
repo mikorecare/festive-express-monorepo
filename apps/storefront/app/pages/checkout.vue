@@ -75,6 +75,9 @@
 </template>
 
 <script setup lang="ts">
+useHead({
+  title: "Checkout",
+});
 const config = useRuntimeConfig();
 const siteKey = config.public.turnstile.siteKey as string;
 const FL_TAX_RATE = Number(config.public.flTaxRate) || 0.07;
