@@ -30,6 +30,39 @@ const isOnCard = ref(false);
 const isTalking = ref(false);
 const isInterrupted = ref(false);
 const isClient = ref(false);
+const preloadMascotImages = async () => {
+  if (typeof window === "undefined") return;
+
+  const stateFrames = {
+    run: 8,
+    talk: 4,
+    jump: 5,
+  };
+
+  const imageUrls: string[] = [];
+
+  for (const [state, frames] of Object.entries(stateFrames)) {
+    for (let frame = 1; frame <= frames; frame++) {
+      imageUrls.push(`/Images/Festivo/${state}-3d-${frame}.png`);
+    }
+  }
+
+  try {
+    const loadPromises = imageUrls.map((src) => {
+      return new Promise<void>((resolve) => {
+        const img = new window.Image();
+        img.onload = () => resolve();
+        img.onerror = () => resolve();
+        img.src = src;
+      });
+    });
+
+    await Promise.all(loadPromises);
+    console.log(`Preloaded ${imageUrls.length} mascot images`);
+  } catch (error) {
+    console.warn("Failed to preload mascot images:", error);
+  }
+};
 
 const interruptCurrentAnimation = () => {
   if (mascot.value) {
@@ -85,7 +118,11 @@ defineExpose({
   interrupt: interruptCurrentAnimation,
 });
 
-onMounted(() => {
+// UPDATE onMounted - Call preloadMascotImages first
+onMounted(async () => {
+  // 1. Preload mascot images FIRST
+  await preloadMascotImages();
+
   isClient.value = true;
 
   const instance = new Festivo(

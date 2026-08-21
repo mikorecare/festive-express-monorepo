@@ -259,6 +259,25 @@ const supabase = useSupabaseClient();
 const timelineItems = ref([]);
 const loadingGallery = ref(true);
 
+const preloadSpinnerImages = async () => {
+  const imageUrls = [];
+  for (let i = 1; i <= 9; i++) {
+    imageUrls.push(`/Images/Festivo/timeline/${i}.png`);
+  }
+  imageUrls.push("/Images/Festivo/timeline/open.png");
+  imageUrls.push("/Images/Festivo/timeline/close.png");
+  imageUrls.push("/Images/Festivo/timeline/wink.png");
+
+  for (const src of imageUrls) {
+    await new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve();
+      img.onerror = () => resolve();
+      img.src = src;
+    });
+  }
+};
+
 const fetchGallery = async () => {
   loadingGallery.value = true;
   try {
@@ -811,8 +830,8 @@ watch(isSpinnerDragging, (newVal) => {
   }
 });
 
-// ESC to close
 onMounted(() => {
+  preloadSpinnerImages();
   fetchGallery();
 
   if (!import.meta.client) return;

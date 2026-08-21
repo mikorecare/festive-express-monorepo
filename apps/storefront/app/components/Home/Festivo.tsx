@@ -1,4 +1,4 @@
-export type FestivoState = "run" | "talk" | "walk-out" | "jump";
+export type FestivoState = "run" | "talk"  | "jump";
 
 interface StateConfig {
   readonly totalFrames: number;
@@ -20,7 +20,6 @@ export interface FestivoConfig {
 const DEFAULT_STATE_CONFIGS: Record<FestivoState, StateConfig> = {
   run: { totalFrames: 7, speed: 200 },
   talk: { totalFrames: 4, speed: 200, maxLoops: 1 },
-  "walk-out": { totalFrames: 8, speed: 200 },
   jump: { totalFrames: 5, speed: 200 },
 };
 
@@ -331,9 +330,6 @@ export class Festivo {
     this.setState("talk");
   }
 
-  public walkOut() {
-    this.setState("walk-out");
-  }
 
   public cleanup() {
     this.isRunActive = false;
