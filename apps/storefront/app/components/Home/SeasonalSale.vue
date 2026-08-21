@@ -55,10 +55,10 @@ onMounted(() => {
     const minutes = Math.floor((time % 3600) / 60)
     const seconds = time % 60
 
-    timeLeft.value[0].value = days.toString().padStart(2, '0')
-    timeLeft.value[1].value = hours.toString().padStart(2, '0')
-    timeLeft.value[2].value = minutes.toString().padStart(2, '0')
-    timeLeft.value[3].value = seconds.toString().padStart(2, '0')
+    timeLeft.value[0]!.value = days.toString().padStart(2, '0')
+    timeLeft.value[1]!.value = hours.toString().padStart(2, '0')
+    timeLeft.value[2]!.value = minutes.toString().padStart(2, '0')
+    timeLeft.value[3]!.value = seconds.toString().padStart(2, '0')
   }, 1000)
 })
 

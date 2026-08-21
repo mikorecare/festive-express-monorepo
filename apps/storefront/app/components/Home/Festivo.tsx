@@ -1,4 +1,4 @@
-export type FestivoState = "run" | "talk"  | "jump";
+export type FestivoState = "run" | "talk" | "jump" | "joy";
 
 interface StateConfig {
   readonly totalFrames: number;
@@ -13,6 +13,8 @@ export interface FestivoConfig {
   jumpOffsetX?: number;
   jumpOffsetY?: number;
   jumpPeakHeight?: number;
+  joyOffsetX?: number;
+  joyOffsetY?: number;
   runFrameDurations?: number[];
   stateConfigs?: Partial<Record<FestivoState, StateConfig>>;
 }
@@ -21,6 +23,7 @@ const DEFAULT_STATE_CONFIGS: Record<FestivoState, StateConfig> = {
   run: { totalFrames: 7, speed: 200 },
   talk: { totalFrames: 4, speed: 200, maxLoops: 1 },
   jump: { totalFrames: 5, speed: 200 },
+  joy: { totalFrames: 8, speed: 100, maxLoops: 0 }, // 0 = infinite loop
 };
 
 const DEFAULT_RUN_FRAME_DURATIONS = [30, 40, 60, 100, 150, 250, 630];
@@ -39,6 +42,7 @@ export class Festivo {
   private lastTargetRect: DOMRect | null = null;
   private loopCount: number = 0;
   private jumpAnimationId: number | null = null;
+  private joyAnimationId: number | null = null;
   private isRunActive: boolean = false;
 
   public onFrameChange: (() => void) | null = null;
@@ -76,7 +80,6 @@ export class Festivo {
         .replace("{frame}", String(this.currentFrame));
     }
 
-    // Default path
     return `/Images/Festivo/${this.currentState}-3d-${this.currentFrame}.png`;
   }
 
@@ -159,6 +162,53 @@ export class Festivo {
     this.animateJump(startX, startY, endX, endY, 800, onScaleUpdate);
   }
 
+  // JOY METHOD - moves to position with bounce, keeps full size, loops animation
+  public joyToPosition(
+    targetRect: DOMRect,
+    onProgressUpdate?: (progress: number) => void,
+    forceScaleX?: number,
+  ) {
+    if (!targetRect) {
+      console.log("No targetRect");
+      return;
+    }
+
+    if (this.joyAnimationId) {
+      cancelAnimationFrame(this.joyAnimationId);
+      this.joyAnimationId = null;
+    }
+
+    this.isVisible = true;
+    if (this.onVisibilityChange) this.onVisibilityChange();
+
+    const startX = this.position.x;
+    const startY = this.position.y;
+
+    const joyOffsetX = this.config.joyOffsetX ?? -80;
+    const joyOffsetY = this.config.joyOffsetY ?? -100;
+
+    const endX =
+      window.scrollX + targetRect.left + targetRect.width / 2 + joyOffsetX;
+    const endY = window.scrollY + targetRect.top + joyOffsetY;
+
+    if (forceScaleX === undefined && this.position.x !== -200) {
+      const newDirection = endX > this.position.x ? "right" : "left";
+      this.scaleX = newDirection === "right" ? 1 : -1;
+      if (this.onPositionChange) this.onPositionChange();
+    } else if (forceScaleX !== undefined) {
+      this.scaleX = forceScaleX;
+      if (this.onPositionChange) this.onPositionChange();
+    }
+
+    this.isMoving = true;
+    // Set joy state WITHOUT clearing the animation (it will loop)
+    this.currentState = "joy";
+    this.currentFrame = 1;
+    if (this.onFrameChange) this.onFrameChange();
+
+    this.animateJoy(startX, startY, endX, endY, 1000, onProgressUpdate);
+  }
+
   private animateJump(
     startX: number,
     startY: number,
@@ -218,6 +268,96 @@ export class Festivo {
     this.jumpAnimationId = requestAnimationFrame(animateFrame);
   }
 
+  private animateJoy(
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+    duration: number,
+    onProgressUpdate?: (progress: number) => void,
+  ) {
+    const startTime = performance.now();
+    const bounceHeight = this.config.jumpPeakHeight ?? 80;
+
+    const animateFrame = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Ease out for smooth landing
+      const eased = 1 - Math.pow(1 - progress, 3);
+
+      const currentX = startX + (endX - startX) * eased;
+
+      // Gentle bounce
+      const baseY = startY + (endY - startY) * eased;
+      const bounce =
+        bounceHeight * Math.sin(progress * Math.PI * 1.5) * (1 - progress);
+      const currentY = baseY - bounce;
+
+      this.position = { x: currentX, y: currentY };
+      if (this.onPositionChange) this.onPositionChange();
+
+      if (onProgressUpdate) {
+        onProgressUpdate(progress);
+      }
+
+      if (progress < 1) {
+        this.joyAnimationId = requestAnimationFrame(animateFrame);
+      } else {
+        this.position = { x: endX, y: endY };
+        if (this.onPositionChange) this.onPositionChange();
+
+        this.isMoving = false;
+        this.joyAnimationId = null;
+        this.cleanup();
+
+        // DON'T go to talk - STAY in joy and loop
+        this.currentState = "joy";
+        this.currentFrame = 1;
+        if (this.onFrameChange) this.onFrameChange();
+
+        if (onProgressUpdate) {
+          onProgressUpdate(1);
+        }
+
+        if (this.onMoveComplete) {
+          this.onMoveComplete();
+        }
+
+        // Start the joy loop animation
+        this.startJoyLoop();
+      }
+    };
+
+    this.joyAnimationId = requestAnimationFrame(animateFrame);
+  }
+
+  // NEW: Start the joy loop animation (infinite)
+  private startJoyLoop() {
+    const config = this.stateConfigs.joy;
+    this.loopCount = 0;
+
+    // Clear any existing interval
+    if (this.frameInterval) {
+      clearInterval(this.frameInterval);
+      this.frameInterval = null;
+    }
+
+    // Start infinite loop for joy
+    this.frameInterval = setInterval(() => {
+      // Move to next frame
+      if (this.currentFrame >= config.totalFrames) {
+        // Loop back to frame 1
+        this.currentFrame = 1;
+        this.loopCount++;
+      } else {
+        this.currentFrame++;
+      }
+
+      if (this.onFrameChange) this.onFrameChange();
+    }, config.speed);
+  }
+
   public setState(newState: FestivoState, delayMs: number = 0) {
     this.cleanup();
     this.loopCount = 0;
@@ -235,6 +375,9 @@ export class Festivo {
           this.runAnimation(config);
         } else if (newState === "jump") {
           this.jumpAnimation(config);
+        } else if (newState === "joy") {
+          // Joy uses loopAnimation but with infinite looping
+          this.loopAnimation(config);
         } else {
           this.loopAnimation(config);
         }
@@ -303,17 +446,26 @@ export class Festivo {
   }
 
   private loopAnimation(config: StateConfig) {
+    // FIX: Use nullish coalescing to handle undefined maxLoops
+    const maxLoops = config.maxLoops ?? Infinity;
+    const isInfinite = maxLoops === 0 || maxLoops === Infinity;
+
     this.frameInterval = setInterval(() => {
       if (this.currentFrame >= config.totalFrames) {
-        if (config.maxLoops && this.loopCount >= config.maxLoops - 1) {
+        // If infinite, always loop
+        if (isInfinite) {
+          this.currentFrame = 1;
+          this.loopCount++;
+        } else if (this.loopCount < maxLoops - 1) {
+          this.currentFrame = 1;
+          this.loopCount++;
+        } else {
+          // Only stop if maxLoops is reached
           this.cleanup();
           this.currentFrame = 1;
           if (this.onFrameChange) this.onFrameChange();
           return;
         }
-
-        this.currentFrame = 1;
-        this.loopCount++;
       } else {
         this.currentFrame++;
       }
@@ -330,12 +482,19 @@ export class Festivo {
     this.setState("talk");
   }
 
+  public joy() {
+    this.setState("joy");
+  }
 
   public cleanup() {
     this.isRunActive = false;
     if (this.jumpAnimationId) {
       cancelAnimationFrame(this.jumpAnimationId);
       this.jumpAnimationId = null;
+    }
+    if (this.joyAnimationId) {
+      cancelAnimationFrame(this.joyAnimationId);
+      this.joyAnimationId = null;
     }
     if (this.frameInterval) {
       clearTimeout(this.frameInterval);

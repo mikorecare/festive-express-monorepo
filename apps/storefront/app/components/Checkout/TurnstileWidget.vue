@@ -1,14 +1,8 @@
 <template>
-  <div class="mt-4 p-3 bg-gray-50 rounded-lg">
-    <div class="flex justify-center min-h-[85px]">
+  <div class="mt-4 px-3 bg-gray-50 rounded-lg">
+    <div class="flex justify-center min-h-max">
       <div id="turnstile-container"></div>
     </div>
-    <p v-if="errors.turnstile" class="text-red-500 text-sm text-center mt-2">
-      {{ errors.turnstile }}
-    </p>
-    <p v-if="status" class="text-center mt-2" :class="statusClass">
-      <i :class="statusIcon"></i> {{ status }}
-    </p>
   </div>
 </template>
 
