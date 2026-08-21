@@ -340,10 +340,19 @@ import {
 } from "@heroicons/vue/24/outline";
 import { usePromo } from "~/composables/usePromo";
 
+const { settings, loadSettings, telHref } = useSettings();
+
 const config = useRuntimeConfig();
 const supabase = useSupabaseClient();
-const FL_TAX_RATE = Number(config.public.flTaxRate) || 0.07;
+const FL_TAX_RATE = computed(() => {
+  // Object / map shape: { fl_tax_rate: '0.07', contact_email: '...', ... }
+  const raw =
+    settings.value?.fl_tax_rate ?? (settings.value as any)?.["fl_tax_rate"];
 
+  const n = Number(raw);
+  if (!Number.isNaN(n) && n >= 0) return n;
+  return 0.07;
+});
 const cart = useCart();
 const cartItems = computed(() => cart.cartItems.value);
 const cartCount = computed(() => cart.cartCount.value);
@@ -363,19 +372,13 @@ const alacarteCartTotal = computed(() =>
 const subtotal = computed(() => cartTotal.value);
 
 const estimatedTax = computed(
-  () => Math.max(0, subtotal.value - promoDiscount.value) * FL_TAX_RATE,
+  () => Math.max(0, subtotal.value - promoDiscount.value) * FL_TAX_RATE.value,
 );
 
 const promoDiscount = computed(() => discountAmount(subtotal.value));
 
 const grandTotal = computed(() =>
-  Math.max(
-    0,
-    subtotal.value +
-      estimatedTax.value +
-      installDeposit.value -
-      promoDiscount.value,
-  ),
+  Math.max(0, subtotal.value + estimatedTax.value - promoDiscount.value),
 );
 
 const lineTotal = (item: any) => {
