@@ -51,6 +51,7 @@
                 :src="item.image"
                 :alt="item.year || 'Gallery Image'"
                 draggable="false"
+                loading="lazy"
                 class="w-full h-[280px] max-w-[400px] max-md:h-[200px] max-md:max-w-[280px] max-sm:h-[160px] max-sm:max-w-[220px] object-cover pointer-events-none block"
               />
             </div>
@@ -93,6 +94,7 @@
                 :src="item.image"
                 :alt="item.year || 'Gallery Image'"
                 draggable="false"
+                loading="lazy"
                 class="w-full h-[280px] max-w-[400px] max-md:h-[200px] max-md:max-w-[280px] max-sm:h-[160px] max-sm:max-w-[220px] object-cover pointer-events-none block"
               />
             </div>
@@ -145,6 +147,7 @@
               @wheel.prevent="onWheel"
             >
               <img
+                loading="lazy"
                 :src="activeImage"
                 alt="Enlarged view"
                 class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-transform duration-200"
@@ -165,6 +168,7 @@
             :src="item.dividerImage"
             alt="Timeline Divider"
             draggable="false"
+            loading="lazy"
             class="h-[320px] shrink-0 pointer-events-none"
           />
         </div>
@@ -195,11 +199,37 @@
           :src="currentSpinnerImage"
           alt="Timeline Ornament"
           draggable="false"
+          loading="lazy"
           class="w-full h-full object-contain pointer-events-none"
           :class="{ '-scale-x-100': isFlipped }"
         />
       </div>
     </div>
+
+    <!-- Lightbox Modal -->
+    <Transition name="fade">
+      <div
+        v-if="activeImage"
+        class="fixed inset-0 w-screen h-screen bg-black/85 flex items-center justify-center z-[9999] p-5"
+        @click.self="closeLightbox"
+      >
+        <button
+          class="absolute top-5 right-[25px] bg-transparent border-none text-white text-[2.5rem] leading-none cursor-pointer z-[10000] transition-transform duration-200 hover:text-brand-orange hover:scale-[1.15]"
+          @click="closeLightbox"
+          aria-label="Close modal"
+        >
+          &times;
+        </button>
+        <div class="max-w-[90vw] max-h-[90vh] flex items-center justify-center">
+          <img
+            :src="activeImage"
+            alt="Enlarged view"
+            loading="lazy"
+            class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
+          />
+        </div>
+      </div>
+    </Transition>
   </section>
 </template>
 
@@ -228,6 +258,25 @@ const supabase = useSupabaseClient();
 
 const timelineItems = ref([]);
 const loadingGallery = ref(true);
+
+const preloadSpinnerImages = async () => {
+  const imageUrls = [];
+  for (let i = 1; i <= 9; i++) {
+    imageUrls.push(`/Images/Festivo/timeline/${i}.png`);
+  }
+  imageUrls.push("/Images/Festivo/timeline/open.png");
+  imageUrls.push("/Images/Festivo/timeline/close.png");
+  imageUrls.push("/Images/Festivo/timeline/wink.png");
+
+  for (const src of imageUrls) {
+    await new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve();
+      img.onerror = () => resolve();
+      img.src = src;
+    });
+  }
+};
 
 const fetchGallery = async () => {
   loadingGallery.value = true;
@@ -781,8 +830,8 @@ watch(isSpinnerDragging, (newVal) => {
   }
 });
 
-// ESC to close
 onMounted(() => {
+  preloadSpinnerImages();
   fetchGallery();
 
   if (!import.meta.client) return;

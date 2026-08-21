@@ -35,7 +35,6 @@
       </div>
 
       <!-- Package Cards Row -->
-
       <div
         v-else
         class="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] max-sm:grid-cols-1 gap-8 max-sm:gap-12 justify-items-center mb-12"
@@ -47,7 +46,7 @@
             :config="festivoConfig"
             initialState="talk"
             :useJump="false"
-            :disableShrink="false"
+            :disableShrink="true"
           />
         </ClientOnly>
         <div
@@ -107,7 +106,6 @@
                 class="btn-inclusions flex flex-col items-center justify-center gap-1.5 bg-transparent border-2 border-white/90 rounded-xl text-white text-[0.75rem] max-sm:text-[0.72rem] font-semibold leading-[1.25] text-center py-3 px-4 max-sm:py-2.5 max-sm:px-3 cursor-pointer transition-colors duration-200"
                 @click.stop="handleExploreClick(pkg.id, $event)"
               >
-                <!-- <i class="fas fa-gift text-[1.4rem] text-brand-orange"></i> -->
                 <GiftIcon
                   class="w-6 h-6 text-brand-orange"
                   aria-hidden="true"
@@ -118,35 +116,6 @@
               </button>
 
               <!-- Tooltip Content -->
-              <!-- <div
-                class="absolute top-full left-0 bg-white border border-gray-300 rounded-xl p-3.5 w-[280px] max-w-[90vw] shadow-[0_10px_25px_rgba(28,45,91,0.15)] opacity-0 invisible transition-all duration-250 z-30 mt-2 text-left text-navy"
-                :class="{ '!opacity-100 !visible': openTooltipId === pkg.id }"
-              >
-                <template v-if="pkg.variations?.length">
-                  <div
-                    v-for="(variation, vIndex) in pkg.variations"
-                    :key="vIndex"
-                    class="mb-2 last:mb-0"
-                  >
-                    <strong class="block mb-1">{{ variation.name }}:</strong>
-                    <div
-                      v-for="(option, oIndex) in variation.options"
-                      :key="oIndex"
-                      class="flex items-center gap-2.5 py-1.5 border-b border-gray-300 text-sm last:border-b-0"
-                    >
-                      <img
-                        v-if="option.image_url"
-                        :src="getImageUrl(option.image_url)"
-                        class="w-10 h-10 object-cover rounded-md"
-                        alt=""
-                      >
-                      {{ option.name }}
-                    </div>
-                  </div>
-                </template>
-                <p v-else class="mb-0">No inclusions listed.</p>
-              </div> -->
-
               <div
                 class="absolute top-full left-0 bg-white border border-gray-300 rounded-xl p-3.5 w-[280px] max-w-[90vw] shadow-[0_10px_25px_rgba(28,45,91,0.15)] opacity-0 invisible transition-all duration-250 z-30 mt-2 text-left text-navy"
                 :class="{ '!opacity-100 !visible': openTooltipId === pkg.id }"
@@ -177,7 +146,6 @@
 
             <!-- Price & Cart Actions -->
             <div class="flex flex-col items-end gap-2.5">
-              <!-- <div class="text-[1.45rem] max-sm:text-[1.4rem] font-extrabold text-white">${{ Math.round(Number(pkg.price) || 0) }} / season</div> -->
               <div
                 class="text-[1rem] max-sm:text-[1rem] font-extrabold text-white"
               >
@@ -189,7 +157,6 @@
                 :aria-label="`Select ${pkg.name}`"
                 @click="selectPackage(pkg)"
               >
-                <!-- <i class="fas fa-shopping-cart text-[1.2rem] text-white"></i> -->
                 <ShoppingCartIcon class="w-7 h-7" aria-hidden="true" />
               </button>
             </div>
@@ -207,7 +174,6 @@
           holidays.
         </h4>
 
-        <!-- Preview Your Home — burst / C-9 -->
         <div
           class="relative isolate my-8 max-lg:my-6 flex flex-col items-center justify-center gap-5 text-center"
         >
@@ -238,7 +204,6 @@ import type { FestivoConfig } from "./Festivo";
 
 import { ShoppingCartIcon, GiftIcon } from "@heroicons/vue/24/outline";
 
-/** New packages table shape */
 interface PackageRow {
   id: number;
   name: string;
@@ -264,6 +229,7 @@ const activeCardRect = ref<DOMRect | null>(null);
 const isAnimating = ref(false);
 const cardImageRefs = ref<Map<number, HTMLImageElement>>(new Map());
 const festivoRef = ref<InstanceType<typeof HomeFestivoAnimation> | null>(null);
+
 const festivoConfig = computed<FestivoConfig>(() => {
   const isMobile = window.innerWidth < 768;
 
@@ -272,9 +238,9 @@ const festivoConfig = computed<FestivoConfig>(() => {
       `/Images/Festivo/${state}-3d-${frame}.png`,
     moveOffsetX: isMobile ? -50 : -100,
     moveOffsetY: 100,
-    jumpOffsetX: -100,
-    jumpOffsetY: -120,
-    jumpPeakHeight: 150,
+    joyOffsetX: 50,
+    joyOffsetY: 120,
+    jumpPeakHeight: 80,
   };
 });
 
@@ -292,9 +258,7 @@ interface PackageInclusionRow {
   package_id?: number;
   is_included?: boolean;
   inclusion_item_id?: number;
-  // if Supabase embeds as object or array depending on FK
   inclusion_items?: InclusionItem | InclusionItem[] | null;
-  // sometimes named inclusion_item (singular)
   inclusion_item?: InclusionItem | null;
 }
 
@@ -308,7 +272,6 @@ interface PackageRow {
   icon_url?: string | null;
   features?: string[] | null;
   package_inclusions?: PackageInclusionRow[] | null;
-  // alternate relation name
   inclusions?: PackageInclusionRow[] | null;
 }
 
@@ -351,7 +314,6 @@ type InclusionDisplay = {
   is_included: boolean;
 };
 
-/** All rows for a package (with is_included) */
 const inclusionsFor = (pkg: PackageRow): InclusionDisplay[] => {
   const rows = pkg.package_inclusions || pkg.inclusions || [];
   const mapped: InclusionDisplay[] = [];
@@ -403,6 +365,7 @@ const handleCardHover = (event: MouseEvent) => {
   }
 };
 
+// ONLY joyToPosition - no jump
 const handleExploreClick = async (packageId: number, event: MouseEvent) => {
   const isOpening = openTooltipId.value !== packageId;
 
@@ -414,7 +377,7 @@ const handleExploreClick = async (packageId: number, event: MouseEvent) => {
 
       const targetRect = new DOMRect(
         imageRect.left + imageRect.width / 2 - 55,
-        imageRect.bottom,
+        imageRect.bottom + 10,
         110,
         110,
       );
@@ -423,7 +386,8 @@ const handleExploreClick = async (packageId: number, event: MouseEvent) => {
       await nextTick();
 
       if (festivoRef.value) {
-        festivoRef.value.jumpToButton(targetRect);
+        // ONLY joyToPosition
+        festivoRef.value.joyToPosition(targetRect);
       } else {
         console.log("festivoRef is null!");
       }
@@ -446,35 +410,11 @@ const handleExploreClick = async (packageId: number, event: MouseEvent) => {
   }
 };
 
-/** Keep same name used in template */
 const packageProducts = computed(() => packages.value);
 
-/** Cart / detail: use slug (packages page) */
 const selectPackage = (pkg: PackageRow) => {
   navigateTo(`/packages?package=${pkg.slug}`);
-  // or: navigateTo(`/checkout?package=${pkg.slug}`)
 };
-
-// const getImageUrl = (url: string | null | undefined) => {
-
-//   if (!url) return '/Images/placeholder.png'
-//   if (url.startsWith('http') || url.startsWith('/')) return url
-
-//   const path = url
-//     .replace(/^\//, '')
-//     .replace(/^products\//i, '')
-//     .replace(/^Products\//i, '')
-//     .replace(/^packages\//i, '')
-
-//   const supabaseUrl =
-//     (config.public as any).supabaseUrl ||
-//     (config.public as any).supabase?.url ||
-//     ''
-
-//   const bucket = ((config.public as any).storageBucket as string) || 'Products'
-
-//   return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`
-// }
 
 const getImageUrl = (url: string | null | undefined) => {
   if (url == null || String(url).trim() === "") {
@@ -486,7 +426,6 @@ const getImageUrl = (url: string | null | undefined) => {
   if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
   if (raw.startsWith("/Images/") || raw.startsWith("/images/")) return raw;
 
-  // keep folder names: packages/Icon1.png → Products/packages/Icon1.png
   const path = raw.replace(/^\/+/, "").replace(/^products\//i, "");
 
   const supabaseUrl =
@@ -517,7 +456,6 @@ const getPackageIcon = (pkg: PackageRow) => {
   return `${BASE}/Icon1.png`;
 };
 
-/** features may be string[] or JSON string from DB */
 type FeatureItem = { name: string; image_url?: string | null };
 
 const getFeatures = (pkg: PackageRow): FeatureItem[] => {

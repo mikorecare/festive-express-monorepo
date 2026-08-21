@@ -25,16 +25,53 @@ const position = ref({ x: 200, y: 200 });
 const scaleX = ref(1);
 const isVisible = ref(false);
 const isJumping = ref(false);
+const isJoy = ref(false);
 const imageScale = ref(1);
 const isOnCard = ref(false);
 const isTalking = ref(false);
 const isInterrupted = ref(false);
 const isClient = ref(false);
 
+const preloadMascotImages = async () => {
+  if (typeof window === "undefined") return;
+
+  const stateFrames = {
+    run: 8,
+    talk: 4,
+    jump: 5,
+    joy: 8,
+  };
+
+  const imageUrls: string[] = [];
+
+  for (const [state, frames] of Object.entries(stateFrames)) {
+    for (let frame = 1; frame <= frames; frame++) {
+      imageUrls.push(`/Images/Festivo/${state}-3d-${frame}.png`);
+    }
+  }
+
+  try {
+    const loadPromises = imageUrls.map((src) => {
+      return new Promise<void>((resolve) => {
+        const img = new window.Image();
+        img.onload = () => resolve();
+        img.onerror = () => resolve();
+        img.src = src;
+      });
+    });
+
+    await Promise.all(loadPromises);
+    console.log(`Preloaded ${imageUrls.length} mascot images`);
+  } catch (error) {
+    console.warn("Failed to preload mascot images:", error);
+  }
+};
+
 const interruptCurrentAnimation = () => {
   if (mascot.value) {
     mascot.value.cleanup();
     isJumping.value = false;
+    isJoy.value = false;
     isInterrupted.value = true;
     mascot.value.isMoving = false;
     mascot.value.currentState = "talk";
@@ -58,6 +95,7 @@ defineExpose({
       interruptCurrentAnimation();
 
       isJumping.value = true;
+      isJoy.value = false;
       isOnCard.value = false;
       isTalking.value = false;
       imageScale.value = props.disableShrink ? 1 : 1;
@@ -82,10 +120,37 @@ defineExpose({
       console.log("Component: No mascot instance!");
     }
   },
+  joyToPosition: (rect: DOMRect) => {
+    if (mascot.value) {
+      interruptCurrentAnimation();
+
+      isJumping.value = false;
+      isJoy.value = true;
+      isOnCard.value = false;
+      isTalking.value = false;
+      imageScale.value = 1;
+
+      mascot.value.joyToPosition(
+        rect,
+        (progress: number) => {
+          imageScale.value = 1;
+
+          if (progress > 0.9 && !isOnCard.value) {
+            isOnCard.value = true;
+          }
+        },
+        props.forceScaleX ?? 1,
+      );
+    } else {
+      console.log("Component: No mascot instance!");
+    }
+  },
   interrupt: interruptCurrentAnimation,
 });
 
-onMounted(() => {
+onMounted(async () => {
+  await preloadMascotImages();
+
   isClient.value = true;
 
   const instance = new Festivo(
@@ -98,6 +163,8 @@ onMounted(() => {
     if (mascot.value) {
       const wasTalking = isTalking.value;
       isTalking.value = mascot.value.currentState === "talk";
+      isJoy.value = mascot.value.currentState === "joy";
+      isJumping.value = mascot.value.currentState === "jump";
 
       if (wasTalking !== isTalking.value) {
         updateScaleBasedOnState();
@@ -118,6 +185,7 @@ onMounted(() => {
 
   instance.onMoveComplete = () => {
     isJumping.value = false;
+    isJoy.value = false;
     if (mascot.value) {
       isTalking.value = mascot.value.currentState === "talk";
     }
@@ -160,6 +228,11 @@ const updateScaleBasedOnState = () => {
     return;
   }
 
+  if (isJoy.value) {
+    imageScale.value = 1;
+    return;
+  }
+
   if (isOnCard.value && isTalking.value) {
     imageScale.value = 0.5;
   } else if (!isOnCard.value && isTalking.value) {
@@ -180,7 +253,7 @@ watch(
   (newRect) => {
     if (!newRect || !mascot.value) return;
 
-    if (isJumping.value || isTalking.value) {
+    if (isJumping.value || isTalking.value || isJoy.value) {
       interruptCurrentAnimation();
     }
 
@@ -190,13 +263,14 @@ watch(
       isTalking.value = false;
     }
 
-    if (!isJumping.value) {
+    if (!isJumping.value && !isJoy.value) {
       if (props.useJump) {
         if (props.forceScaleX !== undefined) {
           scaleX.value = props.forceScaleX;
         }
 
         isJumping.value = true;
+        isJoy.value = false;
         isOnCard.value = false;
         isTalking.value = false;
         imageScale.value = props.disableShrink ? 1 : 1;
@@ -229,7 +303,7 @@ watch(
 );
 
 const onMoveComplete = () => {
-  if (mascot.value && !isJumping.value) {
+  if (mascot.value && !isJumping.value && !isJoy.value) {
     mascot.value.isMoving = false;
     mascot.value.cleanup();
     mascot.value.scaleX = 1;
@@ -254,6 +328,7 @@ const onMoveComplete = () => {
       'opacity-0': !isVisible,
       'opacity-100': isVisible,
       jumping: isJumping,
+      joy: isJoy,
       'on-card': isOnCard,
       talking: isTalking,
     }"
@@ -268,7 +343,12 @@ const onMoveComplete = () => {
         transform: `scaleX(${scaleX}) scale(${imageScale})`,
       }"
     >
-      <img :src="currentImageSrc" alt="Festivo Mascot" class="festivo-img" />
+      <img
+        :src="currentImageSrc"
+        alt="Festivo Mascot"
+        loading="lazy"
+        class="festivo-img"
+      />
     </div>
   </div>
 </template>
@@ -287,6 +367,10 @@ const onMoveComplete = () => {
 }
 
 .festivo-mascot-wrapper.jumping {
+  transition: none !important;
+}
+
+.festivo-mascot-wrapper.joy {
   transition: none !important;
 }
 

@@ -338,6 +338,7 @@ import {
   WrenchScrewdriverIcon,
   ChatBubbleLeftRightIcon, // only if available in your version
 } from "@heroicons/vue/24/outline";
+import { usePromo } from "~/composables/usePromo";
 
 const config = useRuntimeConfig();
 const supabase = useSupabaseClient();
