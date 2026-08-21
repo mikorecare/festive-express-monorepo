@@ -16,14 +16,12 @@ export default defineNuxtConfig({
       titleTemplate: '%s - Festive Express',
       link: [
         { rel: 'icon', type: 'image/x-icon', href: 'Images/favicon.png' },
-        { rel: 'stylesheet', href: 'https://googleapis.com' },
-        { rel: 'stylesheet', href: 'https://googleapis.com' },
-        { rel: 'stylesheet', href: 'https://googleapis.com' },
-        { rel: 'stylesheet', href: 'https://cloudflare.com' }
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap' },
+        { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css' },
       ],
       script: [
         {
-          src: 'https://jsdelivr.net',
+          src: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js',
           defer: true
         }
       ],
@@ -81,8 +79,7 @@ export default defineNuxtConfig({
           'Cross-Origin-Embedder-Policy': 'credentialless',
           'Cross-Origin-Opener-Policy': 'same-origin',
           'X-Powered-By': 'Festive Express',
-
-          'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://jsdelivr.net https://pages.dev https://posthog.com https://*.posthog.com https://challenges.cloudflare.com; worker-src 'self' blob: https://pages.dev; connect-src 'self' https://pages.dev https://*.posthog.com https://posthog.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://googleapis.com https://pages.dev https://challenges.cloudflare.com; font-src 'self' https://gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: https://*.posthog.com; frame-src 'self' https://pages.dev https://challenges.cloudflare.com;"
+          // Remove CSP from here - let the middleware handle it
         }
       }
     }
