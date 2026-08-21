@@ -5,11 +5,10 @@
         <div class="container mx-auto max-w-[1280px] px-5 py-14 text-center">
           <h1 class="text-3xl md:text-4xl font-bold uppercase text-white">
             <span class="text-brand-orange">Frequently Asked</span> questions
-            about 
           </h1>
           <p class="mt-2 text-white/90 max-w-xl mx-auto">
-            Everything you need to know about Festive Express and our holiday
-            lighting packages.
+            Everything you need to know about Festive Express<br />and our
+            holiday lighting packages.
           </p>
         </div>
       </div>

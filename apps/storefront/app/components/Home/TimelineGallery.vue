@@ -207,7 +207,7 @@
     </div>
 
     <!-- Lightbox Modal -->
-    <Transition name="fade">
+    <!-- <Transition name="fade">
       <div
         v-if="activeImage"
         class="fixed inset-0 w-screen h-screen bg-black/85 flex items-center justify-center z-[9999] p-5"
@@ -229,7 +229,7 @@
           />
         </div>
       </div>
-    </Transition>
+    </Transition> -->
   </section>
 </template>
 
@@ -316,169 +316,6 @@ const getImageUrl = (url) => {
   const bucket = config.public.storageBucket || "Gallery";
   return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
 };
-
-// const timelineItems = ref([
-//   {
-//     id: 7,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-7.webp",
-//     imagePosition: "right",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 13,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-13.webp",
-//     imagePosition: "left",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 1,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-1.webp",
-//     imagePosition: "right",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 19,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-19.webp",
-//     imagePosition: "left",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 17,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-17.webp",
-//     imagePosition: "right",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 14,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-14.webp",
-//     imagePosition: "right",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 10,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-10.webp",
-//     imagePosition: "right",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 9,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-9.webp",
-//     imagePosition: "right",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 4,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-4.webp",
-//     imagePosition: "right",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 15,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-15.webp",
-//     imagePosition: "right",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 20,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-20.webp",
-//     imagePosition: "left",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 8,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-8.webp",
-//     imagePosition: "right",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 18,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-18.webp",
-//     imagePosition: "right",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 2,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-2.webp",
-//     imagePosition: "right",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 16,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-16.webp",
-//     imagePosition: "right",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 11,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-11.webp",
-//     imagePosition: "right",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 3,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-3.webp",
-//     imagePosition: "right",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 12,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-12.webp",
-//     imagePosition: "right",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 5,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-5.webp",
-//     imagePosition: "right",
-//     dividerImage: null,
-//   },
-//   {
-//     id: 6,
-//     year: "",
-//     description: "",
-//     image: "/Images/Gallery/Festive-Images-6.webp",
-//     imagePosition: "right",
-//     dividerImage: null,
-//   },
-// ]);
 
 const trackRef = ref(null);
 const navBarRef = ref(null);
