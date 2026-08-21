@@ -506,15 +506,6 @@ watch(
   }
 }
 
-/* @keyframes glossyShineContinuous {
-  0% {
-    transform: rotate(25deg) translateX(-100%);
-  }
-  100% {
-    transform: rotate(25deg) translateX(100%);
-  }
-} */
-
 @keyframes festive-express-animation-pulse-grow {
   0% {
     transform: scale(1);

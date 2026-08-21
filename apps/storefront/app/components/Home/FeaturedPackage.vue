@@ -177,14 +177,13 @@
         <div
           class="relative isolate my-8 max-lg:my-6 flex flex-col items-center justify-center gap-5 text-center"
         >
-          <div
-            class="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-44 h-44 rounded-full bg-[#f7941d]/30 blur-2xl"
-            aria-hidden="true"
-          />
+          <!-- Button 1 -->
+          <PreviewYourHomeButton />
 
+          <!-- Button 2 -->
           <NuxtLink
             to="/packages"
-            class="relative z-10 overflow-hidden border-2 border-navy inline-block font-semibold px-6 py-3 rounded-lg bg-brand-orange text-white animate-[festive-express-animation-pulse-grow_0.5s_linear_infinite_alternate] after:content-[''] after:absolute after:-top-1/2 after:-left-[150%] after:w-[200%] after:h-[200%] after:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] after:rotate-[25deg] after:pointer-events-none after:animate-[glossyShineContinuous_3s_linear_infinite]"
+            class="relative z-10 overflow-hidden border-2 border-navy inline-block font-semibold px-6 py-3 rounded-lg bg-brand-orange text-white animate-[festive-express-animation-pulse-grow_0.5s_linear_infinite_alternate] after:content-[''] after:absolute after:-top-1/2 after:-left-[150%] after:w-[200%] after:h-[200%] after:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] after:rotate-[25deg] after:pointer-events-none"
           >
             Which Package Fits Your Home?
           </NuxtLink>
@@ -488,15 +487,6 @@ const getFeatures = (pkg: PackageRow): FeatureItem[] => {
 .btn-inclusions:hover {
   border-color: var(--orange, #ff7a00) !important;
   background: rgba(244, 147, 33, 0.15) !important;
-}
-
-@keyframes glossyShineContinuous {
-  0% {
-    transform: translateX(-100%) rotate(25deg);
-  }
-  100% {
-    transform: translateX(200%) rotate(25deg);
-  }
 }
 
 @keyframes festive-express-animation-pulse-grow {

@@ -48,6 +48,8 @@
         />
       </ClientOnly>
 
+      <PreviewYourHomeButton />
+
       <div v-if="loading" class="text-center py-20 text-slate-500">
         Loading packages...
       </div>
@@ -872,32 +874,6 @@ const load = async () => {
     loading.value = false;
   }
 };
-
-/** Add cart item = product SKU id */
-// const addPackageSku = async (pkg: PackageRow) => {
-//   const sku = selectedSku(pkg);
-//   if (!sku) return;
-//   addingId.value = sku.id;
-//   try {
-//     if (cart?.addToCart) {
-//       const ok = await cart.addToCart(sku.id, 1, true);
-//       if (ok) {
-//         await navigateTo("/checkout");
-//         return;
-//       }
-//     }
-//     await navigateTo({
-//       path: "/checkout",
-//       query: {
-//         product_id: String(sku.id),
-//         package: pkg.slug,
-//         color: sku.color_key || "",
-//       },
-//     });
-//   } finally {
-//     addingId.value = null;
-//   }
-// };
 
 const cartModal = reactive({
   open: false,

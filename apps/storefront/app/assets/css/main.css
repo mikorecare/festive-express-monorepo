@@ -46,10 +46,10 @@
 
 @keyframes glossyShineContinuous {
   0% {
-    left: -150%;
+    transform: translateX(-100%) rotate(25deg);
   }
   100% {
-    left: 150%;
+    transform: translateX(200%) rotate(25deg);
   }
 }
 
