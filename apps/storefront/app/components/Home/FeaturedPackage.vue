@@ -16,8 +16,7 @@
           class="text-center text-black font-bold tracking-[0.4px] text-[0.72rem] sm:text-[1.15rem] leading-tight mt-2 max-w-[80%] mx-auto"
         >
           Choose one of three fixed rental packages*.<br />
-          Pay once. Pick your install date and take-down date. We handle the
-          rest.
+          Pay online. Pick your install and take-down dates. We handle the rest.
         </p>
       </div>
 

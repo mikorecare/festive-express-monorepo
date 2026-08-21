@@ -23,7 +23,7 @@
         v-fade
         class="text-center text-white/95 font-semibold tracking-[0.3px] uppercase whitespace-nowrap text-[0.68rem] sm:text-[0.8rem] leading-tight mb-10 sm:mb-[50px] drop-shadow-[0_1px_4px_rgba(0,0,0,0.35)]"
       >
-        (Each package is a lease for one season)
+        (Each package is a rental for one season)
       </p>
 
       <div v-if="loading" class="text-center py-10 text-white font-semibold">
