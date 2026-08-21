@@ -19,7 +19,8 @@
     "vue": "^3.5.39",
     "vue-router": "^5.1.0",
     "vue-sonner": "^2.0.9",
-    "vue-toastification": "^1.7.14"
+    "vue-toastification": "^1.7.14",
+    "@heroicons/vue": "^2.2.0"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
