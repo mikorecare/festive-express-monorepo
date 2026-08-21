@@ -97,8 +97,8 @@ const form = ref({
   billing_phone: "",
   shipping_address_1: "",
   billing_postcode: "",
-  preferred_install_date: "",
-  removal_date: "",
+  install_dates: ["", "", ""],
+  removal_dates: ["", "", ""],
   card_name: "",
   card_number: "",
   card_expiry: "",
@@ -113,7 +113,7 @@ const validationErrors = ref({
   billing_phone: "",
   shipping_address_1: "",
   billing_postcode: "",
-  preferred_install_date: "",
+  install_dates: "",
   card_name: "",
   card_number: "",
   card_expiry: "",
@@ -122,6 +122,7 @@ const validationErrors = ref({
 });
 
 const isFormValid = computed(() => {
+  const hasInstallDate = form.value.install_dates.some((d) => d);
   return (
     Object.values(validationErrors.value).every((error) => error === "") &&
     !!form.value.billing_first_name &&
@@ -129,7 +130,7 @@ const isFormValid = computed(() => {
     !!form.value.billing_phone &&
     !!form.value.shipping_address_1 &&
     !!form.value.billing_postcode &&
-    !!form.value.preferred_install_date &&
+    hasInstallDate &&
     !!form.value.card_name &&
     !!form.value.card_number &&
     !!form.value.card_expiry &&
@@ -196,6 +197,33 @@ const resetTurnstile = () => {
   turnstileStatusType.value = "";
 };
 
+const validateLuhn = (cardNumber: string): boolean => {
+  const digits = cardNumber.replace(/\D/g, "");
+
+  if (!digits || digits.length < 13 || digits.length > 19) {
+    return false;
+  }
+
+  let sum = 0;
+  let isEven = false;
+
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let digit = parseInt(digits.charAt(i));
+
+    if (isEven) {
+      digit *= 2;
+      if (digit > 9) {
+        digit -= 9;
+      }
+    }
+
+    sum += digit;
+    isEven = !isEven;
+  }
+
+  return sum % 10 === 0;
+};
+
 const validateField = (field: string) => {
   const value = form.value[field as keyof typeof form.value];
   const errors = validationErrors.value;
@@ -224,8 +252,11 @@ const validateField = (field: string) => {
         const cardNum = stringValue.replace(/\s/g, "");
         if (!cardNum) {
           errors.card_number = "Card number is required";
-        } else if (cardNum.length < 16) {
-          errors.card_number = "Please enter a valid 16-digit card number";
+        } else if (cardNum.length < 13) {
+          errors.card_number = "Card number must be at least 13 digits";
+        } else if (!validateLuhn(cardNum)) {
+          errors.card_number =
+            "Invalid card number - please check and try again";
         } else {
           errors.card_number = "";
         }
@@ -238,7 +269,7 @@ const validateField = (field: string) => {
         } else {
           const [month, year] = stringValue.split("/");
           const expMonth = parseInt(month!);
-          const expYear = parseInt("20" + year);
+          const expYear = parseInt("20" + year!);
           const now = new Date();
           const currentMonth = now.getMonth() + 1;
           const currentYear = now.getFullYear();
@@ -257,10 +288,19 @@ const validateField = (field: string) => {
       case "card_cvv":
         if (!stringValue) {
           errors.card_cvv = "CVV is required";
-        } else if (!/^\d{3,4}$/.test(stringValue)) {
-          errors.card_cvv = "Please enter a valid CVV";
         } else {
-          errors.card_cvv = "";
+          const cvvLength = stringValue.length;
+          const isAmex =
+            form.value.card_number.replace(/\s/g, "").startsWith("34") ||
+            form.value.card_number.replace(/\s/g, "").startsWith("37");
+          const expectedLength = isAmex ? 4 : 3;
+          if (cvvLength !== expectedLength) {
+            errors.card_cvv = `CVV must be ${expectedLength} digits for ${isAmex ? "AMEX" : "this card type"}`;
+          } else if (!/^\d+$/.test(stringValue)) {
+            errors.card_cvv = "CVV must contain only numbers";
+          } else {
+            errors.card_cvv = "";
+          }
         }
         break;
     }
@@ -308,19 +348,12 @@ const validateField = (field: string) => {
       }
       break;
 
-    case "preferred_install_date":
-      if (!stringValue) {
-        errors.preferred_install_date = "Please select an installation date";
+    case "install_dates":
+      const dates = form.value.install_dates.filter((d) => d);
+      if (dates.length === 0) {
+        errors.install_dates = "Please select at least 1 installation date";
       } else {
-        const selected = new Date(stringValue);
-        const today = new Date();
-        today.setDate(today.getDate() + 3);
-        if (selected < today) {
-          errors.preferred_install_date =
-            "Installation date must be at least 3 days from today";
-        } else {
-          errors.preferred_install_date = "";
-        }
+        errors.install_dates = "";
       }
       break;
 
@@ -341,7 +374,7 @@ const validateAllFields = () => {
     "billing_phone",
     "shipping_address_1",
     "billing_postcode",
-    "preferred_install_date",
+    "install_dates",
     "card_name",
     "card_number",
     "card_expiry",
@@ -415,6 +448,9 @@ const buildOrderPayload = () => {
   const firstName = nameParts[0] || "";
   const lastName = nameParts.slice(1).join(" ") || firstName;
 
+  const installDates = form.value.install_dates.filter((d) => d);
+  const removalDates = form.value.removal_dates.filter((d) => d);
+
   return {
     billing_first_name: firstName,
     billing_last_name: lastName,
@@ -423,9 +459,9 @@ const buildOrderPayload = () => {
     billing_postcode: form.value.billing_postcode,
     shipping_address_1: form.value.shipping_address_1,
     shipping_postcode: form.value.billing_postcode,
-    preferred_install_date: form.value.preferred_install_date,
-    removal_date: form.value.removal_date || null,
-    status: "processing",
+    preferred_install_dates: installDates,
+    removal_dates: removalDates,
+    status: "pending",
     payment_method: "converge",
     payment_status: "paid",
     subtotal: cartTotal.value + alacarteCartTotal.value,
@@ -482,68 +518,6 @@ const loadConvergeScript = () => {
   });
 };
 
-// const payWithConverge = async () => {
-//   if (!validateCheckout()) return;
-
-//   isPaying.value = true;
-
-//   try {
-//     const nameParts = (form.value.billing_first_name || "").trim().split(" ");
-//     const firstName = nameParts[0] || "";
-//     const lastName = nameParts.slice(1).join(" ") || firstName;
-//     const response: any = await $fetch("/elavon/charge", {
-//       baseURL: config.public.apiBase,
-//       method: "POST",
-//       body: {
-//         amount: grandTotal.value,
-//         card_number: form.value.card_number,
-//         card_expiry: form.value.card_expiry,
-//         card_cvv: form.value.card_cvv,
-//         card_name: form.value.card_name,
-//         billing_first_name: firstName,
-//         billing_last_name: lastName,
-//         billing_email: form.value.billing_email,
-//         billing_phone: form.value.billing_phone,
-//         billing_address: form.value.shipping_address_1,
-//         billing_postcode: form.value.billing_postcode,
-//         turnstileToken: turnstileToken.value,
-//       },
-//     });
-
-//     if (response.success) {
-//       const orderPayload = buildOrderPayload();
-//       orderPayload.transaction_id = response.transactionId;
-//       orderPayload.approval_code = response.approvalCode;
-//       orderPayload.payment_token = response.token || null;
-
-//       const orderResponse: any = await $fetch("/orders", {
-//         baseURL: config.public.apiBase,
-//         method: "POST",
-//         body: orderPayload,
-//       });
-
-//       await clearCart();
-//       toast.success("Payment successful!");
-//       navigateTo(
-//         `/thank-you?order=${orderResponse.order_number || orderResponse.id}`,
-//       );
-//     } else {
-//       throw new Error(response.message || "Payment failed");
-//     }
-//   } catch (error: any) {
-//     console.error("Payment error:", error);
-//     toast.error(
-//       error.data?.message ||
-//         error.message ||
-//         "Payment failed. Please try again.",
-//     );
-//     resetTurnstile();
-//     validateAllFields();
-//   } finally {
-//     isPaying.value = false;
-//   }
-// };
-
 const payWithConverge = async () => {
   if (!validateCheckout()) return;
 
@@ -553,8 +527,6 @@ const payWithConverge = async () => {
     const nameParts = (form.value.billing_first_name || "").trim().split(" ");
     const firstName = nameParts[0] || "";
     const lastName = nameParts.slice(1).join(" ") || firstName;
-
-    // ✅ Call your server endpoint, not Converge directly
     const tokenRes: any = await $fetch("/api/elavon/session", {
       method: "POST",
       body: {
@@ -563,6 +535,26 @@ const payWithConverge = async () => {
         last_name: lastName,
         email: form.value.billing_email,
         invoice_number: `FLP-${Date.now()}`,
+        billing_phone: form.value.billing_phone,
+        billing_address: form.value.shipping_address_1,
+        billing_postcode: form.value.billing_postcode,
+        shipping_address: form.value.shipping_address_1,
+        shipping_postcode: form.value.billing_postcode,
+        preferred_install_dates: form.value.install_dates.filter((d) => d),
+        removal_dates: form.value.removal_dates.filter((d) => d),
+        customer_note: form.value.customer_note || null,
+        subtotal: cartTotal.value + alacarteCartTotal.value,
+        tax_total: estimatedTax.value,
+        total: grandTotal.value,
+        deposit_amount: 0,
+        items: cartItems.value.map((item: any) => ({
+          product_id: item.product_id || item.id,
+          product_name: item.product?.name || item.name,
+          quantity: item.quantity,
+          price: item.price,
+          is_package: item.is_package || false,
+          options: item.options || {},
+        })),
       },
     });
 
