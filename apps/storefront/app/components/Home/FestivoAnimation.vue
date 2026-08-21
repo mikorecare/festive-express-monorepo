@@ -268,7 +268,12 @@ const onMoveComplete = () => {
         transform: `scaleX(${scaleX}) scale(${imageScale})`,
       }"
     >
-      <img :src="currentImageSrc" alt="Festivo Mascot" class="festivo-img" />
+      <img
+        :src="currentImageSrc"
+        alt="Festivo Mascot"
+        loading="lazy"
+        class="festivo-img"
+      />
     </div>
   </div>
 </template>
