@@ -1,4 +1,5 @@
 export default defineEventHandler(async (event) => {
+    const config = useRuntimeConfig();
     const body = await readBody(event);
 
     const {
@@ -21,7 +22,6 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        const config = useRuntimeConfig();
         const secretKey = config.turnstile.secretKey;
 
         interface TurnstileResponse {
@@ -54,10 +54,20 @@ export default defineEventHandler(async (event) => {
     const [expMonth, expYear] = card_expiry.split('/');
     const formattedYear = expYear.length === 2 ? `20${expYear}` : expYear;
 
+    const accountId = config.elavonAccountId;
+    const userId = config.elavonUserId;
+    const pin = config.elavonPin;
+
+    console.log('🔑 Elavon credentials:', {
+        merchant_id: accountId ? '✅ SET' : '❌ MISSING',
+        user_id: userId ? '✅ SET' : '❌ MISSING',
+        pin: pin ? '✅ SET' : '❌ MISSING',
+    });
+
     const formData = new URLSearchParams();
-    formData.append('ssl_merchant_id', process.env.ELAVON_MERCHANT_ID!);
-    formData.append('ssl_user_id', process.env.ELAVON_USER_ID!);
-    formData.append('ssl_pin', process.env.ELAVON_PIN!);
+    formData.append('ssl_account_id', accountId!);
+    formData.append('ssl_user_id', userId!);
+    formData.append('ssl_pin', pin!);
     formData.append('ssl_transaction_type', 'ccsale');
     formData.append('ssl_amount', amount.toString());
     formData.append('ssl_card_number', card_number.replace(/\s/g, ''));
@@ -74,7 +84,7 @@ export default defineEventHandler(async (event) => {
 
     try {
         const responseText = await $fetch<string>(
-            'https://demo.convergepay.com/api/transaction',
+            'https://api.demo.convergepay.com/hosted-payments/transaction_token',
             {
                 method: 'POST',
                 body: formData.toString(),

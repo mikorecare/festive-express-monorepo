@@ -11,7 +11,12 @@
     "NODE_ENV",
     "NITRO_PRESET",
     "NUXT_PUBLIC_API_BASE",
-    "NUXT_PUBLIC_STORAGE_BUCKET"
+    "NUXT_PUBLIC_STORAGE_BUCKET",
+    "ELAVON_ACCOUNT_ID",
+    "ELAVON_USER_ID",
+    "ELAVON_PIN",
+    "NUXT_PUBLIC_TURNSTILE_SITE_KEY",
+    "NUXT_TURNSTILE_SECRET_KEY"
   ],
   "tasks": {
     "build": {
@@ -25,7 +30,12 @@
         "SUPABASE_URL",
         "SUPABASE_KEY",
         "NUXT_SUPABASE_SECRET_KEY",
-        "NODE_ENV"
+        "NODE_ENV",
+        "ELAVON_ACCOUNT_ID",
+        "ELAVON_USER_ID",
+        "ELAVON_PIN",
+        "NUXT_PUBLIC_TURNSTILE_SITE_KEY",
+        "NUXT_TURNSTILE_SECRET_KEY"
       ]
     },
     "dev": {
@@ -39,7 +49,12 @@
         "SUPABASE_URL",
         "SUPABASE_KEY",
         "NUXT_SUPABASE_SECRET_KEY",
-        "NODE_ENV"
+        "NODE_ENV",
+        "ELAVON_ACCOUNT_ID",
+        "ELAVON_USER_ID",
+        "ELAVON_PIN",
+        "NUXT_PUBLIC_TURNSTILE_SITE_KEY",
+        "NUXT_TURNSTILE_SECRET_KEY"
       ]
     },
     "preview": {
@@ -52,7 +67,12 @@
         "SUPABASE_URL",
         "SUPABASE_KEY",
         "NUXT_SUPABASE_SECRET_KEY",
-        "NODE_ENV"
+        "NODE_ENV",
+        "ELAVON_ACCOUNT_ID",
+        "ELAVON_USER_ID",
+        "ELAVON_PIN",
+        "NUXT_PUBLIC_TURNSTILE_SITE_KEY",
+        "NUXT_TURNSTILE_SECRET_KEY"
       ]
     }
   }
