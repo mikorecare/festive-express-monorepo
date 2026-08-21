@@ -1,13 +1,13 @@
 <template>
-  <div class="checkout-page">
+  <div class="checkout-page min-h-[80vh] bg-[#e7e7e7]">
     <section class="page-hero snow-bg">
       <div class="hero-overlay">
         <div class="container mx-auto px-4">
           <div class="hero-content text-center py-12">
-            <h1 class="text-4xl font-bold text-navy uppercase">Checkout</h1>
-            <p class="text-gray-600 max-w-2xl mx-auto mt-2">
+            <h1 class="text-4xl font-bold text-white uppercase">Checkout</h1>
+            <p class="text-white-600 max-w-2xl mx-auto mt-2">
               Finalize your professional holiday installation details and lock
-              in your festive season dates.
+              in your install/take down dates.
             </p>
           </div>
         </div>
@@ -467,7 +467,6 @@ const loadConvergeScript = () => {
       resolve();
       return;
     }
-
     const demo = true;
     const src = demo
       ? "https://api.demo.convergepay.com/hosted-payments/PayWithConverge.js"

@@ -7,13 +7,13 @@
     <div class="text-center px-5 sm:pb-5 relative z-[2] sm:mb-10">
       <h2
         v-fade
-        class="font-extrabold text-white text-uppercase text-2xl sm:text-3xl lg:text-4xl max-sm:text-[1.2rem] max-sm:leading-[1.3]"
+        class="text-center font-black text-white tracking-wide sm:tracking-wider uppercase text-[1.05rem] sm:text-3xl lg:text-4xl leading-tight"
       >
         Our Wonderful <span class="text-brand-orange">HOLIDAY</span> Stories
       </h2>
       <p
         v-fade
-        class="text-white max-w-[50%] max-sm:max-w-[80%] mx-auto leading-[1.3] text-xl max-sm:text-[0.95rem] mt-2 fade-up is-visible"
+        class="text-center text-white font-bold tracking-[0.4px] text-[0.72rem] sm:text-[1.15rem] leading-tight mt-2 mb-1 max-w-[80%] mx-auto drop-shadow-[0_1px_4px_rgba(0,0,0,0.4)]"
       >
         Journey through our favorite seasonal moments and cherished memories
         captured over the years.
@@ -72,7 +72,7 @@
 
           <!-- Image Right Layout -->
           <template v-else>
-            <div v-if="item.year || item.description">
+            <!-- <div v-if="item.year || item.description">
               <span
                 v-if="item.year"
                 class="text-[3.5rem] font-extrabold text-[#d18d45] leading-none block mb-3"
@@ -84,10 +84,10 @@
               >
                 {{ item.description }}
               </p>
-            </div>
+            </div> -->
             <div
               v-if="item.image"
-              class="shrink-0 w-full relative overflow-hidden cursor-pointer aspect-[16/10] rounded-2xl bg-[#0c1a35] outline outline-2 outline-[rgba(255,122,0,0.2)] -outline-offset-2 shadow-[0_8px_20px_rgba(0,0,0,0.15)] transition-all duration-300 hover:outline-brand-orange hover:outline-offset-4 hover:shadow-[0_12px_28px_rgba(0,0,0,0.25)] hover:scale-[1.02] hover:brightness-[1.05]"
+              class="gallery-shine shrink-0 w-full relative overflow-hidden cursor-pointer aspect-[16/10] rounded-2xl bg-[#0c1a35] outline outline-2 outline-[rgba(255,122,0,0.2)] -outline-offset-2 shadow-[0_8px_20px_rgba(0,0,0,0.15)] transition-all duration-300 hover:outline-brand-orange hover:outline-offset-4 hover:shadow-[0_12px_28px_rgba(0,0,0,0.25)] hover:scale-[1.02] hover:brightness-[1.05]"
               @click="openLightbox(item.image)"
             >
               <img
@@ -100,6 +100,67 @@
             </div>
           </template>
         </div>
+
+        <!-- Lightbox Modal -->
+        <Transition name="fade">
+          <div
+            v-if="activeImage"
+            class="fixed inset-0 w-screen h-screen bg-black/85 flex items-center justify-center z-[9999] p-5"
+            @click.self="closeLightbox"
+          >
+            <button
+              class="absolute top-5 right-[25px] bg-transparent border-none text-white text-[2.5rem] leading-none cursor-pointer z-[10000] transition-transform duration-200 hover:text-brand-orange hover:scale-[1.15]"
+              @click="closeLightbox"
+              aria-label="Close modal"
+            >
+              &times;
+            </button>
+
+            <div
+              class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-3 py-2 rounded-full bg-black/50 backdrop-blur-sm"
+            >
+              <button
+                type="button"
+                class="px-3 py-1.5 rounded-lg bg-white/15 text-white text-sm hover:bg-white/25"
+                @click.stop="zoomOut"
+              >
+                −
+              </button>
+              <button
+                type="button"
+                class="px-3 py-1.5 rounded-lg bg-white/15 text-white text-sm hover:bg-white/25"
+                @click.stop="zoomIn"
+              >
+                +
+              </button>
+              <button
+                type="button"
+                class="px-3 py-1.5 rounded-lg bg-white/15 text-white text-sm hover:bg-white/25"
+                @click.stop="resetZoom"
+              >
+                Reset
+              </button>
+            </div>
+
+            <div
+              class="max-w-[90vw] max-h-[90vh] flex items-center justify-center"
+              @wheel.prevent="onWheel"
+            >
+              <img
+                loading="lazy"
+                :src="activeImage"
+                alt="Enlarged view"
+                class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-transform duration-200"
+                :style="{
+                  transform: `scale(${zoom})`,
+                  cursor: zoom > 1 ? 'zoom-out' : 'zoom-in',
+                  width: 'min(90vw, 1000px)',
+                }"
+                @click.stop="toggleZoom"
+              />
+            </div>
+          </div>
+        </Transition>
 
         <!-- Optional Centerpiece/Divider between cards -->
         <div v-if="item.dividerImage">
@@ -192,168 +253,213 @@ let isFirstFrame = ref(true);
 let isDragRunning = ref(false);
 let lastScrollLeft = 0;
 
-const timelineItems = ref([
-  {
-    id: 7,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-7.webp",
-    imagePosition: "right",
-    dividerImage: null,
-  },
-  {
-    id: 13,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-13.webp",
-    imagePosition: "left",
-    dividerImage: null,
-  },
-  {
-    id: 1,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-1.webp",
-    imagePosition: "right",
-    dividerImage: null,
-  },
-  {
-    id: 19,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-19.webp",
-    imagePosition: "left",
-    dividerImage: null,
-  },
-  {
-    id: 17,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-17.webp",
-    imagePosition: "right",
-    dividerImage: null,
-  },
-  {
-    id: 14,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-14.webp",
-    imagePosition: "right",
-    dividerImage: null,
-  },
-  {
-    id: 10,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-10.webp",
-    imagePosition: "right",
-    dividerImage: null,
-  },
-  {
-    id: 9,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-9.webp",
-    imagePosition: "right",
-    dividerImage: null,
-  },
-  {
-    id: 4,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-4.webp",
-    imagePosition: "right",
-    dividerImage: null,
-  },
-  {
-    id: 15,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-15.webp",
-    imagePosition: "right",
-    dividerImage: null,
-  },
-  {
-    id: 20,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-20.webp",
-    imagePosition: "left",
-    dividerImage: null,
-  },
-  {
-    id: 8,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-8.webp",
-    imagePosition: "right",
-    dividerImage: null,
-  },
-  {
-    id: 18,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-18.webp",
-    imagePosition: "right",
-    dividerImage: null,
-  },
-  {
-    id: 2,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-2.webp",
-    imagePosition: "right",
-    dividerImage: null,
-  },
-  {
-    id: 16,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-16.webp",
-    imagePosition: "right",
-    dividerImage: null,
-  },
-  {
-    id: 11,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-11.webp",
-    imagePosition: "right",
-    dividerImage: null,
-  },
-  {
-    id: 3,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-3.webp",
-    imagePosition: "right",
-    dividerImage: null,
-  },
-  {
-    id: 12,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-12.webp",
-    imagePosition: "right",
-    dividerImage: null,
-  },
-  {
-    id: 5,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-5.webp",
-    imagePosition: "right",
-    dividerImage: null,
-  },
-  {
-    id: 6,
-    year: "",
-    description: "",
-    image: "/Images/Gallery/Festive-Images-6.webp",
-    imagePosition: "right",
-    dividerImage: null,
-  },
-]);
+const config = useRuntimeConfig();
+const supabase = useSupabaseClient();
+
+const timelineItems = ref([]);
+const loadingGallery = ref(true);
+
+const fetchGallery = async () => {
+  loadingGallery.value = true;
+  try {
+    const { data, error } = await supabase
+      .from("gallery_items")
+      .select("*")
+      .eq("is_active", true)
+      .order("sort_order", { ascending: true });
+
+    if (error) throw error;
+
+    timelineItems.value = (data || []).map((row) => ({
+      id: row.id,
+      year: row.year || "",
+      description: row.description || "",
+      image: getImageUrl(row.image_url),
+      imagePosition: row.image_position || "right",
+      dividerImage: row.divider_image_url
+        ? getImageUrl(row.divider_image_url)
+        : null,
+    }));
+  } catch (e) {
+    console.error(e);
+    timelineItems.value = [];
+  } finally {
+    loadingGallery.value = false;
+  }
+};
+
+const getImageUrl = (url) => {
+  if (!url) return "/Images/placeholder.png";
+  if (url.startsWith("http") || url.startsWith("/Images/")) return url;
+  const path = String(url).replace(/^\/+/, "");
+  const supabaseUrl =
+    config.public.supabaseUrl || config.public.supabase?.url || "";
+  const bucket = config.public.storageBucket || "Gallery";
+  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
+};
+
+// const timelineItems = ref([
+//   {
+//     id: 7,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-7.webp",
+//     imagePosition: "right",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 13,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-13.webp",
+//     imagePosition: "left",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 1,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-1.webp",
+//     imagePosition: "right",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 19,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-19.webp",
+//     imagePosition: "left",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 17,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-17.webp",
+//     imagePosition: "right",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 14,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-14.webp",
+//     imagePosition: "right",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 10,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-10.webp",
+//     imagePosition: "right",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 9,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-9.webp",
+//     imagePosition: "right",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 4,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-4.webp",
+//     imagePosition: "right",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 15,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-15.webp",
+//     imagePosition: "right",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 20,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-20.webp",
+//     imagePosition: "left",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 8,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-8.webp",
+//     imagePosition: "right",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 18,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-18.webp",
+//     imagePosition: "right",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 2,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-2.webp",
+//     imagePosition: "right",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 16,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-16.webp",
+//     imagePosition: "right",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 11,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-11.webp",
+//     imagePosition: "right",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 3,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-3.webp",
+//     imagePosition: "right",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 12,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-12.webp",
+//     imagePosition: "right",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 5,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-5.webp",
+//     imagePosition: "right",
+//     dividerImage: null,
+//   },
+//   {
+//     id: 6,
+//     year: "",
+//     description: "",
+//     image: "/Images/Gallery/Festive-Images-6.webp",
+//     imagePosition: "right",
+//     dividerImage: null,
+//   },
+// ]);
 
 const trackRef = ref(null);
 const navBarRef = ref(null);
@@ -660,13 +766,37 @@ const onSpinnerDrag = (e) => {
 };
 
 const activeImage = ref(null);
+const zoom = ref(1);
 
 const openLightbox = (imageSrc) => {
   activeImage.value = imageSrc;
+  zoom.value = 1;
 };
 
 const closeLightbox = () => {
   activeImage.value = null;
+  zoom.value = 1;
+};
+
+const zoomIn = () => {
+  zoom.value = Math.min(zoom.value + 0.25, 4);
+};
+
+const zoomOut = () => {
+  zoom.value = Math.max(zoom.value - 0.25, 1);
+};
+
+const resetZoom = () => {
+  zoom.value = 1;
+};
+
+const toggleZoom = () => {
+  zoom.value = zoom.value > 1 ? 1 : 2;
+};
+
+const onWheel = (e) => {
+  if (e.deltaY < 0) zoomIn();
+  else zoomOut();
 };
 
 const handleKeyDown = (e) => {
@@ -679,6 +809,18 @@ watch(isSpinnerDragging, (newVal) => {
   if (newVal) {
     stopBlinking();
   }
+});
+
+// ESC to close
+onMounted(() => {
+  fetchGallery();
+
+  if (!import.meta.client) return;
+  const onKey = (e) => {
+    if (e.key === "Escape") closeLightbox();
+  };
+  window.addEventListener("keydown", onKey);
+  onUnmounted(() => window.removeEventListener("keydown", onKey));
 });
 </script>
 
@@ -702,5 +844,29 @@ watch(isSpinnerDragging, (newVal) => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.gallery-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 60%
+  );
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+
+.gallery-shine:hover::after {
+  animation: galleryShine 2s ease-out forwards;
+}
+
+@keyframes galleryShine {
+  to {
+    transform: translateX(120%);
+  }
 }
 </style>

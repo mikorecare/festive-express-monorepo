@@ -19,5 +19,8 @@
   "devDependencies": {
     "dotenv-cli": "^7.4.4",
     "turbo": "^2.0.0"
+  },
+  "dependencies": {
+    "@nuxtjs/turnstile": "^1.1.3"
   }
 }

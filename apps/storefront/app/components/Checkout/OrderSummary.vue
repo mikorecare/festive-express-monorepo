@@ -15,9 +15,9 @@
         >
           {{ item.options.c9_color }} LEDs
         </small>
-        <small class="block text-gray-500 text-xs"
+        <!-- <small class="block text-gray-500 text-xs"
           >Professional Installation</small
-        >
+        > -->
       </div>
       <span class="text-orange-500 font-bold text-sm">
         ${{ (Number(item.price || 0) * item.quantity).toFixed(2) }}
@@ -74,16 +74,27 @@
 
     <ul class="space-y-2 mt-4">
       <li class="flex items-center text-sm text-gray-600">
-        <i class="fas fa-check-circle text-green-500 mr-2"></i> SSL Secure
-        Connection
+        <CheckCircleIcon
+          class="w-5 h-5 text-green-500 mr-2 inline-block"
+          aria-hidden="true"
+        />
+        SSL Secure Connection
+        <!-- <i class="fas fa-check-circle text-green-500 mr-2"></i> SSL Secure
+        Connection -->
       </li>
       <li class="flex items-center text-sm text-gray-600">
-        <i class="fas fa-check-circle text-green-500 mr-2"></i> CLIPA Certified
-        Installers
+        <CheckCircleIcon
+          class="w-5 h-5 text-green-500 mr-2 inline-block"
+          aria-hidden="true"
+        />
+        CLIPA Certified Installers
       </li>
       <li class="flex items-center text-sm text-gray-600">
-        <i class="fas fa-check-circle text-green-500 mr-2"></i> Guaranteed
-        Maintenance
+        <CheckCircleIcon
+          class="w-5 h-5 text-green-500 mr-2 inline-block"
+          aria-hidden="true"
+        />
+        Guaranteed Maintenance
       </li>
     </ul>
 
@@ -93,7 +104,8 @@
       <div>
         <strong class="block">Early Bird Special</strong>
         <p class="text-sm opacity-90">
-          Book before Oct 31st and get a free Mixed Noble Wreath.
+          Schedule an installation before Oct. 31st, get a free 24" Sequoia Fir
+          Wreath and 12” nylon bow
         </p>
       </div>
       <i class="fas fa-home text-2xl opacity-80"></i>
@@ -102,6 +114,8 @@
 </template>
 
 <script setup lang="ts">
+import { CheckCircleIcon } from "@heroicons/vue/24/solid";
+
 defineProps<{
   cartItems: any[];
   cartTotal: number;

@@ -94,7 +94,7 @@
           <!-- Logo -->
           <NuxtLink
             to="/"
-            class="flex flex-col items-start md:items-center gap-1 text-transparent shrink-0"
+            class="flex flex-col items-center gap-1 text-transparent shrink-0"
           >
             <img
               src="/Images/FE-Logo.png"
@@ -146,16 +146,32 @@
           <div class="flex items-center gap-3 shrink-0">
             <a
               :href="`tel:${String(settings.contact_phone || '').replace(/[^\d+]/g, '')}`"
-              class="contact-box btn-secondary-2"
+              class="contact-box btn-secondary-2 relative overflow-hidden"
+              :aria-label="`Call ${settings.contact_phone_display || '(941) 239-4722'}`"
             >
-              <span class="phone-icon"><i class="fas fa-phone"></i></span>
+              <span class="phone-icon shrink-0">
+                <!-- Heroicon if you switched -->
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  class="w-5 h-5"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M1.5 4.5a3 3 0 013-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 01-.694 1.955l-1.293.97c-.135.101-.164.279-.087.431a15.2 15.2 0 006.414 6.414c.152.077.33.048.431-.087l.97-1.293a1.875 1.875 0 011.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 01-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </span>
+
               <div class="contact-text">
                 <div class="call-now">CALL US NOW!</div>
                 <div class="phone-number">
                   {{ settings.contact_phone_display || "(941) 239-4722" }}
                 </div>
               </div>
-              <!-- Glossy Shine Overlay -->
+
               <div
                 class="absolute -top-1/2 -left-[150%] w-[200%] h-[200%] bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] rotate-[25deg] pointer-events-none animate-[glossyShineContinuous_3s_linear_infinite]"
               ></div>
@@ -164,7 +180,7 @@
             <!-- Hamburger -->
             <button
               type="button"
-              class="md:hidden flex flex-col justify-center gap-1.25 w-[42px] h-[42px] p-2 border border-[#0c2340] rounded-lg bg-white cursor-pointer"
+              class="md:hidden flex flex-col justify-center gap-1.5 w-[42px] h-[42px] p-2 border border-[#0c2340] rounded-lg bg-white cursor-pointer"
               :aria-expanded="mobileOpen"
               aria-label="Toggle menu"
               @click="mobileOpen = !mobileOpen"
