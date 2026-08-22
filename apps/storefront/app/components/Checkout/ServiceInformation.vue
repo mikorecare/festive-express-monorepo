@@ -75,18 +75,14 @@
           >Phone Number *</label
         >
         <input
-          :value="modelValue.billing_phone"
-          @input="
-            $emit('update:modelValue', {
-              ...modelValue,
-              billing_phone: ($event.target as HTMLInputElement).value,
-            })
-          "
+          :value="formattedPhone"
+          @input="handlePhoneInput"
           @blur="$emit('validate', 'billing_phone')"
           type="tel"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
           :class="{ 'border-red-500': errors.billing_phone }"
           placeholder="(555) 123-4567"
+          maxlength="14"
         />
         <p v-if="errors.billing_phone" class="text-red-500 text-sm mt-1">
           {{ errors.billing_phone }}
@@ -165,6 +161,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
+
 interface FormData {
   billing_first_name: string;
   billing_last_name: string;
@@ -184,13 +182,48 @@ interface ValidationErrors {
   billing_postcode: string;
 }
 
-defineProps<{
+const props = defineProps<{
   modelValue: FormData;
   errors: ValidationErrors;
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   (e: "update:modelValue", value: FormData): void;
   (e: "validate", field: string): void;
 }>();
+
+// Format phone number as (XXX) XXX-XXXX
+const formattedPhone = computed(() => {
+  const phone = props.modelValue.billing_phone || "";
+  const digits = phone.replace(/\D/g, "");
+
+  if (digits.length === 0) return "";
+  if (digits.length <= 3) return `(${digits}`;
+  if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+});
+
+const handlePhoneInput = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const digits = input.value.replace(/\D/g, "");
+
+  // Limit to 10 digits
+  const limitedDigits = digits.slice(0, 10);
+
+  let formatted = "";
+  if (limitedDigits.length > 0) {
+    if (limitedDigits.length <= 3) {
+      formatted = `(${limitedDigits}`;
+    } else if (limitedDigits.length <= 6) {
+      formatted = `(${limitedDigits.slice(0, 3)}) ${limitedDigits.slice(3)}`;
+    } else {
+      formatted = `(${limitedDigits.slice(0, 3)}) ${limitedDigits.slice(3, 6)}-${limitedDigits.slice(6, 10)}`;
+    }
+  }
+
+  emit("update:modelValue", {
+    ...props.modelValue,
+    billing_phone: formatted,
+  });
+};
 </script>

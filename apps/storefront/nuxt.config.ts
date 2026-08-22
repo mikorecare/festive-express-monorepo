@@ -18,7 +18,7 @@ export default defineNuxtConfig({
         { rel: "icon", type: "image/x-icon", href: "Images/favicon.png" },
         {
           rel: "stylesheet",
-          href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+          href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap",
         },
         {
           rel: "stylesheet",
@@ -94,7 +94,6 @@ export default defineNuxtConfig({
           "Cross-Origin-Embedder-Policy": "credentialless",
           "Cross-Origin-Opener-Policy": "same-origin",
           "X-Powered-By": "Festive Express",
-          // Remove CSP from here - let the middleware handle it
         },
       },
     },
