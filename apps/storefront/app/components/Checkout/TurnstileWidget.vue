@@ -22,32 +22,57 @@ const emit = defineEmits<{
   (e: "expired"): void;
 }>();
 
-onMounted(() => {
-  const renderTurnstile = () => {
-    const container = document.getElementById("turnstile-container");
-    if (!container) return;
-    if (!window.turnstile) {
-      setTimeout(renderTurnstile, 500);
-      return;
+let widgetId: any = null;
+
+const renderTurnstile = () => {
+  const container = document.getElementById("turnstile-container");
+  if (!container) return;
+  if (!window.turnstile) {
+    setTimeout(renderTurnstile, 500);
+    return;
+  }
+
+  if (!props.siteKey) {
+    console.error("Turnstile siteKey is missing");
+    return;
+  }
+
+  container.innerHTML = "";
+
+  // @ts-ignore // ✅ Skip TypeScript check
+  widgetId = window.turnstile.render(container, {
+    sitekey: props.siteKey,
+    callback: (token: string) => {
+      emit("success", token);
+    },
+    "error-callback": () => {
+      emit("error");
+    },
+    "expired-callback": () => {
+      emit("expired");
+    },
+    theme: "light",
+    size: "normal",
+  });
+};
+
+const resetTurnstile = () => {
+  if (window.turnstile && widgetId) {
+    try {
+      window.turnstile.reset(widgetId);
+    } catch (e) {
+      renderTurnstile();
     }
+  } else {
+    renderTurnstile();
+  }
+};
 
-    container.innerHTML = "";
-    window.turnstile.render(container, {
-      sitekey: props.siteKey,
-      callback: (token: string) => {
-        emit("success", token);
-      },
-      "error-callback": () => {
-        emit("error");
-      },
-      "expired-callback": () => {
-        emit("expired");
-      },
-      theme: "light",
-      size: "normal",
-    });
-  };
+defineExpose({
+  reset: resetTurnstile,
+});
 
+onMounted(() => {
   if (!window.turnstile) {
     const script = document.createElement("script");
     script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";

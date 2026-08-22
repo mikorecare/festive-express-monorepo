@@ -6,7 +6,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-1"
-          >Full Name *</label
+          >First Name *</label
         >
         <input
           :value="modelValue.billing_first_name"
@@ -20,10 +20,32 @@
           type="text"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
           :class="{ 'border-red-500': errors.billing_first_name }"
-          placeholder="John Doe"
+          placeholder="John"
         />
         <p v-if="errors.billing_first_name" class="text-red-500 text-sm mt-1">
           {{ errors.billing_first_name }}
+        </p>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1"
+          >Last Name *</label
+        >
+        <input
+          :value="modelValue.billing_last_name"
+          @input="
+            $emit('update:modelValue', {
+              ...modelValue,
+              billing_last_name: ($event.target as HTMLInputElement).value,
+            })
+          "
+          @blur="$emit('validate', 'billing_last_name')"
+          type="text"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+          :class="{ 'border-red-500': errors.billing_last_name }"
+          placeholder="Doe"
+        />
+        <p v-if="errors.billing_last_name" class="text-red-500 text-sm mt-1">
+          {{ errors.billing_last_name }}
         </p>
       </div>
       <div>
@@ -145,6 +167,7 @@
 <script setup lang="ts">
 interface FormData {
   billing_first_name: string;
+  billing_last_name: string;
   billing_email: string;
   billing_phone: string;
   shipping_address_1: string;
@@ -154,6 +177,7 @@ interface FormData {
 
 interface ValidationErrors {
   billing_first_name: string;
+  billing_last_name: string;
   billing_email: string;
   billing_phone: string;
   shipping_address_1: string;

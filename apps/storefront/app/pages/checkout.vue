@@ -56,6 +56,7 @@
           >
             <template #turnstile>
               <CheckoutTurnstileWidget
+                ref="turnstileRef"
                 :site-key="siteKey"
                 :errors="validationErrors"
                 :status="turnstileStatus"
@@ -78,12 +79,12 @@
 useHead({
   title: "Checkout",
 });
+import CheckoutTurnstileWidget from "../components/Checkout/TurnstileWidget.vue";
 const config = useRuntimeConfig();
 const siteKey = config.public.turnstile.siteKey as string;
 
 const { settings, loadSettings, telHref } = useSettings();
 const FL_TAX_RATE = computed(() => {
-  // Object / map shape: { fl_tax_rate: '0.07', contact_email: '...', ... }
   const raw =
     settings.value?.fl_tax_rate ?? (settings.value as any)?.["fl_tax_rate"];
 
@@ -100,6 +101,9 @@ import { toast } from "vue-sonner";
 const paymentMethod = ref<string>("converge");
 const isPaying = ref(false);
 
+const turnstileRef = ref<InstanceType<typeof CheckoutTurnstileWidget> | null>(
+  null,
+);
 const isTurnstileVerified = ref(false);
 const turnstileToken = ref("");
 const turnstileStatus = ref("");
@@ -107,6 +111,7 @@ const turnstileStatusType = ref("");
 
 const form = ref({
   billing_first_name: "",
+  billing_last_name: "",
   billing_email: "",
   billing_phone: "",
   shipping_address_1: "",
@@ -123,6 +128,7 @@ const form = ref({
 
 const validationErrors = ref({
   billing_first_name: "",
+  billing_last_name: "",
   billing_email: "",
   billing_phone: "",
   shipping_address_1: "",
@@ -140,6 +146,7 @@ const isFormValid = computed(() => {
   return (
     Object.values(validationErrors.value).every((error) => error === "") &&
     !!form.value.billing_first_name &&
+    !!form.value.billing_last_name &&
     !!form.value.billing_email &&
     !!form.value.billing_phone &&
     !!form.value.shipping_address_1 &&
@@ -188,8 +195,6 @@ const onTurnstileSuccess = (token: string) => {
 };
 
 const onTurnstileError = () => {
-  isTurnstileVerified.value = false;
-  turnstileToken.value = "";
   turnstileStatus.value = "Verification failed. Please try again.";
   turnstileStatusType.value = "error";
   validationErrors.value.turnstile =
@@ -202,11 +207,18 @@ const onTurnstileExpired = () => {
   turnstileStatus.value = "Verification expired. Please refresh.";
   turnstileStatusType.value = "warning";
   validationErrors.value.turnstile = "Verification expired. Please try again.";
+
+  if (turnstileRef.value) {
+    turnstileRef.value.reset();
+  }
 };
 
 const resetTurnstile = () => {
-  isTurnstileVerified.value = false;
-  turnstileToken.value = "";
+  if (!isTurnstileVerified.value) {
+    if (turnstileRef.value) {
+      turnstileRef.value.reset();
+    }
+  }
   turnstileStatus.value = "";
   turnstileStatusType.value = "";
 };
@@ -326,9 +338,17 @@ const validateField = (field: string) => {
   switch (field) {
     case "billing_first_name":
       if (!stringValue || stringValue.trim().length < 2) {
-        errors.billing_first_name = "Please enter your full name";
+        errors.billing_first_name = "Please enter your first name";
       } else {
         errors.billing_first_name = "";
+      }
+      break;
+
+    case "billing_last_name":
+      if (!stringValue || stringValue.trim().length < 2) {
+        errors.billing_last_name = "Please enter your last name";
+      } else {
+        errors.billing_last_name = "";
       }
       break;
 
@@ -384,6 +404,7 @@ const validateField = (field: string) => {
 const validateAllFields = () => {
   const fields = [
     "billing_first_name",
+    "billing_last_name",
     "billing_email",
     "billing_phone",
     "shipping_address_1",
@@ -467,16 +488,12 @@ const minDate = computed(() => {
 });
 
 const buildOrderPayload = () => {
-  const nameParts = (form.value.billing_first_name || "").trim().split(" ");
-  const firstName = nameParts[0] || "";
-  const lastName = nameParts.slice(1).join(" ") || firstName;
-
   const installDates = form.value.install_dates.filter((d) => d);
   const removalDates = form.value.removal_dates.filter((d) => d);
 
   return {
-    billing_first_name: firstName,
-    billing_last_name: lastName,
+    billing_first_name: form.value.billing_first_name || "",
+    billing_last_name: form.value.billing_last_name || "",
     billing_email: form.value.billing_email,
     billing_phone: form.value.billing_phone,
     billing_postcode: form.value.billing_postcode,
@@ -547,9 +564,8 @@ const payWithConverge = async () => {
   isPaying.value = true;
 
   try {
-    const nameParts = (form.value.billing_first_name || "").trim().split(" ");
-    const firstName = nameParts[0] || "";
-    const lastName = nameParts.slice(1).join(" ") || firstName;
+    const firstName = form.value.billing_first_name || "";
+    const lastName = form.value.billing_last_name || "";
     const tokenRes: any = await $fetch("/api/elavon/session", {
       method: "POST",
       body: {
@@ -592,23 +608,13 @@ const payWithConverge = async () => {
       {
         onApproval: async (payment: any) => {
           try {
-            const orderPayload = buildOrderPayload();
-            orderPayload.transaction_id =
-              payment.ssl_txn_id || tokenRes.transactionId;
-            orderPayload.approval_code = payment.ssl_approval_code;
-
-            const orderResponse: any = await $fetch("/api/orders", {
-              method: "POST",
-              body: orderPayload,
-            });
-
             await clearCart();
             toast.success("Payment successful!");
-            navigateTo(
-              `/thank-you?order=${orderResponse.order_number || orderResponse.id}`,
-            );
+            navigateTo(`/thank-you?order=${tokenRes.order.order_number}`);
           } catch (e: any) {
-            toast.error("Payment OK but order failed — contact support");
+            toast.error("Payment successful but something went wrong");
+            isTurnstileVerified.value = false;
+            turnstileToken.value = "";
             resetTurnstile();
           } finally {
             isPaying.value = false;
@@ -617,23 +623,25 @@ const payWithConverge = async () => {
         onError: () => {
           toast.error("Payment error");
           isPaying.value = false;
+          isTurnstileVerified.value = false;
+          turnstileToken.value = "";
           resetTurnstile();
         },
         onCancelled: () => {
           toast.message("Payment cancelled");
           isPaying.value = false;
-          resetTurnstile();
         },
         onDeclined: () => {
           toast.error("Card declined");
           isPaying.value = false;
-          resetTurnstile();
         },
       },
     );
   } catch (error: any) {
     toast.error(error.message || "Unable to start payment");
     isPaying.value = false;
+    isTurnstileVerified.value = false;
+    turnstileToken.value = "";
     resetTurnstile();
   }
 };
