@@ -57,13 +57,6 @@ export default defineEventHandler(async (event) => {
     const accountId = config.elavonAccountId;
     const userId = config.elavonUserId;
     const pin = config.elavonPin;
-
-    console.log('🔑 Elavon credentials:', {
-        merchant_id: accountId ? '✅ SET' : '❌ MISSING',
-        user_id: userId ? '✅ SET' : '❌ MISSING',
-        pin: pin ? '✅ SET' : '❌ MISSING',
-    });
-
     const formData = new URLSearchParams();
     formData.append('ssl_account_id', accountId!);
     formData.append('ssl_user_id', userId!);

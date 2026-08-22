@@ -80,6 +80,17 @@ useHead({
   title: "Checkout",
 });
 import CheckoutTurnstileWidget from "../components/Checkout/TurnstileWidget.vue";
+
+interface OrderResponse {
+  success: boolean;
+  order: {
+    id: string;
+    order_number: string;
+    total: number;
+    status: string;
+  };
+}
+
 const config = useRuntimeConfig();
 const siteKey = config.public.turnstile.siteKey as string;
 
@@ -566,7 +577,53 @@ const payWithConverge = async () => {
   try {
     const firstName = form.value.billing_first_name || "";
     const lastName = form.value.billing_last_name || "";
-    const tokenRes: any = await $fetch("/api/elavon/session", {
+    const useMock = true; // Set to true for testing, false for production
+
+    if (useMock) {
+      console.log(" MOCK MODE: Creating order directly");
+
+      const orderRes = (await $fetch("/api/orders/create", {
+        method: "POST",
+        body: {
+          first_name: firstName,
+          last_name: lastName,
+          email: form.value.billing_email,
+          billing_phone: form.value.billing_phone,
+          billing_address: form.value.shipping_address_1,
+          billing_postcode: form.value.billing_postcode,
+          shipping_address: form.value.shipping_address_1,
+          shipping_postcode: form.value.billing_postcode,
+          preferred_install_dates: form.value.install_dates.filter((d) => d),
+          removal_dates: form.value.removal_dates.filter((d) => d),
+          customer_note: form.value.customer_note || null,
+          items: cartItems.value.map((item: any) => ({
+            product_id: item.product_id || item.id,
+            product_name: item.product?.name || item.name,
+            quantity: item.quantity,
+            price: item.price,
+            is_package: item.is_package || false,
+            options: item.options || {},
+          })),
+          subtotal: cartTotal.value + alacarteCartTotal.value,
+          tax_total: estimatedTax.value,
+          total: grandTotal.value,
+          transaction_id: "MOCK-TXN-" + Date.now(),
+          approval_code: "MOCK-APPROVAL-" + Date.now(),
+          payment_token: "MOCK-TOKEN-" + Date.now(),
+        },
+      })) as OrderResponse;
+
+      if (!orderRes.success) {
+        throw new Error("Mock order creation failed");
+      }
+
+      await clearCart();
+      toast.success("MOCK Payment successful!");
+      navigateTo(`/thank-you?order=${orderRes.order.order_number}`);
+      return;
+    }
+
+    const tokenRes = await $fetch("/api/elavon/session", {
       method: "POST",
       body: {
         amount: grandTotal.value,
@@ -588,7 +645,7 @@ const payWithConverge = async () => {
       {
         onApproval: async (payment: any) => {
           try {
-            const orderRes: any = await $fetch("/api/orders/create", {
+            const orderRes = (await $fetch("/api/orders/create", {
               method: "POST",
               body: {
                 first_name: firstName,
@@ -620,7 +677,7 @@ const payWithConverge = async () => {
                   payment.ssl_approval_code || tokenRes.approvalCode,
                 payment_token: payment.ssl_token || tokenRes.token,
               },
-            });
+            })) as OrderResponse;
 
             if (!orderRes.success) {
               throw new Error("Order creation failed");
@@ -631,8 +688,6 @@ const payWithConverge = async () => {
             navigateTo(`/thank-you?order=${orderRes.order.order_number}`);
           } catch (e: any) {
             toast.error("Payment successful but order creation failed");
-            isTurnstileVerified.value = false;
-            turnstileToken.value = "";
             resetTurnstile();
           } finally {
             isPaying.value = false;
@@ -641,8 +696,6 @@ const payWithConverge = async () => {
         onError: () => {
           toast.error("Payment error");
           isPaying.value = false;
-          isTurnstileVerified.value = false;
-          turnstileToken.value = "";
           resetTurnstile();
         },
         onCancelled: () => {
@@ -658,8 +711,6 @@ const payWithConverge = async () => {
   } catch (error: any) {
     toast.error(error.message || "Unable to start payment");
     isPaying.value = false;
-    isTurnstileVerified.value = false;
-    turnstileToken.value = "";
     resetTurnstile();
   }
 };
