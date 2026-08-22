@@ -7,12 +7,14 @@
     <div class="space-y-4">
       <!-- Installation Dates -->
       <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-2">
+        <label
+          class="block text-sm font-semibold text-gray-700 mb-2 font-raleway"
+        >
           Preferred Installation Dates (Select up to 3) *
         </label>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div v-for="i in 3" :key="'install-' + i" class="relative">
-            <label class="block text-xs text-gray-500 mb-1">
+            <label class="font-raleway block text-xs text-gray-500 mb-1">
               Option {{ i }}
               <span v-if="i === 1" class="text-red-500">*</span>
             </label>
@@ -26,7 +28,7 @@
               "
               @blur="$emit('validate', 'install_dates')"
               type="date"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
+              class="w-full font-raleway px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
               :class="{ 'border-red-500': errors.install_dates }"
               :min="minDate"
             />
@@ -40,10 +42,13 @@
             </button>
           </div>
         </div>
-        <p v-if="errors.install_dates" class="text-red-500 text-sm mt-1">
+        <p
+          v-if="errors.install_dates"
+          class="font-raleway text-red-500 text-sm mt-1"
+        >
           {{ errors.install_dates }}
         </p>
-        <p class="text-xs text-gray-400 mt-1">
+        <p class="text-xs font-raleway text-gray-400 mt-1">
           <i class="fas fa-info-circle mr-1"></i>
           Earliest date is 3 days from today. Select 1-3 preferred dates.
         </p>
@@ -51,13 +56,15 @@
 
       <!-- Removal Dates -->
       <div class="pt-4 border-t border-gray-200">
-        <label class="block text-sm font-semibold text-gray-700 mb-2">
+        <label
+          class="block text-sm font-semibold text-gray-700 mb-2 font-raleway"
+        >
           Preferred Removal Dates (Select up to 3)
           <span class="text-xs font-normal text-gray-400">(Optional)</span>
         </label>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div v-for="i in 3" :key="'removal-' + i" class="relative">
-            <label class="block text-xs text-gray-500 mb-1">
+            <label class="font-raleway block text-xs text-gray-500 mb-1">
               Option {{ i }}
             </label>
             <input
@@ -69,7 +76,7 @@
                 )
               "
               type="date"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
+              class="w-full font-raleway px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
               :min="minDate"
             />
             <button
@@ -82,7 +89,7 @@
             </button>
           </div>
         </div>
-        <p class="text-xs text-gray-400 mt-1">
+        <p class="text-xs font-raleway text-gray-400 mt-1">
           <i class="fas fa-info-circle mr-1"></i>
           Select 1-3 preferred removal dates
         </p>
@@ -90,12 +97,12 @@
 
       <!-- Selected Dates Summary -->
       <div v-if="hasSelectedDates" class="pt-4 border-t border-gray-200">
-        <h4 class="text-sm font-semibold text-navy mb-2">
+        <h4 class="text-sm font-semibold text-navy mb-2 font-raleway">
           Selected Dates Summary
         </h4>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <p class="text-xs font-semibold text-gray-500 mb-1">
+            <p class="text-xs font-semibold text-gray-500 mb-1 font-raleway">
               Installation Dates
             </p>
             <div class="flex flex-wrap gap-1">
@@ -104,20 +111,20 @@
                   (d) => d,
                 )"
                 :key="'install-summary-' + index"
-                class="text-xs bg-brand-orange/10 text-brand-orange px-2 py-1 rounded-full"
+                class="text-xs font-raleway bg-brand-orange/10 text-brand-orange px-2 py-1 rounded-full"
               >
                 {{ formatDate(date) }}
               </span>
               <span
                 v-if="!modelValue.install_dates.filter((d) => d).length"
-                class="text-xs text-gray-400"
+                class="text-xs font-raleway text-gray-400"
               >
                 No dates selected
               </span>
             </div>
           </div>
           <div>
-            <p class="text-xs font-semibold text-gray-500 mb-1">
+            <p class="text-xs font-semibold text-gray-500 mb-1 font-raleway">
               Removal Dates
             </p>
             <div class="flex flex-wrap gap-1">
@@ -126,13 +133,13 @@
                   (d) => d,
                 )"
                 :key="'removal-summary-' + index"
-                class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full"
+                class="text-xs font-raleway bg-gray-100 text-gray-600 px-2 py-1 rounded-full"
               >
                 {{ formatDate(date) }}
               </span>
               <span
                 v-if="!modelValue.removal_dates.filter((d) => d).length"
-                class="text-xs text-gray-400"
+                class="text-xs font-raleway text-gray-400"
               >
                 No dates selected
               </span>

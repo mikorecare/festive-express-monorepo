@@ -574,26 +574,6 @@ const payWithConverge = async () => {
         last_name: lastName,
         email: form.value.billing_email,
         invoice_number: `FLP-${Date.now()}`,
-        billing_phone: form.value.billing_phone,
-        billing_address: form.value.shipping_address_1,
-        billing_postcode: form.value.billing_postcode,
-        shipping_address: form.value.shipping_address_1,
-        shipping_postcode: form.value.billing_postcode,
-        preferred_install_dates: form.value.install_dates.filter((d) => d),
-        removal_dates: form.value.removal_dates.filter((d) => d),
-        customer_note: form.value.customer_note || null,
-        subtotal: cartTotal.value + alacarteCartTotal.value,
-        tax_total: estimatedTax.value,
-        total: grandTotal.value,
-        deposit_amount: 0,
-        items: cartItems.value.map((item: any) => ({
-          product_id: item.product_id || item.id,
-          product_name: item.product?.name || item.name,
-          quantity: item.quantity,
-          price: item.price,
-          is_package: item.is_package || false,
-          options: item.options || {},
-        })),
       },
     });
 
@@ -608,11 +588,49 @@ const payWithConverge = async () => {
       {
         onApproval: async (payment: any) => {
           try {
+            const orderRes: any = await $fetch("/api/orders/create", {
+              method: "POST",
+              body: {
+                first_name: firstName,
+                last_name: lastName,
+                email: form.value.billing_email,
+                billing_phone: form.value.billing_phone,
+                billing_address: form.value.shipping_address_1,
+                billing_postcode: form.value.billing_postcode,
+                shipping_address: form.value.shipping_address_1,
+                shipping_postcode: form.value.billing_postcode,
+                preferred_install_dates: form.value.install_dates.filter(
+                  (d) => d,
+                ),
+                removal_dates: form.value.removal_dates.filter((d) => d),
+                customer_note: form.value.customer_note || null,
+                items: cartItems.value.map((item: any) => ({
+                  product_id: item.product_id || item.id,
+                  product_name: item.product?.name || item.name,
+                  quantity: item.quantity,
+                  price: item.price,
+                  is_package: item.is_package || false,
+                  options: item.options || {},
+                })),
+                subtotal: cartTotal.value + alacarteCartTotal.value,
+                tax_total: estimatedTax.value,
+                total: grandTotal.value,
+                transaction_id: payment.ssl_txn_id || tokenRes.transactionId,
+                approval_code:
+                  payment.ssl_approval_code || tokenRes.approvalCode,
+                payment_token: payment.ssl_token || tokenRes.token,
+              },
+            });
+
+            if (!orderRes.success) {
+              throw new Error("Order creation failed");
+            }
+
             await clearCart();
             toast.success("Payment successful!");
-            navigateTo(`/thank-you?order=${tokenRes.order.order_number}`);
+            navigateTo(`/thank-you?order=${orderRes.order.order_number}`);
           } catch (e: any) {
-            toast.error("Payment successful but something went wrong");
+            toast.error("Payment successful but order creation failed");
             isTurnstileVerified.value = false;
             turnstileToken.value = "";
             resetTurnstile();
