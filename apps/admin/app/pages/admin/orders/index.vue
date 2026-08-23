@@ -44,10 +44,19 @@
         >
           <option value="">All Status</option>
           <option value="pending">Pending</option>
-          <option value="processing">Processing</option>
-          <option value="on-hold">On Hold</option>
+          <option value="confirmed">Confirmed</option>
           <option value="completed">Completed</option>
           <option value="cancelled">Cancelled</option>
+        </select>
+        <select
+          v-model="paymentStatusFilter"
+          @change="applyFilters"
+          class="w-full sm:w-48 px-3 py-2.5 border border-slate-200 rounded-lg bg-slate-50 text-slate-800 text-sm focus:ring-2 focus:ring-brand-orange focus:outline-none focus:bg-white transition-all"
+        >
+          <option value="">All Payment</option>
+          <option value="pending">Pending</option>
+          <option value="paid">Paid</option>
+          <option value="failed">Failed</option>
           <option value="refunded">Refunded</option>
         </select>
       </template>
@@ -65,22 +74,24 @@
         </div>
       </template>
 
+      <template #cell-created_at="{ item }">
+        <span class="text-sm text-slate-600">
+          {{ formatDate(item.created_at) }}
+        </span>
+      </template>
+
       <template #cell-status="{ item }">
         <span
           :class="{
             'bg-amber-100 text-amber-700': item.status === 'pending',
-            'bg-blue-100 text-blue-700': item.status === 'processing',
-            'bg-indigo-100 text-indigo-700': item.status === 'on-hold',
+            'bg-blue-100 text-blue-700': item.status === 'confirmed',
             'bg-emerald-100 text-emerald-700': item.status === 'completed',
             'bg-rose-100 text-rose-700': item.status === 'cancelled',
-            'bg-purple-100 text-purple-700': item.status === 'refunded',
             'bg-slate-100 text-slate-600': ![
               'pending',
-              'processing',
-              'on-hold',
+              'confirmed',
               'completed',
               'cancelled',
-              'refunded',
             ].includes(item.status),
           }"
           class="px-2.5 py-1 rounded-full text-xs font-medium capitalize"
@@ -89,15 +100,23 @@
         </span>
       </template>
 
-      <template #cell-install_date="{ item }">
+      <template #cell-payment_status="{ item }">
+        <span
+          :class="{
+            'bg-emerald-100 text-emerald-700': item.payment_status === 'paid',
+            'bg-amber-100 text-amber-700': item.payment_status === 'pending',
+            'bg-rose-100 text-rose-700': item.payment_status === 'failed',
+            'bg-purple-100 text-purple-700': item.payment_status === 'refunded',
+          }"
+          class="px-2.5 py-1 rounded-full text-xs font-medium capitalize"
+        >
+          {{ item.payment_status }}
+        </span>
+      </template>
+
+      <template #cell-install_dates="{ item }">
         <span class="text-sm text-slate-600">
-          {{
-            item.confirmed_install_date
-              ? formatDate(item.confirmed_install_date)
-              : item.preferred_install_date
-                ? formatDate(item.preferred_install_date) + " (preferred)"
-                : "—"
-          }}
+          {{ formatInstallDates(item.preferred_install_dates) }}
         </span>
       </template>
 
@@ -105,6 +124,18 @@
         <span class="font-semibold text-navy"
           >${{ Number(item.total).toFixed(2) }}</span
         >
+      </template>
+
+      <template #cell-promo="{ item }">
+        <div v-if="item.promo_codes" class="flex flex-col">
+          <span class="text-xs font-medium text-slate-600">{{
+            item.promo_codes.code
+          }}</span>
+          <span class="text-xs font-semibold text-brand-orange">
+            {{ formatDiscount(item.promo_codes) }}
+          </span>
+        </div>
+        <span v-else class="text-xs text-slate-400">—</span>
       </template>
 
       <template #cell-actions="{ item }">
@@ -198,13 +229,16 @@ const columns: Column[] = [
   { key: "created_at", label: "Date", type: "date", sortable: true },
   { key: "total", label: "Total", align: "right" },
   { key: "status", label: "Status" },
-  { key: "install_date", label: "Install Date" },
+  { key: "payment_status", label: "Payment" },
+  { key: "install_dates", label: "Install Dates" },
+  { key: "promo", label: "Promo" },
   { key: "actions", label: "Actions", align: "right" },
 ];
 
 const orders = ref<any[]>([]);
 const isLoading = ref(true);
 const statusFilter = ref("");
+const paymentStatusFilter = ref("");
 const searchQuery = ref("");
 const currentUser = ref<{ role?: string } | null>(null);
 const isSuperAdmin = computed(() => currentUser.value?.role === "super_admin");
@@ -216,18 +250,33 @@ const deleteConfirmText = ref("");
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
 const totalItems = ref(0);
+let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
 const loadOrders = async () => {
   isLoading.value = true;
   try {
     let query = supabase
       .from("orders")
-      .select("*", { count: "exact" })
+      .select(
+        `
+        *,
+        promo_codes (
+          code,
+          discount_type,
+          discount_value
+        )
+      `,
+      )
       .order("created_at", { ascending: false });
 
     // Status filter
     if (statusFilter.value) {
       query = query.eq("status", statusFilter.value);
+    }
+
+    // Payment status filter
+    if (paymentStatusFilter.value) {
+      query = query.eq("payment_status", paymentStatusFilter.value);
     }
 
     // Search
@@ -262,7 +311,16 @@ const loadOrders = async () => {
 const onSearch = (query: string) => {
   searchQuery.value = query;
   currentPage.value = 1;
-  loadOrders();
+
+  // Clear existing timeout
+  if (searchTimeout) {
+    clearTimeout(searchTimeout);
+  }
+
+  // Set new timeout (500ms delay)
+  searchTimeout = setTimeout(() => {
+    loadOrders();
+  }, 500);
 };
 
 const applyFilters = () => {
@@ -284,7 +342,27 @@ const formatDate = (date: string) => {
   });
 };
 
-const viewOrder = (id: number) => {
+const formatInstallDates = (dates: string[]) => {
+  if (!dates || dates.length === 0) return "—";
+  return dates
+    .map((d) =>
+      new Date(d).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }),
+    )
+    .join(", ");
+};
+
+const formatDiscount = (promo: any) => {
+  if (!promo) return "";
+  if (promo.discount_type === "percent") {
+    return `${Number(promo.discount_value).toFixed(0)}% off`;
+  }
+  return `-$${Number(promo.discount_value).toFixed(2)}`;
+};
+
+const viewOrder = (id: string) => {
   navigateTo(`/admin/orders/${id}`);
 };
 
@@ -327,5 +405,11 @@ onMounted(async () => {
     currentUser.value = null;
   }
   await loadOrders();
+});
+
+onUnmounted(() => {
+  if (searchTimeout) {
+    clearTimeout(searchTimeout);
+  }
 });
 </script>

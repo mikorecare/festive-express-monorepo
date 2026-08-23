@@ -1,336 +1,457 @@
 <template>
-  <div class="create-product-page">
-    <div class="page-header">
+  <div class="p-6 max-w-7xl mx-auto">
+    <!-- Page Header -->
+    <div
+      class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8"
+    >
       <div>
-        <h1 v-if="order">Order #{{ order.order_number }}</h1>
-        <p class="text-gray-600" v-if="order">Placed on {{ formatDate(order.created_at) }}</p>
+        <h1 v-if="order" class="text-2xl font-bold text-navy">
+          Order #{{ order.order_number }}
+        </h1>
+        <p v-if="order" class="text-sm text-gray-500">
+          Placed on {{ formatDate(order.created_at) }}
+        </p>
       </div>
-      <div class="header-actions">
-        <button class="btn-secondary" @click="$router.back()">Back to Orders</button>
-        <button class="btn-primary" :disabled="isSaving" @click="saveOrder" v-if="order">
-          {{ isSaving ? 'Saving...' : 'Save Changes' }}
+      <div class="flex gap-3">
+        <button
+          class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium text-sm transition"
+          @click="$router.back()"
+        >
+          Back to Orders
+        </button>
+        <button
+          v-if="order"
+          class="px-4 py-2 bg-brand-orange hover:bg-orange-600 text-white rounded-lg font-medium text-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+          :disabled="isSaving"
+          @click="saveOrder"
+        >
+          {{ isSaving ? "Saving..." : "Save Changes" }}
         </button>
       </div>
     </div>
 
-    <div v-if="order" class="form-grid">
-      <!-- Main Column -->
-      <div class="main-form">
-        <!-- Order Summary (editable) -->
-        <div class="form-section card">
-          <h3>Order Summary</h3>
+    <div v-if="order" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Main Column (2/3) - Scrollable -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Order Summary -->
+        <div class="bg-white rounded-xl p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-navy mb-4">Order Summary</h3>
 
-          <div class="form-section">
-            <label class="form-label">Status</label>
-            <div class="select-wrapper">
-              <select v-model="form.status" class="form-control status-select">
-                <option value="pending">Pending</option>
-                <option value="processing">Processing</option>
-                <option value="on-hold">On Hold</option>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1"
+                >Status</label
+              >
+              <div class="relative">
+                <select
+                  v-model="form.status"
+                  class="w-full px-4 py-2.5 border border-gray-300 rounded-lg appearance-none bg-white pr-10 focus:ring-2 focus:ring-brand-orange focus:border-transparent"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+                <span
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                  >▾</span
+                >
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1"
+                >Payment Status</label
+              >
+              <div class="relative">
+                <select
+                  v-model="form.payment_status"
+                  class="w-full px-4 py-2.5 border border-gray-300 rounded-lg appearance-none bg-white pr-10 focus:ring-2 focus:ring-brand-orange focus:border-transparent"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="paid">Paid</option>
+                  <option value="failed">Failed</option>
+                  <option value="refunded">Refunded</option>
+                </select>
+                <span
+                  class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                  >▾</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <label class="block text-sm font-semibold text-gray-700 mb-1"
+              >Install Status</label
+            >
+            <div class="relative">
+              <select
+                v-model="form.install_status"
+                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg appearance-none bg-white pr-10 focus:ring-2 focus:ring-brand-orange focus:border-transparent"
+              >
+                <option value="scheduled">Scheduled</option>
                 <option value="completed">Completed</option>
-                <option value="cancelled">Cancelled</option>
-                <option value="refunded">Refunded</option>
               </select>
+              <span
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                >▾</span
+              >
             </div>
           </div>
 
-          <div class="summary-row">
-            <span>Total</span>
-            <strong>${{ Number(order.total).toFixed(2) }}</strong>
-          </div>
-          <div class="summary-row">
-            <span>Payment</span>
-            <span>{{ order.payment_method_title || order.payment_method || '—' }}</span>
+          <!-- Order Items List -->
+          <div class="mt-4">
+            <h4 class="text-sm font-semibold text-gray-700 mb-2">Items</h4>
+            <div
+              v-for="(item, index) in order.items"
+              :key="index"
+              class="flex justify-between items-start py-2 border-b border-gray-100 last:border-0"
+            >
+              <div>
+                <span class="text-gray-800">{{ item.product_name }}</span>
+                <span class="text-sm text-gray-500 ml-2"
+                  >× {{ item.quantity }}</span
+                >
+                <span
+                  v-if="item.is_package"
+                  class="ml-2 px-2 py-0.5 bg-brand-orange text-white text-xs font-semibold rounded-full"
+                  >Package</span
+                >
+              </div>
+              <div class="text-right font-medium text-navy">
+                ${{ (item.quantity * Number(item.price)).toFixed(2) }}
+              </div>
+            </div>
           </div>
 
-          <div class="form-row mt-3">
-            <div class="form-section">
-              <label class="form-label">Preferred Install Date</label>
-              <input type="date" v-model="form.preferred_install_date" class="form-control">
+          <!-- Promo Code Applied -->
+          <div
+            v-if="order.promo_codes"
+            class="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg"
+          >
+            <div class="flex justify-between items-center">
+              <div>
+                <span class="text-sm font-semibold text-green-700"
+                  >Promo Code Applied</span
+                >
+                <span
+                  class="ml-2 px-2 py-0.5 bg-green-200 text-green-800 text-xs font-bold rounded"
+                >
+                  {{ order.promo_codes.code }}
+                </span>
+              </div>
+              <span class="text-sm font-semibold text-green-700">
+                -${{ Number(order.discount_amount || 0).toFixed(2) }}
+              </span>
             </div>
-            <div class="form-section">
-              <label class="form-label">Confirmed Install Date</label>
-              <input type="date" v-model="form.confirmed_install_date" class="form-control">
+            <div
+              v-if="order.promo_codes.description"
+              class="text-xs text-green-600 mt-1"
+            >
+              {{ order.promo_codes.description }}
             </div>
           </div>
 
-          <div class="form-section">
-            <label class="form-label">Removal Date</label>
-            <input type="date" v-model="form.removal_date" class="form-control">
+          <!-- Financial Summary -->
+          <div class="mt-4 pt-4 border-t border-gray-200 space-y-2">
+            <div class="flex justify-between py-1">
+              <span class="text-gray-600">Subtotal</span>
+              <strong class="text-navy"
+                >${{ Number(order.subtotal).toFixed(2) }}</strong
+              >
+            </div>
+            <div v-if="order.promo_codes" class="flex justify-between py-1">
+              <span class="text-gray-600"
+                >Discount ({{ order.promo_codes.code }})</span
+              >
+              <strong class="text-green-600"
+                >-${{ Number(order.discount_amount || 0).toFixed(2) }}</strong
+              >
+            </div>
+            <div class="flex justify-between py-1">
+              <span class="text-gray-600">Tax</span>
+              <strong class="text-navy"
+                >${{ Number(order.tax_total).toFixed(2) }}</strong
+              >
+            </div>
+            <div
+              class="flex justify-between py-2 border-t-2 border-brand-orange"
+            >
+              <span class="text-lg font-bold text-navy">Total</span>
+              <strong class="text-lg font-bold text-brand-orange"
+                >${{ Number(order.total).toFixed(2) }}</strong
+              >
+            </div>
+            <div class="flex justify-between py-1 border-b border-gray-100">
+              <span class="text-gray-600">Payment Method</span>
+              <span class="text-navy">{{ order.payment_method || "—" }}</span>
+            </div>
+            <div class="flex justify-between py-1">
+              <span class="text-gray-600">Transaction ID</span>
+              <span class="text-sm font-mono text-gray-500">{{
+                order.transaction_id || "—"
+              }}</span>
+            </div>
+            <div class="flex justify-between py-1">
+              <span class="text-gray-600">Approval Code</span>
+              <span class="text-sm font-mono text-gray-500">{{
+                order.approval_code || "—"
+              }}</span>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <label class="block text-sm font-semibold text-gray-700 mb-2"
+              >Preferred Install Dates</label
+            >
+            <div class="flex flex-wrap gap-2">
+              <span
+                v-for="(date, index) in order.preferred_install_dates"
+                :key="index"
+                class="px-3 py-1 bg-orange-50 text-brand-orange rounded-full text-sm"
+              >
+                {{ formatShortDate(date) }}
+              </span>
+              <span
+                v-if="!order.preferred_install_dates?.length"
+                class="text-sm text-gray-400"
+                >Not set</span
+              >
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <label class="block text-sm font-semibold text-gray-700 mb-2"
+              >Removal Dates</label
+            >
+            <div class="flex flex-wrap gap-2">
+              <span
+                v-for="(date, index) in order.removal_dates"
+                :key="index"
+                class="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm"
+              >
+                {{ formatShortDate(date) }}
+              </span>
+              <span
+                v-if="!order.removal_dates?.length"
+                class="text-sm text-gray-400"
+                >Not set</span
+              >
+            </div>
           </div>
         </div>
 
-        <!-- Order Items (read-only) -->
-        <div class="form-section card">
-          <h3>Order Items</h3>
-          <div v-for="item in order.items" :key="item.id" class="item-row">
-            <div class="item-info">
-              <strong>{{ item.product_name }}</strong>
-              <small>Qty: {{ item.quantity }} × ${{ item.price }}</small>
-              <small v-if="item.options?.c9_color" class="text-muted">
-                Color: {{ item.options.c9_color }}
-              </small>
-            </div>
-            <div class="item-total">
-              <strong>${{ (item.quantity * item.price).toFixed(2) }}</strong>
-            </div>
-          </div>
-        </div>
-
-        <!-- Customer Note (editable) -->
-        <div class="form-section card">
-          <h3>Customer Note</h3>
+        <!-- Customer Note -->
+        <div class="bg-white rounded-xl p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-navy mb-4">Customer Note</h3>
           <textarea
             v-model="form.customer_note"
-            class="form-control"
+            class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-transparent resize-y"
             rows="4"
             placeholder="Customer special instructions..."
           ></textarea>
         </div>
 
-        <!-- Internal Note (editable) -->
-        <div class="form-section card">
-          <h3>Internal Note <small class="text-muted">(admin only)</small></h3>
-          <textarea
-            v-model="form.admin_note"
-            class="form-control"
-            rows="3"
-            placeholder="Private notes for your team..."
-          ></textarea>
+        <!-- Timeline -->
+        <div class="bg-white rounded-xl p-6 shadow-sm">
+          <h3 class="text-lg font-bold text-navy mb-4">Order Timeline</h3>
+          <div v-if="order.timeline && order.timeline.length" class="space-y-3">
+            <div
+              v-for="(entry, index) in order.timeline"
+              :key="index"
+              class="flex gap-4 pb-3 border-b border-gray-100 last:border-0"
+            >
+              <div
+                class="w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0"
+                :class="getStatusColor(entry.status)"
+              ></div>
+              <div>
+                <div class="font-medium text-gray-800 capitalize">
+                  {{ entry.status }}
+                </div>
+                <div class="text-sm text-gray-400">
+                  {{ formatDate(entry.created_at) }}
+                </div>
+                <div v-if="entry.notes" class="text-sm text-gray-600 mt-0.5">
+                  {{ entry.notes }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <p v-else class="text-gray-400 text-sm">No timeline entries yet.</p>
         </div>
       </div>
 
-      <!-- Sidebar (read-only customer info) -->
-      <div class="sidebar">
-        <div class="sidebar-box card">
-          <h3>Customer Information</h3>
-          <p>Full Name: <strong>{{ order.billing_first_name }} {{ order.billing_last_name }}</strong></p>
-          <p>Email: <strong>{{ order.billing_email }}</strong></p>
-          <p>Phone: <strong>{{ order.billing_phone }}</strong></p>
-        </div>
+      <!-- Sidebar (1/3) - Sticky -->
+      <div class="lg:col-span-1 space-y-6">
+        <div class="sticky top-6 space-y-6">
+          <!-- Customer Information -->
+          <div class="bg-white rounded-xl p-6 shadow-sm">
+            <h3 class="text-lg font-bold text-navy mb-4">
+              Customer Information
+            </h3>
+            <div class="space-y-2">
+              <p>
+                <strong class="text-navy"
+                  >{{ order.billing_first_name }}
+                  {{ order.billing_last_name }}</strong
+                >
+              </p>
+              <p class="text-gray-600">{{ order.billing_email }}</p>
+              <p class="text-gray-600">{{ order.billing_phone }}</p>
+            </div>
+          </div>
 
-        <div class="sidebar-box card">
-          <h3>Billing Address</h3>
-          <p><strong>{{ order.billing_first_name }} {{ order.billing_last_name }}</strong></p>
-          <p><strong>{{ order.billing_address_1 }}</strong></p>
-          <p v-if="order.billing_address_2"><strong>{{ order.billing_address_2 }}</strong></p>
-          <p><strong>{{ order.billing_city }}, {{ order.billing_state }} {{ order.billing_postcode }}</strong></p>
-          <p><strong>{{ order.billing_country }}</strong></p>
-        </div>
+          <!-- Billing Address -->
+          <div class="bg-white rounded-xl p-6 shadow-sm">
+            <h3 class="text-lg font-bold text-navy mb-4">Billing Address</h3>
+            <div class="space-y-0.5 text-gray-700">
+              <p>
+                {{ order.billing_first_name }} {{ order.billing_last_name }}
+              </p>
+              <p>{{ order.billing_address }}</p>
+              <p>{{ order.billing_postcode }}</p>
+            </div>
+          </div>
 
-        <div class="sidebar-box card">
-          <h3>Shipping / Installation Address</h3>
-          <p><strong>{{ order.shipping_first_name || order.billing_first_name }} {{ order.shipping_last_name || order.billing_last_name }}</strong></p>
-          <p><strong>{{ order.shipping_address_1 || order.billing_address_1 }}</strong></p>
-          <p><strong>{{ order.shipping_city || order.billing_city }}, {{ order.shipping_state || order.billing_state }} {{ order.shipping_postcode || order.billing_postcode }}</strong></p>
+          <!-- Installation Address -->
+          <div class="bg-white rounded-xl p-6 shadow-sm">
+            <h3 class="text-lg font-bold text-navy mb-4">
+              Installation Address
+            </h3>
+            <div class="space-y-0.5 text-gray-700">
+              <p>{{ order.shipping_address }}</p>
+              <p>{{ order.shipping_postcode }}</p>
+            </div>
+          </div>
+
+          <!-- Order Meta -->
+          <div class="bg-white rounded-xl p-6 shadow-sm">
+            <h3 class="text-lg font-bold text-navy mb-4">Order Meta</h3>
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-500">Order ID</span>
+                <span class="font-mono text-gray-700">{{ order.id }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">Created</span>
+                <span class="text-gray-700">{{
+                  formatDate(order.created_at)
+                }}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">Last Updated</span>
+                <span class="text-gray-700">{{
+                  formatDate(order.updated_at)
+                }}</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div v-else class="loading">
-      Loading order...
+    <div v-else class="flex justify-center items-center py-20">
+      <div class="text-center">
+        <div
+          class="w-12 h-12 border-4 border-brand-orange border-t-transparent rounded-full animate-spin mx-auto mb-4"
+        ></div>
+        <p class="text-gray-500">Loading order...</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-// definePageMeta({
-//   middleware: 'auth'
-// })
+const { showToast } = useToast();
+const route = useRoute();
+const orderId = route.params.id as string;
+const isSaving = ref(false);
 
-const { showToast } = useToast()
-
-const route = useRoute()
-const orderId = route.params.id as string
-const config = useRuntimeConfig()
-const isSaving = ref(false)
-
-const order = ref<any>(null)
+const order = ref<any>(null);
 
 const form = ref({
-  status: 'pending',
-  preferred_install_date: '',
-  confirmed_install_date: '',
-  removal_date: '',
-  customer_note: '',
-  admin_note: '',
-})
+  status: "pending",
+  payment_status: "pending",
+  install_status: "scheduled",
+  customer_note: "",
+});
 
 const loadOrder = async () => {
   try {
-    const res: any = await $fetch(`/orders/${orderId}`, {
-      baseURL: config.public.apiBase
-    })
-    order.value = res
+    const res: any = await $fetch(`/api/orders/${orderId}`);
+    order.value = res.order || res;
 
-    // Prefill editable form
     form.value = {
-      status: res.status || 'pending',
-      preferred_install_date: res.preferred_install_date?.substring(0, 10) || '',
-      confirmed_install_date: res.confirmed_install_date?.substring(0, 10) || '',
-      removal_date: res.removal_date?.substring(0, 10) || '',
-      customer_note: res.customer_note || '',
-      admin_note: res.admin_note || '',
-    }
+      status: order.value.status || "pending",
+      payment_status: order.value.payment_status || "pending",
+      install_status: order.value.install_status || "scheduled",
+      customer_note: order.value.customer_note || "",
+    };
   } catch (error) {
-    console.error('Failed to load order:', error)
+    console.error("Failed to load order:", error);
+    showToast("Failed to load order", "error");
   }
-}
+};
 
 const saveOrder = async () => {
-  if (!order.value) return
-  isSaving.value = true
+  if (!order.value) return;
+  isSaving.value = true;
 
   try {
-    await $fetch(`/orders/${orderId}`, {
-      baseURL: config.public.apiBase,
-      method: 'PUT',
+    await $fetch(`/api/orders/${orderId}`, {
+      method: "PUT",
       body: {
         status: form.value.status,
-        preferred_install_date: form.value.preferred_install_date || null,
-        confirmed_install_date: form.value.confirmed_install_date || null,
-        removal_date: form.value.removal_date || null,
+        payment_status: form.value.payment_status,
+        install_status: form.value.install_status,
         customer_note: form.value.customer_note || null,
-        admin_note: form.value.admin_note || null,
-      }
-    })
+      },
+    });
 
-    // Refresh local data
-    await loadOrder()
-    // Optional: showToast('Order updated successfully', 'success')
-    showToast('✅ Order updated successfully!', 'success')
+    await loadOrder();
+    showToast("Order updated successfully!", "success");
   } catch (error: any) {
-    console.error(error)
-    showToast(error.data?.message || 'Failed to update order!', 'error')
+    console.error(error);
+    showToast(error.data?.message || "Failed to update order!", "error");
   } finally {
-    isSaving.value = false
+    isSaving.value = false;
   }
-}
+};
 
 const formatDate = (date: string) => {
-  if (!date) return '—'
-  return new Date(date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
-}
+  if (!date) return "—";
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
 
-onMounted(loadOrder)
+const formatShortDate = (date: string) => {
+  if (!date) return "—";
+  return new Date(date).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+};
+
+const getStatusColor = (status: string) => {
+  const colors: Record<string, string> = {
+    pending: "bg-amber-400",
+    confirmed: "bg-blue-400",
+    scheduled: "bg-indigo-400",
+    completed: "bg-emerald-400",
+    cancelled: "bg-rose-400",
+    refunded: "bg-gray-400",
+    paid: "bg-emerald-400",
+    failed: "bg-rose-400",
+  };
+  return colors[status] || "bg-gray-400";
+};
+
+onMounted(loadOrder);
 </script>
-
-<style scoped>
-.form-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 40px;
-}
-
-.form-section.card, .sidebar-box.card {
-  background: white;
-  padding: 28px;
-  border-radius: 16px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-  margin-bottom: 24px;
-}
-
-.form-label {
-  display: block;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 8px;
-}
-
-.form-control {
-  width: 100%;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 0.95rem;
-}
-
-.form-control:focus {
-  border-color: #F49322;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(244, 147, 34, 0.15);
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.summary-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
-}
-
-.item-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 16px 0;
-  border-bottom: 1px solid #eee;
-}
-
-.item-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.item-info strong {
-  font-size: 1.05rem;
-  color: #1f2937;
-}
-
-.item-info small {
-  color: #6b7280;
-  font-size: 0.9rem;
-}
-
-.item-total {
-  text-align: right;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #0c2340;
-}
-
-.status-badge {
-  text-transform: capitalize;
-  font-weight: 600;
-}
-
-.select-wrapper {
-  position: relative;
-}
-
-.select-wrapper::after {
-  content: '▼';
-  position: absolute;
-  right: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 0.7rem;
-  color: #6b7280;
-  pointer-events: none;
-}
-
-.status-select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  padding-right: 40px;   /* space for the arrow */
-  cursor: pointer;
-  background: #fff;
-}
-
-.status-select:focus {
-  border-color: #F49322;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(244, 147, 34, 0.15);
-}
-</style>
