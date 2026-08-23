@@ -46,6 +46,19 @@
           </p>
         </div>
 
+        <!-- Intro Paragraph -->
+        <div
+          class="mb-8 p-6 bg-brand-orange/5 rounded-xl border-l-4 border-brand-orange"
+        >
+          <p class="text-slate-700 text-base leading-relaxed">
+            To help us improve our services and provide you with the best
+            possible experience, we value your honest feedback. Please take a
+            moment to share your thoughts about your experience with Festive
+            Express. Your responses help us create more magical moments for
+            families like yours!
+          </p>
+        </div>
+
         <div class="border-t border-gray-200 pt-8">
           <form @submit.prevent="submitSurvey">
             <div class="space-y-8">
@@ -61,15 +74,17 @@
                     v-for="star in 5"
                     :key="star"
                     type="button"
-                    class="text-5xl transition-all hover:scale-110"
-                    :class="
-                      form.rating_overall >= star
-                        ? 'text-[#F49322]'
-                        : 'text-gray-300'
-                    "
+                    class="transition-all hover:scale-110 focus:outline-none"
+                    @mouseenter="hoverOverall = star"
+                    @mouseleave="hoverOverall = 0"
                     @click="form.rating_overall = star"
                   >
-                    ★
+                    <FestiveLightBulb
+                      :filled="
+                        form.rating_overall >= star || hoverOverall >= star
+                      "
+                      class="w-12 h-12"
+                    />
                   </button>
                 </div>
                 <p class="text-center text-sm text-gray-500 mt-2">
@@ -89,15 +104,18 @@
                     v-for="star in 5"
                     :key="star"
                     type="button"
-                    class="text-5xl transition-all hover:scale-110"
-                    :class="
-                      form.rating_installation >= star
-                        ? 'text-[#F49322]'
-                        : 'text-gray-300'
-                    "
+                    class="transition-all hover:scale-110 focus:outline-none"
+                    @mouseenter="hoverInstallation = star"
+                    @mouseleave="hoverInstallation = 0"
                     @click="form.rating_installation = star"
                   >
-                    ★
+                    <FestiveLightBulb
+                      :filled="
+                        form.rating_installation >= star ||
+                        hoverInstallation >= star
+                      "
+                      class="w-12 h-12"
+                    />
                   </button>
                 </div>
                 <p class="text-center text-sm text-gray-500 mt-2">
@@ -133,15 +151,18 @@
                     v-for="star in 5"
                     :key="star"
                     type="button"
-                    class="text-5xl transition-all hover:scale-110"
-                    :class="
-                      form.rating_technicians >= star
-                        ? 'text-[#F49322]'
-                        : 'text-gray-300'
-                    "
+                    class="transition-all hover:scale-110 focus:outline-none"
+                    @mouseenter="hoverTechnicians = star"
+                    @mouseleave="hoverTechnicians = 0"
                     @click="form.rating_technicians = star"
                   >
-                    ★
+                    <FestiveLightBulb
+                      :filled="
+                        form.rating_technicians >= star ||
+                        hoverTechnicians >= star
+                      "
+                      class="w-12 h-12"
+                    />
                   </button>
                 </div>
                 <p class="text-center text-sm text-gray-500 mt-2">
@@ -237,6 +258,8 @@
 </template>
 
 <script setup lang="ts">
+import FestiveLightBulb from "~/components/shared/FestiveLightBulb.vue";
+
 const route = useRoute();
 const config = useRuntimeConfig();
 
@@ -245,6 +268,11 @@ const isLoading = ref(true);
 const isSubmitting = ref(false);
 const error = ref<{ title: string; message: string } | null>(null);
 const review = ref<any>(null);
+
+// Hover states for each rating
+const hoverOverall = ref(0);
+const hoverInstallation = ref(0);
+const hoverTechnicians = ref(0);
 
 const form = ref({
   rating_overall: 0,
@@ -320,9 +348,9 @@ onMounted(async () => {
   }
 
   try {
-    const res = await $fetch(`/survey/validate?token=${token.value}`, {
+    const res = (await $fetch(`/survey/validate?token=${token.value}`, {
       baseURL: config.public.apiBase,
-    }) as any;
+    })) as any;
 
     if (res.success) {
       review.value = res.review;
