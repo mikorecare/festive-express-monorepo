@@ -51,7 +51,7 @@
           </span>
         </div>
 
-        <!-- Submenu with smooth animation -->
+        <!-- Products Submenu -->
         <div
           v-if="!isCollapsed"
           class="ml-4 mt-1 space-y-1 border-l-2 border-brand-orange/30 pl-3 overflow-hidden transition-all duration-300 ease-in-out"
@@ -134,20 +134,67 @@
           >
             Promo Codes
           </NuxtLink>
-          <!-- <NuxtLink
-            to="/admin/products/categories"
+        </div>
+      </div>
+
+      <!-- Customers with Submenu -->
+      <div class="relative">
+        <div
+          @click="toggleCustomers"
+          class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg cursor-pointer select-none"
+          :class="{ 'bg-brand-orange text-navy': isCustomersSection }"
+        >
+          <UsersIcon class="h-5 w-5" />
+          <span v-if="!isCollapsed" class="flex-1">Customers</span>
+          <span
+            v-if="!isCollapsed"
+            class="text-xs transition-transform duration-300"
+            :class="{ 'rotate-180': isCustomersOpen }"
+          >
+            ▼
+          </span>
+        </div>
+
+        <!-- Customers Submenu -->
+        <div
+          v-if="!isCollapsed"
+          class="ml-4 mt-1 space-y-1 border-l-2 border-brand-orange/30 pl-3 overflow-hidden transition-all duration-300 ease-in-out"
+          :class="
+            isCustomersOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          "
+        >
+          <NuxtLink
+            to="/admin/customers"
             class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
             :class="
-              route.path === '/admin/products/categories'
+              route.path === '/admin/customers'
                 ? 'bg-brand-orange/20 text-white font-semibold'
                 : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
             "
           >
-            Categories
-          </NuxtLink> -->
+            All Customers
+          </NuxtLink>
+          <NuxtLink
+            to="/admin/customers/reviews"
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path.startsWith('/admin/customers/reviews')
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
+          >
+            Reviews
+            <span
+              v-if="pendingReviewsCount > 0"
+              class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-500 rounded-full"
+            >
+              {{ pendingReviewsCount }}
+            </span>
+          </NuxtLink>
         </div>
       </div>
 
+      <!-- Users (standalone) -->
       <NuxtLink
         to="/admin/users"
         class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg"
@@ -155,15 +202,6 @@
       >
         <UserIcon class="h-5 w-5" />
         <span v-if="!isCollapsed">Users</span>
-      </NuxtLink>
-
-      <NuxtLink
-        to="/admin/customers"
-        class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg"
-        active-class="bg-brand-orange text-navy"
-      >
-        <UsersIcon class="h-5 w-5" />
-        <span v-if="!isCollapsed">Customers</span>
       </NuxtLink>
 
       <!-- Configuration with Submenu -->
@@ -280,12 +318,9 @@
       class="flex-shrink-0 px-4 py-3 bg-slate-800/50 mx-3 rounded-lg mb-2"
     >
       <p class="font-semibold text-sm text-white truncate">{{ user.email }}</p>
-      <!-- <p class="text-xs text-slate-400 truncate">
-        ID: {{ user.UID?.substring(0, 8) }}
-      </p> -->
     </div>
 
-    <!-- Logout Button - Fixed at bottom -->
+    <!-- Logout Button -->
     <div class="flex-shrink-0 p-4 border-t border-slate-700/60">
       <button
         @click="showLogoutConfirm"
@@ -337,7 +372,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import {
   ChartBarIcon,
   ShoppingBagIcon,
@@ -356,9 +391,36 @@ const user = useSupabaseUser();
 const isCollapsed = ref(false);
 const showLogoutModal = ref(false);
 const isProductsOpen = ref(true);
+const isCustomersOpen = ref(true);
+const isConfigurationOpen = ref(true);
+const pendingReviewsCount = ref(0);
+
+// Fetch pending reviews count
+const fetchPendingReviewsCount = async () => {
+  try {
+    const { count, error } = await supabase
+      .from("reviews")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "pending");
+
+    if (!error) {
+      pendingReviewsCount.value = count || 0;
+    }
+  } catch (error) {
+    console.error("Error fetching pending reviews count:", error);
+  }
+};
 
 const toggleProducts = () => {
   isProductsOpen.value = !isProductsOpen.value;
+};
+
+const toggleCustomers = () => {
+  isCustomersOpen.value = !isCustomersOpen.value;
+};
+
+const toggleConfiguration = () => {
+  isConfigurationOpen.value = !isConfigurationOpen.value;
 };
 
 const showLogoutConfirm = () => {
@@ -383,16 +445,30 @@ const isProductsSection = computed(() =>
     "/admin/packages",
     "/admin/package-skus",
     "/admin/inclusions",
+    "/admin/products/promo-codes",
+    "/admin/products/colors",
   ].some((p) => route.path.startsWith(p)),
 );
 
-const isConfigurationOpen = ref(true); // closed by default
-
-const toggleConfiguration = () => {
-  isConfigurationOpen.value = !isConfigurationOpen.value;
-};
+const isCustomersSection = computed(() =>
+  ["/admin/customers", "/admin/customers/reviews"].some((p) => route.path.startsWith(p)),
+);
 
 const isConfigurationSection = computed(() =>
   route.path.startsWith("/admin/configuration"),
 );
+
+// Refresh pending reviews count on route change
+watch(
+  () => route.path,
+  () => {
+    if (route.path === "/admin/customers/reviews" || route.path === "/admin/customers") {
+      fetchPendingReviewsCount();
+    }
+  },
+);
+
+onMounted(() => {
+  fetchPendingReviewsCount();
+});
 </script>
