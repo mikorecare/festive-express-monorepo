@@ -32,7 +32,16 @@
       </div>
     </section>
 
-    <div class="container mx-auto px-4 py-8">
+    <div v-if="isLoading" class="flex justify-center items-center py-20">
+      <div class="text-center">
+        <div
+          class="w-12 h-12 border-4 border-brand-orange border-t-transparent rounded-full animate-spin mx-auto mb-4"
+        ></div>
+        <p class="text-gray-500">Loading your order...</p>
+      </div>
+    </div>
+
+    <div v-else-if="order" class="container mx-auto px-4 py-8">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Left Column -->
         <div class="lg:col-span-2 space-y-6">
@@ -163,7 +172,7 @@
             </a>
 
             <a
-              href="mailto:support@festive.express"
+              href="mailto:JoyJollyMerry@festive.express"
               class="flex items-center gap-4 bg-white/10 border border-white/15 rounded-xl p-4 hover:bg-white/20 transition-colors text-white no-underline mb-4"
             >
               <i class="fas fa-envelope text-[#F49322] text-lg"></i>
@@ -172,16 +181,16 @@
                   class="block text-white/60 text-xs font-bold tracking-wider uppercase"
                   >Email Support</span
                 >
-                <strong class="text-white">support@festive.express</strong>
+                <strong class="text-white">JoyJollyMerry@festive.express</strong>
               </div>
             </a>
 
-            <NuxtLink
+            <!-- <NuxtLink
               to="/"
               class="block text-center bg-[#F49322] text-white font-bold py-4 rounded-xl hover:bg-[#e07e0e] transition-colors no-underline"
             >
               Go to Dashboard <i class="fas fa-arrow-right ml-1"></i>
-            </NuxtLink>
+            </NuxtLink> -->
           </div>
 
           <!-- Testimonial -->
@@ -203,6 +212,24 @@
         </div>
       </div>
     </div>
+
+    <!-- Error State -->
+    <div
+      v-else-if="!isLoading && !order && errorMessage"
+      class="container mx-auto px-4 py-20 text-center"
+    >
+      <div class="bg-white rounded-2xl p-12 shadow-sm max-w-md mx-auto">
+        <i class="fas fa-exclamation-circle text-5xl text-red-500 mb-4"></i>
+        <h3 class="text-xl font-bold text-[#0c2340] mb-2">Order Not Found</h3>
+        <p class="text-gray-500 text-sm mb-6">{{ errorMessage }}</p>
+        <NuxtLink
+          to="/"
+          class="inline-block bg-[#F49322] text-white font-bold py-3 px-6 rounded-xl hover:bg-[#e07e0e] transition-colors no-underline"
+        >
+          Go to Home
+        </NuxtLink>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -210,8 +237,11 @@
 const route = useRoute();
 const config = useRuntimeConfig();
 
-const orderNumber = ref(String(route.query.order || "FLP-XXXX"));
+const orderNumber = ref(String(route.query.order || ""));
+const email = ref(String(route.query.email || ""));
 const order = ref<any>(null);
+const isLoading = ref(true);
+const errorMessage = ref("");
 
 const packageName = computed(
   () => order.value?.items?.[0]?.product_name || "Holiday Package",
@@ -219,11 +249,19 @@ const packageName = computed(
 const packageDesc = computed(
   () => "Our most popular all-inclusive residential lighting solution.",
 );
-const installDate = computed(() =>
-  formatDate(order.value?.preferred_install_date),
-);
+const installDate = computed(() => {
+  if (order.value?.preferred_install_dates?.length) {
+    return formatDate(order.value.preferred_install_dates[0]);
+  }
+  return null;
+});
 const installTime = ref("9:00 AM - 12:00 PM");
-const removalDate = computed(() => formatDate(order.value?.removal_date));
+const removalDate = computed(() => {
+  if (order.value?.removal_dates?.length) {
+    return formatDate(order.value.removal_dates[0]);
+  }
+  return null;
+});
 
 const features = computed(() => {
   const opts = order.value?.items?.[0]?.options;
@@ -262,15 +300,42 @@ const formatDate = (dateStr?: string) => {
 };
 
 onMounted(async () => {
-  if (!route.query.order) return;
+  if (!route.query.order || !route.query.email) {
+    isLoading.value = false;
+    errorMessage.value = "Missing order information.";
+    return;
+  }
+
   try {
-    const res: any = await $fetch(`/orders/by-number/${route.query.order}`, {
-      baseURL: config.public.apiBase,
-    });
-    order.value = res;
-    orderNumber.value = res.order_number || String(route.query.order);
-  } catch (e) {
-    console.log("Order details not loaded, showing confirmation only");
+    const res: any = await $fetch(
+      `/orders/by-number/${route.query.order}`,
+      {
+        baseURL: config.public.apiBase,
+        params: {
+          email: email.value,
+        },
+      },
+    );
+
+    if (res && res.order_number) {
+      order.value = res;
+      orderNumber.value = res.order_number;
+    } else {
+      errorMessage.value =
+        "We couldn't find your order. Please contact support.";
+    }
+  } catch (error: any) {
+    console.error("Error loading order:", error);
+    if (error.statusCode === 403) {
+      errorMessage.value = "You don't have permission to view this order.";
+    } else if (error.statusCode === 404) {
+      errorMessage.value =
+        "Order not found. Please check your confirmation number.";
+    } else {
+      errorMessage.value = "Something went wrong. Please contact support.";
+    }
+  } finally {
+    isLoading.value = false;
   }
 });
 

@@ -473,15 +473,7 @@ const alacarteCartTotal = computed(() =>
   }, 0),
 );
 
-const {
-  promoCode,
-  promoError,
-  appliedPromo,
-  discountAmount,
-  applyPromo,
-  removePromo,
-  loadPromo,
-} = usePromo();
+const { discountAmount, appliedPromo } = usePromo();
 
 const subtotal = computed(() => cartTotal.value);
 const promoDiscount = computed(() => discountAmount(subtotal.value));
@@ -575,61 +567,71 @@ const payWithConverge = async () => {
   isPaying.value = true;
 
   try {
+    const useMock = true; // Set to true for testing, false for production
     const firstName = form.value.billing_first_name || "";
     const lastName = form.value.billing_last_name || "";
-    const useMock = true; // Set to true for testing, false for production
+    const email = form.value.billing_email || "";
+    const promoCodeId = appliedPromo.value?.id || null;
+    const orderBody = {
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+      billing_phone: form.value.billing_phone,
+      billing_address: form.value.shipping_address_1,
+      billing_postcode: form.value.billing_postcode,
+      shipping_address: form.value.shipping_address_1,
+      shipping_postcode: form.value.billing_postcode,
+      preferred_install_dates: form.value.install_dates.filter((d) => d),
+      removal_dates: form.value.removal_dates.filter((d) => d),
+      customer_note: form.value.customer_note || null,
+      items: cartItems.value.map((item: any) => ({
+        product_id: item.product_id || item.id,
+        product_name: item.product?.name || item.name,
+        quantity: item.quantity,
+        price: item.price,
+        is_package: item.is_package || false,
+        options: item.options || {},
+      })),
+      subtotal: cartTotal.value + alacarteCartTotal.value,
+      tax_total: estimatedTax.value,
+      total: grandTotal.value,
+      promo_code_id: promoCodeId,
+    };
 
     if (useMock) {
-      console.log(" MOCK MODE: Creating order directly");
+      console.log("🔧 MOCK MODE: Creating order directly");
 
-      const orderRes = (await $fetch("/api/orders/create", {
+      const orderRes = await $fetch<any>("/api/orders/create", {
         method: "POST",
         body: {
-          first_name: firstName,
-          last_name: lastName,
-          email: form.value.billing_email,
-          billing_phone: form.value.billing_phone,
-          billing_address: form.value.shipping_address_1,
-          billing_postcode: form.value.billing_postcode,
-          shipping_address: form.value.shipping_address_1,
-          shipping_postcode: form.value.billing_postcode,
-          preferred_install_dates: form.value.install_dates.filter((d) => d),
-          removal_dates: form.value.removal_dates.filter((d) => d),
-          customer_note: form.value.customer_note || null,
-          items: cartItems.value.map((item: any) => ({
-            product_id: item.product_id || item.id,
-            product_name: item.product?.name || item.name,
-            quantity: item.quantity,
-            price: item.price,
-            is_package: item.is_package || false,
-            options: item.options || {},
-          })),
-          subtotal: cartTotal.value + alacarteCartTotal.value,
-          tax_total: estimatedTax.value,
-          total: grandTotal.value,
+          ...orderBody,
           transaction_id: "MOCK-TXN-" + Date.now(),
           approval_code: "MOCK-APPROVAL-" + Date.now(),
           payment_token: "MOCK-TOKEN-" + Date.now(),
         },
-      })) as OrderResponse;
+      });
 
       if (!orderRes.success) {
         throw new Error("Mock order creation failed");
       }
 
       await clearCart();
-      toast.success("MOCK Payment successful!");
-      navigateTo(`/thank-you?order=${orderRes.order.order_number}`);
+      toast.success("Payment successful!");
+
+      navigateTo(
+        `/thank-you?order=${orderRes.order.order_number}&email=${encodeURIComponent(email)}`,
+      );
       return;
     }
 
+    // Real Converge payment flow
     const tokenRes = await $fetch("/api/elavon/session", {
       method: "POST",
       body: {
         amount: grandTotal.value,
         first_name: firstName,
         last_name: lastName,
-        email: form.value.billing_email,
+        email: email,
         invoice_number: `FLP-${Date.now()}`,
       },
     });
@@ -648,30 +650,7 @@ const payWithConverge = async () => {
             const orderRes = (await $fetch("/api/orders/create", {
               method: "POST",
               body: {
-                first_name: firstName,
-                last_name: lastName,
-                email: form.value.billing_email,
-                billing_phone: form.value.billing_phone,
-                billing_address: form.value.shipping_address_1,
-                billing_postcode: form.value.billing_postcode,
-                shipping_address: form.value.shipping_address_1,
-                shipping_postcode: form.value.billing_postcode,
-                preferred_install_dates: form.value.install_dates.filter(
-                  (d) => d,
-                ),
-                removal_dates: form.value.removal_dates.filter((d) => d),
-                customer_note: form.value.customer_note || null,
-                items: cartItems.value.map((item: any) => ({
-                  product_id: item.product_id || item.id,
-                  product_name: item.product?.name || item.name,
-                  quantity: item.quantity,
-                  price: item.price,
-                  is_package: item.is_package || false,
-                  options: item.options || {},
-                })),
-                subtotal: cartTotal.value + alacarteCartTotal.value,
-                tax_total: estimatedTax.value,
-                total: grandTotal.value,
+                ...orderBody,
                 transaction_id: payment.ssl_txn_id || tokenRes.transactionId,
                 approval_code:
                   payment.ssl_approval_code || tokenRes.approvalCode,
@@ -685,7 +664,10 @@ const payWithConverge = async () => {
 
             await clearCart();
             toast.success("Payment successful!");
-            navigateTo(`/thank-you?order=${orderRes.order.order_number}`);
+
+            navigateTo(
+              `/thank-you?order=${orderRes.order.order_number}&email=${encodeURIComponent(email)}`,
+            );
           } catch (e: any) {
             toast.error("Payment successful but order creation failed");
             resetTurnstile();
@@ -717,7 +699,6 @@ const payWithConverge = async () => {
 
 onMounted(async () => {
   await loadCart();
-  loadPromo();
 });
 </script>
 

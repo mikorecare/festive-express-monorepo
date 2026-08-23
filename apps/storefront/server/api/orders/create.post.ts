@@ -37,7 +37,8 @@ export default defineEventHandler(async (event) => {
         transaction_id,
         approval_code,
         payment_token,
-        deposit_amount = 0
+        deposit_amount = 0,
+        promo_code_id
     } = body;
 
     const { data: order, error: orderError } = await supabase
@@ -66,6 +67,7 @@ export default defineEventHandler(async (event) => {
             payment_token: payment_token || null,
             status: 'confirmed',
             install_status: 'scheduled',
+            promo_code_id: promo_code_id || null,
         })
         .select()
         .single();
