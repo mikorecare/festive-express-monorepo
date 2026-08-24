@@ -47,10 +47,13 @@
                   v-model="form.status"
                   class="w-full px-4 py-2.5 border border-gray-300 rounded-lg appearance-none bg-white pr-10 focus:ring-2 focus:ring-brand-orange focus:border-transparent"
                 >
-                  <option value="pending">Pending</option>
-                  <option value="confirmed">Confirmed</option>
-                  <option value="completed">Completed</option>
-                  <option value="cancelled">Cancelled</option>
+                  <option
+                    v-for="option in getAvailableStatusOptions()"
+                    :key="option.value"
+                    :value="option.value"
+                  >
+                    {{ option.label }}
+                  </option>
                 </select>
                 <span
                   class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
@@ -369,6 +372,7 @@ const orderId = route.params.id as string;
 const isSaving = ref(false);
 
 const order = ref<any>(null);
+const originalStatus = ref<string>("pending");
 
 const form = ref({
   status: "pending",
@@ -377,10 +381,39 @@ const form = ref({
   customer_note: "",
 });
 
+// Status rules based on current/original status
+const statusRules: Record<string, string[]> = {
+  pending: ["pending", "confirmed", "completed", "cancelled"],
+  confirmed: ["confirmed", "completed", "cancelled"],
+  completed: ["completed"],
+  cancelled: ["cancelled"],
+};
+
+const getAvailableStatusOptions = () => {
+  const currentStatus =
+    originalStatus.value || order.value?.status || "pending";
+  const allowedStatuses = statusRules[currentStatus] || statusRules.pending;
+
+  const statusLabels: Record<string, string> = {
+    pending: "Pending",
+    confirmed: "Confirmed",
+    completed: "Completed",
+    cancelled: "Cancelled",
+  };
+
+  return allowedStatuses!.map((value) => ({
+    value,
+    label: statusLabels[value] || value,
+  }));
+};
+
 const loadOrder = async () => {
   try {
     const res: any = await $fetch(`/api/orders/${orderId}`);
     order.value = res.order || res;
+
+    // Store the original status from the database
+    originalStatus.value = order.value.status || "pending";
 
     form.value = {
       status: order.value.status || "pending",

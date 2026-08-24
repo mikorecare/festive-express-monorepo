@@ -67,7 +67,11 @@
                 <label
                   class="block text-base font-semibold text-[#0c2340] mb-3"
                 >
-                  How would you rate your overall experience? *
+                  How would you rate your overall experience?
+                  <span class="text-sm font-normal text-gray-400"
+                    >(1 = Lowest, 5 = Highest)</span class="text-red-400"
+                  >
+                  *
                 </label>
                 <div class="flex gap-3 justify-center">
                   <button
@@ -98,6 +102,9 @@
                   class="block text-base font-semibold text-[#0c2340] mb-3"
                 >
                   How would you rate the installation process?
+                  <span class="text-sm font-normal text-gray-400"
+                    >(1 = Lowest, 5 = Highest)</span
+                  >
                 </label>
                 <div class="flex gap-3 justify-center">
                   <button
@@ -145,6 +152,9 @@
                   class="block text-base font-semibold text-[#0c2340] mb-3"
                 >
                   How would you rate our technicians and carpenters?
+                  <span class="text-sm font-normal text-gray-400"
+                    >(1 = Lowest, 5 = Highest)</span
+                  >
                 </label>
                 <div class="flex gap-3 justify-center">
                   <button

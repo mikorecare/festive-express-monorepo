@@ -65,7 +65,7 @@ export default defineEventHandler(async (event) => {
             transaction_id: transaction_id,
             approval_code: approval_code || null,
             payment_token: payment_token || null,
-            status: 'confirmed',
+            status: 'pending',
             install_status: 'scheduled',
             promo_code_id: promo_code_id || null,
         })
