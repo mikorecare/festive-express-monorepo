@@ -46,7 +46,7 @@
               </button>
               <div
                 v-show="openId === faq.id"
-                class="px-5 pb-5 text-gray-600 leading-relaxed whitespace-pre-line border-t border-gray-50"
+                class="px-5 pb-5 text-navy leading-relaxed whitespace-pre-line border-t border-gray-50"
               >
                 {{ faq.answer }}
               </div>
@@ -56,16 +56,16 @@
       </div>
 
       <div class="mt-14 text-center bg-white rounded-2xl p-8 shadow-sm">
-        <p class="text-gray-600 mb-2">Still have questions?</p>
+        <p class="text-navy mb-2">Still have questions?</p>
         <a
           :href="`tel:${phoneHref}`"
           class="text-xl font-bold text-[#F49322] hover:text-[#0c2340]"
         >
           {{ supportPhone }}
         </a>
-        <p class="text-sm text-gray-400 mt-2">
+        <p class="text-sm text-navy mt-2">
           or email
-          <a :href="`mailto:${supportEmail}`" class="hover:text-[#0c2340]">
+          <a :href="`mailto:${supportEmail}`" class="hover:text-[#F49322]">
             {{ supportEmail }}
           </a>
         </p>

@@ -14,25 +14,10 @@
     </section>
 
     <div class="container">
-      <div
-        class="max-w-[860px] mx-auto pt-10 pb-20 text-slate-700 leading-relaxed"
-      >
-        <!-- Intro Paragraph -->
-        <div class="mb-8 p-6 bg-brand-orange/5 rounded-xl border-l-4 border-brand-orange">
-          <p class="text-slate-700 text-base leading-relaxed">
-            To help us improve our services and provide you with the best possible experience, 
-            we encourage you to review these Terms and Conditions carefully. 
-            Your use of our services constitutes acceptance of these terms. 
-            If you have any questions or concerns, please don't hesitate to 
-            <NuxtLink to="/contact" class="text-brand-orange hover:underline font-medium">
-              contact us
-            </NuxtLink>.
-          </p>
-        </div>
-
+      <div class="max-w-[860px] mx-auto pt-10 pb-20 text-navy leading-relaxed">
         <div
           v-if="data?.description"
-          class="prose max-w-none text-slate-600"
+          class="prose max-w-none text-navy"
           v-html="data.description"
         />
       </div>

@@ -150,12 +150,12 @@
     >
       <div>
         <strong class="block">Early Bird Special</strong>
-        <p class="text-sm opacity-90">
-          Schedule an installation before Oct. 31st, get a free 24" Sequoia Fir
+        <p class="text-sm opacity-100">
+          Schedule an installation before October 31, get a free 24" Sequoia Fir
           Wreath and 12" nylon bow
         </p>
       </div>
-      <i class="fas fa-home text-2xl opacity-80"></i>
+      <!-- <i class="fas fa-home text-2xl opacity-80"></i> -->
     </div>
   </div>
 </template>

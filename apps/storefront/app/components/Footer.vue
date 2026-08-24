@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-[#101518] text-white pt-5">
+  <footer class="bg-[#0c2340] text-white pt-5">
     <div class="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-7xl">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-5">
         <!-- Logo -->
@@ -32,7 +32,7 @@
             <a
               :href="`tel:${String(settings.contact_phone || '').replace(/[^\d+]/g, '')}`"
               class="contact-box btn-secondary-2 hover:text-brand-orange"
-            >{{ settings.contact_phone_display || "(941) 239-4722" }}
+              >{{ settings.contact_phone_display || "(941) 239-4722" }}
             </a>
           </p>
         </div>
@@ -108,12 +108,15 @@
     <!-- Bottom Bar Section -->
     <div class="bg-white py-4 px-4 sm:px-6 lg:px-8">
       <div
-        class="w-full mx-auto max-w-7xl  flex flex-wrap justify-between items-center gap-[15px] text-slate-400 text-[0.95rem]"
+        class="w-full mx-auto max-w-7xl flex flex-wrap justify-between items-center gap-[15px] text-slate-400 text-[0.95rem]"
       >
         <div
           class="text-navy text-base w-full sm:w-auto text-center sm:text-left"
         >
-          {{ settings?.copyright_text || `Copyright © ${new Date().getFullYear()} Festive Express. All Rights Reserved.` }}
+          {{
+            settings?.copyright_text ||
+            `Copyright © ${new Date().getFullYear()} Festive Express. All Rights Reserved.`
+          }}
         </div>
 
         <div

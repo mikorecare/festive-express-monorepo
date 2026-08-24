@@ -13,7 +13,7 @@
           <span class="text-brand-orange">holiday lighting</span> simple.
         </h2>
         <p
-          class="text-center text-black font-bold tracking-[0.4px] text-[0.72rem] sm:text-[1.15rem] leading-tight mt-2 max-w-[80%] mx-auto"
+          class="text-center text-navy font-bold tracking-[0.4px] text-[0.72rem] sm:text-[1.15rem] leading-tight mt-2 max-w-[80%] mx-auto"
         >
           Choose one of three fixed rental packages*.<br />
           Pay online. Pick your install and take-down dates. We handle the rest.
@@ -60,11 +60,17 @@
               class="rounded-[22px] border-4 border-brand-orange overflow-hidden relative leading-none"
             >
               <img
+                class="absolute pointer-events-none object-contain z-[9999] w-16 h-16 top-[119px] -left-2 sm:w-20 sm:h-20 sm:top-[100px] sm:-left-12 lg:w-[100px] lg:h-[100px] lg:top-[111px] lg:left-1"
+                :src="starburstSrc"
+                alt=""
+              />
+              <img
                 :ref="(el) => setImageRef(el, pkg.id)"
                 :src="getImageUrl(pkg.image_url)"
                 :alt="pkg.name"
                 class="w-full h-[200px] object-cover block"
               />
+
               <!-- Glossy Shine Overlay -->
               <div
                 class="absolute -top-1/2 -left-[150%] w-[200%] h-[200%] bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] rotate-[25deg] pointer-events-none animate-[glossyShineContinuous_3s_linear_infinite]"
@@ -72,7 +78,7 @@
             </div>
 
             <img
-              class="absolute left-[45px] max-sm:left-5 -bottom-[38px] max-sm:-bottom-[28px] h-[72px] max-sm:h-[56px] w-auto z-[2] pointer-events-none drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)]"
+              class="absolute left-[45px] max-sm:left-5 -bottom-[38px] max-sm:-bottom-[28px] h-[90px] max-sm:h-[90px] w-auto z-[2] pointer-events-none drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)]"
               :src="getPackageTitleImage(pkg)"
               :alt="pkg.name"
             />
@@ -81,11 +87,6 @@
               class="absolute right-[16px] max-sm:right-3 -bottom-[30px] max-sm:-bottom-[24px] w-[76px] h-[76px] max-sm:w-[64px] max-sm:h-[64px] rounded-full bg-brand-orange flex items-center justify-center z-[3] shadow-[0_6px_16px_rgba(244,147,33,0.45)]"
               aria-hidden="true"
             >
-              <img
-                class="absolute -left-[46px] top-[7px] w-[100px] h-[100px] object-contain -z-10"
-                :src="starburstSrc"
-                alt=""
-              />
               <img
                 class="w-[76px] h-[76px] max-sm:w-[64px] max-sm:h-[64px] object-contain"
                 :src="getPackageIcon(pkg)"
@@ -166,7 +167,7 @@
       <!-- Footer Note -->
       <div class="text-center mt-6 mb-4">
         <h4
-          class="text-black font-medium leading-[1.3] max-w-[80%] mx-auto mb-5 text-sm sm:text-base md:text-lg text-center"
+          class="text-navy font-medium leading-[1.3] max-w-[80%] mx-auto mb-5 text-sm sm:text-base md:text-lg text-center"
         >
           Every package is professionally installed, maintained through the
           season, and taken down when you’re ready.<br />You simply enjoy the
@@ -188,7 +189,7 @@
           </NuxtLink>
         </div>
 
-        <p>*Each package is a rental for one season.</p>
+        <p class="text-navy">*Each package is a rental for one season.</p>
       </div>
     </div>
   </section>

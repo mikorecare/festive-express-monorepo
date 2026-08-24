@@ -3,7 +3,7 @@
     class="min-h-screen bg-gradient-to-b from-[#fef9f4] to-[#f3f4f6] py-6 md:py-12"
   >
     <div class="container mx-auto px-4 max-w-3xl">
-      <!-- Loading -->
+      <!-- Loading --> 
       <div v-if="isLoading" class="text-center py-20">
         <div
           class="w-12 h-12 border-4 border-brand-orange border-t-transparent rounded-full animate-spin mx-auto mb-4"
@@ -510,3 +510,4 @@ useHead({
   title: "Share Your Experience - Festive Express",
 });
 </script>
+

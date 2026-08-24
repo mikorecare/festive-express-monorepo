@@ -59,7 +59,7 @@
           <h3 class="text-2xl font-bold text-navy mb-3">
             Let’s connect today.
           </h3>
-          <p class="mb-[30px] text-slate-600">
+          <p class="mb-[30px] text-navy">
             We’re here to guide you – help select the right rental package,
             provide more details about the lights, installation, etc.
           </p>
