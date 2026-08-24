@@ -252,6 +252,8 @@ let isFirstFrame = ref(true);
 let isDragRunning = ref(false);
 let lastScrollLeft = 0;
 
+const isGesturing = ref(false);
+
 const config = useRuntimeConfig();
 const supabase = useSupabaseClient();
 
@@ -636,11 +638,30 @@ const lastY = ref(0);
 const pinchStartDist = ref(0);
 const pinchStartZoom = ref(1);
 
+// const imageStyle = computed(() => ({
+//   transform: `translate(${panX.value}px, ${panY.value}px) scale(${zoom.value})`,
+//   cursor: zoom.value > 1 ? (isPanning.value ? "grabbing" : "grab") : "default",
+//   transition: isPanning.value ? "none" : "transform 0.15s ease",
+// }));
+
 const imageStyle = computed(() => ({
-  transform: `translate(${panX.value}px, ${panY.value}px) scale(${zoom.value})`,
-  cursor: zoom.value > 1 ? (isPanning.value ? "grabbing" : "grab") : "default",
-  transition: isPanning.value ? "none" : "transform 0.15s ease",
+  transform: `translate3d(${panX.value}px, ${panY.value}px, 0) scale(${zoom.value})`,
+  transformOrigin: "center center",
+  transition: isGesturing.value ? "none" : "transform 0.15s ease",
+  willChange: "transform",
 }));
+
+let raf = 0;
+
+const clampZoom = (z) => Math.min(3.5, Math.max(1, Math.round(z * 100) / 100));
+
+const scheduleZoom = (nextZoom) => {
+  if (raf) cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(() => {
+    zoom.value = clampZoom(nextZoom);
+    raf = 0;
+  });
+};
 
 const openLightbox = (src) => {
   activeImage.value = src;
@@ -669,8 +690,6 @@ const resetZoom = () => {
   panX.value = 0;
   panY.value = 0;
 };
-
-const clampZoom = (z) => Math.min(4, Math.max(1, z));
 
 const toggleZoom = () => {
   zoom.value = zoom.value > 1 ? 1 : 2;
@@ -839,5 +858,11 @@ onMounted(() => {
   to {
     transform: translateX(120%);
   }
+}
+.lightbox-img {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  backface-visibility: hidden;
 }
 </style>

@@ -169,7 +169,7 @@
           class="text-black font-medium leading-[1.3] max-w-[80%] mx-auto mb-5 text-sm sm:text-base md:text-lg text-center"
         >
           Every package is professionally installed, maintained through the
-          season, and taken down when you’re ready. You simply enjoy the
+          season, and taken down when you’re ready.<br />You simply enjoy the
           holidays.
         </h4>
 
