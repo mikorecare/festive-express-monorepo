@@ -34,7 +34,7 @@
         :class="{ 'hero-card-focused': isHeroVisible }"
       >
         <h1
-          class="text-4xl font-extrabold leading-[1.15] mb-4 tracking-wide text-white max-lg:text-[1.35rem] max-lg:mb-1 max-lg:text-left max-lg:[text-shadow:0_2px_5px_rgba(0,0,0,0.7)] drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)]"
+          class="text-4xl font-extrabold leading-[1.15] mb-4 tracking-wide text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] max-lg:text-[1.35rem] max-lg:mb-1 max-lg:text-left max-lg:drop-shadow-[0_4px_14px_rgba(0,0,0,0.9)] max-lg:[text-shadow:0_2px_6px_rgba(0,0,0,0.95),0_4px_16px_rgba(0,0,0,0.75)]"
         >
           RENT THE MAGIC<br />
           <span class="highlight text-[#f7941d]">ENJOY THE SEASON</span>
