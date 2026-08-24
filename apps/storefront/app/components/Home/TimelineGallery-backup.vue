@@ -105,58 +105,59 @@
         <Transition name="fade">
           <div
             v-if="activeImage"
-            class="fixed inset-0 z-[9999] bg-black/90 touch-none"
+            class="fixed inset-0 w-screen h-screen bg-black/85 flex items-center justify-center z-[9999] p-5"
             @click.self="closeLightbox"
           >
             <button
-              type="button"
-              class="absolute top-4 right-4 z-[10001] text-white text-4xl leading-none p-2 hover:text-brand-orange"
-              aria-label="Close"
+              class="absolute top-5 right-[25px] bg-transparent border-none text-white text-[2.5rem] leading-none cursor-pointer z-[10000] transition-transform duration-200 hover:text-brand-orange hover:scale-[1.15]"
               @click="closeLightbox"
+              aria-label="Close modal"
             >
               &times;
             </button>
 
-            <!-- Viewport: pinch + drag live here -->
             <div
-              ref="lightboxViewport"
-              class="absolute inset-0 overflow-hidden flex items-center justify-center"
-              @wheel.prevent="onWheel"
-              @pointerdown="onPointerDown"
-              @pointermove="onPointerMove"
-              @pointerup="onPointerUp"
-              @pointercancel="onPointerUp"
-              @pointerleave="onPointerUp"
-              @touchstart.passive="onTouchStart"
-              @touchmove.prevent="onTouchMove"
-              @touchend="onTouchEnd"
+              class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 px-3 py-2 rounded-full bg-black/50 backdrop-blur-sm"
             >
-              <img
-                :src="activeImage"
-                alt="Enlarged view"
-                draggable="false"
-                class="max-w-[90vw] max-h-[85vh] object-contain rounded-lg select-none will-change-transform"
-                :style="imageStyle"
-                @click.stop
-              />
-            </div>
-
-            <!-- Controls (optional on mobile; pinch is primary) -->
-            <div
-              class="absolute bottom-6 left-1/2 -translate-x-1/2 z-[10001] flex items-center gap-2 px-3 py-2 rounded-full bg-black/60 backdrop-blur-sm"
-            >
-              <button type="button" class="lb-btn" @click.stop="zoomOut">
+              <button
+                type="button"
+                class="px-3 py-1.5 rounded-lg bg-white/15 text-white text-sm hover:bg-white/25"
+                @click.stop="zoomOut"
+              >
                 −
               </button>
-              <span class="text-white text-xs w-12 text-center tabular-nums">
-                {{ Math.round(zoom * 100) }}%
-              </span>
-              <button type="button" class="lb-btn" @click.stop="zoomIn">
+              <button
+                type="button"
+                class="px-3 py-1.5 rounded-lg bg-white/15 text-white text-sm hover:bg-white/25"
+                @click.stop="zoomIn"
+              >
                 +
               </button>
-              <button type="button" class="lb-btn" @click.stop="resetZoom">
+              <button
+                type="button"
+                class="px-3 py-1.5 rounded-lg bg-white/15 text-white text-sm hover:bg-white/25"
+                @click.stop="resetZoom"
+              >
                 Reset
               </button>
+            </div>
+
+            <div
+              class="max-w-[90vw] max-h-[90vh] flex items-center justify-center"
+              @wheel.prevent="onWheel"
+            >
+              <img
+                loading="lazy"
+                :src="activeImage"
+                alt="Enlarged view"
+                class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-transform duration-200"
+                :style="{
+                  transform: `scale(${zoom})`,
+                  cursor: zoom > 1 ? 'zoom-out' : 'zoom-in',
+                  width: 'min(90vw, 1000px)',
+                }"
+                @click.stop="toggleZoom"
+              />
             </div>
           </div>
         </Transition>
@@ -622,148 +623,36 @@ const onSpinnerDrag = (e) => {
 
 const activeImage = ref(null);
 const zoom = ref(1);
-const panX = ref(0);
-const panY = ref(0);
 
-const lightboxViewport = ref(null);
-
-// pointer drag
-const isPanning = ref(false);
-const lastX = ref(0);
-const lastY = ref(0);
-
-// pinch
-const pinchStartDist = ref(0);
-const pinchStartZoom = ref(1);
-
-const imageStyle = computed(() => ({
-  transform: `translate(${panX.value}px, ${panY.value}px) scale(${zoom.value})`,
-  cursor: zoom.value > 1 ? (isPanning.value ? "grabbing" : "grab") : "default",
-  transition: isPanning.value ? "none" : "transform 0.15s ease",
-}));
-
-const openLightbox = (src) => {
-  activeImage.value = src;
-  resetZoom();
+const openLightbox = (imageSrc) => {
+  activeImage.value = imageSrc;
+  zoom.value = 1;
 };
 
 const closeLightbox = () => {
   activeImage.value = null;
-  resetZoom();
+  zoom.value = 1;
 };
 
 const zoomIn = () => {
-  zoom.value = clampZoom(zoom.value + 0.35);
+  zoom.value = Math.min(zoom.value + 0.25, 4);
 };
 
 const zoomOut = () => {
-  zoom.value = clampZoom(zoom.value - 0.35);
-  if (zoom.value === 1) {
-    panX.value = 0;
-    panY.value = 0;
-  }
+  zoom.value = Math.max(zoom.value - 0.25, 1);
 };
 
 const resetZoom = () => {
   zoom.value = 1;
-  panX.value = 0;
-  panY.value = 0;
 };
-
-const clampZoom = (z) => Math.min(4, Math.max(1, z));
 
 const toggleZoom = () => {
   zoom.value = zoom.value > 1 ? 1 : 2;
 };
 
 const onWheel = (e) => {
-  const prev = zoom.value;
   if (e.deltaY < 0) zoomIn();
   else zoomOut();
-  // keep feel stable; pan unchanged on wheel
-  if (zoom.value === 1) {
-    panX.value = 0;
-    panY.value = 0;
-  }
-};
-
-const getDistance = (t1, t2) => {
-  const dx = t1.clientX - t2.clientX;
-  const dy = t1.clientY - t2.clientY;
-  return Math.hypot(dx, dy);
-};
-
-const onPointerDown = (e) => {
-  // two-finger pinch starts via touch list on touch devices
-  if (e.pointerType === "touch" && e.target) {
-    // handled in touch handlers below if you prefer; pointer works for 1 finger pan
-  }
-
-  if (zoom.value <= 1) return;
-
-  isPanning.value = true;
-  lastX.value = e.clientX;
-  lastY.value = e.clientY;
-  e.currentTarget?.setPointerCapture?.(e.pointerId);
-};
-
-const onPointerMove = (e) => {
-  if (!isPanning.value || zoom.value <= 1) return;
-  const dx = e.clientX - lastX.value;
-  const dy = e.clientY - lastY.value;
-  panX.value += dx;
-  panY.value += dy;
-  lastX.value = e.clientX;
-  lastY.value = e.clientY;
-};
-
-const onPointerUp = (e) => {
-  isPanning.value = false;
-  try {
-    e.currentTarget?.releasePointerCapture?.(e.pointerId);
-  } catch (_) {}
-};
-
-// Native touch for reliable pinch on iOS
-const onTouchStart = (e) => {
-  if (e.touches.length === 2) {
-    pinchStartDist.value = getDistance(e.touches[0], e.touches[1]);
-    pinchStartZoom.value = zoom.value;
-    isPanning.value = false;
-  } else if (e.touches.length === 1 && zoom.value > 1) {
-    isPanning.value = true;
-    lastX.value = e.touches[0].clientX;
-    lastY.value = e.touches[0].clientY;
-  }
-};
-
-const onTouchMove = (e) => {
-  if (e.touches.length === 2) {
-    e.preventDefault();
-    const dist = getDistance(e.touches[0], e.touches[1]);
-    if (pinchStartDist.value > 0) {
-      const ratio = dist / pinchStartDist.value;
-      zoom.value = clampZoom(pinchStartZoom.value * ratio);
-      if (zoom.value === 1) {
-        panX.value = 0;
-        panY.value = 0;
-      }
-    }
-  } else if (e.touches.length === 1 && isPanning.value && zoom.value > 1) {
-    e.preventDefault();
-    const t = e.touches[0];
-    panX.value += t.clientX - lastX.value;
-    panY.value += t.clientY - lastY.value;
-    lastX.value = t.clientX;
-    lastY.value = t.clientY;
-  }
-};
-
-const onTouchEnd = () => {
-  if (!lightboxViewport.value) return;
-  // if fewer than 2 touches, end pinch
-  pinchStartDist.value = 0;
-  isPanning.value = false;
 };
 
 const handleKeyDown = (e) => {
@@ -792,10 +681,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.lb-btn {
-  @apply min-w-[44px] min-h-[44px] px-3 rounded-lg bg-white/15 text-white text-lg hover:bg-white/25;
-}
-
 @keyframes slide-hand {
   0%,
   100% {
