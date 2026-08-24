@@ -1,5 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-[#fef9f4] to-[#f3f4f6] py-12">
+  <div
+    class="min-h-screen bg-gradient-to-b from-[#fef9f4] to-[#f3f4f6] py-6 md:py-12"
+  >
     <div class="container mx-auto px-4 max-w-3xl">
       <!-- Loading -->
       <div v-if="isLoading" class="text-center py-20">
@@ -12,7 +14,7 @@
       <!-- Error -->
       <div
         v-else-if="error"
-        class="bg-white rounded-2xl p-12 text-center shadow-sm"
+        class="bg-white rounded-2xl p-8 md:p-12 text-center shadow-sm"
       >
         <i class="fas fa-exclamation-circle text-5xl text-red-500 mb-4"></i>
         <h3 class="text-xl font-bold text-[#0c2340] mb-2">{{ error.title }}</h3>
@@ -26,31 +28,59 @@
       </div>
 
       <!-- Survey -->
-      <div v-else-if="review" class="bg-white rounded-2xl p-8 shadow-sm">
-        <div class="text-center mb-8">
-          <div
-            class="inline-block bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-bold mb-4"
-          >
-            <i class="fas fa-check-circle mr-2"></i> Share Your Experience
+      <div v-else-if="review" class="bg-white rounded-2xl p-4 md:p-8">
+        <!-- Header Section with Mascot -->
+        <div
+          class="flex flex-col md:flex-row items-start justify-between gap-4 md:gap-6 mb-6"
+        >
+          <!-- Left Content -->
+          <div class="flex-1 flex flex-col justify-between w-full md:h-[264px]">
+            <!-- Top Section -->
+            <div class="flex flex-col items-center md:items-start">
+              <p
+                class="text-2xl md:text-3xl font-semibold text-[#0c2340] mb-1 text-center md:text-left"
+              >
+                Thank you, {{ review.customer_name }}!
+              </p>
+              <p class="text-lg md:text-xl text-black text-center md:text-left">
+                Order #{{ review.order_number }}
+              </p>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="mt-4 md:mt-0">
+              <div
+                class="flex flex-col items-center md:items-start gap-2 md:gap-3"
+              >
+                <p
+                  class="text-lg md:text-xl font-bold text-[#0c2340] text-center md:text-left"
+                >
+                  Share your experience
+                </p>
+                <h1
+                  class="text-2xl md:text-3xl font-bold text-[#F39124] text-center md:text-left"
+                >
+                  We'd Love Your Feedback!
+                </h1>
+              </div>
+            </div>
           </div>
-          <h1 class="text-3xl font-bold text-[#0c2340]">
-            We'd Love Your Feedback!
-          </h1>
-          <p class="text-gray-500 mt-2">
-            Order #{{ review.order_number }} &bull; Thank you,
-            {{ review.customer_name }}!
-          </p>
-          <p class="text-sm text-gray-400 mt-1">
-            This survey expires
-            <strong class="text-brand-orange">{{ formatExpiry }}</strong>
-          </p>
+
+          <!-- Right Content - Mascot Image -->
+          <div class="flex-shrink-0 mx-auto md:mx-0">
+            <img
+              src="/Images/reviews/review-mascot.png"
+              alt="Review Mascot"
+              class="h-[150px] md:h-[264px] w-auto object-contain"
+            />
+          </div>
         </div>
 
         <!-- Intro Paragraph -->
-        <div
-          class="mb-8 p-6 bg-brand-orange/5 rounded-xl border-l-4 border-brand-orange"
-        >
-          <p class="text-slate-700 text-base leading-relaxed">
+        <div>
+          <p
+            class="text-base md:text-xl text-slate-700 leading-relaxed text-justify"
+          >
             To help us improve our services and provide you with the best
             possible experience, we value your honest feedback. Please take a
             moment to share your thoughts about your experience with Festive
@@ -59,201 +89,267 @@
           </p>
         </div>
 
-        <div class="border-t border-gray-200 pt-8">
+        <div class="border-t border-gray-200 pt-6 md:pt-8">
           <form @submit.prevent="submitSurvey">
-            <div class="space-y-8">
+            <div class="space-y-6 md:space-y-8">
               <!-- Question 1: Overall Rating -->
-              <div class="bg-gray-50 rounded-xl p-6">
-                <label
-                  class="block text-base font-semibold text-[#0c2340] mb-3"
+              <div
+                class="bg-gray-50 rounded-xl p-4 md:p-6 border border-gray-200"
+              >
+                <div
+                  class="flex flex-col md:flex-row items-center md:items-center justify-between gap-4 md:gap-6"
                 >
-                  How would you rate your overall experience?
-                  <span class="text-sm font-normal text-gray-400"
-                    >(1 = Lowest, 5 = Highest)</span class="text-red-400"
-                  >
-                  *
-                </label>
-                <div class="flex gap-3 justify-center">
-                  <button
-                    v-for="star in 5"
-                    :key="star"
-                    type="button"
-                    class="transition-all hover:scale-110 focus:outline-none"
-                    @mouseenter="hoverOverall = star"
-                    @mouseleave="hoverOverall = 0"
-                    @click="form.rating_overall = star"
-                  >
-                    <FestiveLightBulb
-                      :filled="
-                        form.rating_overall >= star || hoverOverall >= star
-                      "
-                      class="w-12 h-12"
-                    />
-                  </button>
+                  <!-- Left: Label -->
+                  <div class="flex-1 w-full">
+                    <label
+                      class="block text-sm md:text-base font-semibold text-[#0c2340] md:text-left"
+                    >
+                      How would you rate your overall experience?
+                      <span class="text-red-400">*</span>
+                    </label>
+                    <p
+                      class="text-center md:text-start text-sm text-slate-600 mt-2"
+                    >
+                      {{ getRatingLabel(form.rating_overall) }}
+                    </p>
+                  </div>
+
+                  <!-- Right: Star Images -->
+                  <div class="flex gap-2 md:gap-4 flex-shrink-0">
+                    <button
+                      v-for="star in 5"
+                      :key="star"
+                      type="button"
+                      class="transition-all hover:scale-110 focus:outline-none"
+                      @mouseenter="hoverOverall = star"
+                      @mouseleave="hoverOverall = 0"
+                      @click="form.rating_overall = star"
+                    >
+                      <img
+                        :src="
+                          getStarImage(star, form.rating_overall, hoverOverall)
+                        "
+                        :alt="`${star} star`"
+                        class="h-[60px] md:h-[136px] w-auto object-contain"
+                      />
+                    </button>
+                  </div>
                 </div>
-                <p class="text-center text-sm text-gray-500 mt-2">
-                  {{ getRatingLabel(form.rating_overall) }}
-                </p>
               </div>
 
               <!-- Question 2: Installation Process -->
-              <div class="bg-gray-50 rounded-xl p-6">
-                <label
-                  class="block text-base font-semibold text-[#0c2340] mb-3"
+              <div
+                class="bg-gray-50 rounded-xl p-4 md:p-6 border border-gray-200"
+              >
+                <div
+                  class="flex flex-col md:flex-row items-center md:items-center justify-between gap-4 md:gap-6"
                 >
-                  How would you rate the installation process?
-                  <span class="text-sm font-normal text-gray-400"
-                    >(1 = Lowest, 5 = Highest)</span
-                  >
-                </label>
-                <div class="flex gap-3 justify-center">
-                  <button
-                    v-for="star in 5"
-                    :key="star"
-                    type="button"
-                    class="transition-all hover:scale-110 focus:outline-none"
-                    @mouseenter="hoverInstallation = star"
-                    @mouseleave="hoverInstallation = 0"
-                    @click="form.rating_installation = star"
-                  >
-                    <FestiveLightBulb
-                      :filled="
-                        form.rating_installation >= star ||
-                        hoverInstallation >= star
-                      "
-                      class="w-12 h-12"
-                    />
-                  </button>
+                  <!-- Left: Label -->
+                  <div class="flex-1 w-full">
+                    <label
+                      class="block text-sm md:text-base font-semibold text-[#0c2340] md:text-left"
+                    >
+                      How would you rate the installation process?
+                    </label>
+                    <p
+                      class="text-center md:text-start text-sm text-slate-600 mt-2"
+                    >
+                      {{ getRatingLabel(form.rating_installation) }}
+                    </p>
+                  </div>
+
+                  <!-- Right: Star Images -->
+                  <div class="flex gap-2 md:gap-4 flex-shrink-0">
+                    <button
+                      v-for="star in 5"
+                      :key="star"
+                      type="button"
+                      class="transition-all hover:scale-110 focus:outline-none"
+                      @mouseenter="hoverInstallation = star"
+                      @mouseleave="hoverInstallation = 0"
+                      @click="form.rating_installation = star"
+                    >
+                      <img
+                        :src="
+                          getStarImage(
+                            star,
+                            form.rating_installation,
+                            hoverInstallation,
+                          )
+                        "
+                        :alt="`${star} star`"
+                        class="h-[60px] md:h-[136px] w-auto object-contain"
+                      />
+                    </button>
+                  </div>
                 </div>
-                <p class="text-center text-sm text-gray-500 mt-2">
-                  {{ getRatingLabel(form.rating_installation) }}
-                </p>
               </div>
 
               <!-- Question 3: Comments about Installation -->
-              <div class="bg-gray-50 rounded-xl p-6">
+              <div
+                class="bg-gray-50 rounded-xl p-4 md:p-6 border border-gray-200"
+              >
                 <label
-                  class="block text-base font-semibold text-[#0c2340] mb-2"
+                  class="block text-sm md:text-base font-semibold text-[#0c2340] mb-2"
                 >
                   What did you think about the installation process?
                 </label>
                 <p class="text-sm text-gray-400 mb-3">Optional</p>
                 <textarea
                   v-model="form.comments_installation"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-transparent resize-y"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-transparent resize-y text-sm md:text-base"
                   rows="3"
                   placeholder="Share your thoughts about the installation..."
                 ></textarea>
               </div>
 
               <!-- Question 4: Technicians Rating -->
-              <div class="bg-gray-50 rounded-xl p-6">
-                <label
-                  class="block text-base font-semibold text-[#0c2340] mb-3"
+              <div
+                class="bg-gray-50 rounded-xl p-4 md:p-6 border border-gray-200"
+              >
+                <div
+                  class="flex flex-col md:flex-row items-center md:items-center justify-between gap-4 md:gap-6"
                 >
-                  How would you rate our technicians and carpenters?
-                  <span class="text-sm font-normal text-gray-400"
-                    >(1 = Lowest, 5 = Highest)</span
-                  >
-                </label>
-                <div class="flex gap-3 justify-center">
-                  <button
-                    v-for="star in 5"
-                    :key="star"
-                    type="button"
-                    class="transition-all hover:scale-110 focus:outline-none"
-                    @mouseenter="hoverTechnicians = star"
-                    @mouseleave="hoverTechnicians = 0"
-                    @click="form.rating_technicians = star"
-                  >
-                    <FestiveLightBulb
-                      :filled="
-                        form.rating_technicians >= star ||
-                        hoverTechnicians >= star
-                      "
-                      class="w-12 h-12"
-                    />
-                  </button>
+                  <!-- Left: Label -->
+                  <div class="flex-1 w-full">
+                    <label
+                      class="block text-sm md:text-base font-semibold text-[#0c2340] md:text-left"
+                    >
+                      How would you rate our technicians and carpenters?
+                    </label>
+                    <p
+                      class="text-center md:text-start text-sm text-slate-600 mt-2"
+                    >
+                      {{ getRatingLabel(form.rating_technicians) }}
+                    </p>
+                  </div>
+
+                  <!-- Right: Star Images -->
+                  <div class="flex gap-2 md:gap-4 flex-shrink-0">
+                    <button
+                      v-for="star in 5"
+                      :key="star"
+                      type="button"
+                      class="transition-all hover:scale-110 focus:outline-none"
+                      @mouseenter="hoverTechnicians = star"
+                      @mouseleave="hoverTechnicians = 0"
+                      @click="form.rating_technicians = star"
+                    >
+                      <img
+                        :src="
+                          getStarImage(
+                            star,
+                            form.rating_technicians,
+                            hoverTechnicians,
+                          )
+                        "
+                        :alt="`${star} star`"
+                        class="h-[60px] md:h-[136px] w-auto object-contain"
+                      />
+                    </button>
+                  </div>
                 </div>
-                <p class="text-center text-sm text-gray-500 mt-2">
-                  {{ getRatingLabel(form.rating_technicians) }}
-                </p>
               </div>
 
               <!-- Question 5: Comments about Team -->
-              <div class="bg-gray-50 rounded-xl p-6">
+              <div
+                class="bg-gray-50 rounded-xl p-4 md:p-6 border border-gray-200"
+              >
                 <label
-                  class="block text-base font-semibold text-[#0c2340] mb-2"
+                  class="block text-sm md:text-base font-semibold text-[#0c2340] mb-2"
                 >
                   How was your experience with our team?
                 </label>
                 <p class="text-sm text-gray-400 mb-3">Optional</p>
                 <textarea
                   v-model="form.comments_technicians"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-transparent resize-y"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-transparent resize-y text-sm md:text-base"
                   rows="3"
                   placeholder="Tell us about your experience with our team..."
                 ></textarea>
               </div>
 
               <!-- Question 6: Additional Comments -->
-              <div class="bg-gray-50 rounded-xl p-6">
+              <div
+                class="bg-gray-50 rounded-xl p-4 md:p-6 border border-gray-200"
+              >
                 <label
-                  class="block text-base font-semibold text-[#0c2340] mb-2"
+                  class="block text-sm md:text-base font-semibold text-[#0c2340] mb-2"
                 >
                   Any additional feedback or suggestions?
                 </label>
                 <p class="text-sm text-gray-400 mb-3">Optional</p>
                 <textarea
                   v-model="form.comments_additional"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-transparent resize-y"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-transparent resize-y text-sm md:text-base"
                   rows="3"
                   placeholder="Anything else you'd like to share..."
                 ></textarea>
               </div>
 
               <!-- Question 7: Would Recommend -->
-              <div class="bg-gray-50 rounded-xl p-6">
+              <div
+                class="bg-[#0c2340] rounded-xl py-8 md:py-14 px-4 md:px-6 border-4 border-[#F39124]"
+              >
                 <label
-                  class="block text-base font-semibold text-[#0c2340] mb-3"
+                  class="block text-sm md:text-base text-center font-normal text-white mb-4 md:mb-6 tracking-widest"
                 >
                   Would you recommend Festive Express to family and friends?
                 </label>
-                <div class="flex gap-6 justify-center">
-                  <label
-                    class="flex items-center gap-3 cursor-pointer hover:text-brand-orange transition-colors"
+                <div
+                  class="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center"
+                >
+                  <button
+                    type="button"
+                    class="w-full sm:w-auto px-6 md:px-8 py-2.5 rounded-full font-normal text-white transition-all hover:scale-105 flex items-center justify-center gap-2 text-sm md:text-base"
+                    :class="
+                      form.would_recommend === true
+                        ? 'bg-[#F39124] font-semibold'
+                        : 'bg-[#F39124]'
+                    "
+                    @click="form.would_recommend = true"
                   >
-                    <input
-                      type="radio"
-                      v-model="form.would_recommend"
-                      :value="true"
-                      class="w-5 h-5 text-brand-orange"
-                    />
-                    <span class="text-lg">Yes, absolutely!</span>
-                  </label>
-                  <label
-                    class="flex items-center gap-3 cursor-pointer hover:text-brand-orange transition-colors"
+                    Yes, absolutely!
+                    <span
+                      v-if="form.would_recommend === true"
+                      class="text-white"
+                      >✓</span
+                    >
+                  </button>
+                  <button
+                    type="button"
+                    class="w-full sm:w-auto px-6 md:px-8 py-2 rounded-full font-semibold text-white transition-all hover:scale-105 flex items-center justify-center gap-2 text-sm md:text-base"
+                    :class="
+                      form.would_recommend === false
+                        ? 'bg-gray-600'
+                        : 'bg-gray-400'
+                    "
+                    @click="form.would_recommend = false"
                   >
-                    <input
-                      type="radio"
-                      v-model="form.would_recommend"
-                      :value="false"
-                      class="w-5 h-5 text-brand-orange"
-                    />
-                    <span class="text-lg">No</span>
-                  </label>
+                    No, I will not
+                    <span
+                      v-if="form.would_recommend === false"
+                      class="text-white"
+                      >✓</span
+                    >
+                  </button>
                 </div>
               </div>
 
               <!-- Submit Button -->
-              <button
-                type="submit"
-                class="w-full bg-[#F49322] text-white font-bold py-4 rounded-xl hover:bg-[#e07e0e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-lg"
-                :disabled="!form.rating_overall || isSubmitting"
-              >
-                <i v-if="isSubmitting" class="fas fa-spinner fa-spin mr-2"></i>
-                {{ isSubmitting ? "Submitting..." : "Submit Feedback" }}
-              </button>
+              <div class="flex justify-center">
+                <button
+                  type="submit"
+                  class="w-full sm:w-max bg-[#F49322] text-white font-bold py-3 px-6 md:px-8 rounded-full hover:bg-[#e07e0e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-lg"
+                  :disabled="!form.rating_overall || isSubmitting"
+                >
+                  <i
+                    v-if="isSubmitting"
+                    class="fas fa-spinner fa-spin mr-2"
+                  ></i>
+                  {{ isSubmitting ? "Submitting..." : "Submit Feedback" }}
+                </button>
+              </div>
 
               <p class="text-xs text-gray-400 text-center">
                 <i class="fas fa-lock mr-1"></i> Your feedback is secure and
@@ -268,8 +364,6 @@
 </template>
 
 <script setup lang="ts">
-import FestiveLightBulb from "~/components/shared/FestiveLightBulb.vue";
-
 const route = useRoute();
 const config = useRuntimeConfig();
 
@@ -293,6 +387,23 @@ const form = ref({
   comments_additional: "",
   would_recommend: null as boolean | null,
 });
+
+const getStarImage = (star: number, rating: number, hover: number) => {
+  const active = rating >= star || hover >= star;
+
+  if (!active) {
+    return `/Images/reviews/${star}-off.png`;
+  }
+
+  // If this is the highest active star (the one that was clicked/hovered)
+  const highestActive = Math.max(rating, hover);
+  if (star === highestActive) {
+    return `/Images/reviews/${star}-on.png`;
+  }
+
+  // All stars before the highest active star use generic on.png
+  return `/Images/reviews/on.png`;
+};
 
 const formatExpiry = computed(() => {
   if (!review.value?.expires_at) return "";

@@ -121,6 +121,10 @@
   animation-direction: alternate;
 }
 
+.text-primary {
+  color: #0C2340;
+}
+
 /* Page Banner Hero Global */
 .page-hero {
   position: relative;
