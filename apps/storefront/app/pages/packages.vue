@@ -248,7 +248,7 @@
           <div class="details-column lg:col-span-5 flex flex-col gap-6">
             <div
               v-if="pkg.description"
-              class="text-base text-slate-600 leading-relaxed whitespace-pre-line"
+              class="text-base text-navy leading-relaxed whitespace-pre-line"
               v-html="pkg.description"
             />
 
@@ -272,9 +272,7 @@
                     alt=""
                   />
                   <span v-else class="text-emerald-500 font-bold">✔</span>
-                  <span
-                    class="text-xs font-semibold leading-snug text-slate-700"
-                  >
+                  <span class="text-xs font-semibold leading-snug text-navy">
                     {{ row.label_override || row.inclusion_items?.name }}
                     <!-- <template v-if="row.quantity > 1">
                       × {{ row.quantity }}</template
@@ -286,7 +284,7 @@
 
             <button
               type="button"
-              class="inline-flex items-center justify-center gap-2 bg-transparent text-slate-900 border-2 border-slate-900 px-6 py-3 text-sm font-semibold rounded-lg hover:bg-slate-900 hover:text-white transition-all"
+              class="inline-flex items-center justify-center gap-2 bg-transparent text-navy border-2 border-slate-900 px-6 py-3 text-sm font-semibold rounded-lg hover:bg-slate-900 hover:text-white transition-all"
               @click="scrollToSpecs"
             >
               For More Product Information
@@ -297,7 +295,7 @@
               class="p-4 bg-blue-50 border border-dashed border-blue-200 rounded-xl"
             >
               <p
-                class="m-0 text-xs sm:text-sm text-blue-800 flex items-start gap-2.5 leading-relaxed"
+                class="m-0 text-xs sm:text-smtext-navy flex items-start gap-2.5 leading-relaxed"
               >
                 <span class="flex-shrink-0">ℹ</span>
                 Includes commercial-grade LEDs, custom fit sizing, professional
@@ -367,24 +365,22 @@
     <section id="package-specs" class="product-info-section py-20 bg-slate-50">
       <div class="container mx-auto px-4 max-w-7xl">
         <div class="section-header2 text-center mb-12">
-          <h2 class="text-3xl font-extrabold text-slate-900 mb-3">
+          <h2 class="text-3xl font-extrabold text-navy mb-3">
             Product Specifications
           </h2>
-          <p
-            class="section-subtitle text-slate-600 text-base max-w-2xl mx-auto"
-          >
+          <p class="section-subtitle text-navy text-base max-w-2xl mx-auto">
             Discover the professional-grade materials and engineering behind
             every installation.
           </p>
         </div>
 
-        <div v-if="specsLoading" class="text-center text-slate-500 py-10">
+        <div v-if="specsLoading" class="text-center text-navy py-10">
           Loading specifications...
         </div>
 
         <div
           v-else-if="!inclusionItems.length"
-          class="text-center text-slate-500 py-10"
+          class="text-center text-navy py-10"
         >
           No product specifications available.
         </div>
@@ -399,7 +395,7 @@
             class="product-card bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden"
           >
             <div
-              class="product-header bg-slate-900 text-white p-5 flex justify-between items-center gap-3"
+              class="product-header bg-[#0c2340] text-white p-5 flex justify-between items-center gap-3"
             >
               <h3 class="text-lg font-bold text-white m-0">
                 {{ item.name }}
@@ -415,7 +411,7 @@
             <div class="product-body p-6 flex flex-col flex-grow">
               <p
                 v-if="item.description"
-                class="description text-slate-600 text-sm leading-relaxed mb-4"
+                class="description text-navy text-sm leading-relaxed mb-4"
               >
                 {{ item.description }}
               </p>
@@ -435,7 +431,7 @@
                   Features
                 </h4>
                 <ul
-                  class="list-disc list-inside text-xs text-slate-600 space-y-1.5 p-0 m-0"
+                  class="list-disc list-inside text-sm text-navy space-y-1.5 p-0 m-0"
                 >
                   <li v-for="(f, i) in featureList(item)" :key="i">
                     {{ f }}
@@ -453,10 +449,10 @@
                   Specifications
                 </h4>
                 <div
-                  class="spec-grid grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-lg text-xs text-slate-600"
+                  class="spec-grid grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-lg text-sm text-slate-600"
                 >
                   <div v-for="(val, key) in specMap(item)" :key="key">
-                    <span class="font-bold text-slate-900">{{ key }}:</span>
+                    <span class="font-bold text-navy">{{ key }}:</span>
                     {{ val }}
                   </div>
                 </div>

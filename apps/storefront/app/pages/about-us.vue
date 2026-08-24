@@ -4,9 +4,11 @@
       <div class="hero-overlay">
         <div class="container">
           <div class="hero-content">
-            <h1 v-fade>About <span class="text-brand-orange">Festive Express</span></h1>
+            <h1 v-fade>
+              About <span class="text-brand-orange">Festive Express</span>
+            </h1>
             <p v-fade class="breadcrumb">
-              {{ data?.subtitle || '' }}
+              {{ data?.subtitle || "" }}
             </p>
           </div>
         </div>
@@ -15,7 +17,9 @@
 
     <!-- About Us Content Section -->
     <section class="bg-white text-slate-800 py-20">
-      <div class="container flex flex-col lg:flex-row items-center gap-10 lg:gap-12">
+      <div
+        class="container flex flex-col lg:flex-row items-center gap-10 lg:gap-12"
+      >
         <!-- Content Left -->
         <div class="flex-1">
           <div
@@ -50,27 +54,27 @@
 
 <script setup lang="ts">
 useHead({
-  title: 'About Festive Express'
-})
+  title: "About Festive Express",
+});
 
 type AboutUsContent = {
-  id?: string
-  banner_image_url?: string | null
-  title?: string | null
-  subtitle?: string | null
-  description?: string | null
-  description_image_url?: string | null
-}
+  id?: string;
+  banner_image_url?: string | null;
+  title?: string | null;
+  subtitle?: string | null;
+  description?: string | null;
+  description_image_url?: string | null;
+};
 
-const supabase = useSupabaseClient()
-const data = ref<AboutUsContent | null>(null)
+const supabase = useSupabaseClient();
+const data = ref<AboutUsContent | null>(null);
 
-const descriptionHtml = computed(() => data.value?.description || '')
+const descriptionHtml = computed(() => data.value?.description || "");
 const sideImage = computed(
   () =>
     data.value?.description_image_url ||
-    '/Images/Gallery/Festive-Images-14.webp'
-)
+    "/Images/Gallery/Festive-Images-14.webp",
+);
 
 // Optional: use CMS title for hero instead — comment above and use:
 // const heroParts = computed(() => {
@@ -82,21 +86,21 @@ const sideImage = computed(
 const load = async () => {
   try {
     const { data: row, error } = await supabase
-      .from('about_us')
-      .select('*')
-      .eq('is_active', true)
+      .from("about_us")
+      .select("*")
+      .eq("is_active", true)
       .limit(1)
-      .maybeSingle()
+      .maybeSingle();
 
-    if (error) throw error
-    data.value = (row ?? null) as AboutUsContent | null
+    if (error) throw error;
+    data.value = (row ?? null) as AboutUsContent | null;
   } catch (e) {
-    console.error(e)
-    data.value = null
+    console.error(e);
+    data.value = null;
   }
-}
+};
 
-onMounted(load)
+onMounted(load);
 </script>
 
 <style scoped>
@@ -130,26 +134,26 @@ onMounted(load)
   justify-content: center;
 
   position: relative;
-  
+
   /* Set your desired size for the total circular container */
   width: 400px;
   height: 400px;
-  
+
   /* 1. Make it perfectly circular and angled (rotated) */
   border-radius: 50%;
   transform: rotate(-15deg); /* Recreates the specific angle in the image */
-  
+
   /* 2. Apply the solid orange border */
   border: 10px solid #ff7a00; /* Matching your primary orange */
-  
+
   /* 3. Recreates the double-shadow effect for depth */
-  box-shadow: 
-    0 15px 25px rgba(0, 0, 0, 0.2), /* Soft deep shadow */
-    0 5px 10px rgba(0, 0, 0, 0.1);  /* Sharper near shadow */
-  
+  box-shadow:
+    0 15px 25px rgba(0, 0, 0, 0.2),
+    /* Soft deep shadow */ 0 5px 10px rgba(0, 0, 0, 0.1); /* Sharper near shadow */
+
   /* 4. Ensure everything inside (the image) stays within the circle */
   overflow: hidden;
-  
+
   /* Required for smooth rendering during animations or scrolling */
   will-change: transform;
 
@@ -160,22 +164,21 @@ onMounted(load)
 .about-image img {
   width: 100%;
   /* max-width: 550px; */
-  
+
   height: 100%;
-  
+
   /* Re-align the image, but un-rotate it slightly so the image content 
      (the people) appears upright while the container circle is angled. 
      Adjust the rotation and translate values slightly if needed. */
   transform: rotate(15deg) scale(1.1); /* Un-rotates the content; slightly zooms to cover edges */
-  
+
   transform-origin: center center;
   object-fit: cover; /* Ensures the image covers the entire circular area */
   pointer-events: none; /* Recommended if you have complex interactions */
-
 }
 
 .about-image::after {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   left: -150%;

@@ -14,12 +14,10 @@
     </section>
 
     <div class="container">
-      <div
-        class="max-w-[860px] mx-auto pt-10 pb-20 text-slate-700 leading-relaxed"
-      >
+      <div class="max-w-[860px] mx-auto pt-10 pb-20 text-navy leading-relaxed">
         <div
           v-if="data?.description"
-          class="prose max-w-none text-slate-600"
+          class="prose max-w-none text-navy"
           v-html="data.description"
         />
       </div>
