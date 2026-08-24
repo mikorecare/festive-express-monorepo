@@ -299,23 +299,31 @@
                 <div
                   class="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center"
                 >
-                  <button
-                    type="button"
-                    class="w-full sm:w-auto px-6 md:px-8 py-2.5 rounded-full font-normal text-white transition-all hover:scale-105 flex items-center justify-center gap-2 text-sm md:text-base"
-                    :class="
-                      form.would_recommend === true
-                        ? 'bg-[#F39124] font-semibold'
-                        : 'bg-[#F39124]'
-                    "
-                    @click="form.would_recommend = true"
-                  >
-                    Yes, absolutely!
-                    <span
-                      v-if="form.would_recommend === true"
-                      class="text-white"
-                      >✓</span
+                  <div class="relative">
+                    <button
+                      type="button"
+                      class="w-full sm:w-auto px-6 md:px-8 py-2.5 rounded-full font-normal text-white transition-all hover:scale-105 flex items-center justify-center gap-2 text-sm md:text-base"
+                      :class="
+                        form.would_recommend === true
+                          ? 'bg-[#F39124] font-semibold'
+                          : 'bg-[#F39124]'
+                      "
+                      @click="form.would_recommend = true"
                     >
-                  </button>
+                      Yes, absolutely!
+                      <span
+                        v-if="form.would_recommend === true"
+                        class="text-white"
+                        >✓</span
+                      >
+                    </button>
+                    <img
+                      v-if="form.would_recommend === true"
+                      src="/Images/Holiday-Lighting-Package/starburst.png"
+                      alt="Starburst"
+                      class="absolute -top-4 -right-5 w-12 h-12 md:w-15 md:h-15 object-cover"
+                    />
+                  </div>
                   <button
                     type="button"
                     class="w-full sm:w-auto px-6 md:px-8 py-2 rounded-full font-semibold text-white transition-all hover:scale-105 flex items-center justify-center gap-2 text-sm md:text-base"
