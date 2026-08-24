@@ -115,7 +115,7 @@
                   </div>
 
                   <!-- Right: Star Images -->
-                  <div class="flex gap-2 md:gap-4 flex-shrink-0">
+                  <div class="flex flex-shrink-0 space-x-1 md:space-x-6">
                     <button
                       v-for="star in 5"
                       :key="star"
@@ -159,7 +159,7 @@
                   </div>
 
                   <!-- Right: Star Images -->
-                  <div class="flex gap-2 md:gap-4 flex-shrink-0">
+                  <div class="flex flex-shrink-0 space-x-1 md:space-x-6">
                     <button
                       v-for="star in 5"
                       :key="star"
@@ -225,7 +225,7 @@
                   </div>
 
                   <!-- Right: Star Images -->
-                  <div class="flex gap-2 md:gap-4 flex-shrink-0">
+                  <div class="flex flex-shrink-0 space-x-1 md:space-x-6">
                     <button
                       v-for="star in 5"
                       :key="star"
@@ -392,7 +392,7 @@ const getStarImage = (star: number, rating: number, hover: number) => {
   const active = rating >= star || hover >= star;
 
   if (!active) {
-    return `/Images/reviews/${star}-off.png`;
+    return `/Images/reviews/off.png`;
   }
 
   // If this is the highest active star (the one that was clicked/hovered)
