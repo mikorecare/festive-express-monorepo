@@ -16,7 +16,7 @@
         v-else-if="error"
         class="bg-white rounded-2xl p-8 md:p-12 text-center shadow-sm"
       >
-        <SurveyComplete />
+        <!-- <SurveyComplete /> -->
       </div>
 
       <!-- Survey -->
@@ -442,7 +442,6 @@
 </template>
 
 <script setup lang="ts">
-import SurveyComplete from '~/components/Reviews/SurveyComplete.vue';
 
 const route = useRoute();
 const config = useRuntimeConfig();
