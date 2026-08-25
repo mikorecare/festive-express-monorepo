@@ -1,25 +1,23 @@
 <template>
   <ClientOnly>
     <!-- Floating trigger -->
-    <Transition name="fade-slide">
-      <button
-        type="button"
-        class="fixed bottom-[100px] right-[20px] z-[999] flex items-center justify-center bg-[#172a50] border-[3px] border-[#ff890b] rounded-full w-[60px] h-[60px] p-0 shadow-[0_8px_24px_rgba(0,0,0,0.35)] cursor-pointer max-sm:bottom-[90px]"
-        aria-label="Open cart"
-        @click="open = true"
+    <button
+      type="button"
+      class="fixed bottom-[100px] right-[20px] z-[999] flex items-center justify-center bg-[#172a50] border-[3px] border-[#ff890b] rounded-full w-[60px] h-[60px] p-0 shadow-[0_8px_24px_rgba(0,0,0,0.35)] cursor-pointer max-sm:bottom-[90px]"
+      aria-label="Open cart"
+      @click="open = true"
+    >
+      <div
+        class="relative flex items-center justify-center bg-[#ff890b] text-white w-[54px] h-[54px] rounded-full"
       >
-        <div
-          class="relative flex items-center justify-center bg-[#ff890b] text-white w-[54px] h-[54px] rounded-full"
+        <ShoppingCartIcon class="w-7 h-7" aria-hidden="true" />
+        <span
+          class="absolute -top-1 -right-1 z-10 bg-white text-[#172a50] text-[0.8rem] font-extrabold w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 border-[#ff890b]"
         >
-          <ShoppingCartIcon class="w-7 h-7" aria-hidden="true" />
-          <span
-            class="absolute -top-1 -right-1 z-10 bg-white text-[#172a50] text-[0.8rem] font-extrabold w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 border-[#ff890b]"
-          >
-            {{ displayCount }}
-          </span>
-        </div>
-      </button>
-    </Transition>
+          {{ displayCount }}
+        </span>
+      </div>
+    </button>
 
     <!-- Backdrop -->
     <Transition name="fade">
@@ -34,116 +32,116 @@
     <Transition name="slide-cart">
       <aside
         v-if="open"
-        class="fixed top-0 right-0 z-[10001] h-full w-full max-w-[400px] bg-white shadow-2xl flex flex-col"
+        class="fixed top-0 right-0 z-[10001] flex h-full w-full max-w-[380px] flex-col bg-white shadow-2xl"
         role="dialog"
         aria-label="Shopping cart"
       >
-        <!-- Header -->
+        <!-- Orange frame: header + items only -->
         <div
-          class="flex items-center justify-between px-5 py-4 border-b border-slate-100"
+          class="flex min-h-0 flex-1 flex-col border-x-[6px] border-t-[6px] border-[#f59e0b]"
         >
-          <div>
-            <h2 class="text-lg font-bold text-[#0c2340]">Your Cart</h2>
-            <p class="text-xs text-slate-500">
-              {{ displayCount }} {{ displayCount === 1 ? "item" : "items" }}
-            </p>
-          </div>
-          <button
-            type="button"
-            class="w-10 h-10 rounded-full hover:bg-slate-100 text-2xl leading-none text-slate-600"
-            aria-label="Close cart"
-            @click="open = false"
-          >
-            &times;
-          </button>
-        </div>
-
-        <!-- Items -->
-        <div class="flex-1 overflow-y-auto px-5 py-4">
-          <div
-            v-if="!cartItems.length"
-            class="text-center py-16 text-slate-500"
-          >
-            <p class="mb-4">Your cart is empty</p>
-            <NuxtLink
-              to="/packages"
-              class="text-[#F49322] font-semibold"
+          <!-- Header -->
+          <div class="relative border-b border-slate-200 px-6 pb-4 pt-6">
+            <button
+              type="button"
+              class="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full text-2xl leading-none text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+              aria-label="Close cart"
               @click="open = false"
             >
-              Browse packages
-            </NuxtLink>
+              &times;
+            </button>
+            <h2 class="text-2xl font-bold text-[#f59e0b]">My Cart</h2>
+            <p class="mt-1 text-sm text-navy">
+              Total items: {{ displayCount }}
+            </p>
           </div>
 
-          <div
-            v-for="item in cartItems"
-            :key="item.id"
-            class="flex gap-3 py-4 border-b border-slate-100 last:border-0"
-          >
-            <img
-              :src="getImageUrl(item.product?.image_url)"
-              :alt="item.product?.name || ''"
-              class="w-16 h-16 rounded-lg object-cover bg-slate-100 shrink-0"
-              @error="onImgError"
-            />
-            <div class="flex-1 min-w-0">
-              <h3 class="text-sm font-semibold text-[#0c2340] truncate">
-                {{ item.product?.name || "" }}
-              </h3>
-              <p
-                v-if="item.options?.c9_color"
-                class="text-xs text-slate-500 mt-0.5"
-              >
-                {{ item.options.c9_color }} LEDs
-              </p>
-              <p
-                v-if="item.options?.design_name"
-                class="text-xs text-slate-500 mt-0.5"
-              >
-                Theme: {{ item.options.design_name }}
-              </p>
-              <p class="text-xs text-slate-500 mt-1">
-                Qty: {{ item.quantity }}
+          <!-- Body -->
+          <div class="flex flex-1 flex-col overflow-y-auto px-6 py-6">
+            <!-- Empty -->
+            <div
+              v-if="!cartItems.length"
+              class="flex flex-1 flex-col items-center justify-center px-4 text-center"
+            >
+              <img
+                src="/Images/Festivo/cart-empty.png"
+                alt=""
+                class="mb-4 h-28 w-auto object-contain"
+                @error="onEmptyImgError"
+              />
+              <p class="text-base text-slate-600">
+                Your cart is empty,<br />
+                <NuxtLink
+                  to="/packages"
+                  class="font-bold text-[#f59e0b] hover:underline underline"
+                  @click="open = false"
+                >
+                  Explore
+                </NuxtLink>
+                our packages!
               </p>
             </div>
-            <div class="text-right shrink-0">
-              <p class="text-sm font-bold text-[#F49322]">
-                ${{ lineTotal(item) }}
-              </p>
-              <button
-                type="button"
-                class="text-xs text-red-500 mt-2 hover:underline"
-                @click="removeItem(item.id)"
-              >
-                Remove
-              </button>
+
+            <!-- Items -->
+            <div v-else class="space-y-5">
+              <div v-for="item in cartItems" :key="item.id" class="flex gap-3">
+                <img
+                  :src="getImageUrl(item.product?.image_url)"
+                  :alt="item.product?.name || ''"
+                  class="h-16 w-16 shrink-0 rounded-md object-cover bg-slate-100"
+                  @error="onImgError"
+                />
+                <div class="min-w-0 flex-1 flex flex-col">
+                  <div class="flex items-start justify-between gap-3">
+                    <h3 class="text-xl font-bold uppercase text-[#f59e0b]">
+                      {{ item.product?.name || "—" }}
+                    </h3>
+                    <p class="shrink-0 text-sm font-bold text-[#f59e0b]">
+                      USD {{ lineTotal(item) }}
+                    </p>
+                  </div>
+                  <div
+                    class="mt-auto flex items-center justify-between gap-3 pt-1"
+                  >
+                    <p class="text-xs text-navy-500">
+                      Quantity: {{ item.quantity }}
+                    </p>
+                    <button
+                      type="button"
+                      class="text-xs text-red-500 hover:underline"
+                      @click="removeItem(item.id)"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Footer -->
-        <div class="border-t border-slate-100 px-5 py-4 space-y-3 bg-slate-50">
-          <div class="flex justify-between text-sm mb-5">
-            <span class="text-slate-600">Subtotal</span>
-            <span class="font-bold text-[#0c2340]">${{ displayTotal }}</span>
+        <div class="bg-[#0c2340] px-6 pb-6 pt-5 text-white">
+          <div class="mb-5 flex items-center justify-between text-base">
+            <span>Subtotal:</span>
+            <span class="font-bold text-xl">USD {{ displayTotal }}</span>
           </div>
-          <!-- <NuxtLink
-            to="/cart"
-            class="block w-full text-center py-3 rounded-lg border-2 border-[#0c2340] text-[#0c2340] font-semibold hover:bg-[#0c2340] hover:text-white transition"
-            @click="open = false"
-          >
-            View cart
-          </NuxtLink> -->
           <NuxtLink
+            v-if="cartItems.length"
             to="/checkout"
-            class="btn-checkout relative block w-full text-center py-3 rounded-lg bg-[#F49322] text-white font-bold border-2 border-[#0c2340] transition hover:bg-[#0c2340] overflow-hidden"
+            class="group relative block w-full overflow-hidden rounded-full bg-[#ff890b] py-3.5 text-center text-base font-bold text-white transition hover:bg-[#e67a00] before:pointer-events-none before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
             @click="open = false"
           >
-            Checkout <i class="fas fa-arrow-right ml-1" />
-            <!-- Glossy Shine Overlay -->
-            <div
-              class="absolute -top-1/2 -left-[150%] w-[200%] h-[200%] bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] rotate-[25deg] pointer-events-none animate-[glossyShineContinuous_3s_linear_infinite]"
-            />
+            <span class="relative z-10">Checkout</span>
           </NuxtLink>
+          <button
+            v-else
+            type="button"
+            disabled
+            class="block w-full cursor-not-allowed rounded-full bg-slate-400 py-3.5 text-center text-base font-bold text-white"
+          >
+            Checkout
+          </button>
         </div>
       </aside>
     </Transition>
@@ -158,7 +156,6 @@ const supabase = useSupabaseClient();
 const config = useRuntimeConfig();
 
 const open = ref(false);
-const visible = ref(false);
 
 const cartItems = computed(() => cart.cartItems.value);
 const displayTotal = computed(() =>
@@ -171,8 +168,6 @@ const lineTotal = (item: any) =>
 
 const getImageUrl = (url?: string | null) => {
   if (!url) return "/Images/placeholder-package.jpg";
-
-  // Already absolute, site path, or local preview
   if (
     url.startsWith("http://") ||
     url.startsWith("https://") ||
@@ -181,12 +176,8 @@ const getImageUrl = (url?: string | null) => {
   ) {
     return url;
   }
-
-  // DB may store "Products/foo.jpg" or "foo.jpg"
   const path = url.replace(/^\//, "").replace(/^Products\//i, "");
-
   const bucket = (config.public.storageBucket as string) || "Products";
-
   const { data } = supabase.storage.from(bucket).getPublicUrl(path);
   return data.publicUrl || "/Images/placeholder-package.jpg";
 };
@@ -196,19 +187,23 @@ const onImgError = (e: Event) => {
   if (img) img.src = "/Images/placeholder.png";
 };
 
+const onEmptyImgError = (e: Event) => {
+  const img = e.target as HTMLImageElement;
+  // fallback if Festivo empty asset missing
+  if (img) img.src = "/Images/Festivo/cart-empty.png";
+};
+
 const removeItem = async (id: string | number) => {
   await cart.removeFromCart?.(id);
   await cart.loadCart?.();
 };
 
-// Lock body scroll while open
 watch(open, (v) => {
   if (!import.meta.client) return;
   document.body.style.overflow = v ? "hidden" : "";
 });
 
 onMounted(async () => {
-  visible.value = true;
   await cart.loadCart?.();
   const onFocus = () => cart.loadCart?.();
   window.addEventListener("focus", onFocus);
@@ -220,15 +215,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.fade-slide-enter-active,
-.fade-slide-leave-active {
-  transition: all 0.3s ease;
-}
-.fade-slide-enter-from,
-.fade-slide-leave-to {
-  opacity: 0;
-  transform: translateY(20px);
-}
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.25s ease;

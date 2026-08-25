@@ -93,13 +93,25 @@
           <textarea v-model="form.description" rows="4" class="field" />
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
           <div>
             <label class="block text-sm font-semibold text-slate-700 mb-1.5"
               >Base price ($)</label
             >
             <input
               v-model.number="form.price"
+              type="number"
+              step="0.01"
+              min="0"
+              class="field"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-1.5"
+              >Sale price ($)</label
+            >
+            <input
+              v-model.number="form.sale_price"
               type="number"
               step="0.01"
               min="0"
@@ -382,6 +394,7 @@ const form = ref({
   slug: "",
   description: "",
   price: 0,
+  sale_price: 0,
   sort_order: 0,
   is_popular: false,
   is_active: true,
@@ -443,6 +456,7 @@ const load = async () => {
       slug: pkg.slug || "",
       description: pkg.description || "",
       price: Number(pkg.price) || 0,
+      sale_price: Number(pkg.sale_price) || 0,
       sort_order: Number(pkg.sort_order) || 0,
       is_popular: !!pkg.is_popular,
       is_active: pkg.is_active !== false,
@@ -494,6 +508,7 @@ const saveDetails = async () => {
     slug: form.value.slug,
     description: form.value.description ?? "",
     price: form.value.price,
+    sale_price: form.value.sale_price,
     sort_order: form.value.sort_order,
     is_popular: form.value.is_popular,
     is_active: form.value.is_active,

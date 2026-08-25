@@ -36,7 +36,7 @@
 
         <!-- Festivo — right of steps on desktop -->
         <div class="how-festivo">
-          <PreviewYourHomeButton :centered="false" />
+          <PreviewYourHomeButton />
         </div>
       </div>
 
@@ -137,19 +137,17 @@ onMounted(async () => {
 }
 
 .how-festivo {
-  justify-self: start;
+  justify-self: end; /* right of steps on desktop */
   align-self: start;
 }
 
-/* Mobile: Festivo on top, then steps */
 @media (max-width: 768px) {
   .how-layout {
     grid-template-columns: 1fr;
     gap: 28px;
   }
-
   .how-festivo {
-    order: -1; /* above timeline */
+    order: -1;
     justify-self: center;
     align-self: center;
   }

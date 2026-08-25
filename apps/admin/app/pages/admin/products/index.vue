@@ -61,7 +61,7 @@
           <option value="outofstock">Out of Stock</option>
           <option value="lowstock">Low Stock (&lt; 10)</option>
         </select>
-        
+
         <select
           v-model="statusFilter"
           @change="applyFilters"
@@ -120,7 +120,7 @@
         <div class="text-right space-x-2">
           <NuxtLink
             :to="`/admin/products/edit/${item.id}`"
-            class="inline-block px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md text-xs font-medium transition-colors"
+            class="inline-block px-3 py-1.5 bg-navy text-white rounded-md text-xs font-medium hover:bg-brand-orange hover:text-navy transition-colors no-underline"
             >Edit</NuxtLink
           >
           <button
@@ -199,6 +199,7 @@ const columns = [
   { key: "name", label: "Product", sortable: true },
   { key: "sku", label: "SKU" },
   { key: "price", label: "Price" },
+  { key: "sale_price", label: "Sale Price" },
   { key: "stock", label: "Stock" },
   { key: "category", label: "Category" },
   { key: "status", label: "Status" },
@@ -220,7 +221,7 @@ const itemsPerPage = ref(10);
 const totalItems = ref(0);
 const searchQuery = ref("");
 
-const statusFilter = ref('');
+const statusFilter = ref("");
 
 const loadProducts = async () => {
   isLoading.value = true;
@@ -246,7 +247,7 @@ const loadProducts = async () => {
     }
 
     if (statusFilter.value) {
-      query = query.eq('status', statusFilter.value)
+      query = query.eq("status", statusFilter.value);
     }
 
     if (searchQuery.value) {

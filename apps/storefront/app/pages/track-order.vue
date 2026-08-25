@@ -79,58 +79,58 @@
             </div>
           </div>
 
-          <ul class="mb-7 grid gap-2.5">
-            <li
-              class="rounded-lg px-3.5 py-2.5 font-semibold"
-              :class="
-                isAtLeast('pending')
-                  ? 'bg-emerald-50 text-emerald-800'
-                  : 'bg-slate-100 text-slate-400'
-              "
-            >
-              Order received
-            </li>
-            <li
-              class="rounded-lg px-3.5 py-2.5 font-semibold"
-              :class="
-                isAtLeast('processing')
-                  ? 'bg-emerald-50 text-emerald-800'
-                  : 'bg-slate-100 text-slate-400'
-              "
-            >
-              Processing
-            </li>
-            <li
-              class="rounded-lg px-3.5 py-2.5 font-semibold"
-              :class="
-                isAtLeast('scheduled')
-                  ? 'bg-emerald-50 text-emerald-800'
-                  : 'bg-slate-100 text-slate-400'
-              "
-            >
-              Install scheduled
-            </li>
-            <li
-              class="rounded-lg px-3.5 py-2.5 font-semibold"
-              :class="
-                isAtLeast('completed')
-                  ? 'bg-emerald-50 text-emerald-800'
-                  : 'bg-slate-100 text-slate-400'
-              "
-            >
-              Completed
-            </li>
-          </ul>
+          <!-- Timeline -->
+          <div
+            class="mb-7 rounded-xl border border-slate-100 bg-slate-50/80 p-6"
+          >
+            <h3 class="mb-4 text-lg font-bold text-navy">Order Timeline</h3>
 
-          <div v-if="order.items?.length">
+            <div v-if="timeline.length" class="space-y-3">
+              <div
+                v-for="(entry, index) in timeline"
+                :key="entry.id || index"
+                class="flex gap-4 border-b border-gray-100 pb-3 last:border-0"
+              >
+                <div
+                  class="mt-1.5 h-2.5 w-2.5 flex-shrink-0 rounded-full"
+                  :class="getStatusColor(entry.status)"
+                />
+                <div>
+                  <div class="font-medium capitalize text-gray-800">
+                    {{ formatStatus(entry.status) }}
+                  </div>
+                  <div class="text-sm text-gray-400">
+                    {{ formatDateTime(entry.created_at) }}
+                  </div>
+                  <div
+                    v-if="entry.notes || entry.description"
+                    class="mt-0.5 text-sm text-gray-600"
+                  >
+                    {{ entry.notes || entry.description }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p v-else class="text-sm text-gray-400">No timeline entries yet.</p>
+          </div>
+
+          <div v-if="items.length">
             <h3 class="mb-3 font-bold text-navy">Items</h3>
             <div
-              v-for="(item, i) in order.items"
+              v-for="(item, i) in items"
               :key="i"
               class="flex justify-between border-b border-slate-100 py-2.5 text-sm"
             >
-              <span>{{ item.name }} × {{ item.quantity }}</span>
-              <strong>${{ Number(item.total).toFixed(2) }}</strong>
+              <span
+                >{{ item.product_name || item.name }} ×
+                {{ item.quantity }}</span
+              >
+              <strong
+                >${{
+                  Number(item.total ?? item.price * item.quantity).toFixed(2)
+                }}</strong
+              >
             </div>
           </div>
         </div>
@@ -140,15 +140,24 @@
 </template>
 
 <script setup lang="ts">
-useHead({ title: "Track Your Order - Festive Lighting Pros Express" });
+useHead({ title: "Track Your Order - Festive Express" });
 
-const config = useRuntimeConfig();
+const supabase = useSupabaseClient();
 const route = useRoute();
 
 const orderNumber = ref((route.query.order as string) || "");
 const loading = ref(false);
 const error = ref("");
-const order = ref<any>(null);
+const order = ref<Record<string, any> | null>(null);
+const timeline = ref<Record<string, any>[]>([]);
+const items = ref<Record<string, any>[]>([]);
+
+const fallbackSteps = [
+  { key: "pending", label: "Order received" },
+  { key: "processing", label: "Processing" },
+  { key: "scheduled", label: "Install scheduled" },
+  { key: "completed", label: "Completed" },
+];
 
 const statusRank: Record<string, number> = {
   pending: 1,
@@ -161,21 +170,79 @@ const statusRank: Record<string, number> = {
 const trackOrder = async () => {
   error.value = "";
   order.value = null;
+  timeline.value = [];
+  items.value = [];
+
   const num = orderNumber.value.trim();
   if (!num) return;
 
   loading.value = true;
   try {
-    const res = await $fetch(`/orders/track/${encodeURIComponent(num)}`, {
-      baseURL: config.public.apiBase,
-    });
-    order.value = res;
+    // Public / unrestricted view preferred for guest tracking
+    const { data: orderRow, error: orderErr } = await supabase
+      .from("orders_with_promo")
+      .select("*")
+      .eq("order_number", num)
+      .maybeSingle();
+
+    if (orderErr) throw orderErr;
+    if (!orderRow) {
+      error.value = "Order not found. Check the number and try again.";
+      return;
+    }
+
+    const row = orderRow as Record<string, any>;
+    order.value = row;
+
+    const { data: timelineRows, error: tlErr } = await supabase
+      .from("order_timeline")
+      .select("*")
+      .eq("order_id", row.id)
+      .order("created_at", { ascending: true });
+
+    if (tlErr) console.error(tlErr);
+    timeline.value = timelineRows || [];
+
+    // Optional: only if order_items exists + RLS allows read by order_id
+    const { data: itemRows, error: itemsErr } = await supabase
+      .from("order_items")
+      .select("product_name, name, quantity, price, total, options")
+      .eq("order_id", row.id);
+
+    if (!itemsErr && itemRows) items.value = itemRows;
   } catch (e: any) {
+    console.error(e);
     error.value =
-      e?.data?.message || "Order not found. Check the number and try again.";
+      e?.message || "Order not found. Check the number and try again.";
   } finally {
     loading.value = false;
   }
+};
+
+const getStatusColor = (status: string) => {
+  const colors: Record<string, string> = {
+    pending: "bg-amber-400",
+    confirmed: "bg-blue-400",
+    processing: "bg-blue-400",
+    scheduled: "bg-indigo-400",
+    completed: "bg-emerald-400",
+    cancelled: "bg-rose-400",
+    refunded: "bg-gray-400",
+    paid: "bg-emerald-400",
+    failed: "bg-rose-400",
+  };
+  return colors[status] || "bg-gray-400";
+};
+
+const formatDateTime = (date?: string | null) => {
+  if (!date) return "—";
+  return new Date(date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 };
 
 const formatStatus = (s: string) =>

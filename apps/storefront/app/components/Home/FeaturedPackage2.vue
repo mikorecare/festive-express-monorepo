@@ -105,12 +105,18 @@
           >
             <button
               type="button"
-              class="group relative overflow-hidden w-[85%] bg-brand-orange text-white border-2 border-[#0c2340] rounded-[50px] py-[12px] px-[16px] text-[0.95rem] font-black tracking-[0.5px] cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out hover:bg-[#0c2340] hover:text-white hover:-translate-y-[2px] -mt-[30px] before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
+              class="pkg-select-btn group relative overflow-hidden w-[85%] bg-brand-orange border-2 border-white rounded-[50px] py-[12px] px-[16px] text-[0.95rem] font-black tracking-[0.5px] cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out hover:bg-[#0c2340] -mt-[30px] before:content-[''] before:absolute before:inset-0 before:z-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
               @click="selectPackage(pkg)"
             >
-              <span>{{ getPackageButtonPrefix(pkg) }}</span>
-              <span class="text-navy group-hover:text-white transition-colors">
-                {{ getPackageButtonName(pkg) }}
+              <span
+                class="pkg-select-label relative z-10 inline-flex items-center justify-center"
+              >
+                <span class="pkg-select-prefix">
+                  {{ getPackageButtonPrefix(pkg) }}
+                </span>
+                <span class="pkg-select-name">
+                  {{ getPackageButtonName(pkg) }}
+                </span>
               </span>
             </button>
           </div>
@@ -280,11 +286,50 @@ const getPackageButtonPrefix = (pkg: { name: string }) => {
 
 const getPackageButtonName = (pkg: { name: string }) => {
   const name = pkg.name.toLowerCase();
-  if (name.includes("joy")) return "JOY";
-  if (name.includes("jolly")) return "JOLLY";
-  if (name.includes("merry")) return "MERRY";
+  if (name.includes("joy")) return " Joy";
+  if (name.includes("jolly")) return " Jolly";
+  if (name.includes("merry")) return " Merry";
   return pkg.name.toUpperCase();
 };
 
 onMounted(fetchPackages);
 </script>
+
+<style scoped>
+.pkg-select-btn {
+  color: #fff;
+}
+
+.pkg-select-label {
+  color: #fff;
+}
+
+.pkg-select-prefix {
+  display: inline-block;
+  max-width: 0;
+  margin-right: 0;
+  overflow: hidden;
+  opacity: 0;
+  white-space: nowrap;
+  color: #fff !important;
+  transition:
+    max-width 0.3s ease,
+    opacity 0.3s ease,
+    margin 0.3s ease;
+}
+
+.pkg-select-name {
+  color: #fff !important;
+}
+
+.pkg-select-btn:hover .pkg-select-prefix {
+  max-width: 120px;
+  margin-right: 6px;
+  opacity: 1;
+  color: #fff !important;
+}
+
+.pkg-select-btn:hover .pkg-select-name {
+  color: #fff !important;
+}
+</style>

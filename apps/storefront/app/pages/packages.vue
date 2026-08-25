@@ -83,10 +83,42 @@
               {{ pkg.name }}
             </h2>
           </div>
-          <div
-            class="package-price text-3xl md:text-4xl font-extrabold text-[#F49322]"
+          <!-- <div
+            class="package-price text-3xl md:text-4xl font-extrabold text-[#f59e0b]"
           >
             ${{ Math.round(Number(selectedPrice(pkg)) || 0) }} / season
+          </div> -->
+
+          <div
+            class="package-price flex items-center justify-between gap-4 text-[#f59e0b]"
+          >
+            <div class="text-left">
+              <template
+                v-if="
+                  selectedSku(pkg)?.sale_price != null &&
+                  Number(selectedSku(pkg)?.sale_price) > 0
+                "
+              >
+                <div class="text-3xl md:text-4xl font-extrabold leading-none">
+                  ${{ Math.round(Number(selectedPrice(pkg)) || 0) }}
+                </div>
+                <div
+                  class="mt-1 text-base md:text-lg font-semibold text-slate-400 line-through"
+                >
+                  ${{ Math.round(Number(selectedSku(pkg)?.price) || 0) }}
+                </div>
+              </template>
+              <template v-else>
+                <div class="text-3xl md:text-4xl font-extrabold leading-none">
+                  ${{ Math.round(Number(selectedPrice(pkg)) || 0) }}
+                </div>
+              </template>
+            </div>
+            <div
+              class="text-sm md:text-base font-semibold text-slate-600 shrink-0 pb-1"
+            >
+              / season
+            </div>
           </div>
         </div>
 
@@ -106,7 +138,7 @@
                 :ref="(el) => setImageRef(el, pkg.id)"
                 :src="selectedImage(pkg)"
                 :alt="pkg.name"
-                class="main-image w-full h-[320px] sm:h-[420px] object-cover block border-4 border-[#F49322] rounded-2xl"
+                class="main-image w-full h-[320px] sm:h-[420px] object-cover block border-4 border-[#f59e0b] rounded-2xl"
                 @error="onImgError"
               />
 
@@ -139,13 +171,13 @@
                   class="hotspot-dot block w-4 h-4 mx-auto mt-1 rounded-full border-2 border-white shadow-md transition-all duration-200"
                   :class="
                     activeHotspot[String(pkg.id)] === spot.key
-                      ? 'bg-[#F49322] scale-125'
-                      : 'bg-slate-900 group-hover/spot:bg-[#F49322] group-hover/spot:scale-110'
+                      ? 'bg-[#f59e0b] scale-125'
+                      : 'bg-slate-900 group-hover/spot:bg-[#f59e0b] group-hover/spot:scale-110'
                   "
                 />
                 <span
                   v-if="activeHotspot[String(pkg.id)] === spot.key"
-                  class="hotspot-pulse absolute inset-0 rounded-full border-2 border-[#F49322] animate-ping opacity-75"
+                  class="hotspot-pulse absolute inset-0 rounded-full border-2 border-[#f59e0b] animate-ping opacity-75"
                 />
               </button>
 
@@ -179,7 +211,7 @@
 
                 <button
                   type="button"
-                  class="absolute top-1.5 right-1.5 z-10 w-5 h-5 rounded-full bg-slate-900 text-white text-xs flex items-center justify-center opacity-80 hover:bg-[#F49322]"
+                  class="absolute top-1.5 right-1.5 z-10 w-5 h-5 rounded-full bg-slate-900 text-white text-xs flex items-center justify-center opacity-80 hover:bg-[#f59e0b]"
                   @click.stop="activeHotspot[String(pkg.id)] = null"
                 >
                   ×
@@ -217,7 +249,7 @@
                   class="flex flex-col items-center gap-1.5 cursor-pointer px-3.5 py-2 rounded-xl border-2 transition-all"
                   :class="
                     String(selectedSkuId[String(pkg.id)]) === String(sku.id)
-                      ? 'border-[#F49322] bg-orange-50'
+                      ? 'border-[#f59e0b] bg-orange-50'
                       : 'border-transparent bg-slate-50 hover:bg-slate-100'
                   "
                   @click="selectSku(pkg.id, sku.id)"
@@ -262,7 +294,7 @@
                     (r) => r.is_included,
                   )"
                   :key="i"
-                  class="flex items-center gap-2.5 p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-[#F49322] hover:bg-[#fff7ed] transition-colors"
+                  class="flex items-center gap-2.5 p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-[#f59e0b] hover:bg-[#fff7ed] transition-colors"
                   @click="highlightInclusion(pkg, row)"
                 >
                   <img
@@ -303,18 +335,9 @@
               </p>
             </div>
 
-            <!-- <button
-              type="button"
-              class="w-full bg-[#F49322] hover:bg-[#0c2340] text-white font-bold py-4 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
-              :disabled="!selectedSku(pkg) || addingId === selectedSku(pkg)?.id"
-              @click="addPackageSku(pkg)"
-            >
-              <span v-if="addingId === selectedSku(pkg)?.id">Adding...</span>
-              <span v-else>Add {{ pkg.name }} to Cart</span>
-            </button> -->
             <button
               type="button"
-              class="group relative overflow-hidden w-full bg-[#F49322] hover:bg-[#0c2340] text-white font-bold py-4 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
+              class="group relative overflow-hidden w-full bg-[#f59e0b] hover:bg-[#0c2340] text-white font-bold py-4 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
               :disabled="
                 !selectedSku(pkg)?.id || addingId === selectedSku(pkg)?.id
               "
@@ -426,7 +449,7 @@
 
               <div v-if="featureList(item).length" class="spec-block mb-4">
                 <h4
-                  class="text-base font-bold text-[#0c2340] mb-2.5 pb-0.75 border-b-2 border-[#f49322] inline-block"
+                  class="text-base font-bold text-[#0c2340] mb-2.5 pb-0.75 border-b-2 border-[#f59e0b] inline-block"
                 >
                   Features
                 </h4>
@@ -444,7 +467,7 @@
                 class="spec-block mt-auto"
               >
                 <h4
-                  class="text-base font-bold text-[#0c2340] mb-2.5 pb-0.75 border-b-2 border-[#f49322] inline-block"
+                  class="text-base font-bold text-[#0c2340] mb-2.5 pb-0.75 border-b-2 border-[#f59e0b] inline-block"
                 >
                   Specifications
                 </h4>
@@ -510,6 +533,7 @@ type PackageRow = {
   slug: string;
   description?: string | null;
   price?: number | string | null;
+  sale_price?: number | string | null;
   title_image_url?: string | null;
   icon_url?: string | null;
   is_popular?: boolean;
@@ -521,6 +545,7 @@ type SkuRow = {
   id: string | number;
   name: string;
   price?: number | string | null;
+  sale_price?: number | string | null;
   stock?: number | null;
   image_url?: string | null;
   package_id: string | number;
@@ -651,8 +676,32 @@ const selectedSku = (pkg: PackageRow): SkuRow | null => {
   return skus.value.find((s) => String(s.id) === String(id)) || null;
 };
 
-const selectedPrice = (pkg: PackageRow) =>
-  selectedSku(pkg)?.price ?? pkg.price ?? 0;
+const selectedPrice = (pkg: PackageRow) => {
+  const sku = selectedSku(pkg);
+  if (sku) {
+    const sale = Number(sku.sale_price);
+    if (
+      sku.sale_price != null &&
+      sku.sale_price !== "" &&
+      !Number.isNaN(sale) &&
+      sale > 0
+    ) {
+      return sale;
+    }
+    return Number(sku.price ?? 0);
+  }
+  // fallback: package-level
+  const sale = Number(pkg.sale_price);
+  if (
+    pkg.sale_price != null &&
+    pkg.sale_price !== "" &&
+    !Number.isNaN(sale) &&
+    sale > 0
+  ) {
+    return sale;
+  }
+  return Number(pkg.price ?? 0);
+};
 
 const selectedImage = (pkg: PackageRow) => {
   const sku = selectedSku(pkg);
@@ -809,7 +858,7 @@ const load = async () => {
         .from("packages")
         .select(
           `
-          id, name, slug, description, price,
+          id, name, slug, description, price, sale_price,
           title_image_url, icon_url, is_popular, sort_order,
           package_inclusions (
             quantity, is_included, label_override, sort_order,
@@ -822,7 +871,7 @@ const load = async () => {
       db
         .from("products")
         .select(
-          "id, name, price, stock, image_url, package_id, color_key, color_label",
+          "id, name, price, sale_price, stock, image_url, package_id, color_key, color_label",
         )
         .eq("is_package", true)
         .eq("is_active", true),
@@ -890,6 +939,49 @@ const openCartModal = (
 };
 
 /** Add selected package color/SKU to cart — no redirect */
+// const addPackageSku = async (pkg: PackageRow) => {
+//   const sku = selectedSku(pkg);
+//   if (!sku?.id) {
+//     openCartModal(
+//       "error",
+//       "Select an option",
+//       "Please choose a color before adding to cart.",
+//     );
+//     return;
+//   }
+
+//   addingId.value = sku.id;
+//   try {
+//     // Match your useCart signature — usually (productId, qty) only
+//     const ok = await cart.addToCart(sku.id, 1);
+
+//     if (ok !== false) {
+//       if (typeof cart.loadCart === "function") {
+//         await cart.loadCart();
+//       }
+//       openCartModal(
+//         "success",
+//         "Added to cart",
+//         `${pkg.name || "Package"} was added to your cart.`,
+//       );
+//     } else {
+//       openCartModal(
+//         "error",
+//         "Could not add",
+//         "Something went wrong. Please try again.",
+//       );
+//     }
+//   } catch (e: any) {
+//     console.error("addPackageSku", e);
+//     openCartModal(
+//       "error",
+//       "Could not add",
+//       e?.message || "Something went wrong.",
+//     );
+//   } finally {
+//     addingId.value = null;
+//   }
+// };
 const addPackageSku = async (pkg: PackageRow) => {
   const sku = selectedSku(pkg);
   if (!sku?.id) {
@@ -901,15 +993,22 @@ const addPackageSku = async (pkg: PackageRow) => {
     return;
   }
 
+  // Prefer sale_price when present and > 0
+  const unitPrice =
+    sku.sale_price != null && Number(sku.sale_price) > 0
+      ? Number(sku.sale_price)
+      : Number(sku.price ?? pkg.price ?? 0);
+
   addingId.value = sku.id;
   try {
-    // Match your useCart signature — usually (productId, qty) only
+    // If your useCart is (id, qty, isPackage?, options?)
     const ok = await cart.addToCart(sku.id, 1);
 
+    // If signature is only (id, qty):
+    // const ok = await cart.addToCart(sku.id, 1)
+
     if (ok !== false) {
-      if (typeof cart.loadCart === "function") {
-        await cart.loadCart();
-      }
+      if (typeof cart.loadCart === "function") await cart.loadCart();
       openCartModal(
         "success",
         "Added to cart",

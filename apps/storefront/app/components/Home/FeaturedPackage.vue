@@ -145,12 +145,49 @@
             </div>
 
             <!-- Price & Cart Actions -->
-            <div class="flex flex-col items-end gap-2.5">
+            <!-- <div class="flex flex-col items-end gap-2.5">
               <div
                 class="text-[1rem] max-sm:text-[1rem] font-extrabold text-white"
               >
                 ${{ Math.round(Number(pkg.price) || 0) }} / season
               </div>
+              <button
+                type="button"
+                class="w-12 h-12 border-none rounded-xl bg-brand-orange text-white cursor-pointer flex items-center justify-center transition-colors duration-200 hover:bg-[#ff890b] hover:animate-[festive-express-animation-pulse-grow_0.3s_linear_infinite_alternate]"
+                :aria-label="`Select ${pkg.name}`"
+                @click="selectPackage(pkg)"
+              >
+                <ShoppingCartIcon class="w-7 h-7" aria-hidden="true" />
+              </button>
+            </div> -->
+            <!-- Price & Cart Actions -->
+            <div class="flex flex-col items-end gap-2">
+              <template
+                v-if="pkg.sale_price != null && Number(pkg.sale_price) > 0"
+              >
+                <span
+                  class="inline-block rounded-full bg-white/15 px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white"
+                >
+                  Early Bird Special
+                </span>
+                <div class="text-right leading-tight">
+                  <span class="block text-xs text-white/70 line-through">
+                    was ${{ Math.round(Number(pkg.price) || 0) }}
+                  </span>
+                  <span
+                    class="text-[1rem] max-sm:text-[1rem] font-extrabold text-white"
+                  >
+                    is ${{ Math.round(Number(pkg.sale_price) || 0) }}/season
+                  </span>
+                </div>
+              </template>
+              <template v-else>
+                <div
+                  class="text-[1rem] max-sm:text-[1rem] font-extrabold text-white"
+                >
+                  ${{ Math.round(Number(pkg.price) || 0) }}/season
+                </div>
+              </template>
               <button
                 type="button"
                 class="w-12 h-12 border-none rounded-xl bg-brand-orange text-white cursor-pointer flex items-center justify-center transition-colors duration-200 hover:bg-[#ff890b] hover:animate-[festive-express-animation-pulse-grow_0.3s_linear_infinite_alternate]"
@@ -175,15 +212,15 @@
         </h4>
 
         <div
-          class="relative isolate my-8 max-lg:my-6 flex flex-col items-center justify-center gap-5 text-center"
+          class="relative isolate my-8 max-lg:my-6 flex flex-col items-center justify-center gap-2 text-center"
         >
           <!-- Button 1 -->
-          <PreviewYourHomeButton :centered="false" class="lg:ml-4" />
+          <PreviewYourHomeButton />
 
           <!-- Button 2 -->
           <NuxtLink
             to="/packages"
-            class="relative z-10 overflow-hidden border-2 border-navy inline-block font-semibold px-6 py-3 rounded-lg bg-brand-orange text-white animate-[festive-express-animation-pulse-grow_0.5s_linear_infinite_alternate] after:content-[''] after:absolute after:-top-1/2 after:-left-[150%] after:w-[200%] after:h-[200%] after:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] after:rotate-[25deg] after:pointer-events-none"
+            class="relative z-10 overflow-hidden inline-block font-semibold px-6 py-3 rounded-full bg-brand-orange text-white animate-[festive-express-animation-pulse-grow_1.4s_ease-in-out_infinite_alternate] after:content-[''] after:absolute after:-top-1/2 after:-left-[150%] after:w-[200%] after:h-[200%] after:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] after:rotate-[25deg] after:pointer-events-none"
           >
             Which Package Fits Your Home?
           </NuxtLink>
@@ -209,6 +246,7 @@ interface PackageRow {
   name: string;
   slug: string;
   price: number | string;
+  sale_price: number | string;
   description?: string | null;
   max_roofline_ft?: number | null;
   features?: string[] | null;
@@ -267,6 +305,7 @@ interface PackageRow {
   name: string;
   slug: string;
   price: number | string;
+  sale_price: number | string;
   image_url?: string | null;
   title_image_url?: string | null;
   icon_url?: string | null;
@@ -494,7 +533,7 @@ const getFeatures = (pkg: PackageRow): FeatureItem[] => {
     transform: scale(1);
   }
   100% {
-    transform: scale(1.04);
+    transform: scale(1.03);
   }
 }
 </style>
