@@ -16,15 +16,7 @@
         v-else-if="error"
         class="bg-white rounded-2xl p-8 md:p-12 text-center shadow-sm"
       >
-        <i class="fas fa-exclamation-circle text-5xl text-red-500 mb-4"></i>
-        <h3 class="text-xl font-bold text-[#0c2340] mb-2">{{ error.title }}</h3>
-        <p class="text-gray-500 text-sm mb-6">{{ error.message }}</p>
-        <NuxtLink
-          to="/"
-          class="inline-block bg-[#F49322] text-white font-bold py-3 px-6 rounded-xl hover:bg-[#e07e0e] transition-colors no-underline"
-        >
-          Go to Home
-        </NuxtLink>
+        <SurveyComplete />
       </div>
 
       <!-- Survey -->
@@ -450,6 +442,8 @@
 </template>
 
 <script setup lang="ts">
+import SurveyComplete from '~/components/Reviews/SurveyComplete.vue';
+
 const route = useRoute();
 const config = useRuntimeConfig();
 
@@ -491,11 +485,11 @@ const getStarImage = (star: number, rating: number, hover: number) => {
 
 const getRatingLabel = (rating: number) => {
   const labels: Record<number, string> = {
-    1: "Very Poor",
-    2: "Poor",
-    3: "Average",
-    4: "Happy",
-    5: "Festive!",
+    1: "Dim",
+    2: "Sparse",
+    3: "Glowing",
+    4: "Brilliant",
+    5: "Festive",
   };
   return labels[rating] || "";
 };
