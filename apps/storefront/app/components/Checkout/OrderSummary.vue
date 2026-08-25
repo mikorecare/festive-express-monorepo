@@ -151,8 +151,7 @@
       <div>
         <strong class="block">Early Bird Special</strong>
         <p class="text-sm opacity-100">
-          Schedule an installation before October 31, get a free 24" Sequoia Fir
-          Wreath and 12" nylon bow
+          Schedule an installation before October 31st, get 15% off.
         </p>
       </div>
       <!-- <i class="fas fa-home text-2xl opacity-80"></i> -->

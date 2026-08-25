@@ -17,18 +17,26 @@
     <!-- Main Content -->
     <!-- Timeline -->
     <div class="page-main-section container">
-      <div class="timeline" v-if="steps.length">
-        <div
-          v-for="(step, index) in steps"
-          :key="index"
-          class="timeline-item"
-          :class="{ active: visibleSteps.has(index) }"
-        >
-          <div class="timeline-dot"></div>
-          <div class="timeline-content">
-            <h3>{{ step.title }}</h3>
-            <p>{{ step.description }}</p>
+      <div class="how-layout">
+        <!-- Steps -->
+        <div class="timeline" v-if="steps.length">
+          <div
+            v-for="(step, index) in steps"
+            :key="index"
+            class="timeline-item"
+            :class="{ active: visibleSteps.has(index) }"
+          >
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <h3>{{ step.title }}</h3>
+              <p>{{ step.description }}</p>
+            </div>
           </div>
+        </div>
+
+        <!-- Festivo — right of steps on desktop -->
+        <div class="how-festivo">
+          <PreviewYourHomeButton :centered="false" />
         </div>
       </div>
 
@@ -121,6 +129,32 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.how-layout {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 48px 40px;
+  align-items: center;
+}
+
+.how-festivo {
+  justify-self: start;
+  align-self: start;
+}
+
+/* Mobile: Festivo on top, then steps */
+@media (max-width: 768px) {
+  .how-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .how-festivo {
+    order: -1; /* above timeline */
+    justify-self: center;
+    align-self: center;
+  }
+}
+
 .timeline {
   position: relative;
   max-width: 900px;

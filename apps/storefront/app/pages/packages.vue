@@ -64,7 +64,7 @@
         v-for="pkg in packages"
         :id="`package-${pkg.slug}`"
         :key="pkg.id"
-        class="container mx-auto px-4 max-w-7xl mb-16 last:mb-0 scroll-mt-48"
+        class="container mx-auto px-4 max-w-7xl mb-16 last:mb-0 scroll-mt-48 mt-5"
         :ref="(el) => setPackageRef(el, pkg.id)"
         @mouseenter="handlePackageFocus(pkg.id)"
       >
@@ -75,7 +75,7 @@
           <div class="header-left relative flex items-center gap-4">
             <img
               v-if="pkg.title_image_url || pkg.icon_url"
-              class="pkg-title-img h-12 md:h-16 w-auto object-contain drop-shadow-md"
+              class="pkg-title-img h-16 md:h-24 w-auto object-contain drop-shadow-md"
               :src="getImageUrl(pkg.title_image_url || pkg.icon_url)"
               :alt="pkg.name"
             />

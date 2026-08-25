@@ -178,7 +178,7 @@
           class="relative isolate my-8 max-lg:my-6 flex flex-col items-center justify-center gap-5 text-center"
         >
           <!-- Button 1 -->
-          <PreviewYourHomeButton />
+          <PreviewYourHomeButton :centered="false" class="lg:ml-4" />
 
           <!-- Button 2 -->
           <NuxtLink

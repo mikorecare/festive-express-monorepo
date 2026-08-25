@@ -1,7 +1,14 @@
 <template>
   <NuxtLink
+    ref="rootRef"
     to="/preview-your-home"
-    class="group relative z-10 block w-fit mx-auto overflow-hidden rounded-lg transition-transform duration-200 hover:-translate-y-0.5"
+    class="group relative z-10 block w-fit overflow-hidden rounded-lg"
+    :class="[
+      centered ? 'mx-auto' : '',
+      enterFromLeft ? 'festivo-btn-enter' : '',
+      enterFromLeft && isIn ? 'is-in' : '',
+      isIn ? 'festivo-btn-ready' : '',
+    ]"
   >
     <img
       src="/Images/PreviewYourHomeButton.png"
@@ -19,3 +26,114 @@
     </span>
   </NuxtLink>
 </template>
+
+<script setup>
+const props = defineProps({
+  /** Slide in from the left when the button enters the viewport */
+  enterFromLeft: { type: Boolean, default: true },
+  /** Keep mx-auto centering (set false on homepage for asymmetric placement) */
+  centered: { type: Boolean, default: true },
+});
+
+const rootRef = ref(null);
+const isIn = ref(false);
+
+onMounted(() => {
+  if (!props.enterFromLeft) {
+    isIn.value = true;
+    return;
+  }
+
+  nextTick(() => {
+    const el = rootRef.value?.$el ?? rootRef.value;
+    if (!el || typeof el === "string") {
+      isIn.value = true;
+      return;
+    }
+
+    if (!("IntersectionObserver" in window)) {
+      isIn.value = true;
+      return;
+    }
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          // Re-trigger animation: remove class, force reflow, add again
+          isIn.value = false;
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              isIn.value = true;
+            });
+          });
+        } else {
+          // Reset when scrolled away so next enter can play again
+          isIn.value = false;
+        }
+      },
+      { threshold: 0.2 },
+    );
+
+    io.observe(el);
+
+    onUnmounted(() => io.disconnect());
+  });
+});
+</script>
+
+<style scoped>
+/* No transition during enter */
+.festivo-btn-enter {
+  opacity: 0;
+  transform: translateX(-50vw) rotate(-8deg);
+  transition: none;
+}
+
+.festivo-btn-enter.is-in {
+  animation: festivoBtnIn 1.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Hover lift only after animation done */
+.festivo-btn-ready {
+  transition: transform 0.2s ease;
+}
+.festivo-btn-ready:hover {
+  transform: translateY(-2px);
+}
+
+@keyframes festivoBtnIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50vw) rotate(-8deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) rotate(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .festivo-btn-enter {
+    transform: translateX(-70vw) rotate(-6deg);
+  }
+
+  .festivo-btn-enter.is-in {
+    animation-duration: 1.35s;
+  }
+
+  @keyframes festivoBtnIn {
+    0% {
+      opacity: 0;
+      transform: translateX(-70vw) rotate(-6deg);
+    }
+    75% {
+      opacity: 1;
+      transform: translateX(6px) rotate(1deg);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0) rotate(0);
+    }
+  }
+}
+</style>

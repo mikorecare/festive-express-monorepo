@@ -2,7 +2,7 @@
 <template>
   <div class="hero-countdown-widget">
     <h3 class="hero-timer-title">Christmas Countdown</h3>
-    
+
     <div class="timer-blocks">
       <div class="mini-timer-item">
         <span>{{ formatNumber(timeLeft.days) }}</span>
@@ -23,7 +23,7 @@
     </div>
 
     <p class="hero-timer-subtext">
-      Install Dates Are Filling Up - <br class="mobile-only">Reserve Yours
+      Install Dates Are Filling Up - <br class="mobile-only" />Reserve Yours
     </p>
   </div>
 </template>
@@ -32,13 +32,13 @@
 defineProps({
   timeLeft: {
     type: Object,
-    required: true
+    required: true,
   },
   formatNumber: {
     type: Function,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 </script>
 
 <style scoped>
@@ -60,7 +60,8 @@ defineProps({
 }
 
 .mini-timer-item {
-  background: rgba(9, 26, 48, 0.8);
+  /* background: rgba(9, 26, 48, 0.8); */
+  background: rgba(12, 26, 53, 1);
   border: 1.5px solid rgba(255, 137, 11, 0.6);
   border-radius: 8px;
   padding: 6px 10px;
@@ -85,7 +86,7 @@ defineProps({
 }
 
 .hero-timer-subtext {
-  font-size: 0.88rem;
+  font-size: 0.78rem;
   line-height: 1.35;
   color: #e2e8f0;
   margin: 0;
@@ -142,7 +143,7 @@ defineProps({
 }
 
 .hero-countdown-widget::after {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   left: -150%;
@@ -203,7 +204,8 @@ defineProps({
     min-width: 28px;
     padding: 2px 5px;
     border-radius: 4px;
-    background: rgba(9, 26, 48, 0.6);
+    /* background: rgba(9, 26, 48, 0.6); */
+    background: rgba(12, 26, 53, 1);
     border: 1px solid rgba(255, 137, 11, 0.5);
   }
 
