@@ -1,0 +1,48 @@
+name: Deploy Monorepo to AWS EC2
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            # 1. Navigate to monorepo root and pull code
+            cd /var/www/festive-express/festive-express-monorepo
+            git pull origin master
+
+            # 2. Load Node/NVM environment rules
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+            # 3. BUILD & DEPLOY APP 1: Storefront
+            echo "Building Storefront..."
+            cd /var/www/festive-express/festive-express-monorepo/apps/storefront
+            npm install
+            npm run build
+
+            # 4. BUILD & DEPLOY APP 2: Admin
+            echo "Building Admin..."
+            cd /var/www/festive-express/festive-express-monorepo/apps/admin
+            npm install
+            npm run build
+
+            # 5. ZERO-DOWNTIME RELOAD VIA PM2
+            # We target the root ecosystem file to reload both distinct processes safely
+            echo "Reloading applications with PM2..."
+            cd /var/www/festive-express/festive-express-monorepo
+            pm2 reload ecosystem.config.js --update-env

@@ -55,6 +55,21 @@ export default defineNuxtConfig({
     },
   },
 
+   postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {},
+      cssnano: {
+        preset: [
+          'default',
+          {
+            mergeLonghand: false,
+          },
+        ],
+      },
+    },
+  },
+
   runtimeConfig: {
     // PRIVATE — never use public:
     convergeMerchantId: process.env.CONVERGE_MERCHANT_ID || "",
