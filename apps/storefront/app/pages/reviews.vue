@@ -2,8 +2,8 @@
   <div
     class="min-h-screen bg-gradient-to-b from-[#fef9f4] to-[#f3f4f6] py-6 md:py-12"
   >
-    <div class="container mx-auto px-4 max-w-3xl">
-      <!-- Loading --> 
+    <div class="w-full mx-auto px-4 lg:px-[84px] max-w-[2048px]">
+      <!-- Loading -->
       <div v-if="isLoading" class="text-center py-20">
         <div
           class="w-12 h-12 border-4 border-brand-orange border-t-transparent rounded-full animate-spin mx-auto mb-4"
@@ -28,7 +28,10 @@
       </div>
 
       <!-- Survey -->
-      <div v-else-if="review" class="bg-white rounded-2xl p-4 md:p-8">
+      <div
+        v-else-if="review"
+        class="bg-white rounded-2xl p-6 md:p-10 lg:p-16 xl:p-24"
+      >
         <!-- Header Section with Mascot -->
         <div
           class="flex flex-col md:flex-row items-start justify-between gap-4 md:gap-6 mb-6"
@@ -38,11 +41,13 @@
             <!-- Top Section -->
             <div class="flex flex-col items-center md:items-start">
               <p
-                class="text-2xl md:text-3xl font-semibold text-[#0c2340] mb-1 text-center md:text-left"
+                class="text-2xl md:text-[50px] font-semibold text-[#0c2340] mb-1 text-center md:text-left leading-tight"
               >
                 Thank you, {{ review.customer_name }}!
               </p>
-              <p class="text-lg md:text-xl text-black text-center md:text-left">
+              <p
+                class="text-lg md:text-[32px] text-black text-center md:text-left leading-tight"
+              >
                 Order #{{ review.order_number }}
               </p>
             </div>
@@ -53,12 +58,12 @@
                 class="flex flex-col items-center md:items-start gap-2 md:gap-3"
               >
                 <p
-                  class="text-lg md:text-xl font-bold text-[#0c2340] text-center md:text-left"
+                  class="text-lg md:text-[32px] font-bold text-[#0c2340] text-center md:text-left leading-tight"
                 >
                   Share your experience
                 </p>
                 <h1
-                  class="text-2xl md:text-3xl font-bold text-[#F39124] text-center md:text-left"
+                  class="text-2xl md:text-[50px] font-bold text-[#F39124] text-center md:text-left leading-tight"
                 >
                   We'd Love Your Feedback!
                 </h1>
@@ -79,7 +84,7 @@
         <!-- Intro Paragraph -->
         <div>
           <p
-            class="text-base md:text-xl text-slate-700 leading-relaxed text-justify"
+            class="text-base md:text-[32px] text-slate-700 leading-relaxed text-justify"
           >
             To help us improve our services and provide you with the best
             possible experience, we value your honest feedback. Please take a
@@ -94,215 +99,288 @@
             <div class="space-y-6 md:space-y-8">
               <!-- Question 1: Overall Rating -->
               <div
-                class="bg-gray-50 rounded-xl p-4 md:p-6 border border-gray-200"
+                class="bg-gray-50 rounded-xl p-4 md:!p-12 lg:!p-16 border-2 transition-colors duration-200"
+                :class="
+                  form.rating_overall > 0
+                    ? 'border-[#F39124]'
+                    : 'border-gray-200'
+                "
               >
                 <div
-                  class="flex flex-col md:flex-row items-center md:items-center justify-between gap-4 md:gap-6"
+                  class="flex flex-col md:flex-row items-center gap-4 md:gap-8"
                 >
                   <!-- Left: Label -->
-                  <div class="flex-1 w-full">
+                  <div class="flex-1 w-full md:w-1/2">
                     <label
-                      class="block text-sm md:text-base font-semibold text-[#0c2340] md:text-left"
+                      class="block text-base md:text-[32px] font-semibold transition-colors duration-200 text-left leading-tight"
+                      :class="
+                        form.rating_overall > 0
+                          ? 'text-[#F39124]'
+                          : 'text-[#0c2340]'
+                      "
                     >
                       How would you rate your overall experience?
                       <span class="text-red-400">*</span>
                     </label>
-                    <p
-                      class="text-center md:text-start text-sm text-slate-600 mt-2"
-                    >
-                      {{ getRatingLabel(form.rating_overall) }}
-                    </p>
                   </div>
 
-                  <!-- Right: Star Images -->
-                  <div class="flex flex-shrink-0 space-x-1 md:space-x-6">
-                    <button
-                      v-for="star in 5"
-                      :key="star"
-                      type="button"
-                      class="transition-all hover:scale-110 focus:outline-none"
-                      @mouseenter="hoverOverall = star"
-                      @mouseleave="hoverOverall = 0"
-                      @click="form.rating_overall = star"
+                  <!-- Right: Stars with Labels -->
+                  <div class="flex-1 w-full md:w-1/2">
+                    <div
+                      class="flex justify-between items-center space-x-1 md:space-x-0"
                     >
-                      <img
-                        :src="
-                          getStarImage(star, form.rating_overall, hoverOverall)
-                        "
-                        :alt="`${star} star`"
-                        class="h-[60px] md:h-[136px] w-auto object-contain"
-                      />
-                    </button>
+                      <div
+                        v-for="star in 5"
+                        :key="star"
+                        class="flex flex-col items-center flex-1"
+                      >
+                        <button
+                          type="button"
+                          class="transition-all hover:scale-110 focus:outline-none"
+                          @mouseenter="hoverOverall = star"
+                          @mouseleave="hoverOverall = 0"
+                          @click="form.rating_overall = star"
+                        >
+                          <img
+                            :src="
+                              getStarImage(
+                                star,
+                                form.rating_overall,
+                                hoverOverall,
+                              )
+                            "
+                            :alt="`${star} star`"
+                            class="h-[36px] md:h-[120px] w-auto object-contain"
+                          />
+                        </button>
+                        <span
+                          class="text-[8px] md:text-sm mt-1 text-center whitespace-nowrap transition-colors duration-200"
+                          :class="
+                            form.rating_overall === star
+                              ? 'text-[#F39124] font-semibold'
+                              : 'text-gray-500'
+                          "
+                        >
+                          {{ getRatingLabel(star) }}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
               <!-- Question 2: Installation Process -->
               <div
-                class="bg-gray-50 rounded-xl p-4 md:p-6 border border-gray-200"
+                class="bg-gray-50 rounded-xl p-4 md:!p-12 lg:!p-16 border-2 transition-colors duration-200"
+                :class="
+                  form.rating_installation > 0
+                    ? 'border-[#F39124]'
+                    : 'border-gray-200'
+                "
               >
                 <div
-                  class="flex flex-col md:flex-row items-center md:items-center justify-between gap-4 md:gap-6"
+                  class="flex flex-col md:flex-row items-center gap-4 md:gap-8"
                 >
                   <!-- Left: Label -->
-                  <div class="flex-1 w-full">
+                  <div class="flex-1 w-full md:w-1/2">
                     <label
-                      class="block text-sm md:text-base font-semibold text-[#0c2340] md:text-left"
+                      class="block text-base md:text-[32px] font-semibold transition-colors duration-200 text-left leading-tight"
+                      :class="
+                        form.rating_installation > 0
+                          ? 'text-[#F39124]'
+                          : 'text-[#0c2340]'
+                      "
                     >
                       How would you rate the installation process?
                     </label>
-                    <p
-                      class="text-center md:text-start text-sm text-slate-600 mt-2"
-                    >
-                      {{ getRatingLabel(form.rating_installation) }}
-                    </p>
                   </div>
 
-                  <!-- Right: Star Images -->
-                  <div class="flex flex-shrink-0 space-x-1 md:space-x-6">
-                    <button
-                      v-for="star in 5"
-                      :key="star"
-                      type="button"
-                      class="transition-all hover:scale-110 focus:outline-none"
-                      @mouseenter="hoverInstallation = star"
-                      @mouseleave="hoverInstallation = 0"
-                      @click="form.rating_installation = star"
+                  <!-- Right: Stars with Labels -->
+                  <div class="flex-1 w-full md:w-1/2">
+                    <div
+                      class="flex justify-between items-center space-x-1 md:space-x-0"
                     >
-                      <img
-                        :src="
-                          getStarImage(
-                            star,
-                            form.rating_installation,
-                            hoverInstallation,
-                          )
-                        "
-                        :alt="`${star} star`"
-                        class="h-[60px] md:h-[136px] w-auto object-contain"
-                      />
-                    </button>
+                      <div
+                        v-for="star in 5"
+                        :key="star"
+                        class="flex flex-col items-center flex-1"
+                      >
+                        <button
+                          type="button"
+                          class="transition-all hover:scale-110 focus:outline-none"
+                          @mouseenter="hoverInstallation = star"
+                          @mouseleave="hoverInstallation = 0"
+                          @click="form.rating_installation = star"
+                        >
+                          <img
+                            :src="
+                              getStarImage(
+                                star,
+                                form.rating_installation,
+                                hoverInstallation,
+                              )
+                            "
+                            :alt="`${star} star`"
+                            class="h-[36px] md:h-[120px] w-auto object-contain"
+                          />
+                        </button>
+                        <span
+                          class="text-[8px] md:text-sm mt-1 text-center whitespace-nowrap transition-colors duration-200"
+                          :class="
+                            form.rating_installation === star
+                              ? 'text-[#F39124] font-semibold'
+                              : 'text-gray-500'
+                          "
+                        >
+                          {{ getRatingLabel(star) }}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
               <!-- Question 3: Comments about Installation -->
               <div
-                class="bg-gray-50 rounded-xl p-4 md:p-6 border border-gray-200"
+                class="bg-gray-50 rounded-xl p-4 md:!p-12 lg:!p-16 border border-gray-200"
               >
                 <label
-                  class="block text-sm md:text-base font-semibold text-[#0c2340] mb-2"
+                  class="block text-base md:text-[32px] font-semibold text-[#0c2340] mb-2 leading-tight text-left"
                 >
                   What did you think about the installation process?
                 </label>
-                <p class="text-sm text-gray-400 mb-3">Optional</p>
+                <p class="text-sm md:text-base text-gray-400 mb-3">Optional</p>
                 <textarea
                   v-model="form.comments_installation"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-transparent resize-y text-sm md:text-base"
-                  rows="3"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-transparent resize-y text-sm md:text-[32px]"
+                  rows="4"
                   placeholder="Share your thoughts about the installation..."
                 ></textarea>
               </div>
 
               <!-- Question 4: Technicians Rating -->
               <div
-                class="bg-gray-50 rounded-xl p-4 md:p-6 border border-gray-200"
+                class="bg-gray-50 rounded-xl p-4 md:!p-12 lg:!p-16 border-2 transition-colors duration-200"
+                :class="
+                  form.rating_technicians > 0
+                    ? 'border-[#F39124]'
+                    : 'border-gray-200'
+                "
               >
                 <div
-                  class="flex flex-col md:flex-row items-center md:items-center justify-between gap-4 md:gap-6"
+                  class="flex flex-col md:flex-row items-center gap-4 md:gap-8"
                 >
                   <!-- Left: Label -->
-                  <div class="flex-1 w-full">
+                  <div class="flex-1 w-full md:w-1/2">
                     <label
-                      class="block text-sm md:text-base font-semibold text-[#0c2340] md:text-left"
+                      class="block text-base md:text-[32px] font-semibold transition-colors duration-200 text-left leading-tight"
+                      :class="
+                        form.rating_technicians > 0
+                          ? 'text-[#F39124]'
+                          : 'text-[#0c2340]'
+                      "
                     >
                       How would you rate our technicians and carpenters?
                     </label>
-                    <p
-                      class="text-center md:text-start text-sm text-slate-600 mt-2"
-                    >
-                      {{ getRatingLabel(form.rating_technicians) }}
-                    </p>
                   </div>
 
-                  <!-- Right: Star Images -->
-                  <div class="flex flex-shrink-0 space-x-1 md:space-x-6">
-                    <button
-                      v-for="star in 5"
-                      :key="star"
-                      type="button"
-                      class="transition-all hover:scale-110 focus:outline-none"
-                      @mouseenter="hoverTechnicians = star"
-                      @mouseleave="hoverTechnicians = 0"
-                      @click="form.rating_technicians = star"
+                  <!-- Right: Stars with Labels -->
+                  <div class="flex-1 w-full md:w-1/2">
+                    <div
+                      class="flex justify-between items-center space-x-1 md:space-x-0"
                     >
-                      <img
-                        :src="
-                          getStarImage(
-                            star,
-                            form.rating_technicians,
-                            hoverTechnicians,
-                          )
-                        "
-                        :alt="`${star} star`"
-                        class="h-[60px] md:h-[136px] w-auto object-contain"
-                      />
-                    </button>
+                      <div
+                        v-for="star in 5"
+                        :key="star"
+                        class="flex flex-col items-center flex-1"
+                      >
+                        <button
+                          type="button"
+                          class="transition-all hover:scale-110 focus:outline-none"
+                          @mouseenter="hoverTechnicians = star"
+                          @mouseleave="hoverTechnicians = 0"
+                          @click="form.rating_technicians = star"
+                        >
+                          <img
+                            :src="
+                              getStarImage(
+                                star,
+                                form.rating_technicians,
+                                hoverTechnicians,
+                              )
+                            "
+                            :alt="`${star} star`"
+                            class="h-[36px] md:h-[120px] w-auto object-contain"
+                          />
+                        </button>
+                        <span
+                          class="text-[8px] md:text-sm mt-1 text-center whitespace-nowrap transition-colors duration-200"
+                          :class="
+                            form.rating_technicians === star
+                              ? 'text-[#F39124] font-semibold'
+                              : 'text-gray-500'
+                          "
+                        >
+                          {{ getRatingLabel(star) }}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
               <!-- Question 5: Comments about Team -->
               <div
-                class="bg-gray-50 rounded-xl p-4 md:p-6 border border-gray-200"
+                class="bg-gray-50 rounded-xl p-4 md:!p-12 lg:!p-16 border border-gray-200"
               >
                 <label
-                  class="block text-sm md:text-base font-semibold text-[#0c2340] mb-2"
+                  class="block text-base md:text-[32px] font-semibold text-[#0c2340] mb-2 leading-tight text-left"
                 >
                   How was your experience with our team?
                 </label>
-                <p class="text-sm text-gray-400 mb-3">Optional</p>
+                <p class="text-sm md:text-base text-gray-400 mb-3">Optional</p>
                 <textarea
                   v-model="form.comments_technicians"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-transparent resize-y text-sm md:text-base"
-                  rows="3"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-transparent resize-y text-sm md:text-[32px]"
+                  rows="4"
                   placeholder="Tell us about your experience with our team..."
                 ></textarea>
               </div>
 
               <!-- Question 6: Additional Comments -->
               <div
-                class="bg-gray-50 rounded-xl p-4 md:p-6 border border-gray-200"
+                class="bg-gray-50 rounded-xl p-4 md:!p-12 lg:!p-16 border border-gray-200"
               >
                 <label
-                  class="block text-sm md:text-base font-semibold text-[#0c2340] mb-2"
+                  class="block text-base md:text-[32px] font-semibold text-[#0c2340] mb-2 leading-tight text-left"
                 >
                   Any additional feedback or suggestions?
                 </label>
-                <p class="text-sm text-gray-400 mb-3">Optional</p>
+                <p class="text-sm md:text-base text-gray-400 mb-3">Optional</p>
                 <textarea
                   v-model="form.comments_additional"
-                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-transparent resize-y text-sm md:text-base"
-                  rows="3"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-orange focus:border-transparent resize-y text-sm md:text-[32px]"
+                  rows="4"
                   placeholder="Anything else you'd like to share..."
                 ></textarea>
               </div>
 
               <!-- Question 7: Would Recommend -->
               <div
-                class="bg-[#0c2340] rounded-xl py-8 md:py-14 px-4 md:px-6 border-4 border-[#F39124]"
+                class="bg-[#0c2340] rounded-[36px] md:!h-[489px] border-[9px] border-[#F39124] flex flex-col justify-center items-center py-8 md:!py-0 px-6 md:!px-12 lg:!px-16"
               >
                 <label
-                  class="block text-sm md:text-base text-center font-normal text-white mb-4 md:mb-6 tracking-widest"
+                  class="block text-base md:text-[32px] text-center font-normal text-white mb-4 md:mb-8 leading-tight"
                 >
                   Would you recommend Festive Express to family and friends?
                 </label>
                 <div
-                  class="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center"
+                  class="flex flex-col sm:flex-row gap-4 md:gap-8 justify-center items-center"
                 >
                   <div class="relative">
                     <button
                       type="button"
-                      class="w-full sm:w-auto px-6 md:px-8 py-2.5 rounded-full font-normal text-white transition-all hover:scale-105 flex items-center justify-center gap-2 text-sm md:text-base"
+                      class="w-full sm:w-auto px-8 md:!px-12 lg:!px-16 py-3 md:!py-5 lg:!py-6 rounded-full font-normal text-white transition-all hover:scale-105 flex items-center justify-center gap-2 text-sm md:text-[32px]"
                       :class="
                         form.would_recommend === true
                           ? 'bg-[#F39124] font-semibold'
@@ -326,10 +404,10 @@
                   </div>
                   <button
                     type="button"
-                    class="w-full sm:w-auto px-6 md:px-8 py-2 rounded-full font-semibold text-white transition-all hover:scale-105 flex items-center justify-center gap-2 text-sm md:text-base"
+                    class="w-full sm:w-auto px-8 md:!px-12 lg:!px-16 py-3 md:!py-5 lg:!py-6 rounded-full font-normal text-white transition-all hover:scale-105 flex items-center justify-center gap-2 text-sm md:text-[32px]"
                     :class="
                       form.would_recommend === false
-                        ? 'bg-gray-600'
+                        ? 'bg-gray-600 font-semibold'
                         : 'bg-gray-400'
                     "
                     @click="form.would_recommend = false"
@@ -348,7 +426,7 @@
               <div class="flex justify-center">
                 <button
                   type="submit"
-                  class="w-full sm:w-max bg-[#F49322] text-white font-bold py-3 px-6 md:px-8 rounded-full hover:bg-[#e07e0e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-lg"
+                  class="w-full sm:w-max bg-[#F49322] text-white font-bold py-4 px-8 md:px-12 rounded-full hover:bg-[#e07e0e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-[32px]"
                   :disabled="!form.rating_overall || isSubmitting"
                 >
                   <i
@@ -359,7 +437,7 @@
                 </button>
               </div>
 
-              <p class="text-xs text-gray-400 text-center">
+              <p class="text-xs md:text-base text-gray-400 text-center">
                 <i class="fas fa-lock mr-1"></i> Your feedback is secure and
                 anonymous
               </p>
@@ -403,33 +481,21 @@ const getStarImage = (star: number, rating: number, hover: number) => {
     return `/Images/reviews/off.png`;
   }
 
-  // If this is the highest active star (the one that was clicked/hovered)
   const highestActive = Math.max(rating, hover);
   if (star === highestActive) {
     return `/Images/reviews/${star}-on.png`;
   }
 
-  // All stars before the highest active star use generic on.png
   return `/Images/reviews/on.png`;
 };
-
-const formatExpiry = computed(() => {
-  if (!review.value?.expires_at) return "";
-  return new Date(review.value.expires_at).toLocaleString("en-US", {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-});
 
 const getRatingLabel = (rating: number) => {
   const labels: Record<number, string> = {
     1: "Very Poor",
     2: "Poor",
     3: "Average",
-    4: "Good",
-    5: "Excellent!",
+    4: "Happy",
+    5: "Festive!",
   };
   return labels[rating] || "";
 };
@@ -510,4 +576,3 @@ useHead({
   title: "Share Your Experience - Festive Express",
 });
 </script>
-
