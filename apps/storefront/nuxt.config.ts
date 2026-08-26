@@ -71,25 +71,46 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    // PRIVATE — never use public:
+    // PRIVATE
     convergeMerchantId: process.env.CONVERGE_MERCHANT_ID || "",
     convergeUserId: process.env.CONVERGE_USER_ID || "",
     convergePin: process.env.CONVERGE_PIN || "",
     convergeDemo: process.env.CONVERGE_DEMO !== "false",
-    estimatorApiUrl: process.env.ESTIMATOR_API_URL,
-    estimatorAssetUrl: process.env.ESTIMATOR_ASSET_URL || "",
+
+    estimatorApiUrl:
+      process.env.ESTIMATOR_API_URL ||
+      "http://52.204.215.130/estimator",
+
+    estimatorAssetUrl:
+      process.env.ESTIMATOR_ASSET_URL ||
+      "http://52.204.215.130",
+
     turnstile: {
-      secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY,
+      secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY || "",
     },
-    supabaseServiceKey: process.env.NUXT_SUPABASE_SECRET_KEY,
-    elavonAccountId: process.env.ELAVON_ACCOUNT_ID,
-    elavonUserId: process.env.ELAVON_USER_ID,
-    elavonPin: process.env.ELAVON_PIN,
+
+    supabaseServiceKey:
+      process.env.NUXT_SUPABASE_SECRET_KEY || "",
+
+    elavonAccountId:
+      process.env.ELAVON_ACCOUNT_ID || "",
+
+    elavonUserId:
+      process.env.ELAVON_USER_ID || "",
+
+    elavonPin:
+      process.env.ELAVON_PIN || "",
+
     public: {
-      supabaseUrl: process.env.SUPABASE_URL,
-      supabaseKey: process.env.SUPABASE_KEY,
+      supabaseUrl:
+        process.env.SUPABASE_URL || "",
+
+      supabaseKey:
+        process.env.SUPABASE_KEY || "",
+
       apiBase:
-        process.env.NUXT_PUBLIC_API_BASE || "http://localhost:3000/api",
+        process.env.NUXT_PUBLIC_API_BASE ||
+        "http://localhost:3000/api",
     },
   },
 
@@ -112,9 +133,6 @@ export default defineNuxtConfig({
           "X-Powered-By": "Festive Express",
         },
       },
-      '/estimator/**': {
-        proxy: 'http://52.204.215**'
-      }
     },
   },
 });
