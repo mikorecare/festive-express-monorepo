@@ -554,6 +554,84 @@ const validateCheckout = () => {
 };
 
 // ============================================
+// GET CITY FROM ZIP CODE
+// ============================================
+
+const getCityFromZip = (zip: string): string => {
+  const sarasotaZips = [
+    "34223",
+    "34228",
+    "34229",
+    "34231",
+    "34232",
+    "34233",
+    "34234",
+    "34235",
+    "34236",
+    "34237",
+    "34238",
+    "34239",
+    "34241",
+    "34242",
+    "34275",
+    "34285",
+    "34286",
+    "34287",
+    "34288",
+    "34289",
+    "34291",
+    "34292",
+    "34293",
+    "34230",
+    "34249",
+    "34272",
+    "34274",
+    "34276",
+    "34277",
+    "34284",
+    "34290",
+    "34295",
+  ];
+
+  const bradentonZips = [
+    "34201",
+    "34203",
+    "34205",
+    "34207",
+    "34208",
+    "34209",
+    "34210",
+    "34215",
+    "34216",
+    "34217",
+    "34219",
+    "34221",
+    "34222",
+    "34243",
+    "34251",
+    "34204",
+    "34206",
+    "34218",
+    "34220",
+    "34250",
+    "34260",
+    "34264",
+    "34270",
+    "34280",
+    "34281",
+    "34282",
+  ];
+
+  const lakewoodRanchZips = ["34202", "34211", "34212", "34240"];
+
+  if (sarasotaZips.includes(zip)) return "Sarasota";
+  if (bradentonZips.includes(zip)) return "Bradenton";
+  if (lakewoodRanchZips.includes(zip)) return "Lakewood Ranch";
+
+  return "Sarasota"; // Default fallback
+};
+
+// ============================================
 // CHECKOUT.JS IMPLEMENTATION
 // ============================================
 
@@ -632,15 +710,13 @@ const processPaymentWithCheckout = async (
     ssl_avs_zip: form.value.billing_postcode,
     ssl_email: form.value.billing_email,
     ssl_phone: form.value.billing_phone,
-    // Additional optional fields
-    ssl_city: "Sarasota",
+    ssl_city: getCityFromZip(form.value.billing_postcode),
     ssl_state: "FL",
     ssl_country: "USA",
   };
 
   console.log("Sending payment to Converge via Checkout.js...");
 
-  // Send directly to Converge - NEVER touches your server!
   return new Promise((resolve, reject) => {
     (window as any).ConvergeCheckout.processPayment(
       paymentData,
@@ -670,6 +746,8 @@ const payWithConverge = async () => {
     const email = form.value.billing_email || "";
     const promoCodeId = appliedPromo.value?.id || null;
 
+    const city = getCityFromZip(form.value.billing_postcode);
+
     const orderBody = {
       first_name: firstName,
       last_name: lastName,
@@ -679,6 +757,8 @@ const payWithConverge = async () => {
       billing_postcode: form.value.billing_postcode,
       shipping_address: form.value.shipping_address_1,
       shipping_postcode: form.value.billing_postcode,
+      billing_city: city,
+      billing_state: "FL",
       preferred_install_dates: form.value.install_dates.filter((d) => d),
       removal_dates: form.value.removal_dates.filter((d) => d),
       customer_note: form.value.customer_note || null,
@@ -705,7 +785,7 @@ const payWithConverge = async () => {
         email: email,
         invoice_number: `F-EX-${Date.now()}`,
         billing_address: form.value.shipping_address_1,
-        billing_city: "Sarasota",
+        billing_city: city,
         billing_state: "FL",
         billing_zip: form.value.billing_postcode,
         billing_country: "USA",
@@ -722,14 +802,17 @@ const payWithConverge = async () => {
     const paymentData = {
       ssl_txn_auth_token: tokenRes.token,
       ssl_card_number: form.value.card_number.replace(/\s/g, ""),
-      ssl_exp_date: form.value.card_expiry.replace("/", ""), // MMYY format
+      ssl_exp_date: form.value.card_expiry.replace("/", ""),
       ssl_cvv2cvc2: form.value.card_cvv,
       ssl_first_name: form.value.billing_first_name,
       ssl_last_name: form.value.billing_last_name,
       ssl_avs_address: form.value.shipping_address_1,
-      ssl_city: "Sarasota",
+      ssl_city: city,
       ssl_state: "FL",
       ssl_avs_zip: form.value.billing_postcode,
+      ssl_country: "USA",
+      ssl_email: form.value.billing_email,
+      ssl_phone: form.value.billing_phone,
       ssl_invoice_number: `INV-${Date.now()}`,
       ssl_get_token: "Y",
       ssl_add_token: "Y",
@@ -770,7 +853,6 @@ const payWithConverge = async () => {
           await clearCart();
           toast.success("Payment successful!");
 
-          // FIX: Include email in navigation
           navigateTo(
             `/thank-you?order=${orderRes.order.order_number}&email=${encodeURIComponent(email)}`,
           );
