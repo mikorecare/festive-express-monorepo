@@ -4,7 +4,7 @@
       class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
     >
       <div>
-        <h1 class="text-2xl font-bold text-[#0c2340]">Inclusion Items</h1>
+        <h1 class="text-2xl font-bold text-[#1C2D5B]">Inclusion Items</h1>
         <p class="text-slate-500 text-sm mt-1">
           Shared catalog (C-9, Wreath, Bow…) with description, colors, features
           &amp; specs for storefront cards.
@@ -16,7 +16,7 @@
       <!-- LEFT: Add / Edit form -->
       <div class="lg:col-span-5">
         <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-6">
-          <h2 class="text-lg font-bold text-[#0c2340] mb-4">
+          <h2 class="text-lg font-bold text-[#1C2D5B] mb-4">
             {{ editingId ? "Edit inclusion" : "Add inclusion" }}
           </h2>
 
@@ -96,7 +96,7 @@
                 </label>
                 <button
                   type="button"
-                  class="text-xs font-semibold text-[#F49322] hover:text-[#0c2340]"
+                  class="text-xs font-semibold text-[#F49321] hover:text-[#1C2D5B]"
                   @click="addSpecRow"
                 >
                   + Add row
@@ -148,7 +148,7 @@
                 >Image</label
               >
               <div
-                class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center cursor-pointer hover:border-[#F49322]"
+                class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center cursor-pointer hover:border-[#F49321]"
                 @click="fileInput?.click()"
               >
                 <img
@@ -183,7 +183,7 @@
             <div class="flex flex-wrap gap-2 pt-2">
               <button
                 type="button"
-                class="px-5 py-2.5 rounded-lg bg-[#F49322] text-white text-sm font-semibold hover:bg-[#0c2340] disabled:opacity-60"
+                class="px-5 py-2.5 rounded-lg bg-[#F49321] text-white text-sm font-semibold hover:bg-[#1C2D5B] disabled:opacity-60"
                 :disabled="saving"
                 @click="saveItem"
               >
@@ -210,7 +210,7 @@
           <div
             class="px-5 py-4 border-b border-slate-100 flex items-center justify-between"
           >
-            <h2 class="font-bold text-[#0c2340]">
+            <h2 class="font-bold text-[#1C2D5B]">
               Existing items ({{ items.length }})
             </h2>
           </div>
@@ -240,7 +240,7 @@
               </div>
 
               <div class="flex-1 min-w-0">
-                <div class="font-semibold text-[#0c2340] truncate">
+                <div class="font-semibold text-[#1C2D5B] truncate">
                   {{ item.name }}
                 </div>
                 <div class="text-xs text-slate-400">
@@ -262,7 +262,7 @@
               <div class="flex gap-2 shrink-0">
                 <button
                   type="button"
-                  class="px-3 py-1.5 rounded-lg bg-[#0c2340] text-white text-xs font-semibold hover:bg-[#F49322]"
+                  class="px-3 py-1.5 rounded-lg bg-[#1C2D5B] text-white text-xs font-semibold hover:bg-[#F49321]"
                   @click="startEdit(item)"
                 >
                   Edit
@@ -294,13 +294,13 @@
         @click.self="cancelDelete"
       >
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-          <h3 class="text-lg font-bold text-[#0c2340] mb-2">
+          <h3 class="text-lg font-bold text-[#1C2D5B] mb-2">
             Delete inclusion?
           </h3>
           <p class="text-slate-600 text-sm mb-1">
             Are you sure you want to delete this item?
           </p>
-          <p class="font-semibold text-[#0c2340] mb-4">
+          <p class="font-semibold text-[#1C2D5B] mb-4">
             {{ itemToDelete?.name }}
           </p>
           <p class="text-xs text-slate-500 mb-6">
@@ -693,7 +693,7 @@ onMounted(async () => {
 }
 .field:focus {
   outline: none;
-  border-color: #f49322;
+  border-color: #f49321;
   box-shadow: 0 0 0 3px rgba(244, 147, 34, 0.2);
 }
 </style>

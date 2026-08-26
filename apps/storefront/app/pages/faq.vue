@@ -22,7 +22,7 @@
       <div v-else class="space-y-10">
         <section v-for="cat in categories" :key="cat.id">
           <h2
-            class="text-2xl font-bold text-[#0c2340] mb-4 border-b-2 border-[#F49322] pb-2"
+            class="text-2xl font-bold text-[#1C2D5B] mb-4 border-b-2 border-[#F49321] pb-2"
           >
             {{ cat.name }}
           </h2>
@@ -35,12 +35,12 @@
             >
               <button
                 type="button"
-                class="w-full flex items-center justify-between gap-4 px-5 py-4 text-left font-semibold text-[#0c2340] hover:bg-orange-50 transition"
+                class="w-full flex items-center justify-between gap-4 px-5 py-4 text-left font-semibold text-[#1C2D5B] hover:bg-orange-50 transition"
                 @click="toggle(faq.id)"
               >
                 <span>{{ faq.question }}</span>
                 <i
-                  class="fas fa-chevron-down text-[#F49322] transition-transform"
+                  class="fas fa-chevron-down text-[#F49321] transition-transform"
                   :class="{ 'rotate-180': openId === faq.id }"
                 />
               </button>
@@ -59,13 +59,13 @@
         <p class="text-navy mb-2">Still have questions?</p>
         <a
           :href="`tel:${phoneHref}`"
-          class="text-xl font-bold text-[#F49322] hover:text-[#0c2340]"
+          class="text-xl font-bold text-[#F49321] hover:text-[#1C2D5B]"
         >
           {{ supportPhone }}
         </a>
         <p class="text-sm text-navy mt-2">
           or email
-          <a :href="`mailto:${supportEmail}`" class="hover:text-[#F49322]">
+          <a :href="`mailto:${supportEmail}`" class="hover:text-[#F49321]">
             {{ supportEmail }}
           </a>
         </p>

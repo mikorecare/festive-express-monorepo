@@ -5,11 +5,14 @@
         <span class="badge">SHOP BY CATEGORY</span>
         <h2 class="section-title">Our Collections</h2>
       </div>
-      
+
       <div class="collections-grid">
         <!-- Collection 1 -->
         <div class="collection-card">
-          <img src="/Images/Permanent-outdoor-lights.jpg" alt="Roofline Lighting">
+          <img
+            src="/Images/Permanent-outdoor-lights.jpg"
+            alt="Roofline Lighting"
+          />
           <div class="card-content">
             <h3>Roofline Lighting</h3>
             <p class="popular">Most Popular</p>
@@ -19,7 +22,7 @@
 
         <!-- Collection 2 -->
         <div class="collection-card">
-          <img src="/Images/roofline-lighting-2.jpg" alt="Wreath & Garlands">
+          <img src="/Images/roofline-lighting-2.jpg" alt="Wreath & Garlands" />
           <div class="card-content">
             <h3>Wreath, Garlands & Bows</h3>
             <p class="popular">Classic</p>
@@ -29,7 +32,10 @@
 
         <!-- Collection 3 -->
         <div class="collection-card">
-          <img src="/Images/21-web-or-mls-4605-5th-Ave-NE23.jpg" alt="Ground & Shrub">
+          <img
+            src="/Images/21-web-or-mls-4605-5th-Ave-NE23.jpg"
+            alt="Ground & Shrub"
+          />
           <div class="card-content">
             <h3>Ground & Shrub Lighting</h3>
             <p class="popular">Most Popular</p>
@@ -39,7 +45,10 @@
 
         <!-- Collection 4 -->
         <div class="collection-card">
-          <img src="/Images/Ground-Lighting-Bundle.jpg" alt="Light Burst & Spritzers">
+          <img
+            src="/Images/Ground-Lighting-Bundle.jpg"
+            alt="Light Burst & Spritzers"
+          />
           <div class="card-content">
             <h3>Light Burst & Spritzers</h3>
             <p class="popular">Seasonal</p>
@@ -61,7 +70,7 @@
   text-align: center;
   font-size: 2.4rem;
   margin-bottom: 50px;
-  color: #0c2340;
+  color: #1c2d5b;
 }
 
 .collections-grid {
@@ -74,13 +83,15 @@
   position: relative;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
 }
 
 .collection-card:hover {
   transform: translateY(-12px);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
 }
 
 .collection-card img {
@@ -108,7 +119,7 @@
   margin-bottom: 50px;
 }
 .badge {
-  background: #0c2340;
+  background: #1c2d5b;
   color: white;
   padding: 6px 16px;
   border-radius: 30px;
@@ -126,7 +137,7 @@
 
 .view-btn {
   background: white;
-  color: #0c2340;
+  color: #1c2d5b;
   border: none;
   padding: 10px 24px;
   border-radius: 6px;
@@ -136,7 +147,7 @@
 }
 
 .view-btn:hover {
-  background: #F49322;
+  background: #f49321;
   color: white;
 }
 

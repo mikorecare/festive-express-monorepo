@@ -4,15 +4,16 @@ module.exports = {
     extend: {
       colors: {
         navy: {
-          DEFAULT: '#0c2340',
-          dark: '#08172b',
+          DEFAULT: "#1C2D5B",
+          // dark: "#1C2D5B",
         },
         brand: {
-          orange: '#ff890b',
-          'orange-hover': '#e0831a',
-        }
-      }
-    }
+          orange: "#F49321",
+          "orange-hover": "#e0831a",
+        },
+        "brand-gray": "#D6D7D8",
+      },
+    },
   },
   plugins: [],
-}
+};

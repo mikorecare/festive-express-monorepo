@@ -46,7 +46,7 @@ defineProps({
 .hero-timer-title {
   font-size: 1.15rem;
   font-weight: 800;
-  color: #ff890b;
+  color: #f49321;
   text-transform: uppercase;
   margin-bottom: 0.75rem;
 }
@@ -82,7 +82,7 @@ defineProps({
 .mini-timer-item small {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #ff890b;
+  color: #f49321;
 }
 
 .hero-timer-subtext {

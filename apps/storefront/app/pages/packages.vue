@@ -79,7 +79,7 @@
               :src="getImageUrl(pkg.title_image_url || pkg.icon_url)"
               :alt="pkg.name"
             />
-            <h2 v-else class="text-3xl font-bold text-[#0c2340]">
+            <h2 v-else class="text-3xl font-bold text-[#1C2D5B]">
               {{ pkg.name }}
             </h2>
           </div>
@@ -337,7 +337,7 @@
 
             <button
               type="button"
-              class="group relative overflow-hidden w-full bg-[#f59e0b] hover:bg-[#0c2340] text-white font-bold py-4 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
+              class="group relative overflow-hidden w-full bg-[#f59e0b] hover:bg-[#1C2D5B] text-white font-bold py-4 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
               :disabled="
                 !selectedSku(pkg)?.id || addingId === selectedSku(pkg)?.id
               "
@@ -418,7 +418,7 @@
             class="product-card bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden"
           >
             <div
-              class="product-header bg-[#0c2340] text-white p-5 flex justify-between items-center gap-3"
+              class="product-header bg-[#1C2D5B] text-white p-5 flex justify-between items-center gap-3"
             >
               <h3 class="text-lg font-bold text-white m-0">
                 {{ item.name }}
@@ -441,7 +441,7 @@
 
               <div
                 v-if="colorList(item).length"
-                class="options-tag bg-[#f0f4f8] text-[#0c2340] px-3 py-2 rounded-[6px] text-[0.88rem] mb-5"
+                class="options-tag bg-[#f0f4f8] text-[#1C2D5B] px-3 py-2 rounded-[6px] text-[0.88rem] mb-5"
               >
                 <strong>Color Options:</strong>
                 {{ colorList(item).join(", ") }}
@@ -449,7 +449,7 @@
 
               <div v-if="featureList(item).length" class="spec-block mb-4">
                 <h4
-                  class="text-base font-bold text-[#0c2340] mb-2.5 pb-0.75 border-b-2 border-[#f59e0b] inline-block"
+                  class="text-base font-bold text-[#1C2D5B] mb-2.5 pb-0.75 border-b-2 border-[#f59e0b] inline-block"
                 >
                   Features
                 </h4>
@@ -467,7 +467,7 @@
                 class="spec-block mt-auto"
               >
                 <h4
-                  class="text-base font-bold text-[#0c2340] mb-2.5 pb-0.75 border-b-2 border-[#f59e0b] inline-block"
+                  class="text-base font-bold text-[#1C2D5B] mb-2.5 pb-0.75 border-b-2 border-[#f59e0b] inline-block"
                 >
                   Specifications
                 </h4>

@@ -230,8 +230,6 @@
 </template>
 
 <script setup lang="ts">
-
-
 const packages = ref<
   Array<{
     id: number;
@@ -335,7 +333,7 @@ const getBadgeText = (name: string) => {
 
 .section-title {
   font-size: 2.5rem;
-  color: #0c2340;
+  color: #1c2d5b;
   margin-bottom: 12px;
 }
 
@@ -409,7 +407,7 @@ const getBadgeText = (name: string) => {
   border-bottom: 2px solid #eee;
   margin-bottom: 20px;
   padding: 30px 0;
-  background: #ff890b;
+  background: #f49321;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   text-align: center;
@@ -440,7 +438,7 @@ const getBadgeText = (name: string) => {
 
 .tooltip-trigger {
   /* background: #f1f5f9;
-  color: #0c2340;
+  color: #1C2D5B;
   border: none;
   padding: 8px 16px;
   border-radius: 8px; */

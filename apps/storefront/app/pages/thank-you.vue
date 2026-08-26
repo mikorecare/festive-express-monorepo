@@ -4,10 +4,10 @@
     <section
       class="bg-[url('/Images/Banner/hero-image.webp')] bg-cover bg-center bg-no-repeat relative"
     >
-      <div class="absolute inset-0 bg-[#0c2340]/80"></div>
+      <div class="absolute inset-0 bg-[#1C2D5B]/80"></div>
       <div class="container mx-auto px-4 py-20 text-center relative z-10">
         <span
-          class="inline-flex items-center gap-2 bg-[#F49322]/20 border border-[#F49322] text-[#F49322] px-5 py-2 rounded-full text-sm font-bold tracking-wide mb-5"
+          class="inline-flex items-center gap-2 bg-[#F49321]/20 border border-[#F49321] text-[#F49321] px-5 py-2 rounded-full text-sm font-bold tracking-wide mb-5"
         >
           <i class="fas fa-check-circle"></i> ORDER CONFIRMED
         </span>
@@ -47,7 +47,7 @@
         <div class="lg:col-span-2 space-y-6">
           <!-- Order Details -->
           <div class="bg-white rounded-2xl p-6 shadow-sm">
-            <h3 class="text-xl font-bold text-[#0c2340] mb-6">
+            <h3 class="text-xl font-bold text-[#1C2D5B] mb-6">
               <i class="fas fa-gift mr-2"></i> Your Holiday Package
             </h3>
 
@@ -58,7 +58,7 @@
                   class="text-xs font-bold text-gray-400 tracking-wider uppercase"
                   >Selected Plan</span
                 >
-                <h4 class="text-2xl font-extrabold text-[#0c2340] mt-1 mb-2">
+                <h4 class="text-2xl font-extrabold text-[#1C2D5B] mt-1 mb-2">
                   {{ packageName }}
                 </h4>
                 <p class="text-gray-500 text-sm mb-3">{{ packageDesc }}</p>
@@ -77,7 +77,7 @@
               <div class="space-y-3">
                 <div class="flex gap-3 bg-gray-50 rounded-xl p-4">
                   <div
-                    class="w-11 h-11 bg-blue-50 text-[#F49322] rounded-lg flex items-center justify-center text-lg flex-shrink-0"
+                    class="w-11 h-11 bg-blue-50 text-[#F49321] rounded-lg flex items-center justify-center text-lg flex-shrink-0"
                   >
                     <i class="fas fa-calendar-alt"></i>
                   </div>
@@ -86,7 +86,7 @@
                       class="block text-xs font-bold text-gray-400 tracking-wider uppercase"
                       >Installation Date</span
                     >
-                    <strong class="text-[#0c2340] text-lg">{{
+                    <strong class="text-[#1C2D5B] text-lg">{{
                       installDate || "To be confirmed"
                     }}</strong>
                     <span
@@ -99,7 +99,7 @@
 
                 <div class="flex gap-3 bg-gray-50 rounded-xl p-4">
                   <div
-                    class="w-11 h-11 bg-blue-50 text-[#F49322] rounded-lg flex items-center justify-center text-lg flex-shrink-0"
+                    class="w-11 h-11 bg-blue-50 text-[#F49321] rounded-lg flex items-center justify-center text-lg flex-shrink-0"
                   >
                     <i class="fas fa-calendar-check"></i>
                   </div>
@@ -108,7 +108,7 @@
                       class="block text-xs font-bold text-gray-400 tracking-wider uppercase"
                       >Removal Window</span
                     >
-                    <strong class="text-[#0c2340] text-lg">{{
+                    <strong class="text-[#1C2D5B] text-lg">{{
                       removalDate || "To be scheduled"
                     }}</strong>
                     <span class="block text-gray-400 text-xs"
@@ -122,7 +122,7 @@
 
           <!-- Next Steps -->
           <div>
-            <h3 class="text-xl font-bold text-[#0c2340] mb-4">
+            <h3 class="text-xl font-bold text-[#1C2D5B] mb-4">
               What Happens Next?
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -132,11 +132,11 @@
                 class="bg-white rounded-2xl p-6 shadow-sm"
               >
                 <span
-                  class="inline-flex w-8 h-8 bg-[#0c2340] text-white rounded-full items-center justify-center font-bold text-sm mb-3"
+                  class="inline-flex w-8 h-8 bg-[#1C2D5B] text-white rounded-full items-center justify-center font-bold text-sm mb-3"
                 >
                   {{ i + 1 }}
                 </span>
-                <h5 class="font-bold text-[#0c2340] mb-2">{{ step.title }}</h5>
+                <h5 class="font-bold text-[#1C2D5B] mb-2">{{ step.title }}</h5>
                 <p class="text-gray-500 text-sm leading-relaxed">
                   {{ step.desc }}
                 </p>
@@ -148,7 +148,7 @@
         <!-- Right Sidebar -->
         <div class="space-y-6">
           <!-- Help Card -->
-          <div class="bg-[#0c2340] text-white rounded-2xl p-6">
+          <div class="bg-[#1C2D5B] text-white rounded-2xl p-6">
             <h4 class="font-bold text-lg mb-3">
               <i class="fas fa-headset mr-2"></i> Need Help?
             </h4>
@@ -161,7 +161,7 @@
               href="tel:5555555548"
               class="flex items-center gap-4 bg-white/10 border border-white/15 rounded-xl p-4 hover:bg-white/20 transition-colors text-white no-underline mb-3"
             >
-              <i class="fas fa-phone-alt text-[#F49322] text-lg"></i>
+              <i class="fas fa-phone-alt text-[#F49321] text-lg"></i>
               <div>
                 <span
                   class="block text-white/60 text-xs font-bold tracking-wider uppercase"
@@ -175,19 +175,21 @@
               href="mailto:JoyJollyMerry@festive.express"
               class="flex items-center gap-4 bg-white/10 border border-white/15 rounded-xl p-4 hover:bg-white/20 transition-colors text-white no-underline mb-4"
             >
-              <i class="fas fa-envelope text-[#F49322] text-lg"></i>
+              <i class="fas fa-envelope text-[#F49321] text-lg"></i>
               <div>
                 <span
                   class="block text-white/60 text-xs font-bold tracking-wider uppercase"
                   >Email Support</span
                 >
-                <strong class="text-white">JoyJollyMerry@festive.express</strong>
+                <strong class="text-white"
+                  >JoyJollyMerry@festive.express</strong
+                >
               </div>
             </a>
 
             <!-- <NuxtLink
               to="/"
-              class="block text-center bg-[#F49322] text-white font-bold py-4 rounded-xl hover:bg-[#e07e0e] transition-colors no-underline"
+              class="block text-center bg-[#F49321] text-white font-bold py-4 rounded-xl hover:bg-[#e07e0e] transition-colors no-underline"
             >
               Go to Dashboard <i class="fas fa-arrow-right ml-1"></i>
             </NuxtLink> -->
@@ -195,17 +197,17 @@
 
           <!-- Testimonial -->
           <div
-            class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-[#F49322]"
+            class="bg-white rounded-2xl p-6 shadow-sm border-l-4 border-[#F49321]"
           >
             <span
-              class="inline-block bg-orange-50 text-[#F49322] text-xs font-bold tracking-wider uppercase px-3 py-1 rounded-full mb-3"
+              class="inline-block bg-orange-50 text-[#F49321] text-xs font-bold tracking-wider uppercase px-3 py-1 rounded-full mb-3"
               >Trusted Pro</span
             >
             <p class="text-gray-700 text-sm italic leading-relaxed mb-3">
               "The process was seamless and the results were stunning. Truly the
               best investment we made for our family's holiday spirit!"
             </p>
-            <span class="text-[#0c2340] text-sm font-semibold"
+            <span class="text-[#1C2D5B] text-sm font-semibold"
               >— Sarah J., Happy Customer</span
             >
           </div>
@@ -220,11 +222,11 @@
     >
       <div class="bg-white rounded-2xl p-12 shadow-sm max-w-md mx-auto">
         <i class="fas fa-exclamation-circle text-5xl text-red-500 mb-4"></i>
-        <h3 class="text-xl font-bold text-[#0c2340] mb-2">Order Not Found</h3>
+        <h3 class="text-xl font-bold text-[#1C2D5B] mb-2">Order Not Found</h3>
         <p class="text-gray-500 text-sm mb-6">{{ errorMessage }}</p>
         <NuxtLink
           to="/"
-          class="inline-block bg-[#F49322] text-white font-bold py-3 px-6 rounded-xl hover:bg-[#e07e0e] transition-colors no-underline"
+          class="inline-block bg-[#F49321] text-white font-bold py-3 px-6 rounded-xl hover:bg-[#e07e0e] transition-colors no-underline"
         >
           Go to Home
         </NuxtLink>
@@ -307,15 +309,12 @@ onMounted(async () => {
   }
 
   try {
-    const res: any = await $fetch(
-      `/orders/by-number/${route.query.order}`,
-      {
-        baseURL: config.public.apiBase,
-        params: {
-          email: email.value,
-        },
+    const res: any = await $fetch(`/orders/by-number/${route.query.order}`, {
+      baseURL: config.public.apiBase,
+      params: {
+        email: email.value,
       },
-    );
+    });
 
     if (res && res.order_number) {
       order.value = res;

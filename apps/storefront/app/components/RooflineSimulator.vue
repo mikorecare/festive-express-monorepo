@@ -1,29 +1,26 @@
 <template>
   <div class="roofline-simulator">
-    <h3 class="simulator-title text-center">C-9 Lights Preview – {{ packageName }}</h3>
+    <h3 class="simulator-title text-center">
+      C-9 Lights Preview – {{ packageName }}
+    </h3>
 
     <div class="simulator-layout">
       <!-- Main Preview -->
       <div class="preview-container" ref="previewRef">
-        <img 
-          :src="backgroundImage" 
-          class="house-bg" 
-          alt="House Preview"
-        />
-        <canvas 
-          ref="canvasRef" 
+        <img :src="backgroundImage" class="house-bg" alt="House Preview" />
+        <canvas
+          ref="canvasRef"
           class="scene-canvas"
           aria-label="Roofline lighting simulator"
         ></canvas>
 
         <!-- Wreath for Joy package -->
-        <img 
+        <img
           v-if="showWreath"
-          src="/Images/Holiday-Lighting-Package/mixed-noble-wreath.png" 
+          src="/Images/Holiday-Lighting-Package/mixed-noble-wreath.png"
           class="wreath-overlay"
           alt="24 inch Mixed Noble Wreath"
         />
-
       </div>
     </div>
 
@@ -43,196 +40,254 @@
         </button>
       </div>
     </div>
-
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from "vue";
 
 const props = defineProps({
   packageName: {
     type: String,
-    default: 'Joy'
+    default: "Joy",
   },
   showWreath: {
     type: Boolean,
-    default: true
-  }
-})
+    default: true,
+  },
+});
 
-const canvasRef = ref<HTMLCanvasElement | null>(null)
-const previewRef = ref<HTMLElement | null>(null)
+const canvasRef = ref<HTMLCanvasElement | null>(null);
+const previewRef = ref<HTMLElement | null>(null);
 
 const lightColors = [
-  { value: 'warm-white', label: 'Warm White', hex: '#F8D5A3', color: '#F8D5A3' },
-  { value: 'pure-white', label: 'Pure White', hex: '#F0F4FF', color: '#FFFFFF' },
-  { value: 'champagne', label: 'Champagne', hex: '#F5E8C7', color: '#F5E8C7' }
-]
+  {
+    value: "warm-white",
+    label: "Warm White",
+    hex: "#F8D5A3",
+    color: "#F8D5A3",
+  },
+  {
+    value: "pure-white",
+    label: "Pure White",
+    hex: "#F0F4FF",
+    color: "#FFFFFF",
+  },
+  { value: "champagne", label: "Champagne", hex: "#F5E8C7", color: "#F5E8C7" },
+];
 
-const selectedColor = ref('warm-white')
-const backgroundImage = ref('/Images/night.webp') // Use your night.webp
+const selectedColor = ref("warm-white");
+const backgroundImage = ref("/Images/night.webp"); // Use your night.webp
 
 // Simplified roofline points (based on your original coordinates, scaled)
 const rooflines = {
-  roof1: [{ x: 210, y: 383 }, { x: 460, y: 235 }, { x: 723, y: 382 }],
-  roof2: [{ x: 720, y: 325 }, { x: 940, y: 200 }, { x: 1155, y: 318 }],
-  roof3: [{ x: 1100, y: 400 }, { x: 1290, y: 293 }, { x: 1450, y: 380 }],
-  roof4: [{ x: 800, y: 437 }, { x: 1050, y: 435 }],
-  roof5: [{ x: 1065, y: 428 }, { x: 1540, y: 428 }],
-  roof6: [{ x: 155, y: 415 }, { x: 230, y: 415 }],
-  roof7: [{ x: 700, y: 415 }, { x: 770, y: 415 }]
-}
+  roof1: [
+    { x: 210, y: 383 },
+    { x: 460, y: 235 },
+    { x: 723, y: 382 },
+  ],
+  roof2: [
+    { x: 720, y: 325 },
+    { x: 940, y: 200 },
+    { x: 1155, y: 318 },
+  ],
+  roof3: [
+    { x: 1100, y: 400 },
+    { x: 1290, y: 293 },
+    { x: 1450, y: 380 },
+  ],
+  roof4: [
+    { x: 800, y: 437 },
+    { x: 1050, y: 435 },
+  ],
+  roof5: [
+    { x: 1065, y: 428 },
+    { x: 1540, y: 428 },
+  ],
+  roof6: [
+    { x: 155, y: 415 },
+    { x: 230, y: 415 },
+  ],
+  roof7: [
+    { x: 700, y: 415 },
+    { x: 770, y: 415 },
+  ],
+};
 
-const roofOrder = ['roof6', 'roof1', 'roof7', 'roof2', 'roof4', 'roof3', 'roof5']
+const roofOrder = [
+  "roof6",
+  "roof1",
+  "roof7",
+  "roof2",
+  "roof4",
+  "roof3",
+  "roof5",
+];
 
-let animationId: number | null = null
-let bulbs: any[] = []
-let ctx: CanvasRenderingContext2D | null = null
-let currentColor = '#F8D5A3'
+let animationId: number | null = null;
+let bulbs: any[] = [];
+let ctx: CanvasRenderingContext2D | null = null;
+let currentColor = "#F8D5A3";
 
-const DESIGN_WIDTH = 1690
-const DESIGN_HEIGHT = 862
+const DESIGN_WIDTH = 1690;
+const DESIGN_HEIGHT = 862;
 
 function buildBulbs() {
-  const spacing = 22
-  const result: any[] = []
-  let globalIndex = 0
+  const spacing = 22;
+  const result: any[] = [];
+  let globalIndex = 0;
 
   for (const roofName of roofOrder) {
-    const points = (rooflines as any)[roofName]
-    if (!points) continue
+    const points = (rooflines as any)[roofName];
+    if (!points) continue;
 
-    const segments = []
-    let pathLength = 0
+    const segments = [];
+    let pathLength = 0;
 
     for (let i = 0; i < points.length - 1; i++) {
-      const start = points[i]
-      const end = points[i + 1]
-      const len = Math.hypot(end.x - start.x, end.y - start.y)
-      pathLength += len
-      segments.push({ start, end, length: len })
+      const start = points[i];
+      const end = points[i + 1];
+      const len = Math.hypot(end.x - start.x, end.y - start.y);
+      pathLength += len;
+      segments.push({ start, end, length: len });
     }
 
-    const bulbCount = Math.max(2, Math.round(pathLength / spacing))
+    const bulbCount = Math.max(2, Math.round(pathLength / spacing));
 
     for (let local = 0; local <= bulbCount; local++) {
-      const target = (local / bulbCount) * pathLength
-      let walked = 0
-      let point = points[0]
-      let tangent = { x: 1, y: 0 }
+      const target = (local / bulbCount) * pathLength;
+      let walked = 0;
+      let point = points[0];
+      let tangent = { x: 1, y: 0 };
 
       for (const seg of segments) {
         if (walked + seg.length >= target) {
-          const t = (target - walked) / seg.length
+          const t = (target - walked) / seg.length;
           point = {
             x: seg.start.x + (seg.end.x - seg.start.x) * t,
-            y: seg.start.y + (seg.end.y - seg.start.y) * t
-          }
+            y: seg.start.y + (seg.end.y - seg.start.y) * t,
+          };
           tangent = {
             x: seg.end.x - seg.start.x,
-            y: seg.end.y - seg.start.y
-          }
-          const len = Math.hypot(tangent.x, tangent.y) || 1
-          tangent.x /= len
-          tangent.y /= len
-          break
+            y: seg.end.y - seg.start.y,
+          };
+          const len = Math.hypot(tangent.x, tangent.y) || 1;
+          tangent.x /= len;
+          tangent.y /= len;
+          break;
         }
-        walked += seg.length
+        walked += seg.length;
       }
 
       result.push({
         x: point.x,
         y: point.y,
         globalIndex,
-        offset: globalIndex * 0.28
-      })
-      globalIndex++
+        offset: globalIndex * 0.28,
+      });
+      globalIndex++;
     }
   }
-  return result
+  return result;
 }
 
 function resizeCanvas() {
-  if (!canvasRef.value || !previewRef.value) return
+  if (!canvasRef.value || !previewRef.value) return;
 
-  const canvas = canvasRef.value
-  const rect = previewRef.value.getBoundingClientRect()
-  const dpr = window.devicePixelRatio || 1
+  const canvas = canvasRef.value;
+  const rect = previewRef.value.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
 
-  canvas.width = Math.round(rect.width * dpr)
-  canvas.height = Math.round(rect.height * dpr)
+  canvas.width = Math.round(rect.width * dpr);
+  canvas.height = Math.round(rect.height * dpr);
 
-  ctx = canvas.getContext('2d')
-  if (!ctx) return
+  ctx = canvas.getContext("2d");
+  if (!ctx) return;
 
-  const scale = Math.max(rect.width / DESIGN_WIDTH, rect.height / DESIGN_HEIGHT)
-  const offsetX = (rect.width - DESIGN_WIDTH * scale) / 2
-  const offsetY = (rect.height - DESIGN_HEIGHT * scale) / 2
+  const scale = Math.max(
+    rect.width / DESIGN_WIDTH,
+    rect.height / DESIGN_HEIGHT,
+  );
+  const offsetX = (rect.width - DESIGN_WIDTH * scale) / 2;
+  const offsetY = (rect.height - DESIGN_HEIGHT * scale) / 2;
 
-  ctx.setTransform(scale * dpr, 0, 0, scale * dpr, offsetX * dpr, offsetY * dpr)
+  ctx.setTransform(
+    scale * dpr,
+    0,
+    0,
+    scale * dpr,
+    offsetX * dpr,
+    offsetY * dpr,
+  );
 }
 
 function hexToRgba(hex: string, alpha: number) {
-  const normalized = hex.replace('#', '')
-  const r = parseInt(normalized.substring(0, 2), 16)
-  const g = parseInt(normalized.substring(2, 4), 16)
-  const b = parseInt(normalized.substring(4, 6), 16)
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`
+  const normalized = hex.replace("#", "");
+  const r = parseInt(normalized.substring(0, 2), 16);
+  const g = parseInt(normalized.substring(2, 4), 16);
+  const b = parseInt(normalized.substring(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
 function draw() {
-  if (!ctx || !canvasRef.value) return
+  if (!ctx || !canvasRef.value) return;
 
-  ctx.clearRect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT)
-  ctx.globalCompositeOperation = 'screen'
+  ctx.clearRect(0, 0, DESIGN_WIDTH, DESIGN_HEIGHT);
+  ctx.globalCompositeOperation = "screen";
 
   for (const bulb of bulbs) {
-    const intensity = 0.85 + Math.sin(Date.now() / 800 + bulb.offset) * 0.15
+    const intensity = 0.85 + Math.sin(Date.now() / 800 + bulb.offset) * 0.15;
 
     // Glow
-    const gradient = ctx.createRadialGradient(bulb.x, bulb.y, 0, bulb.x, bulb.y, 22)
-    gradient.addColorStop(0, hexToRgba(currentColor, 0.7 * intensity))
-    gradient.addColorStop(0.4, hexToRgba(currentColor, 0.35 * intensity))
-    gradient.addColorStop(1, hexToRgba(currentColor, 0))
-    ctx.fillStyle = gradient
-    ctx.beginPath()
-    ctx.arc(bulb.x, bulb.y, 22, 0, Math.PI * 2)
-    ctx.fill()
+    const gradient = ctx.createRadialGradient(
+      bulb.x,
+      bulb.y,
+      0,
+      bulb.x,
+      bulb.y,
+      22,
+    );
+    gradient.addColorStop(0, hexToRgba(currentColor, 0.7 * intensity));
+    gradient.addColorStop(0.4, hexToRgba(currentColor, 0.35 * intensity));
+    gradient.addColorStop(1, hexToRgba(currentColor, 0));
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(bulb.x, bulb.y, 22, 0, Math.PI * 2);
+    ctx.fill();
 
     // Core
-    const core = ctx.createRadialGradient(bulb.x, bulb.y, 0, bulb.x, bulb.y, 5)
-    core.addColorStop(0, 'rgba(255,255,255,0.95)')
-    core.addColorStop(0.5, hexToRgba(currentColor, 0.9))
-    core.addColorStop(1, hexToRgba(currentColor, 0.7))
-    ctx.fillStyle = core
-    ctx.beginPath()
-    ctx.arc(bulb.x, bulb.y, 4.5, 0, Math.PI * 2)
-    ctx.fill()
+    const core = ctx.createRadialGradient(bulb.x, bulb.y, 0, bulb.x, bulb.y, 5);
+    core.addColorStop(0, "rgba(255,255,255,0.95)");
+    core.addColorStop(0.5, hexToRgba(currentColor, 0.9));
+    core.addColorStop(1, hexToRgba(currentColor, 0.7));
+    ctx.fillStyle = core;
+    ctx.beginPath();
+    ctx.arc(bulb.x, bulb.y, 4.5, 0, Math.PI * 2);
+    ctx.fill();
   }
 
-  animationId = requestAnimationFrame(draw)
+  animationId = requestAnimationFrame(draw);
 }
 
 function changeColor(value: string) {
-  selectedColor.value = value
-  const found = lightColors.find(c => c.value === value)
+  selectedColor.value = value;
+  const found = lightColors.find((c) => c.value === value);
   if (found) {
-    currentColor = found.color
+    currentColor = found.color;
   }
 }
 
 onMounted(() => {
-  bulbs = buildBulbs()
-  resizeCanvas()
-  window.addEventListener('resize', resizeCanvas)
-  draw()
-})
+  bulbs = buildBulbs();
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+  draw();
+});
 
 onUnmounted(() => {
-  if (animationId) cancelAnimationFrame(animationId)
-  window.removeEventListener('resize', resizeCanvas)
-})
+  if (animationId) cancelAnimationFrame(animationId);
+  window.removeEventListener("resize", resizeCanvas);
+});
 </script>
 
 <style scoped>
@@ -245,7 +300,7 @@ onUnmounted(() => {
 
 .simulator-title {
   font-size: 1.5rem;
-  color: #0c2340;
+  color: #1c2d5b;
   margin-bottom: 20px;
 }
 
@@ -264,7 +319,9 @@ onUnmounted(() => {
   overflow: hidden;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
   background: #071321;
-  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  transition:
+    transform 0.5s ease,
+    box-shadow 0.5s ease;
   margin: 0 auto;
 }
 
@@ -317,7 +374,7 @@ onUnmounted(() => {
   padding: 28px 24px;
   border-radius: 12px;
   min-width: 260px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   width: 100%;
   max-width: 100%;
   margin: 40px auto;
@@ -326,14 +383,14 @@ onUnmounted(() => {
 .color-panel h4 {
   text-align: center;
   margin-bottom: 20px;
-  color: #0c2340;
+  color: #1c2d5b;
   font-size: 1.1rem;
 }
 
 .color-options {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;     /* Center the buttons */
+  justify-content: center; /* Center the buttons */
   gap: 40px;
   align-items: center;
 }
@@ -352,12 +409,12 @@ onUnmounted(() => {
 }
 
 .color-btn:hover {
-  border-color: #F49322;
+  border-color: #f49321;
   background: white;
 }
 
 .color-btn.active {
-  border-color: #F49322;
+  border-color: #f49321;
   background: #fff7ed;
   box-shadow: 0 4px 12px rgba(244, 147, 34, 0.2);
 }
@@ -367,12 +424,12 @@ onUnmounted(() => {
   height: 42px;
   border-radius: 50%;
   border: 3px solid white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 .label {
   font-weight: 600;
-  color: #0c2340;
+  color: #1c2d5b;
   font-size: 0.95rem;
 }
 

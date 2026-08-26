@@ -1,7 +1,11 @@
 <template>
-  <div class="rich-editor border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm">
+  <div
+    class="rich-editor border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm"
+  >
     <!-- Toolbar -->
-    <div class="flex flex-wrap items-center gap-1.5 p-2 border-b border-slate-200 bg-slate-50">
+    <div
+      class="flex flex-wrap items-center gap-1.5 p-2 border-b border-slate-200 bg-slate-50"
+    >
       <button
         type="button"
         class="rte-btn"
@@ -88,7 +92,7 @@
           type="color"
           class="absolute inset-0 opacity-0 cursor-pointer"
           @input="setColor(($event.target as HTMLInputElement).value)"
-        >
+        />
       </label>
 
       <span class="rte-sep" />
@@ -169,167 +173,168 @@
 <script setup lang="ts">
 const props = withDefaults(
   defineProps<{
-    modelValue?: string | null
-    placeholder?: string
+    modelValue?: string | null;
+    placeholder?: string;
   }>(),
   {
-    modelValue: '',
-    placeholder: 'Write content…',
-  }
-)
+    modelValue: "",
+    placeholder: "Write content…",
+  },
+);
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string]
-}>()
+  "update:modelValue": [value: string];
+}>();
 
-const editorEl = ref<HTMLElement | null>(null)
-let syncing = false
+const editorEl = ref<HTMLElement | null>(null);
+let syncing = false;
 
 const state = reactive({
   bold: false,
   italic: false,
   underline: false,
-  align: '' as '' | 'left' | 'center' | 'right',
-  fontSize: '' as string,
+  align: "" as "" | "left" | "center" | "right",
+  fontSize: "" as string,
   link: false,
   quote: false,
   list: false,
-})
+});
 
 const cmd = (command: string, value?: string) => {
-  editorEl.value?.focus()
-  document.execCommand(command, false, value)
-  onInput()
-  syncToolbar()
-}
+  editorEl.value?.focus();
+  document.execCommand(command, false, value);
+  onInput();
+  syncToolbar();
+};
 
 const setColor = (color: string) => {
-  cmd('foreColor', color)
-}
+  cmd("foreColor", color);
+};
 
 const onSizeChange = (size: string) => {
-  if (!size) return
-  cmd('fontSize', size)
-}
+  if (!size) return;
+  cmd("fontSize", size);
+};
 
 const applyOrange = () => {
-  editorEl.value?.focus()
-  document.execCommand('foreColor', false, '#f49322')
-  document.execCommand('bold', false)
-  onInput()
-  syncToolbar()
-}
+  editorEl.value?.focus();
+  document.execCommand("foreColor", false, "#F49321");
+  document.execCommand("bold", false);
+  onInput();
+  syncToolbar();
+};
 
 const applyLink = () => {
-  editorEl.value?.focus()
-  const sel = window.getSelection()
+  editorEl.value?.focus();
+  const sel = window.getSelection();
   if (!sel || sel.isCollapsed) {
-    alert('Highlight text first, then click Link')
-    return
+    alert("Highlight text first, then click Link");
+    return;
   }
 
-  const existing = document.queryCommandValue('createLink') || ''
-  const url = window.prompt('Enter URL[](https://…)', existing || 'https://')
-  if (url === null) return
+  const existing = document.queryCommandValue("createLink") || "";
+  const url = window.prompt("Enter URL[](https://…)", existing || "https://");
+  if (url === null) return;
   if (!url.trim()) {
-    document.execCommand('unlink')
+    document.execCommand("unlink");
   } else {
-    document.execCommand('createLink', false, url.trim())
+    document.execCommand("createLink", false, url.trim());
   }
-  onInput()
-  syncToolbar()
-}
+  onInput();
+  syncToolbar();
+};
 
 const applyQuote = () => {
-  const editor = editorEl.value
-  if (!editor) return
-  editor.focus()
+  const editor = editorEl.value;
+  if (!editor) return;
+  editor.focus();
 
-  const sel = window.getSelection()
-  let node: Node | null = sel?.anchorNode || null
-  if (node?.nodeType === Node.TEXT_NODE) node = node.parentElement
+  const sel = window.getSelection();
+  let node: Node | null = sel?.anchorNode || null;
+  if (node?.nodeType === Node.TEXT_NODE) node = node.parentElement;
 
-  const existing = (node as HTMLElement)?.closest?.('blockquote')
+  const existing = (node as HTMLElement)?.closest?.("blockquote");
   if (existing && editor.contains(existing)) {
-    const parent = existing.parentNode
-    while (existing.firstChild) parent?.insertBefore(existing.firstChild, existing)
-    parent?.removeChild(existing)
-    onInput()
-    syncToolbar()
-    return
+    const parent = existing.parentNode;
+    while (existing.firstChild)
+      parent?.insertBefore(existing.firstChild, existing);
+    parent?.removeChild(existing);
+    onInput();
+    syncToolbar();
+    return;
   }
 
-  const text = sel?.toString()?.trim() || 'Quote text here…'
-  const html = `<blockquote class="about-quote">${text}</blockquote><p><br></p>`
-  document.execCommand('insertHTML', false, html)
-  onInput()
-  syncToolbar()
-}
+  const text = sel?.toString()?.trim() || "Quote text here…";
+  const html = `<blockquote class="about-quote">${text}</blockquote><p><br></p>`;
+  document.execCommand("insertHTML", false, html);
+  onInput();
+  syncToolbar();
+};
 
 const syncToolbar = () => {
   try {
-    state.bold = document.queryCommandState('bold')
-    state.italic = document.queryCommandState('italic')
-    state.underline = document.queryCommandState('underline')
-    state.list = document.queryCommandState('insertUnorderedList')
+    state.bold = document.queryCommandState("bold");
+    state.italic = document.queryCommandState("italic");
+    state.underline = document.queryCommandState("underline");
+    state.list = document.queryCommandState("insertUnorderedList");
 
-    if (document.queryCommandState('justifyCenter')) state.align = 'center'
-    else if (document.queryCommandState('justifyRight')) state.align = 'right'
-    else if (document.queryCommandState('justifyLeft')) state.align = 'left'
-    else state.align = 'left'
+    if (document.queryCommandState("justifyCenter")) state.align = "center";
+    else if (document.queryCommandState("justifyRight")) state.align = "right";
+    else if (document.queryCommandState("justifyLeft")) state.align = "left";
+    else state.align = "left";
 
     // fontSize returns "1"–"7" when using execCommand fontSize
-    const fs = document.queryCommandValue('fontSize')
-    state.fontSize = fs && fs !== '0' ? fs : ''
+    const fs = document.queryCommandValue("fontSize");
+    state.fontSize = fs && fs !== "0" ? fs : "";
 
-    const sel = window.getSelection()
-    let node: Node | null = sel?.anchorNode || null
-    if (node?.nodeType === Node.TEXT_NODE) node = node.parentElement
-    const el = node as HTMLElement | null
-    state.link = !!el?.closest?.('a')
-    state.quote = !!el?.closest?.('blockquote')
+    const sel = window.getSelection();
+    let node: Node | null = sel?.anchorNode || null;
+    if (node?.nodeType === Node.TEXT_NODE) node = node.parentElement;
+    const el = node as HTMLElement | null;
+    state.link = !!el?.closest?.("a");
+    state.quote = !!el?.closest?.("blockquote");
   } catch {
     /* ignore */
   }
-}
+};
 
 const onInput = () => {
-  if (!editorEl.value || syncing) return
-  emit('update:modelValue', editorEl.value.innerHTML)
-  syncToolbar()
-}
+  if (!editorEl.value || syncing) return;
+  emit("update:modelValue", editorEl.value.innerHTML);
+  syncToolbar();
+};
 
 const setHtml = (html: string) => {
-  if (!editorEl.value) return
-  syncing = true
-  editorEl.value.innerHTML = html || ''
-  syncing = false
-}
+  if (!editorEl.value) return;
+  syncing = true;
+  editorEl.value.innerHTML = html || "";
+  syncing = false;
+};
 
 watch(
   () => props.modelValue,
   (val) => {
-    if (!editorEl.value) return
-    if (editorEl.value.innerHTML === (val || '')) return
-    setHtml(val || '')
-  }
-)
+    if (!editorEl.value) return;
+    if (editorEl.value.innerHTML === (val || "")) return;
+    setHtml(val || "");
+  },
+);
 
 onMounted(() => {
-  setHtml(props.modelValue || '')
-  document.addEventListener('selectionchange', onSelectionChange)
-})
+  setHtml(props.modelValue || "");
+  document.addEventListener("selectionchange", onSelectionChange);
+});
 
 onUnmounted(() => {
-  document.removeEventListener('selectionchange', onSelectionChange)
-})
+  document.removeEventListener("selectionchange", onSelectionChange);
+});
 
 const onSelectionChange = () => {
-  if (!editorEl.value) return
-  const sel = window.getSelection()
-  if (!sel?.anchorNode) return
-  if (editorEl.value.contains(sel.anchorNode)) syncToolbar()
-}
+  if (!editorEl.value) return;
+  const sel = window.getSelection();
+  if (!sel?.anchorNode) return;
+  if (editorEl.value.contains(sel.anchorNode)) syncToolbar();
+};
 </script>
 
 <style scoped>
@@ -344,15 +349,18 @@ const onSelectionChange = () => {
   font-size: 0.75rem;
   font-weight: 600;
   color: #334155;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
 }
 .rte-btn:hover {
   background: #f1f5f9;
 }
 .rte-active {
-  background: #f49322 !important;
+  background: #f49321 !important;
   color: #fff !important;
-  border-color: #f49322 !important;
+  border-color: #f49321 !important;
 }
 .rte-sep {
   width: 1px;
@@ -376,15 +384,15 @@ const onSelectionChange = () => {
   pointer-events: none;
 }
 .rte-content :deep(a) {
-  color: #f49322;
+  color: #f49321;
   text-decoration: underline;
 }
 .rte-content :deep(blockquote),
 .rte-content :deep(.about-quote) {
-  border-left: 4px solid #f49322;
+  border-left: 4px solid #f49321;
   padding-left: 0.75rem;
   margin: 0.75rem 0;
-  color: #0c2340;
+  color: #1c2d5b;
   font-weight: 600;
 }
 </style>

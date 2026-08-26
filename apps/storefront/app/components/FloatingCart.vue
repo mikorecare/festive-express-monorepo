@@ -3,16 +3,16 @@
     <!-- Floating trigger -->
     <button
       type="button"
-      class="fixed bottom-[100px] right-[20px] z-[999] flex items-center justify-center bg-[#172a50] border-[3px] border-[#ff890b] rounded-full w-[60px] h-[60px] p-0 shadow-[0_8px_24px_rgba(0,0,0,0.35)] cursor-pointer max-sm:bottom-[90px]"
+      class="fixed bottom-[100px] right-[20px] z-[999] flex items-center justify-center bg-[#172a50] border-[3px] border-[#F49321] rounded-full w-[60px] h-[60px] p-0 shadow-[0_8px_24px_rgba(0,0,0,0.35)] cursor-pointer max-sm:bottom-[90px]"
       aria-label="Open cart"
       @click="open = true"
     >
       <div
-        class="relative flex items-center justify-center bg-[#ff890b] text-white w-[54px] h-[54px] rounded-full"
+        class="relative flex items-center justify-center bg-[#F49321] text-white w-[54px] h-[54px] rounded-full"
       >
         <ShoppingCartIcon class="w-7 h-7" aria-hidden="true" />
         <span
-          class="absolute -top-1 -right-1 z-10 bg-white text-[#172a50] text-[0.8rem] font-extrabold w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 border-[#ff890b]"
+          class="absolute -top-1 -right-1 z-10 bg-white text-[#172a50] text-[0.8rem] font-extrabold w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 border-[#F49321]"
         >
           {{ displayCount }}
         </span>
@@ -121,7 +121,7 @@
         </div>
 
         <!-- Footer -->
-        <div class="bg-[#0c2340] px-6 pb-6 pt-5 text-white">
+        <div class="bg-[#1C2D5B] px-6 pb-6 pt-5 text-white">
           <div class="mb-5 flex items-center justify-between text-base">
             <span>Subtotal:</span>
             <span class="font-bold text-xl">USD {{ displayTotal }}</span>
@@ -129,7 +129,7 @@
           <NuxtLink
             v-if="cartItems.length"
             to="/checkout"
-            class="group relative block w-full overflow-hidden rounded-full bg-[#ff890b] py-3.5 text-center text-base font-bold text-white transition hover:bg-[#e67a00] before:pointer-events-none before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
+            class="group relative block w-full overflow-hidden rounded-full bg-[#F49321] py-3.5 text-center text-base font-bold text-white transition hover:bg-[#e67a00] before:pointer-events-none before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
             @click="open = false"
           >
             <span class="relative z-10">Checkout</span>

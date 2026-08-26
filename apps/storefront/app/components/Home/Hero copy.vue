@@ -3,14 +3,14 @@
     <div class="container">
       <!-- Background Images Slider -->
       <div class="hero-images">
-        <img 
-          v-for="(image, index) in heroImages" 
+        <img
+          v-for="(image, index) in heroImages"
           :key="index"
-          :src="image" 
+          :src="image"
           :class="{ active: currentImage === index }"
           class="hero-image"
           alt="Holiday Lighting"
-        >
+        />
       </div>
 
       <!-- Content Overlay -->
@@ -19,7 +19,8 @@
           <div class="badge1">YOUR <span>HOLIDAY LIGHTS,</span></div>
           <h1 class="hero-title">YOUR WAY!</h1>
           <p class="hero-subtitle">
-            Brighten your home for the holidays—fast, easy, and totally under your control.
+            Brighten your home for the holidays—fast, easy, and totally under
+            your control.
           </p>
           <button class="shop-btn" @click="goToShop">
             SHOP SEASONAL COLLECTION
@@ -29,8 +30,8 @@
 
       <!-- Optional Navigation Dots -->
       <div class="hero-dots">
-        <button 
-          v-for="(image, index) in heroImages" 
+        <button
+          v-for="(image, index) in heroImages"
           :key="index"
           :class="{ active: currentImage === index }"
           @click="currentImage = index"
@@ -41,32 +42,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from "vue";
 
-const currentImage = ref(0)
+const currentImage = ref(0);
 
 const heroImages = [
-  '/Images/Banner/hero-1-scaled.webp',
-  '/Images/Banner/hero-2-scaled.webp',
-  '/Images/Banner/hero-3.webp'
-]
+  "/Images/Banner/hero-1-scaled.webp",
+  "/Images/Banner/hero-2-scaled.webp",
+  "/Images/Banner/hero-3.webp",
+];
 
-let interval: NodeJS.Timeout
+let interval: NodeJS.Timeout;
 
 onMounted(() => {
   interval = setInterval(() => {
-    currentImage.value = (currentImage.value + 1) % heroImages.length
-  }, 5000) // Change image every 5 seconds
-})
+    currentImage.value = (currentImage.value + 1) % heroImages.length;
+  }, 5000); // Change image every 5 seconds
+});
 
 onUnmounted(() => {
-  clearInterval(interval)
-})
+  clearInterval(interval);
+});
 
 const goToShop = () => {
   // Navigate to shop page later
-  console.log('Go to Shop')
-}
+  console.log("Go to Shop");
+};
 </script>
 
 <style scoped>
@@ -111,12 +112,14 @@ const goToShop = () => {
   border: white 3px solid;
 }
 
-.badge1{
+.badge1 {
   font-size: 2.25rem;
   font-weight: 700;
-  color: #FFFFFF;
+  color: #ffffff;
 }
-.badge1 span{color: #F49322;}
+.badge1 span {
+  color: #f49321;
+}
 
 .hero-title {
   font-size: 4.688rem;
@@ -133,7 +136,7 @@ const goToShop = () => {
 
 .shop-btn {
   background: white;
-  color: #0c2340;
+  color: #1c2d5b;
   border: none;
   padding: 16px 40px;
   font-size: 1.1rem;
@@ -144,7 +147,7 @@ const goToShop = () => {
 }
 
 .shop-btn:hover {
-  background: #F49322;
+  background: #f49321;
   color: white;
   transform: translateY(-3px);
 }
@@ -163,7 +166,7 @@ const goToShop = () => {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.6);
+  background: rgba(255, 255, 255, 0.6);
   border: none;
   cursor: pointer;
   transition: all 0.3s;

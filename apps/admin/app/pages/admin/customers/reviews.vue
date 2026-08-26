@@ -99,7 +99,7 @@
               :key="star"
               class="text-sm"
               :class="
-                star <= item.rating_overall ? 'text-[#F49322]' : 'text-gray-300'
+                star <= item.rating_overall ? 'text-[#F49321]' : 'text-gray-300'
               "
             >
               ★
@@ -286,7 +286,7 @@
                       class="text-sm"
                       :class="
                         star <= selectedReview.rating_overall
-                          ? 'text-[#F49322]'
+                          ? 'text-[#F49321]'
                           : 'text-gray-300'
                       "
                     >
@@ -310,7 +310,7 @@
                       class="text-sm"
                       :class="
                         star <= (selectedReview.rating_installation || 0)
-                          ? 'text-[#F49322]'
+                          ? 'text-[#F49321]'
                           : 'text-gray-300'
                       "
                     >
@@ -336,7 +336,7 @@
                       class="text-sm"
                       :class="
                         star <= (selectedReview.rating_technicians || 0)
-                          ? 'text-[#F49322]'
+                          ? 'text-[#F49321]'
                           : 'text-gray-300'
                       "
                     >

@@ -8,12 +8,7 @@
         </div>
 
         <form class="newsletter-form" @submit.prevent="subscribe">
-          <input 
-            type="email" 
-            v-model="email" 
-            placeholder="Email" 
-            required
-          >
+          <input type="email" v-model="email" placeholder="Email" required />
           <button type="submit">Subscribe</button>
         </form>
       </div>
@@ -22,14 +17,14 @@
 </template>
 
 <script setup lang="ts">
-const email = ref('')
+const email = ref("");
 
 const subscribe = () => {
   if (email.value) {
-    alert(`Thank you for subscribing with ${email.value}!`)
-    email.value = ''
+    alert(`Thank you for subscribing with ${email.value}!`);
+    email.value = "";
   }
-}
+};
 </script>
 
 <style scoped>
@@ -58,7 +53,9 @@ const subscribe = () => {
 .paper-plane {
   font-size: 1.5rem;
 }
-.newsletter-title{font-size: 1.375rem;}
+.newsletter-title {
+  font-size: 1.375rem;
+}
 
 .newsletter-form {
   display: flex;
@@ -77,7 +74,7 @@ const subscribe = () => {
 }
 
 .newsletter-form button {
-  background: #0c2340;
+  background: #1c2d5b;
   color: white;
   border: none;
   padding: 0 32px;
@@ -89,7 +86,7 @@ const subscribe = () => {
 }
 
 .newsletter-form button:hover {
-  background: #F49322;
+  background: #f49321;
 }
 
 /* Responsive */
@@ -98,7 +95,7 @@ const subscribe = () => {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .newsletter-form {
     max-width: 100%;
   }

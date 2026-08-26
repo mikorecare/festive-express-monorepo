@@ -7,15 +7,15 @@
 }
 
 .font-poppins {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .font-raleway {
-  font-family: 'Raleway', sans-serif;
+  font-family: "Raleway", sans-serif;
 }
 
 body {
-  font-family: 'Poppins', system-ui, sans-serif;
+  font-family: "Poppins", system-ui, sans-serif;
   background: #f8fafc;
 }
 
@@ -28,7 +28,7 @@ body {
 
 /* Buttons */
 .btn-primary {
-  background: #F49322;
+  background: #f49321;
   color: white;
   border: none;
   padding: 12px 28px;
@@ -60,10 +60,14 @@ body {
   transform: translateY(-2px);
 }
 
-.btn-delete { background: #e74c3c; color: white; }
+.btn-delete {
+  background: #e74c3c;
+  color: white;
+}
 
-.delete-btn { /* Smaller */
-  background: #ef4444; 
+.delete-btn {
+  /* Smaller */
+  background: #ef4444;
   color: white;
   cursor: pointer;
   border: none;
@@ -71,7 +75,8 @@ body {
   border-radius: 6px;
 }
 
-.btn-remove { /* Used in Packages Features */
+.btn-remove {
+  /* Used in Packages Features */
   background: #ef4444;
   color: white;
   border: none;
@@ -125,7 +130,7 @@ body {
   background: white;
   padding: 28px;
   border-radius: 16px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
   margin-bottom: 24px;
 }
 
@@ -139,7 +144,9 @@ body {
   margin-top: 10px;
 }
 
-input, textarea, select {
+input,
+textarea,
+select {
   width: 100%;
   padding: 12px 16px;
   border: 1px solid #d1d5db;
@@ -148,9 +155,11 @@ input, textarea, select {
   background: #ececec;
 }
 
-input:focus, textarea:focus, select:focus {
+input:focus,
+textarea:focus,
+select:focus {
   outline: none;
-  border-color: #F49322;
+  border-color: #f49321;
   box-shadow: 0 0 0 3px rgba(244, 147, 34, 0.1);
 }
 
@@ -163,31 +172,51 @@ input:focus, textarea:focus, select:focus {
   text-transform: capitalize;
 }
 
-.status-badge.pending { background: #fef3c7; color: #92400e; }
-.status-badge.processing { background: #dbeafe; color: #1e40af; }
-.status-badge.completed { background: #d1fae5; color: #065f46; }
-.status-badge.cancelled { background: #fee2e2; color: #991b1b; }
-.status-badge.active { background: #d1fae5; color: #065f46; }
-.status-badge.inactive {background: #fee2e2; color: #991b1b;}
+.status-badge.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+.status-badge.processing {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.status-badge.completed {
+  background: #d1fae5;
+  color: #065f46;
+}
+.status-badge.cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.status-badge.active {
+  background: #d1fae5;
+  color: #065f46;
+}
+.status-badge.inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
 
 /* Table */
-.orders-table, .products-table {
+.orders-table,
+.products-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.orders-table th, .products-table th {
-  background: #0c2340;
+.orders-table th,
+.products-table th {
+  background: #1c2d5b;
   color: white;
   padding: 16px;
   text-align: left;
 }
 
-.orders-table td, .products-table td {
+.orders-table td,
+.products-table td {
   padding: 16px;
   border-bottom: 1px solid #eee;
 }
-
 
 /* Page Header */
 .page-header {
@@ -196,7 +225,6 @@ input:focus, textarea:focus, select:focus {
   align-items: center;
   margin-bottom: 32px;
 }
-
 
 /* Delete Modal */
 .delete-modal-overlay {
@@ -252,7 +280,8 @@ input:focus, textarea:focus, select:focus {
   cursor: pointer;
 }
 
-.btn-cancel:hover, .btn-confirm-delete:hover {
+.btn-cancel:hover,
+.btn-confirm-delete:hover {
   opacity: 0.9;
 }
 /* End Delete Modal */
@@ -275,7 +304,7 @@ input:focus, textarea:focus, select:focus {
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   padding: 0px 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .search-box input {
@@ -286,8 +315,8 @@ input:focus, textarea:focus, select:focus {
   background: transparent;
 }
 
-.search-box input{
-    box-shadow: none;
+.search-box input {
+  box-shadow: none;
 }
 
 .search-icon {
@@ -316,11 +345,10 @@ input:focus, textarea:focus, select:focus {
 
 .filter-select:focus {
   outline: none;
-  border-color: #F49322;
+  border-color: #f49321;
   box-shadow: 0 0 0 3px rgba(244, 147, 34, 0.1);
 }
 /* End Search */
-
 
 /* Table No Data */
 .no-data {
@@ -358,7 +386,6 @@ input:focus, textarea:focus, select:focus {
   color: #666;
 }
 
-
 /* FOR DATE FORMAT */
 .form-date {
   width: 100%;
@@ -372,7 +399,7 @@ input:focus, textarea:focus, select:focus {
 
 .form-date:focus {
   outline: none;
-  border-color: #F49322;
+  border-color: #f49321;
   box-shadow: 0 0 0 3px rgba(244, 147, 34, 0.1);
 }
 

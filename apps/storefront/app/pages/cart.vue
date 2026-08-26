@@ -23,7 +23,7 @@
           <div
             class="flex flex-wrap items-center justify-between gap-3 border-b-2 border-gray-400 pb-4 mb-6"
           >
-            <h2 class="text-2xl font-bold text-[#0c2340] m-0">
+            <h2 class="text-2xl font-bold text-[#1C2D5B] m-0">
               Shopping Cart
               <span class="text-base font-medium text-gray-500">
                 ({{ cartCount }} {{ cartCount === 1 ? "item" : "items" }})
@@ -40,7 +40,7 @@
             <p class="text-gray-500 text-lg mb-6">Your cart is empty.</p>
             <NuxtLink
               to="/packages"
-              class="inline-block bg-[#F49322] hover:bg-[#0c2340] text-white font-semibold px-8 py-3 rounded-lg transition"
+              class="inline-block bg-[#F49321] hover:bg-[#1C2D5B] text-white font-semibold px-8 py-3 rounded-lg transition"
             >
               Browse Packages
             </NuxtLink>
@@ -72,7 +72,7 @@
               </div>
 
               <div class="flex-1 min-w-0">
-                <h3 class="text-lg font-bold text-[#0c2340] mb-2">
+                <h3 class="text-lg font-bold text-[#1C2D5B] mb-2">
                   {{ item.product?.name || "Product" }}
                 </h3>
 
@@ -80,7 +80,7 @@
                   v-if="item.options?.c9_color"
                   class="flex items-center gap-2 text-sm text-gray-500 mb-2"
                 >
-                  <span class="w-2 h-2 rounded-full bg-[#F49322]" />
+                  <span class="w-2 h-2 rounded-full bg-[#F49321]" />
                   Selected: {{ item.options.c9_color }} LEDs
                 </div>
 
@@ -88,7 +88,7 @@
                   v-if="item.options?.design_name"
                   class="flex items-center gap-2 text-sm text-gray-500 mb-2"
                 >
-                  <span class="w-2 h-2 rounded-full bg-[#F49322]" />
+                  <span class="w-2 h-2 rounded-full bg-[#F49321]" />
                   Design: {{ item.options.design_name }}
                 </div>
 
@@ -138,7 +138,7 @@
               <div
                 class="flex sm:flex-col justify-between items-end sm:min-w-[110px]"
               >
-                <div class="text-xl font-bold text-[#0c2340] whitespace-nowrap">
+                <div class="text-xl font-bold text-[#1C2D5B] whitespace-nowrap">
                   ${{ lineTotal(item).toFixed(2) }}
                 </div>
                 <button
@@ -157,7 +157,7 @@
         <!-- Right: summary -->
         <div class="lg:col-span-4">
           <div class="bg-white rounded-2xl p-7 shadow-sm sticky top-24">
-            <h3 class="text-xl font-bold text-[#0c2340] mb-5">Order Summary</h3>
+            <h3 class="text-xl font-bold text-[#1C2D5B] mb-5">Order Summary</h3>
 
             <div class="flex justify-between text-gray-500 mb-3">
               <span>Subtotal</span>
@@ -197,10 +197,10 @@
               class="flex justify-between items-end border-t border-gray-200 pt-4 mt-4 mb-6"
             >
               <div>
-                <strong class="text-[#0c2340]">Total</strong>
+                <strong class="text-[#1C2D5B]">Total</strong>
               </div>
               <div class="text-right">
-                <div class="text-3xl font-extrabold text-[#F49322]">
+                <div class="text-3xl font-extrabold text-[#F49321]">
                   ${{ grandTotal.toFixed(2) }}
                 </div>
                 <small class="block text-xs text-gray-400 mt-1 font-medium">
@@ -216,11 +216,11 @@
                   v-model="promoCode"
                   type="text"
                   placeholder="GIFT2025"
-                  class="flex-1 border border-gray-200 border-r-0 rounded-l-lg px-3 py-2.5 outline-none focus:border-[#0c2340]"
+                  class="flex-1 border border-gray-200 border-r-0 rounded-l-lg px-3 py-2.5 outline-none focus:border-[#1C2D5B]"
                 >
                 <button
                   type="button"
-                  class="bg-[#0c2340] text-white px-4 rounded-r-lg font-semibold hover:bg-[#F49322] transition"
+                  class="bg-[#1C2D5B] text-white px-4 rounded-r-lg font-semibold hover:bg-[#F49321] transition"
                   @click="applyPromo"
                 >
                   Apply
@@ -269,7 +269,7 @@
 
             <button
               type="button"
-              class="btn-checkout relative w-full text-center text-white font-bold py-4 rounded-xl border-2 border-[#0c2340] transition disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
+              class="btn-checkout relative w-full text-center text-white font-bold py-4 rounded-xl border-2 border-[#1C2D5B] transition disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
               :disabled="!cartItems.length || loading"
               @click="handleCheckout"
             >
@@ -290,9 +290,9 @@
 
       <!-- Trust -->
       <div class="flex flex-wrap justify-center gap-10 md:gap-14 mt-12">
-        <div class="flex items-center gap-3 text-[#0c2340]">
-          <!-- <i class="fas fa-lock text-2xl text-[#F49322]" /> -->
-          <LockClosedIcon class="w-8 h-8 text-[#F49322]" aria-hidden="true" />
+        <div class="flex items-center gap-3 text-[#1C2D5B]">
+          <!-- <i class="fas fa-lock text-2xl text-[#F49321]" /> -->
+          <LockClosedIcon class="w-8 h-8 text-[#F49321]" aria-hidden="true" />
           <div>
             <strong class="block text-sm">Secure Checkout</strong>
             <small class="text-gray-400 text-xs"
@@ -300,10 +300,10 @@
             >
           </div>
         </div>
-        <div class="flex items-center gap-3 text-[#0c2340]">
-          <!-- <i class="fas fa-tools text-2xl text-[#F49322]" /> -->
+        <div class="flex items-center gap-3 text-[#1C2D5B]">
+          <!-- <i class="fas fa-tools text-2xl text-[#F49321]" /> -->
           <WrenchScrewdriverIcon
-            class="w-8 h-8 text-[#F49322]"
+            class="w-8 h-8 text-[#F49321]"
             aria-hidden="true"
           />
           <div>
@@ -313,9 +313,9 @@
             >
           </div>
         </div>
-        <div class="flex items-center gap-3 text-[#0c2340]">
-          <!-- <i class="fas fa-headset text-2xl text-[#F49322]" /> -->
-          <ChatBubbleLeftRightIcon class="w-8 h-8 text-[#F49322]" />
+        <div class="flex items-center gap-3 text-[#1C2D5B]">
+          <!-- <i class="fas fa-headset text-2xl text-[#F49321]" /> -->
+          <ChatBubbleLeftRightIcon class="w-8 h-8 text-[#F49321]" />
           <div>
             <strong class="block text-sm">Worry-Free</strong>
             <small class="text-gray-400 text-xs"

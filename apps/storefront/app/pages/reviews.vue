@@ -33,7 +33,7 @@
             <!-- Top Section -->
             <div class="flex flex-col items-center md:items-start">
               <p
-                class="text-2xl md:text-[50px] font-semibold text-[#0c2340] mb-1 text-center md:text-left leading-tight"
+                class="text-2xl md:text-[50px] font-semibold text-[#1C2D5B] mb-1 text-center md:text-left leading-tight"
               >
                 Thank you, {{ review.customer_name }}!
               </p>
@@ -50,7 +50,7 @@
                 class="flex flex-col items-center md:items-start gap-2 md:gap-3"
               >
                 <p
-                  class="text-lg md:text-[32px] font-bold text-[#0c2340] text-center md:text-left leading-tight"
+                  class="text-lg md:text-[32px] font-bold text-[#1C2D5B] text-center md:text-left leading-tight"
                 >
                   Share your experience
                 </p>
@@ -108,7 +108,7 @@
                       :class="
                         form.rating_overall > 0
                           ? 'text-[#F39124]'
-                          : 'text-[#0c2340]'
+                          : 'text-[#1C2D5B]'
                       "
                     >
                       How would you rate your overall experience?
@@ -180,7 +180,7 @@
                       :class="
                         form.rating_installation > 0
                           ? 'text-[#F39124]'
-                          : 'text-[#0c2340]'
+                          : 'text-[#1C2D5B]'
                       "
                     >
                       How would you rate the installation process?
@@ -237,7 +237,7 @@
                 class="bg-gray-50 rounded-xl p-4 md:!p-12 lg:!p-16 border border-gray-200"
               >
                 <label
-                  class="block text-base md:text-[32px] font-semibold text-[#0c2340] mb-2 leading-tight text-left"
+                  class="block text-base md:text-[32px] font-semibold text-[#1C2D5B] mb-2 leading-tight text-left"
                 >
                   What did you think about the installation process?
                 </label>
@@ -269,7 +269,7 @@
                       :class="
                         form.rating_technicians > 0
                           ? 'text-[#F39124]'
-                          : 'text-[#0c2340]'
+                          : 'text-[#1C2D5B]'
                       "
                     >
                       How would you rate our technicians and carpenters?
@@ -326,7 +326,7 @@
                 class="bg-gray-50 rounded-xl p-4 md:!p-12 lg:!p-16 border border-gray-200"
               >
                 <label
-                  class="block text-base md:text-[32px] font-semibold text-[#0c2340] mb-2 leading-tight text-left"
+                  class="block text-base md:text-[32px] font-semibold text-[#1C2D5B] mb-2 leading-tight text-left"
                 >
                   How was your experience with our team?
                 </label>
@@ -344,7 +344,7 @@
                 class="bg-gray-50 rounded-xl p-4 md:!p-12 lg:!p-16 border border-gray-200"
               >
                 <label
-                  class="block text-base md:text-[32px] font-semibold text-[#0c2340] mb-2 leading-tight text-left"
+                  class="block text-base md:text-[32px] font-semibold text-[#1C2D5B] mb-2 leading-tight text-left"
                 >
                   Any additional feedback or suggestions?
                 </label>
@@ -359,7 +359,7 @@
 
               <!-- Question 7: Would Recommend -->
               <div
-                class="bg-[#0c2340] rounded-[36px] md:!h-[489px] border-[9px] border-[#F39124] flex flex-col justify-center items-center py-8 md:!py-0 px-6 md:!px-12 lg:!px-16"
+                class="bg-[#1C2D5B] rounded-[36px] md:!h-[489px] border-[9px] border-[#F39124] flex flex-col justify-center items-center py-8 md:!py-0 px-6 md:!px-12 lg:!px-16"
               >
                 <label
                   class="block text-base md:text-[32px] text-center font-normal text-white mb-4 md:mb-8 leading-tight"
@@ -418,7 +418,7 @@
               <div class="flex justify-center">
                 <button
                   type="submit"
-                  class="w-full sm:w-max bg-[#F49322] text-white font-bold py-4 px-8 md:px-12 rounded-full hover:bg-[#e07e0e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-[32px]"
+                  class="w-full sm:w-max bg-[#F49321] text-white font-bold py-4 px-8 md:px-12 rounded-full hover:bg-[#e07e0e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-base md:text-[32px]"
                   :disabled="!form.rating_overall || isSubmitting"
                 >
                   <i
@@ -442,7 +442,6 @@
 </template>
 
 <script setup lang="ts">
-
 const route = useRoute();
 const config = useRuntimeConfig();
 

@@ -37,7 +37,7 @@
           class="text-4xl font-extrabold leading-[1.15] mb-4 tracking-wide text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] max-lg:text-[1.35rem] max-lg:mb-1 max-lg:text-left max-lg:drop-shadow-[0_4px_14px_rgba(0,0,0,0.9)] max-lg:[text-shadow:0_2px_6px_rgba(0,0,0,0.95),0_4px_16px_rgba(0,0,0,0.75)]"
         >
           RENT THE MAGIC<br />
-          <span class="highlight text-[#f7941d]">ENJOY THE SEASON</span>
+          <span class="highlight text-[#F49321]">ENJOY THE SEASON</span>
         </h1>
 
         <p
@@ -54,7 +54,7 @@
 
         <NuxtLink
           to="/packages"
-          class="btn-primary-card bg-[#f7941d] text-white font-bold py-3 px-6 rounded-xl inline-block hover:bg-[#e0850a] transition-colors shadow-lg hover:shadow-xl max-lg:text-[0.82rem] max-lg:py-2 max-lg:px-3 max-lg:rounded-lg max-lg:float-left max-lg:clear-both max-lg:!ml-1 max-lg:!mr-auto max-lg:relative max-lg:overflow-hidden max-lg:after:content-[''] max-lg:after:absolute max-lg:after:-top-1/2 max-lg:after:-left-[150%] max-lg:after:w-[200%] max-lg:after:h-[200%] max-lg:after:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] max-lg:after:rotate-[25deg] max-lg:after:pointer-events-none max-lg:after:animate-[glossyShineContinuous_3s_linear_infinite]"
+          class="btn-primary-card bg-[#F49321] text-white font-bold py-3 px-6 rounded-xl inline-block hover:bg-[#e0850a] transition-colors shadow-lg hover:shadow-xl max-lg:text-[0.82rem] max-lg:py-2 max-lg:px-3 max-lg:rounded-lg max-lg:float-left max-lg:clear-both max-lg:!ml-1 max-lg:!mr-auto max-lg:relative max-lg:overflow-hidden max-lg:after:content-[''] max-lg:after:absolute max-lg:after:-top-1/2 max-lg:after:-left-[150%] max-lg:after:w-[200%] max-lg:after:h-[200%] max-lg:after:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] max-lg:after:rotate-[25deg] max-lg:after:pointer-events-none max-lg:after:animate-[glossyShineContinuous_3s_linear_infinite]"
         >
           Explore the Packages
         </NuxtLink>

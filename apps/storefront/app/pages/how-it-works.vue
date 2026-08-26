@@ -179,7 +179,7 @@ onMounted(async () => {
 .timeline-dot {
   width: 20px;
   height: 20px;
-  border: 5px solid #0c2340;
+  border: 5px solid #1c2d5b;
   border-radius: 50%;
   flex-shrink: 0;
   background: white;
@@ -200,8 +200,8 @@ onMounted(async () => {
 }
 
 .timeline-item.active .timeline-dot {
-  background: #f49322;
-  border-color: #f49322;
+  background: #f49321;
+  border-color: #f49321;
   transform: scale(1.4);
   opacity: 1;
 }
@@ -209,7 +209,7 @@ onMounted(async () => {
 .timeline-content h3 {
   font-size: 1.45rem;
   margin-bottom: 12px;
-  color: #0c2340;
+  color: #1c2d5b;
 }
 
 .timeline-content p {

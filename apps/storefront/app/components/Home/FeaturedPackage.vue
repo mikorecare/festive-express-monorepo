@@ -153,7 +153,7 @@
               </div>
               <button
                 type="button"
-                class="w-12 h-12 border-none rounded-xl bg-brand-orange text-white cursor-pointer flex items-center justify-center transition-colors duration-200 hover:bg-[#ff890b] hover:animate-[festive-express-animation-pulse-grow_0.3s_linear_infinite_alternate]"
+                class="w-12 h-12 border-none rounded-xl bg-brand-orange text-white cursor-pointer flex items-center justify-center transition-colors duration-200 hover:bg-[#F49321] hover:animate-[festive-express-animation-pulse-grow_0.3s_linear_infinite_alternate]"
                 :aria-label="`Select ${pkg.name}`"
                 @click="selectPackage(pkg)"
               >
@@ -190,7 +190,7 @@
               </template>
               <button
                 type="button"
-                class="w-12 h-12 border-none rounded-xl bg-brand-orange text-white cursor-pointer flex items-center justify-center transition-colors duration-200 hover:bg-[#ff890b] hover:animate-[festive-express-animation-pulse-grow_0.3s_linear_infinite_alternate]"
+                class="w-12 h-12 border-none rounded-xl bg-brand-orange text-white cursor-pointer flex items-center justify-center transition-colors duration-200 hover:bg-[#F49321] hover:animate-[festive-express-animation-pulse-grow_0.3s_linear_infinite_alternate]"
                 :aria-label="`Select ${pkg.name}`"
                 @click="selectPackage(pkg)"
               >
