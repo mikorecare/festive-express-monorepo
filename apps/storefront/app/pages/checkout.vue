@@ -93,6 +93,17 @@ interface OrderResponse {
   };
 }
 
+interface ConvergePaymentResponse {
+  ssl_result: string;
+  ssl_result_message?: string;
+  ssl_txn_id?: string;
+  ssl_approval_code?: string;
+  ssl_token?: string;
+  ssl_card_token?: string;
+  ssl_avs_response?: string;
+  ssl_cvv2_response?: string;
+}
+
 const config = useRuntimeConfig();
 const siteKey = config.public.turnstile.siteKey as string;
 
@@ -542,38 +553,125 @@ const validateCheckout = () => {
   return true;
 };
 
-const loadConvergeScript = () => {
-  return new Promise<void>((resolve, reject) => {
-    if ((window as any).PayWithConverge) {
+// ============================================
+// CHECKOUT.JS IMPLEMENTATION
+// ============================================
+
+/**
+ * Detect card type from card number
+ */
+const detectCardType = (cardNumber: string): string => {
+  const cleaned = cardNumber.replace(/\D/g, "");
+  if (!cleaned) return "Unknown";
+
+  const patterns: Record<string, RegExp> = {
+    "American Express": /^3[47]/,
+    Visa: /^4/,
+    Mastercard: /^5[1-5]/,
+    Discover: /^6(?:011|5)/,
+    "Diners Club": /^3(?:0[0-5]|[68])/,
+    JCB: /^(?:2131|1800|35)/,
+  };
+
+  for (const [type, pattern] of Object.entries(patterns)) {
+    if (pattern.test(cleaned)) {
+      return type;
+    }
+  }
+  return "Unknown";
+};
+
+/**
+ * Load Checkout.js script
+ */
+const loadCheckoutScript = (): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    if ((window as any).ConvergeCheckout) {
       resolve();
       return;
     }
-    const demo = true;
-    const src = demo
-      ? "https://api.demo.convergepay.com/hosted-payments/PayWithConverge.js"
-      : "https://api.convergepay.com/hosted-payments/PayWithConverge.js";
 
-    const s = document.createElement("script");
-    s.src = src;
-    s.async = true;
-    s.crossOrigin = "anonymous";
-    s.onload = () => resolve();
-    s.onerror = () => reject(new Error("Failed to load Converge script"));
-    document.head.appendChild(s);
+    const isDemo = true;
+    const src = isDemo
+      ? "https://api.demo.convergepay.com/checkout/Checkout.js"
+      : "https://api.convergepay.com/checkout/Checkout.js";
+
+    const script = document.createElement("script");
+    script.src = src;
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    script.onload = () => {
+      console.log("Checkout.js loaded successfully");
+      resolve();
+    };
+    script.onerror = () => {
+      reject(new Error("Failed to load Checkout.js"));
+    };
+    document.head.appendChild(script);
   });
 };
 
+/**
+ * Process payment using Checkout.js
+ * Card data goes directly to Converge.
+ */
+const processPaymentWithCheckout = async (
+  token: string,
+): Promise<ConvergePaymentResponse> => {
+  if (!(window as any).ConvergeCheckout) {
+    throw new Error("Checkout.js not loaded");
+  }
+
+  const paymentData = {
+    ssl_txn_auth_token: token,
+    ssl_card_number: form.value.card_number.replace(/\s/g, ""),
+    ssl_exp_date: form.value.card_expiry.replace("/", ""),
+    ssl_cvv2cvc2: form.value.card_cvv,
+    ssl_first_name: form.value.billing_first_name,
+    ssl_last_name: form.value.billing_last_name,
+    ssl_avs_address: form.value.shipping_address_1,
+    ssl_avs_zip: form.value.billing_postcode,
+    ssl_email: form.value.billing_email,
+    ssl_phone: form.value.billing_phone,
+    // Additional optional fields
+    ssl_city: "Sarasota",
+    ssl_state: "FL",
+    ssl_country: "USA",
+  };
+
+  console.log("Sending payment to Converge via Checkout.js...");
+
+  // Send directly to Converge - NEVER touches your server!
+  return new Promise((resolve, reject) => {
+    (window as any).ConvergeCheckout.processPayment(
+      paymentData,
+      (response: ConvergePaymentResponse) => {
+        console.log("Converge response:", response);
+        resolve(response);
+      },
+      (error: any) => {
+        console.error("Converge error:", error);
+        reject(error);
+      },
+    );
+  });
+};
+
+/**
+ * Main payment function using Checkout.js
+ */
 const payWithConverge = async () => {
   if (!validateCheckout()) return;
 
   isPaying.value = true;
 
   try {
-    const useMock = true; // Set to true for testing, false for production
+    const isDemo = true;
     const firstName = form.value.billing_first_name || "";
     const lastName = form.value.billing_last_name || "";
     const email = form.value.billing_email || "";
     const promoCodeId = appliedPromo.value?.id || null;
+
     const orderBody = {
       first_name: firstName,
       last_name: lastName,
@@ -600,9 +698,10 @@ const payWithConverge = async () => {
       promo_code_id: promoCodeId,
     };
 
+    // MOCK MODE for testing without real payments
+    const useMock = false; // Set to false when testing with real Converge
     if (useMock) {
-      console.log("🔧 MOCK MODE: Creating order directly");
-
+      console.log("MOCK MODE: Creating order directly");
       const orderRes = await $fetch<any>("/api/orders/create", {
         method: "POST",
         body: {
@@ -610,6 +709,8 @@ const payWithConverge = async () => {
           transaction_id: "MOCK-TXN-" + Date.now(),
           approval_code: "MOCK-APPROVAL-" + Date.now(),
           payment_token: "MOCK-TOKEN-" + Date.now(),
+          card_last4: form.value.card_number.replace(/\s/g, "").slice(-4),
+          card_type: detectCardType(form.value.card_number),
         },
       });
 
@@ -619,83 +720,89 @@ const payWithConverge = async () => {
 
       await clearCart();
       toast.success("Payment successful!");
-
       navigateTo(
         `/thank-you?order=${orderRes.order.order_number}&email=${encodeURIComponent(email)}`,
       );
       return;
     }
 
-    // Real Converge payment flow
-    const tokenRes = await $fetch("/api/elavon/session", {
+    // STEP 1: Get session token from your server
+    // This is the only server call - just to get the token
+    const tokenRes = (await $fetch("/api/elavon/session", {
       method: "POST",
       body: {
         amount: grandTotal.value,
         first_name: firstName,
         last_name: lastName,
         email: email,
-        invoice_number: `FLP-${Date.now()}`,
+        invoice_number: `F-EX-${Date.now()}`,
+        billing_address: form.value.shipping_address_1,
+        billing_city: "Sarasota",
+        billing_state: "FL",
+        billing_zip: form.value.billing_postcode,
+        billing_country: "USA",
+        billing_phone: form.value.billing_phone,
       },
-    });
+    })) as any;
 
     if (!tokenRes.success || !tokenRes.token) {
-      throw new Error("Failed to get payment token");
+      throw new Error(tokenRes.error || "Failed to get payment token");
+    }
+    await loadCheckoutScript();
+
+    const paymentResponse = await processPaymentWithCheckout(tokenRes.token);
+
+    if (paymentResponse.ssl_result === "0") {
+      const cardLast4 = form.value.card_number.replace(/\s/g, "").slice(-4);
+      const cardType = detectCardType(form.value.card_number);
+      const orderRes = await $fetch<OrderResponse>("/api/orders/create", {
+        method: "POST",
+        body: {
+          ...orderBody,
+          transaction_id: paymentResponse.ssl_txn_id,
+          approval_code: paymentResponse.ssl_approval_code,
+          payment_token: paymentResponse.ssl_token || tokenRes.token,
+          card_token: paymentResponse.ssl_card_token || null,
+          card_last4: cardLast4,
+          card_type: cardType,
+          avs_response: paymentResponse.ssl_avs_response,
+          cvv_response: paymentResponse.ssl_cvv2_response,
+        },
+      });
+
+      if (!orderRes.success) {
+        throw new Error("Order creation failed");
+      }
+
+      await clearCart();
+      toast.success("Payment successful!");
+
+      navigateTo(
+        `/thank-you?order=${orderRes.order.order_number}&email=${encodeURIComponent(email)}`,
+      );
+    } else {
+      // Payment failed
+      const errorMessage =
+        paymentResponse.ssl_result_message || "Payment failed";
+      throw new Error(errorMessage);
+    }
+  } catch (error: any) {
+    console.error("Payment error:", error);
+
+    let errorMessage = error.message || "Payment failed. Please try again.";
+
+    if (errorMessage.includes("card")) {
+      errorMessage = "Your card was declined. Please check your card details.";
+    } else if (errorMessage.includes("CVV") || errorMessage.includes("cvv")) {
+      errorMessage = "Invalid CVV code. Please check and try again.";
+    } else if (errorMessage.includes("expired")) {
+      errorMessage = "Your card has expired. Please use a different card.";
     }
 
-    await loadConvergeScript();
-
-    (window as any).PayWithConverge.open(
-      { ssl_txn_auth_token: tokenRes.token },
-      {
-        onApproval: async (payment: any) => {
-          try {
-            const orderRes = (await $fetch("/api/orders/create", {
-              method: "POST",
-              body: {
-                ...orderBody,
-                transaction_id: payment.ssl_txn_id || tokenRes.transactionId,
-                approval_code:
-                  payment.ssl_approval_code || tokenRes.approvalCode,
-                payment_token: payment.ssl_token || tokenRes.token,
-              },
-            })) as OrderResponse;
-
-            if (!orderRes.success) {
-              throw new Error("Order creation failed");
-            }
-
-            await clearCart();
-            toast.success("Payment successful!");
-
-            navigateTo(
-              `/thank-you?order=${orderRes.order.order_number}&email=${encodeURIComponent(email)}`,
-            );
-          } catch (e: any) {
-            toast.error("Payment successful but order creation failed");
-            resetTurnstile();
-          } finally {
-            isPaying.value = false;
-          }
-        },
-        onError: () => {
-          toast.error("Payment error");
-          isPaying.value = false;
-          resetTurnstile();
-        },
-        onCancelled: () => {
-          toast.message("Payment cancelled");
-          isPaying.value = false;
-        },
-        onDeclined: () => {
-          toast.error("Card declined");
-          isPaying.value = false;
-        },
-      },
-    );
-  } catch (error: any) {
-    toast.error(error.message || "Unable to start payment");
-    isPaying.value = false;
+    toast.error(errorMessage);
     resetTurnstile();
+  } finally {
+    isPaying.value = false;
   }
 };
 
