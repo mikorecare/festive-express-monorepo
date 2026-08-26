@@ -78,11 +78,11 @@ export default defineNuxtConfig({
     convergeDemo: process.env.CONVERGE_DEMO !== "false",
 
     estimatorApiUrl:
-      process.env.ESTIMATOR_API_URL ||
+      process.env.NUXT_ESTIMATOR_ASSET_URL ||
       "http://52.204.215.130/estimator",
 
     estimatorAssetUrl:
-      process.env.ESTIMATOR_ASSET_URL ||
+      process.env.NUXT_ESTIMATOR_ASSET_URL ||
       "http://52.204.215.130",
 
     turnstile: {
