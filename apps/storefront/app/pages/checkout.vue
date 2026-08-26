@@ -586,25 +586,24 @@ const detectCardType = (cardNumber: string): string => {
  */
 const loadCheckoutScript = (): Promise<void> => {
   return new Promise((resolve, reject) => {
-    if ((window as any).ConvergeCheckout) {
+    if ((window as any).ConvergeEmbeddedPayment) {
       resolve();
       return;
     }
 
-    const isDemo = true;
-    const src = isDemo
-      ? "https://api.demo.convergepay.com/checkout/Checkout.js"
-      : "https://api.convergepay.com/checkout/Checkout.js";
+    const src = "https://api.demo.convergepay.com/hosted-payments/Checkout.js";
+
+    console.log("Loading Checkout.js from:", src);
 
     const script = document.createElement("script");
     script.src = src;
     script.async = true;
-    script.crossOrigin = "anonymous";
     script.onload = () => {
       console.log("Checkout.js loaded successfully");
       resolve();
     };
     script.onerror = () => {
+      console.error("Failed to load Checkout.js");
       reject(new Error("Failed to load Checkout.js"));
     };
     document.head.appendChild(script);
@@ -666,7 +665,6 @@ const payWithConverge = async () => {
   isPaying.value = true;
 
   try {
-    const isDemo = true;
     const firstName = form.value.billing_first_name || "";
     const lastName = form.value.billing_last_name || "";
     const email = form.value.billing_email || "";
@@ -698,36 +696,6 @@ const payWithConverge = async () => {
       promo_code_id: promoCodeId,
     };
 
-    // MOCK MODE for testing without real payments
-    const useMock = false; // Set to false when testing with real Converge
-    if (useMock) {
-      console.log("MOCK MODE: Creating order directly");
-      const orderRes = await $fetch<any>("/api/orders/create", {
-        method: "POST",
-        body: {
-          ...orderBody,
-          transaction_id: "MOCK-TXN-" + Date.now(),
-          approval_code: "MOCK-APPROVAL-" + Date.now(),
-          payment_token: "MOCK-TOKEN-" + Date.now(),
-          card_last4: form.value.card_number.replace(/\s/g, "").slice(-4),
-          card_type: detectCardType(form.value.card_number),
-        },
-      });
-
-      if (!orderRes.success) {
-        throw new Error("Mock order creation failed");
-      }
-
-      await clearCart();
-      toast.success("Payment successful!");
-      navigateTo(
-        `/thank-you?order=${orderRes.order.order_number}&email=${encodeURIComponent(email)}`,
-      );
-      return;
-    }
-
-    // STEP 1: Get session token from your server
-    // This is the only server call - just to get the token
     const tokenRes = (await $fetch("/api/elavon/session", {
       method: "POST",
       body: {
@@ -748,61 +716,76 @@ const payWithConverge = async () => {
     if (!tokenRes.success || !tokenRes.token) {
       throw new Error(tokenRes.error || "Failed to get payment token");
     }
+
     await loadCheckoutScript();
 
-    const paymentResponse = await processPaymentWithCheckout(tokenRes.token);
+    const paymentData = {
+      ssl_txn_auth_token: tokenRes.token,
+      ssl_card_number: form.value.card_number.replace(/\s/g, ""),
+      ssl_exp_date: form.value.card_expiry.replace("/", ""), // MMYY format
+      ssl_cvv2cvc2: form.value.card_cvv,
+      ssl_first_name: form.value.billing_first_name,
+      ssl_last_name: form.value.billing_last_name,
+      ssl_avs_address: form.value.shipping_address_1,
+      ssl_city: "Sarasota",
+      ssl_state: "FL",
+      ssl_avs_zip: form.value.billing_postcode,
+      ssl_invoice_number: `INV-${Date.now()}`,
+      ssl_get_token: "Y",
+      ssl_add_token: "Y",
+    };
 
-    if (paymentResponse.ssl_result === "0") {
-      const cardLast4 = form.value.card_number.replace(/\s/g, "").slice(-4);
-      const cardType = detectCardType(form.value.card_number);
-      const orderRes = await $fetch<OrderResponse>("/api/orders/create", {
-        method: "POST",
-        body: {
-          ...orderBody,
-          transaction_id: paymentResponse.ssl_txn_id,
-          approval_code: paymentResponse.ssl_approval_code,
-          payment_token: paymentResponse.ssl_token || tokenRes.token,
-          card_token: paymentResponse.ssl_card_token || null,
-          card_last4: cardLast4,
-          card_type: cardType,
-          avs_response: paymentResponse.ssl_avs_response,
-          cvv_response: paymentResponse.ssl_cvv2_response,
-        },
-      });
+    // Step 4: Process payment using ConvergeEmbeddedPayment
+    const callback = {
+      onError: function (error: any) {
+        console.error("Payment error:", error);
+        toast.error("Payment error occurred");
+        isPaying.value = false;
+        resetTurnstile();
+      },
+      onDeclined: function (response: any) {
+        console.log("Payment declined:", response);
+        toast.error(response.ssl_result_message || "Card declined");
+        isPaying.value = false;
+        resetTurnstile();
+      },
+      onApproval: async function (response: any) {
+        console.log("Payment approved:", response);
 
-      if (!orderRes.success) {
-        throw new Error("Order creation failed");
-      }
+        try {
+          const orderRes = (await $fetch("/api/orders/create", {
+            method: "POST",
+            body: {
+              ...orderBody,
+              transaction_id: response.ssl_txn_id,
+              approval_code: response.ssl_approval_code,
+              payment_token: response.ssl_token || tokenRes.token,
+              card_last4: form.value.card_number.replace(/\s/g, "").slice(-4),
+            },
+          })) as any;
 
-      await clearCart();
-      toast.success("Payment successful!");
+          if (!orderRes.success) {
+            throw new Error("Order creation failed");
+          }
 
-      navigateTo(
-        `/thank-you?order=${orderRes.order.order_number}&email=${encodeURIComponent(email)}`,
-      );
-    } else {
-      // Payment failed
-      const errorMessage =
-        paymentResponse.ssl_result_message || "Payment failed";
-      throw new Error(errorMessage);
-    }
+          await clearCart();
+          toast.success("Payment successful!");
+          navigateTo(`/thank-you?order=${orderRes.order.order_number}`);
+        } catch (error: any) {
+          console.error("Order creation error:", error);
+          toast.error("Payment successful but order creation failed");
+        } finally {
+          isPaying.value = false;
+        }
+      },
+    };
+
+    (window as any).ConvergeEmbeddedPayment.pay(paymentData, callback);
   } catch (error: any) {
     console.error("Payment error:", error);
-
-    let errorMessage = error.message || "Payment failed. Please try again.";
-
-    if (errorMessage.includes("card")) {
-      errorMessage = "Your card was declined. Please check your card details.";
-    } else if (errorMessage.includes("CVV") || errorMessage.includes("cvv")) {
-      errorMessage = "Invalid CVV code. Please check and try again.";
-    } else if (errorMessage.includes("expired")) {
-      errorMessage = "Your card has expired. Please use a different card.";
-    }
-
-    toast.error(errorMessage);
-    resetTurnstile();
-  } finally {
+    toast.error(error.message || "Payment failed");
     isPaying.value = false;
+    resetTurnstile();
   }
 };
 
