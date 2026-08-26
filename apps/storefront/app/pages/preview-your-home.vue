@@ -13,18 +13,14 @@
     </section>
 
     <!-- Main Content -->
-    
   </div>
 </template>
 
 <script setup lang="ts">
 useHead({
-  title: 'Preview Your Home - Festive Express'
-})
-import { ref, onMounted, onUnmounted } from 'vue'
-
+  title: "Preview Your Home - Festive Express",
+});
+import { ref, onMounted, onUnmounted } from "vue";
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -57,8 +57,29 @@
                 :alt="pkg.name"
               />
             </div>
-            <div class="text-[1.5rem] font-black text-white ml-3">
-              ${{ Math.round(Number(pkg.price) || 0) }} / season
+            <div class="ml-3 text-right text-white">
+              <template v-if="showSale(pkg.sale_price)">
+                <span
+                  class="mb-1 inline-block rounded-full bg-white/15 px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide"
+                >
+                  Early Bird Special
+                </span>
+                <div class="leading-tight">
+                  <span class="block text-xs text-white/70 line-through">
+                    was ${{ Math.round(Number(pkg.price) || 0) }}
+                  </span>
+                  <span class="text-[1.5rem] font-black">
+                    is ${{
+                      Math.round(effectivePrice(pkg.price, pkg.sale_price))
+                    }}/season
+                  </span>
+                </div>
+              </template>
+              <template v-else>
+                <div class="text-[1.5rem] font-black">
+                  ${{ Math.round(Number(pkg.price) || 0) }}/season
+                </div>
+              </template>
             </div>
           </div>
 
@@ -151,6 +172,7 @@ interface PackageRow {
   name: string;
   slug: string;
   price: number | string;
+  sale_price: number | string;
   is_popular?: boolean;
   is_package?: boolean;
   package_data?: string | null;
@@ -292,7 +314,11 @@ const getPackageButtonName = (pkg: { name: string }) => {
   return pkg.name.toUpperCase();
 };
 
-onMounted(fetchPackages);
+const { loadEarlyBird, showSale, effectivePrice } = useEarlyBirdSpecial();
+
+onMounted(async () => {
+  await Promise.all([fetchPackages(), loadEarlyBird()]);
+});
 </script>
 
 <style scoped>

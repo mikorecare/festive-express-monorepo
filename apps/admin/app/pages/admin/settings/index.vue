@@ -139,7 +139,7 @@
       <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
         <h2 class="text-lg font-semibold text-[#0c2340] mb-5">Checkout</h2>
 
-        <div class="mb-1">
+        <div class="mb-3">
           <label class="block text-sm font-semibold text-gray-700 mb-1.5">
             Florida tax rate (%)
           </label>
@@ -156,6 +156,86 @@
             Enter percent (e.g. <strong>7</strong> for 7%). Storefront converts
             to decimal (0.07).
           </p>
+        </div>
+
+        <div class="form-section mt-5">
+          <label class="form-label mb-2 block"
+            >Early Bird Special / Sale Price</label
+          >
+
+          <button
+            type="button"
+            role="switch"
+            :aria-checked="form.early_bird_enabled === 'true'"
+            class="relative h-10 w-[88px] shrink-0 rounded-full border-0 p-0 shadow-inner transition-colors duration-250 cursor-pointer"
+            :class="
+              form.early_bird_enabled === 'true'
+                ? 'bg-green-500'
+                : 'bg-slate-200'
+            "
+            @click="
+              form.early_bird_enabled =
+                form.early_bird_enabled === 'true' ? 'false' : 'true'
+            "
+          >
+            <span
+              class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[0.7rem] font-extrabold tracking-wide text-white transition-opacity duration-200"
+              :class="
+                form.early_bird_enabled === 'true' ? 'opacity-100' : 'opacity-0'
+              "
+            >
+              ON
+            </span>
+            <span
+              class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[0.7rem] font-extrabold tracking-wide text-slate-400 transition-opacity duration-200"
+              :class="
+                form.early_bird_enabled === 'true' ? 'opacity-0' : 'opacity-100'
+              "
+            >
+              OFF
+            </span>
+            <span
+              class="absolute top-1 left-1 h-8 w-8 rounded-full bg-white shadow-md transition-transform duration-250"
+              :class="
+                form.early_bird_enabled === 'true'
+                  ? 'translate-x-12'
+                  : 'translate-x-0'
+              "
+            />
+          </button>
+        </div>
+
+        <div v-show="form.early_bird_enabled === 'true'" class="space-y-4">
+          <div class="form-section">
+            <label class="form-label">Early Bird Expires At</label>
+            <input
+              v-model="form.early_bird_expires_at"
+              type="datetime-local"
+              class="form-date"
+            />
+            <small class="text-slate-500">
+              After this date, sale/early bird prices are hidden and base price
+              is used.
+            </small>
+          </div>
+
+          <div class="form-section">
+            <label class="form-label">Early Bird Title</label>
+            <input
+              v-model="form.early_bird_title"
+              type="text"
+              placeholder="Early Bird Special Pricing"
+            />
+          </div>
+
+          <div class="form-section">
+            <label class="form-label">Early Bird Description</label>
+            <textarea
+              v-model="form.early_bird_description"
+              rows="3"
+              placeholder="Short description for the storefront banner"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -175,6 +255,10 @@ type SettingsForm = {
   opening_hours: string;
   copyright_text: string;
   fl_tax_rate: string;
+  early_bird_expires_at: string;
+  early_bird_enabled: string; // "true" | "false"
+  early_bird_title: string;
+  early_bird_description: string;
 
   social_facebook: string;
   social_instagram: string;
@@ -206,6 +290,10 @@ const SETTING_KEYS: (keyof SettingsForm)[] = [
   "opening_hours",
   "copyright_text",
   "fl_tax_rate",
+  "early_bird_enabled",
+  "early_bird_expires_at",
+  "early_bird_title",
+  "early_bird_description",
 
   "social_facebook",
   "social_instagram",
@@ -231,6 +319,10 @@ const form = ref<SettingsForm>({
   opening_hours: "",
   copyright_text: "",
   fl_tax_rate: "",
+  early_bird_expires_at: "",
+  early_bird_enabled: "",
+  early_bird_title: "",
+  early_bird_description: "",
 
   social_facebook: "",
   social_instagram: "",
@@ -271,6 +363,10 @@ const emptyForm = (): SettingsForm => ({
   opening_hours: "",
   copyright_text: "",
   fl_tax_rate: "",
+  early_bird_enabled: "false",
+  early_bird_expires_at: "",
+  early_bird_title: "",
+  early_bird_description: "",
 
   social_facebook: "",
   social_instagram: "",
@@ -279,12 +375,16 @@ const emptyForm = (): SettingsForm => ({
   social_pinterest: "",
 });
 
+const earlyBirdEnabled = ref(false);
+const earlyBirdExpiresAt = ref(""); // datetime-local string
+const earlyBirdTitle = ref("");
+const earlyBirdDescription = ref("");
+
 /** Load all key/value rows → form */
 const loadSettings = async () => {
   loading.value = true;
   try {
     const { data, error } = await db.from("settings").select("id, key, value");
-
     if (error) throw error;
 
     const rows = (data || []) as SettingRow[];
@@ -292,18 +392,31 @@ const loadSettings = async () => {
 
     for (const row of rows) {
       const k = row.key as keyof SettingsForm;
-      if (SETTING_KEYS.includes(k)) {
+      if (SETTING_KEYS.includes(k as any)) {
         next[k] = row.value ?? "";
       }
     }
 
-    // Show % in the form (0.07 → 7)
+    // Tax: 0.07 → 7
     if (next.fl_tax_rate) {
       const n = Number(next.fl_tax_rate);
       if (!Number.isNaN(n) && n > 0 && n <= 1) {
         next.fl_tax_rate = String(n * 100);
       }
     }
+
+    // datetime-local needs "YYYY-MM-DDTHH:mm"
+    if (next.early_bird_expires_at) {
+      next.early_bird_expires_at = next.early_bird_expires_at.slice(0, 16);
+    }
+
+    // normalize enable flag
+    next.early_bird_enabled =
+      next.early_bird_enabled === "true" ||
+      next.early_bird_enabled === "1" ||
+      next.early_bird_enabled === "yes"
+        ? "true"
+        : "false";
 
     form.value = next;
   } catch (e: any) {
@@ -326,10 +439,18 @@ const saveSettings = async () => {
     const rows = SETTING_KEYS.map((key) => {
       let value = form.value[key] ?? "";
 
-      // Percent → decimal for fl_tax_rate (7 → 0.07)
       if (key === "fl_tax_rate") {
         const pct = Number(value);
         value = !Number.isNaN(pct) ? String(pct / 100) : "0.07";
+      }
+
+      if (key === "early_bird_enabled") {
+        value = value === "true" || value === "1" ? "true" : "false";
+      }
+
+      if (key === "early_bird_expires_at" && value) {
+        // datetime-local → ISO for storefront compare
+        value = new Date(value).toISOString();
       }
 
       return {
@@ -344,7 +465,6 @@ const saveSettings = async () => {
       .upsert(rows, { onConflict: "key" });
 
     if (error) throw error;
-
     showToast("Settings saved", "success");
   } catch (e: any) {
     console.error("saveSettings", e);

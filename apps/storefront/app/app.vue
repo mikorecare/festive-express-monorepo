@@ -5,5 +5,6 @@
     <Toaster position="top-center" richColors closeButton />
     <Footer />
     <FloatingCart />
+    <CookieConsent />
   </div>
 </template>
