@@ -78,7 +78,7 @@ export default defineNuxtConfig({
     convergeDemo: process.env.CONVERGE_DEMO !== "false",
 
     estimatorApiUrl:
-      process.env.NUXT_ESTIMATOR_URL ||
+      process.env.NUXT_ESTIMATOR_API_URL ||
       "http://52.204.215.130/estimator",
 
     estimatorAssetUrl:
