@@ -55,13 +55,13 @@ export default defineNuxtConfig({
     },
   },
 
-   postcss: {
+  postcss: {
     plugins: {
       tailwindcss: {},
       autoprefixer: {},
       cssnano: {
         preset: [
-          'default',
+          "default",
           {
             mergeLonghand: false,
           },

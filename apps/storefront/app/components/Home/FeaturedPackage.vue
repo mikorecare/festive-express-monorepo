@@ -162,9 +162,7 @@
             </div> -->
             <!-- Price & Cart Actions -->
             <div class="flex flex-col items-end gap-2">
-              <template
-                v-if="pkg.sale_price != null && Number(pkg.sale_price) > 0"
-              >
+              <template v-if="showSale(pkg.sale_price)">
                 <span
                   class="inline-block rounded-full bg-white/15 px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white"
                 >
@@ -177,7 +175,9 @@
                   <span
                     class="text-[1rem] max-sm:text-[1rem] font-extrabold text-white"
                   >
-                    is ${{ Math.round(Number(pkg.sale_price) || 0) }}/season
+                    is ${{
+                      Math.round(effectivePrice(pkg.price, pkg.sale_price))
+                    }}/season
                   </span>
                 </div>
               </template>
@@ -385,8 +385,10 @@ const setImageRef = (
   }
 };
 
-onMounted(() => {
-  fetchPackages();
+const { loadEarlyBird, showSale, effectivePrice } = useEarlyBirdSpecial();
+
+onMounted(async () => {
+  await Promise.all([fetchPackages(), loadEarlyBird()]);
 
   if (import.meta.client) {
     window.addEventListener("click", () => {

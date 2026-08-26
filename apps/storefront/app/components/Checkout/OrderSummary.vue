@@ -145,16 +145,31 @@
       </li>
     </ul>
 
-    <div
+    <!-- <div
       class="bg-navy text-white rounded-xl p-4 mt-4 flex justify-between items-center"
     >
       <div>
         <strong class="block">Early Bird Special</strong>
         <p class="text-sm opacity-100">
-          Schedule an installation before October 31st, get 15% off.
+          Schedule an installation before deadline October 31, 2026, get 15%
+          off.
         </p>
-      </div>
-      <!-- <i class="fas fa-home text-2xl opacity-80"></i> -->
+      </div> -->
+    <!-- <i class="fas fa-home text-2xl opacity-80"></i> -->
+    <!-- </div> -->
+
+    <div v-if="isEarlyBirdLive" class="bg-navy text-white rounded-xl p-4 mt-4">
+      <strong class="block">{{ earlyBirdTitle }}</strong>
+      <p class="text-sm opacity-90 mb-0">
+        {{ earlyBirdDescription }}
+        <template v-if="formatEndsLabel"> Ends {{ formatEndsLabel }}.</template>
+      </p>
+      <p
+        v-if="countdown && countdown !== 'Ended'"
+        class="mb-0 mt-1 text-sm font-semibold text-brand-orange"
+      >
+        {{ countdown }}
+      </p>
     </div>
   </div>
 </template>
@@ -222,8 +237,48 @@ const grandTotal = computed(() => {
   return Math.max(0, subtotal + estimatedTax.value - discount);
 });
 
+const {
+  loadEarlyBird,
+  showSale,
+  effectivePrice,
+  earlyBirdExpiresAt,
+  isEarlyBirdLive,
+  earlyBirdTitle,
+  earlyBirdDescription,
+  formatEndsLabel,
+} = useEarlyBirdSpecial();
+
+const countdown = ref("");
+
+const tickCountdown = () => {
+  if (!earlyBirdExpiresAt.value) {
+    countdown.value = "";
+    return;
+  }
+  const end = new Date(earlyBirdExpiresAt.value).getTime();
+  const diff = end - Date.now();
+  if (diff <= 0) {
+    countdown.value = "Ended";
+    return;
+  }
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  countdown.value = `${d}d ${h}h ${m}m ${s}s`;
+};
+
+let timer: ReturnType<typeof setInterval> | null = null;
+
 onMounted(() => {
   loadSettings();
   loadPromo();
+  loadEarlyBird();
+  tickCountdown();
+  timer = setInterval(tickCountdown, 1000);
+});
+
+onBeforeUnmount(() => {
+  if (timer) clearInterval(timer);
 });
 </script>

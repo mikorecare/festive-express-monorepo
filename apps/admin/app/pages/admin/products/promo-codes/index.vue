@@ -13,9 +13,7 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <!-- Left: form -->
       <div class="lg:col-span-5">
-        <div
-          class="inline-block px-3 py-1.5 bg-navy text-white rounded-md text-xs font-medium hover:bg-brand-orange hover:text-navy transition-colors no-underline"
-        >
+        <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-6">
           <h2 class="text-lg font-bold text-navy mb-5">
             {{ editingId ? "Edit Promo Code" : "Add Promo Code" }}
           </h2>

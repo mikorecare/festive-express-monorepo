@@ -109,6 +109,8 @@ export const useCart = () => {
     }
   };
 
+  const { isEarlyBirdActive } = useEarlyBirdSpecial();
+
   const addToCart = async (productId: string | number, quantity = 1) => {
     if (!import.meta.client) return false;
 
@@ -116,11 +118,19 @@ export const useCart = () => {
       const cartId = await ensureCart();
       const pid = String(productId);
 
-      const { data: productData, error: productError } = await supabase
-        .from("products")
-        .select("id, price, sale_price")
-        .eq("id", pid)
-        .maybeSingle();
+      const [{ data: productData, error: productError }, { data: settings }] =
+        await Promise.all([
+          supabase
+            .from("products")
+            .select("id, price, sale_price")
+            .eq("id", pid)
+            .maybeSingle(),
+          supabase
+            .from("settings")
+            .select("value")
+            .eq("key", "early_bird_expires_at")
+            .maybeSingle(),
+        ]);
 
       if (productError) throw productError;
 
@@ -130,15 +140,17 @@ export const useCart = () => {
         sale_price: number | string | null;
       } | null;
 
-      const sale = Number(product?.sale_price);
-      const base = Number(product?.price ?? 0);
+      const expiresAt =
+        (settings as { value?: string | null } | null)?.value ?? null;
+
+      // const sale = Number(product?.sale_price);
+      // const base = Number(product?.price ?? 0);
       const unitPrice =
+        isEarlyBirdActive(expiresAt) &&
         product?.sale_price != null &&
-        product.sale_price !== "" &&
-        !Number.isNaN(sale) &&
-        sale > 0
-          ? sale
-          : base;
+        Number(product.sale_price) > 0
+          ? Number(product.sale_price)
+          : Number(product?.price ?? 0);
 
       type CartItemRow = { id: string | number; quantity: number };
 
