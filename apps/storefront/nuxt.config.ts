@@ -76,7 +76,8 @@ export default defineNuxtConfig({
     convergeUserId: process.env.CONVERGE_USER_ID || "",
     convergePin: process.env.CONVERGE_PIN || "",
     convergeDemo: process.env.CONVERGE_DEMO !== "false",
-
+    estimatorApiUrl: process.env.ESTIMATOR_API_URL,
+    estimatorAssetUrl: process.env.ESTIMATOR_ASSET_URL || "",
     turnstile: {
       secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY,
     },
@@ -111,6 +112,9 @@ export default defineNuxtConfig({
           "X-Powered-By": "Festive Express",
         },
       },
+      '/estimator/**': {
+        proxy: 'http://52.204.215**'
+      }
     },
   },
 });

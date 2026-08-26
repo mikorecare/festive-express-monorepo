@@ -735,7 +735,6 @@ const payWithConverge = async () => {
       ssl_add_token: "Y",
     };
 
-    // Step 4: Process payment using ConvergeEmbeddedPayment
     const callback = {
       onError: function (error: any) {
         console.error("Payment error:", error);
@@ -770,7 +769,11 @@ const payWithConverge = async () => {
 
           await clearCart();
           toast.success("Payment successful!");
-          navigateTo(`/thank-you?order=${orderRes.order.order_number}`);
+
+          // FIX: Include email in navigation
+          navigateTo(
+            `/thank-you?order=${orderRes.order.order_number}&email=${encodeURIComponent(email)}`,
+          );
         } catch (error: any) {
           console.error("Order creation error:", error);
           toast.error("Payment successful but order creation failed");

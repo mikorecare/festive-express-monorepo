@@ -5,14 +5,22 @@
       <div class="hero-overlay">
         <div class="container">
           <div class="hero-content">
-            <h1 v-fade class="">Preview Your Home</h1>
+            <h1 v-fade>Preview Your Home</h1>
             <p v-fade class="breadcrumb"></p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Main Content -->
+    <div style="width: 100%; height: 1200px; overflow: hidden">
+      <iframe
+        src="/api/estimator"
+        width="100%"
+        height="1200px"
+        scrolling="no"
+        style="border: none; display: block"
+      />
+    </div>
   </div>
 </template>
 
@@ -20,7 +28,6 @@
 useHead({
   title: "Preview Your Home - Festive Express",
 });
-import { ref, onMounted, onUnmounted } from "vue";
 </script>
 
 <style scoped></style>
