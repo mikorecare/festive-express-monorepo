@@ -5,7 +5,10 @@
         <div class="container">
           <div class="hero-content">
             <h1 class="text-uppercase">Your Cart</h1>
-            <p class="breadcrumb">Review your holiday package selection and secure your installation date.</p>
+            <p class="breadcrumb">
+              Review your holiday package selection and secure your installation
+              date.
+            </p>
             <!-- <span class="item-count">
               ({{ cartCount }} {{ cartCount === 1 ? 'item' : 'items' }})
             </span> -->
@@ -18,31 +21,34 @@
       <div class="row g-4">
         <!-- Left: Cart Items -->
         <div class="col-lg-8">
-          <div class="cart-title-section d-flex justify-content-between align-items-center mb-4">
+          <div
+            class="cart-title-section d-flex justify-content-between align-items-center mb-4"
+          >
             <h1 class="cart-title mb-0">
               Shopping Bag
-              <span class="item-count">({{ cartCount }} {{ cartCount === 1 ? 'item' : 'items' }})</span>
+              <span class="item-count"
+                >({{ cartCount }}
+                {{ cartCount === 1 ? "item" : "items" }})</span
+              >
             </h1>
             <span class="ready-text">Ready for installation</span>
           </div>
 
           <div v-if="cartItems.length === 0" class="empty-cart">
             <p>Your cart is empty.</p>
-            <NuxtLink to="/packages" class="btn-primary">Browse Packages</NuxtLink>
+            <NuxtLink to="/packages" class="btn-primary"
+              >Browse Packages</NuxtLink
+            >
           </div>
 
           <div v-else class="cart-items">
-            <div 
-              v-for="item in cartItems" 
-              :key="item.id" 
-              class="cart-item"
-            >
+            <div v-for="item in cartItems" :key="item.id" class="cart-item">
               <div class="item-image">
-                <img 
-                  :src="getImageUrl(item.product?.image_url)" 
+                <img
+                  :src="getImageUrl(item.product?.image_url)"
                   :alt="item.product?.name"
                   @error="handleImageError"
-                >
+                />
               </div>
 
               <div class="item-details">
@@ -88,28 +94,40 @@
                   v-if="item.options?.alacarte?.length"
                   class="item-features"
                 >
-                  <div
-                    v-for="(line, i) in item.options.alacarte"
-                    :key="i"
-                  >
+                  <div v-for="(line, i) in item.options.alacarte" :key="i">
                     <i class="fas fa-check"></i>
                     {{ line.group }} – {{ line.label }}
                     <template v-if="line.lights"> + lights</template>
-                    (${{ (Number(line.price) + Number(line.lights_price || 0)).toFixed(2) }})
+                    (${{
+                      (
+                        Number(line.price) + Number(line.lights_price || 0)
+                      ).toFixed(2)
+                    }})
                   </div>
                 </div>
-                
 
-                <div v-if="item.is_package && !item.options?.alacarte?.length" class="item-features">
-                  <div><i class="fas fa-check"></i> Custom-fit installation</div>
-                  <div><i class="fas fa-check"></i> 24-hour repair guarantee</div>
+                <div
+                  v-if="item.is_package && !item.options?.alacarte?.length"
+                  class="item-features"
+                >
+                  <div>
+                    <i class="fas fa-check"></i> Custom-fit installation
+                  </div>
+                  <div>
+                    <i class="fas fa-check"></i> 24-hour repair guarantee
+                  </div>
                 </div>
 
-                <div class="item-actions"> <!-- v-if="!item.is_package" -->
+                <div class="item-actions">
+                  <!-- v-if="!item.is_package" -->
                   <div class="qty-controls">
-                    <button @click="updateQty(item, item.quantity - 1)">−</button>
+                    <button @click="updateQty(item, item.quantity - 1)">
+                      −
+                    </button>
                     <span>{{ item.quantity }}</span>
-                    <button @click="updateQty(item, item.quantity + 1)">+</button>
+                    <button @click="updateQty(item, item.quantity + 1)">
+                      +
+                    </button>
                   </div>
                   <!-- <button class="remove-btn" @click="removeItem(item.id)">
                     <i class="fas fa-trash-alt"></i> Remove
@@ -128,15 +146,17 @@
                   class="item-option"
                 >
                   <span class="dot"></span>
-                  Incl. a la carte <span class="font-weight-bold">${{ Number(item.options.alacarte_total).toFixed(2) }}</span>
+                  Incl. a la carte
+                  <span class="font-weight-bold"
+                    >${{ Number(item.options.alacarte_total).toFixed(2) }}</span
+                  >
                 </div>
-                
+
                 <button class="remove-btn" @click="removeItem(item.id)">
                   <i class="fas fa-trash-alt"></i> Remove
                 </button>
               </div>
             </div>
-              
           </div>
         </div>
 
@@ -152,11 +172,15 @@
             <!-- Optional: sum of all a la carte in cart -->
             <div class="summary-row" v-if="alacarteCartTotal > 0">
               <span>A la carte</span>
-              <span class="font-weight-bold">${{ alacarteCartTotal.toFixed(2) }}</span>
+              <span class="font-weight-bold"
+                >${{ alacarteCartTotal.toFixed(2) }}</span
+              >
             </div>
             <div class="summary-row">
               <span>Estimated Tax (FL)</span>
-              <span class="font-weight-bold">${{ estimatedTax.toFixed(2) }}</span>
+              <span class="font-weight-bold"
+                >${{ estimatedTax.toFixed(2) }}</span
+              >
             </div>
             <!-- <div class="summary-row">
               <span>Installation Deposit</span>
@@ -166,18 +190,17 @@
             <div class="summary-total">
               <div>
                 <strong>Total</strong>
-          
               </div>
-              <div class="total-amount">${{ grandTotal.toFixed(2) }}
+              <div class="total-amount">
+                ${{ grandTotal.toFixed(2) }}
                 <small>PRICING INCLUDES REMOVAL & STORAGE</small>
               </div>
             </div>
 
-            
             <div class="promo-box">
               <label>PROMO CODE</label>
               <div class="promo-input">
-                <input v-model="promoCode" type="text" placeholder="GIFT2025">
+                <input v-model="promoCode" type="text" placeholder="GIFT2025" />
                 <button @click="applyPromo">Apply</button>
               </div>
             </div>
@@ -191,16 +214,17 @@
             </NuxtLink> -->
 
             <button
-                type="button"
-                class="btn-checkout"
-                :disabled="!cartItems.length"
-                @click="handleCheckout"
-              >
-                Proceed to Checkout <i class="fas fa-arrow-right"></i>
-              </button>
+              type="button"
+              class="btn-checkout"
+              :disabled="!cartItems.length"
+              @click="handleCheckout"
+            >
+              Proceed to Checkout <i class="fas fa-arrow-right"></i>
+            </button>
 
             <p class="checkout-note">
-              A representative will contact you within 24 hours to schedule your specific installation date.
+              A representative will contact you within 24 hours to schedule your
+              specific installation date.
             </p>
           </div>
         </div>
@@ -230,7 +254,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -238,90 +261,96 @@
 <script setup lang="ts">
 useHead({
   title: computed(() => {
-    return 'Cart - Festive Express'
-  })
-})
-const config = useRuntimeConfig()
-const FL_TAX_RATE = Number(config.public.flTaxRate) || 0.07
-const { cartTotal, cartCount, cartItems, loadCart, removeFromCart, updateCartItemQty } = useCart()
-
+    return "Cart - Festive Express";
+  }),
+});
+const config = useRuntimeConfig();
+const FL_TAX_RATE = Number(config.public.flTaxRate) || 0.07;
+const {
+  cartTotal,
+  cartCount,
+  cartItems,
+  loadCart,
+  removeFromCart,
+  updateCartItemQty,
+} = useCart();
 
 // Sum of a la carte across all items
 const alacarteCartTotal = computed(() =>
   cartItems.value.reduce((sum, item) => {
-    return sum + Number(item.options?.alacarte_total || 0)
-  }, 0)
-)
+    return sum + Number(item.options?.alacarte_total || 0);
+  }, 0),
+);
 
-const promoCode = ref('')
-const estimatedTax = computed(() =>
-  Number(cartTotal.value) * FL_TAX_RATE
-)
+const promoCode = ref("");
+const estimatedTax = computed(() => Number(cartTotal.value) * FL_TAX_RATE);
 // const installDeposit = ref(250)
-const installDeposit = ref(0)
-const grandTotal = computed(() => 
-  Number(cartTotal.value) + estimatedTax.value + installDeposit.value + alacarteCartTotal.value
-)
+const installDeposit = ref(0);
+const grandTotal = computed(
+  () =>
+    Number(cartTotal.value) +
+    estimatedTax.value +
+    installDeposit.value +
+    alacarteCartTotal.value,
+);
 
 const getImageUrl = (url: string | undefined) => {
-  if (!url) return '/Images/Colors/default-house.jpg'
-  return `${config.public.imageBase.replace(/\/$/, '')}/${url.replace(/^\//, '')}`
-}
+  if (!url) return "/Images/Colors/default-house.jpg";
+  return `${config.public.imageBase.replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
+};
 
 const handleImageError = (e: Event) => {
-  const img = e.target as HTMLImageElement
-  if (img) img.src = '/Images/Colors/placeholder.jpg'
-}
+  const img = e.target as HTMLImageElement;
+  if (img) img.src = "/Images/Colors/placeholder.jpg";
+};
 
 const updateQty = async (item: any, qty: number) => {
-  if (qty < 1) return
+  if (qty < 1) return;
   try {
-    await updateCartItemQty(item.id, qty)  // cart item id, not product_id
-    await loadCart()
+    await updateCartItemQty(item.id, qty); // cart item id, not product_id
+    await loadCart();
   } catch (e) {
-    console.error(e)
+    console.error(e);
   }
-}
+};
 
 const removeItem = async (id: number) => {
-  await removeFromCart(id)
-}
+  await removeFromCart(id);
+};
 
 const applyPromo = () => {
   // placeholder
-  alert('Promo applied (demo)')
-}
+  alert("Promo applied (demo)");
+};
 
-onMounted(() => loadCart())
-
+onMounted(() => loadCart());
 
 // Refresh cart after remove
 const removeFromCartHandler = async (id: number) => {
-  await removeFromCart(id)
-  window.location.reload()  // Temporary fix to refresh header
-}
+  await removeFromCart(id);
+  window.location.reload(); // Temporary fix to refresh header
+};
 
-onMounted(loadCart)
+onMounted(loadCart);
 
 const getBadgeText = (name?: string | null) => {
-  const n = name?.toLowerCase() || ''
-  
-  if (n.includes('joy')) return 'STANDARD'
-  if (n.includes('jolly')) return 'POPULAR'
-  if (n.includes('merry')) return 'PREMIUM'
-  if (n.includes('new')) return 'NEW'
-  if (n.includes('best')) return 'BEST SELLER'
-  if (n.includes('limited')) return 'LIMITED'
-  if (n.includes('exclusive')) return 'EXCLUSIVE'
-  
-  return 'FEATURED'
-}
+  const n = name?.toLowerCase() || "";
+
+  if (n.includes("joy")) return "STANDARD";
+  if (n.includes("jolly")) return "POPULAR";
+  if (n.includes("merry")) return "PREMIUM";
+  if (n.includes("new")) return "NEW";
+  if (n.includes("best")) return "BEST SELLER";
+  if (n.includes("limited")) return "LIMITED";
+  if (n.includes("exclusive")) return "EXCLUSIVE";
+
+  return "FEATURED";
+};
 
 const handleCheckout = () => {
-  if (!cartItems.value.length) return
-  navigateTo('/checkout')
-}
-
+  if (!cartItems.value.length) return;
+  navigateTo("/checkout");
+};
 </script>
 
 <style scoped>
@@ -338,14 +367,14 @@ const handleCheckout = () => {
   margin-bottom: 40px;
 }
 
-.cart-title-section{
+.cart-title-section {
   border-bottom: 2px solid #9ca3af;
   padding-bottom: 15px;
 }
 .cart-title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #0c2340;
+  color: #1c2d5b;
 }
 
 .item-count {
@@ -366,7 +395,7 @@ const handleCheckout = () => {
   border-radius: 16px;
   padding: 24px;
   margin-bottom: 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   align-items: stretch;
 }
 
@@ -409,7 +438,7 @@ const handleCheckout = () => {
 
 .item-badge.package {
   background: #fff7ed;
-  color: #F49322;
+  color: #f49321;
 }
 
 .item-badge.addon {
@@ -420,7 +449,7 @@ const handleCheckout = () => {
 .item-name {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #0c2340;
+  color: #1c2d5b;
   margin-bottom: 6px;
 }
 
@@ -436,7 +465,7 @@ const handleCheckout = () => {
 .dot {
   width: 8px;
   height: 8px;
-  background: #F49322;
+  background: #f49321;
   border-radius: 50%;
 }
 
@@ -490,7 +519,7 @@ const handleCheckout = () => {
 .item-price {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #0c2340;
+  color: #1c2d5b;
   white-space: nowrap;
 }
 
@@ -499,7 +528,7 @@ const handleCheckout = () => {
   background: #fff;
   border-radius: 16px;
   padding: 28px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 100px;
 }
@@ -507,7 +536,7 @@ const handleCheckout = () => {
 .order-summary h3 {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #0c2340;
+  color: #1c2d5b;
   margin-bottom: 20px;
 }
 
@@ -538,7 +567,7 @@ const handleCheckout = () => {
 .total-amount {
   font-size: 2rem;
   font-weight: 800;
-  color: #F49322;
+  color: #f49321;
   text-align: right;
 }
 
@@ -564,7 +593,7 @@ const handleCheckout = () => {
 }
 
 .promo-input button {
-  background: #0c2340;
+  background: #1c2d5b;
   color: #fff;
   border: none;
   padding: 0 18px;
@@ -577,21 +606,21 @@ const handleCheckout = () => {
   display: block;
   width: 100%;
   text-align: center;
-  background: #F49322;
+  background: #f49321;
   color: #fff;
   padding: 16px;
   border-radius: 12px;
   font-weight: 700;
   text-decoration: none;
   transition: background 0.3s;
-  border: 2px solid #0c2340;
+  border: 2px solid #1c2d5b;
 
   position: relative;
   overflow: hidden;
 }
 
 .btn-checkout::after {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   left: -150%;
@@ -611,7 +640,7 @@ const handleCheckout = () => {
 }
 
 .btn-checkout:hover {
-  background: #0c2340;
+  background: #1c2d5b;
   color: #fff;
 }
 
@@ -635,12 +664,12 @@ const handleCheckout = () => {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #0c2340;
+  color: #1c2d5b;
 }
 
 .trust-item i {
   font-size: 1.5rem;
-  color: #F49322;
+  color: #f49321;
 }
 
 .trust-item strong {
@@ -662,12 +691,10 @@ const handleCheckout = () => {
   }
 }
 
-
 .btn-checkout:disabled,
 .btn-checkout.disabled-link {
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
 }
-
 </style>

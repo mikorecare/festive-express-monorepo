@@ -18,13 +18,13 @@
               :src="getImageUrl(pkg.image_url)"
               :alt="pkg.name"
               class="package-image"
-            >
+            />
             <div
               class="badge"
               :class="{
                 standard: isName(pkg.name, 'joy'),
                 popular: isName(pkg.name, 'jolly'),
-                premium: isName(pkg.name, 'merry')
+                premium: isName(pkg.name, 'merry'),
               }"
             >
               {{ getBadgeText(pkg.name) }}
@@ -39,16 +39,18 @@
 
             <div class="card-actions">
               <div class="description-tooltip">
-                <button type="button" class="select-btn-border w-100">View Features</button>
+                <button type="button" class="select-btn-border w-100">
+                  View Features
+                </button>
                 <div class="tooltip-content">
                   <div
-                    v-for="(variation, vIndex) in (pkg.variations || [])"
+                    v-for="(variation, vIndex) in pkg.variations || []"
                     :key="vIndex"
                     class="variation-group"
                   >
                     <strong>{{ variation.name }}</strong>
                     <div
-                      v-for="(option, oIndex) in (variation.options || [])"
+                      v-for="(option, oIndex) in variation.options || []"
                       :key="oIndex"
                       class="feature-line"
                     >
@@ -57,7 +59,7 @@
                         :src="getImageUrl(option.image_url)"
                         class="option-preview"
                         alt=""
-                      >
+                      />
                       <span>{{ option.name }}</span>
                     </div>
                   </div>
@@ -67,7 +69,11 @@
                 </div>
               </div>
 
-              <button type="button" class="select-btn w-100" @click="selectPackage(pkg)">
+              <button
+                type="button"
+                class="select-btn w-100"
+                @click="selectPackage(pkg)"
+              >
                 Select {{ shortName(pkg.name) }}
               </button>
             </div>
@@ -80,80 +86,78 @@
 
 <script setup lang="ts">
 type PackageProduct = {
-  id: number
-  name: string
-  price: number
-  is_popular?: boolean
-  is_package?: boolean
-  package_data?: string
-  image_url?: string | null
-  created_at?: string
+  id: number;
+  name: string;
+  price: number;
+  is_popular?: boolean;
+  is_package?: boolean;
+  package_data?: string;
+  image_url?: string | null;
+  created_at?: string;
   variations?: Array<{
-    name: string
-    options: Array<{ name: string; image_url?: string }>
-  }>
-}
+    name: string;
+    options: Array<{ name: string; image_url?: string }>;
+  }>;
+};
 
-const packages = ref<PackageProduct[]>([])
-const config = useRuntimeConfig()
+const packages = ref<PackageProduct[]>([]);
+const config = useRuntimeConfig();
 
 onMounted(async () => {
   try {
-    const res: any = await $fetch('/products', {
+    const res: any = await $fetch("/products", {
       baseURL: config.public.apiBase,
       params: {
         is_package: true,
-        status: 'publish'
-      }
-    })
-    packages.value = res.data || res || []
+        status: "publish",
+      },
+    });
+    packages.value = res.data || res || [];
   } catch (error) {
-    console.error('Failed to load packages:', error)
+    console.error("Failed to load packages:", error);
   }
-})
+});
 
 /** Outdoor only */
 const packageProducts = computed(() =>
   packages.value
     .filter(
       (p) =>
-        p.is_package &&
-        p.package_data === 'holiday-lighting-package-programs'
+        p.is_package && p.package_data === "holiday-lighting-package-programs",
     )
     .sort((a, b) => {
-      const ta = a.created_at ? new Date(a.created_at).getTime() : 0
-      const tb = b.created_at ? new Date(b.created_at).getTime() : 0
-      return ta - tb
-    })
-)
+      const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return ta - tb;
+    }),
+);
 
 const selectPackage = (pkg: PackageProduct) => {
-  navigateTo(`/products/${pkg.id}`)
-}
+  navigateTo(`/products/${pkg.id}`);
+};
 
 const getImageUrl = (url?: string | null) => {
-  if (!url) return '/Images/placeholder.png'
-  return `${config.public.imageBase}/${url}`
-}
+  if (!url) return "/Images/placeholder.png";
+  return `${config.public.imageBase}/${url}`;
+};
 
-const isName = (name: string, key: string) =>
-  name.toLowerCase().includes(key)
+const isName = (name: string, key: string) => name.toLowerCase().includes(key);
 
 const getBadgeText = (name: string) => {
-  const n = name.toLowerCase()
-  if (n.includes('joy')) return 'STANDARD'
-  if (n.includes('jolly')) return 'POPULAR'
-  if (n.includes('merry')) return 'PREMIUM'
-  return 'PACKAGE'
-}
+  const n = name.toLowerCase();
+  if (n.includes("joy")) return "STANDARD";
+  if (n.includes("jolly")) return "POPULAR";
+  if (n.includes("merry")) return "PREMIUM";
+  return "PACKAGE";
+};
 
 const shortName = (name: string) => {
-  const n = name.toLowerCase()
-  if (n.includes('joy')) return 'Joy'
-  if (n.includes('jolly')) return 'Jolly'
-  if (n.includes('merry')) return 'Merry'
-  return name
-}
+  const n = name.toLowerCase();
+  if (n.includes("joy")) return "Joy";
+  if (n.includes("jolly")) return "Jolly";
+  if (n.includes("merry")) return "Merry";
+  return name;
+};
 </script>
 
 <style scoped>
@@ -169,7 +173,7 @@ const shortName = (name: string) => {
 
 .section-title {
   font-size: 2.5rem;
-  color: #0c2340;
+  color: #1c2d5b;
   margin-bottom: 10px;
 }
 
@@ -194,7 +198,9 @@ const shortName = (name: string) => {
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .package-card:hover {
@@ -223,11 +229,11 @@ const shortName = (name: string) => {
   font-weight: 700;
   letter-spacing: 0.04em;
   color: #fff;
-  background: #0c2340;
+  background: #1c2d5b;
 }
 
 .badge.popular {
-  background: #F49322;
+  background: #f49321;
 }
 
 .badge.premium {
@@ -257,14 +263,14 @@ const shortName = (name: string) => {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 700;
-  color: #0c2340;
+  color: #1c2d5b;
 }
 
 .price {
   margin: 0;
   font-size: 1.35rem;
   font-weight: 800;
-  color: #F49322;
+  color: #f49321;
   white-space: nowrap;
 }
 
@@ -288,8 +294,8 @@ const shortName = (name: string) => {
 
 .btn-outline {
   background: #fff;
-  color: #0c2340;
-  border: 2px solid #0c2340;
+  color: #1c2d5b;
+  border: 2px solid #1c2d5b;
 }
 
 .btn-outline:hover {
@@ -303,7 +309,7 @@ const shortName = (name: string) => {
 }
 
 .btn-select:hover {
-  background: #0c2340;
+  background: #1c2d5b;
 }
 
 /* Features tooltip */
@@ -341,7 +347,7 @@ const shortName = (name: string) => {
 
 .variation-group strong {
   display: block;
-  color: #0c2340;
+  color: #1c2d5b;
   margin-bottom: 6px;
   font-size: 0.9rem;
 }

@@ -3,16 +3,21 @@
     <div class="container">
       <div class="section-header">
         <div>
-            <span class="badge">AMERICAN PRIDE COLLECTION</span>
-            <h2 class="section-title">Patriotic Décor</h2>
+          <span class="badge">AMERICAN PRIDE COLLECTION</span>
+          <h2 class="section-title">Patriotic Décor</h2>
         </div>
-        <NuxtLink to="/patriotic" class="view-all">View all Patriotic →</NuxtLink>
+        <NuxtLink to="/patriotic" class="view-all"
+          >View all Patriotic →</NuxtLink
+        >
       </div>
 
       <div class="products-grid">
         <!-- Product 1 -->
         <div class="product-card">
-          <img src="/Images/American-Flag-Waving-LED-768x768.webp" alt="American Flag Waving LED">
+          <img
+            src="/Images/American-Flag-Waving-LED-768x768.webp"
+            alt="American Flag Waving LED"
+          />
           <div class="product-info">
             <h3>American Flag Waving LED Patriotic Metal Frame 48"</h3>
             <div class="price">$850.00</div>
@@ -22,7 +27,10 @@
 
         <!-- Product 2 -->
         <div class="product-card">
-          <img src="/Images/Flag-Infinity-Light-1-768x768.webp" alt="Flag Infinity Light">
+          <img
+            src="/Images/Flag-Infinity-Light-1-768x768.webp"
+            alt="Flag Infinity Light"
+          />
           <div class="product-info">
             <h3>Flag Infinity Light Standing 23"</h3>
             <div class="price">$345.00</div>
@@ -32,7 +40,10 @@
 
         <!-- Product 3 -->
         <div class="product-card">
-          <img src="/Images/light-bursts.webp" alt="LED Light Burst Patriotic">
+          <img
+            src="/Images/light-bursts.webp"
+            alt="LED Light Burst Patriotic"
+          />
           <div class="product-info">
             <h3>LED Light Burst Patriotic 36"</h3>
             <div class="price">$55.00</div>
@@ -42,7 +53,10 @@
 
         <!-- Product 4 -->
         <div class="product-card">
-          <img src="/Images/Spritzer-Patriotic-white-bg-768x768.webp" alt="LED Spritzer">
+          <img
+            src="/Images/Spritzer-Patriotic-white-bg-768x768.webp"
+            alt="LED Spritzer"
+          />
           <div class="product-info">
             <h3>LED Spritzer, Red, Pure White, & Blue</h3>
             <div class="price">$65.00</div>
@@ -70,7 +84,7 @@
 }
 
 .badge {
-  background: #0c2340;
+  background: #1c2d5b;
   color: white;
   padding: 6px 18px;
   border-radius: 30px;
@@ -80,12 +94,12 @@
 
 .section-title {
   font-size: 2.4rem;
-  color: #0c2340;
+  color: #1c2d5b;
   margin: 0;
 }
 
 .view-all {
-  color: #0c2340;
+  color: #1c2d5b;
   text-decoration: none;
   font-weight: 600;
 }
@@ -100,13 +114,13 @@
   background: white;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
   transition: all 0.3s;
 }
 
 .product-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
 }
 
 .product-card img {
@@ -129,14 +143,14 @@
 .price {
   font-size: 1.4rem;
   font-weight: 700;
-  color: #0c2340;
+  color: #1c2d5b;
   margin-bottom: 16px;
 }
 
 .details-btn {
   width: 100%;
   padding: 12px;
-  background: #0c2340;
+  background: #1c2d5b;
   color: white;
   border: none;
   border-radius: 6px;
@@ -145,7 +159,7 @@
 }
 
 .details-btn:hover {
-  background: #F49322;
+  background: #f49321;
   color: #fff;
 }
 

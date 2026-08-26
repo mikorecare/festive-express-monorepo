@@ -18,11 +18,11 @@
   }
 
   .font-raleway {
-    font-family: 'Raleway', 'Poppins', Arial, sans-serif;
+    font-family: "Raleway", "Poppins", Arial, sans-serif;
   }
-  
+
   .font-poppins {
-    font-family: 'Poppins', Arial, sans-serif;
+    font-family: "Poppins", Arial, sans-serif;
   }
 }
 
@@ -122,7 +122,7 @@
 }
 
 .text-primary {
-  color: #0C2340;
+  color: #1c2d5b;
 }
 
 /* Page Banner Hero Global */
@@ -214,7 +214,7 @@
 }
 .section-title {
   font-size: 2.5rem;
-  color: #0c2340;
+  color: #1c2d5b;
   margin-bottom: 12px;
 }
 .subtitle {
@@ -232,7 +232,7 @@
   width: 100%;
   max-width: 320px; /* Optional: limit max width */
   margin: 20px auto 0;
-  background: #ff890b;
+  background: #f49321;
   color: white;
   border: none;
   padding: 16px 32px;
@@ -245,7 +245,7 @@
 }
 
 .btn-primary:hover {
-  background: #0c2340;
+  background: #1c2d5b;
   transform: translateY(-2px);
 }
 
@@ -257,7 +257,7 @@
 }
 
 .btn-primary:hover {
-  background: #0c2340;
+  background: #1c2d5b;
 }
 
 .btn-secondary {
@@ -265,7 +265,7 @@
   width: auto;
   max-width: 320px; /* Optional: limit max width */
   margin: 0 auto;
-  background: #0c2340 !important;
+  background: #1c2d5b !important;
   color: white !important;
   border: none;
   padding: 16px 32px !important;
@@ -278,7 +278,7 @@
 }
 
 .btn-secondary:hover {
-  background: #0c2340;
+  background: #1c2d5b;
   transform: translateY(-2px);
 }
 
@@ -324,7 +324,7 @@
 /* Glass Card Button */
 .btn-primary-card {
   display: inline-block;
-  background-color: #ff890b;
+  background-color: #f49321;
   color: #ffffff;
   font-size: 1.1rem;
   font-weight: 700;
@@ -337,17 +337,17 @@
 }
 
 .btn-primary-card:hover {
-  background-color: #ff890b;
-  color: #0c2340;
+  background-color: #f49321;
+  color: #1c2d5b;
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(247, 148, 29, 0.5);
 }
 
 .btn-checkout {
-  background: linear-gradient(180deg, #ff890b 0%, #ff890b 50%, #ff890b 100%);
+  background: linear-gradient(180deg, #f49321 0%, #f49321 50%, #f49321 100%);
 }
 .btn-checkout:hover {
-  background: #0c2340 !important;
+  background: #1c2d5b !important;
 }
 .btn-checkout::before {
   content: "";
@@ -386,14 +386,14 @@
 .highlight {
   font-size: inherit;
   font-style: normal;
-  color: #f7941d;
+  color: #f49321;
   font-family: inherit;
   font-weight: inherit;
 }
 
 /* Font Color */
 .font-color-orange {
-  color: #ff890b !important;
+  color: #f49321 !important;
 }
 .font-weight-bold {
   font-weight: bold;
@@ -431,7 +431,7 @@
 }
 
 .featured {
-  background: #0c2340; /* Dark Navy */
+  background: #1c2d5b; /* Dark Navy */
 }
 
 /* New ones */
@@ -440,7 +440,7 @@
 }
 
 .best-seller {
-  background: #ff890b; /* Brand Orange */
+  background: #f49321; /* Brand Orange */
 }
 
 .limited {
@@ -461,17 +461,17 @@ section[id] {
 /* FOR CHATBOT */
 /* Example override using CSS custom properties or deep targeting */
 :root {
-  --chat-widget-primary-color: #ff890b !important; /* Changes theme color if CSS variables are exposed */
+  --chat-widget-primary-color: #f49321 !important; /* Changes theme color if CSS variables are exposed */
 }
 
 /* Force styling directly on iframe / widget wrappers if needed */
 iframe#chat-widget-container,
 .chat-widget-header {
-  background-color: #0c2340 !important;
+  background-color: #1c2d5b !important;
 }
 
 .chat-widget-button {
-  background-color: #ff890b !important;
+  background-color: #f49321 !important;
 }
 
 .mobile-only {
@@ -571,7 +571,7 @@ iframe#chat-widget-container,
   -webkit-backdrop-filter: blur(12px);
   text-align: center;
   color: #fff;
-  background: #0c2340a6;
+  background: #1c2d5ba6;
   display: block;
   position: absolute;
   overflow: hidden;
@@ -590,7 +590,7 @@ iframe#chat-widget-container,
 }
 .field:focus {
   outline: none;
-  border-color: #f49322;
+  border-color: #f49321;
   background: #fff;
   box-shadow: 0 0 0 3px rgba(244, 147, 34, 0.2);
 }
@@ -608,9 +608,9 @@ iframe#chat-widget-container,
   background: #f1f5f9;
 }
 .toolbar-btn.is-active {
-  background: #f49322;
+  background: #f49321;
   color: #fff;
-  border-color: #f49322;
+  border-color: #f49321;
 }
 
 .toolbar-select {

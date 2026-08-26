@@ -1,7 +1,7 @@
 <template>
   <header class="sticky top-0 z-[9999] w-full shadow-md">
     <!-- Top Bar -->
-    <div class="bg-[#0c2340] text-white py-2.5 text-base font-semibold">
+    <div class="bg-navy text-white py-2.5 text-base font-semibold">
       <!-- Use max-w-7xl and mx-auto instead of container -->
       <div class="w-full px-4 mx-auto max-w-7xl">
         <!-- Mobile: stacked, Desktop: inline -->
@@ -17,7 +17,7 @@
               :href="settings.social_facebook"
               target="_blank"
               rel="noopener"
-              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49322] hover:-translate-y-1"
+              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49321] hover:-translate-y-1"
               aria-label="Facebook"
               ><i class="fab fa-facebook"></i
             ></a>
@@ -26,7 +26,7 @@
               :href="settings.social_instagram"
               target="_blank"
               rel="noopener"
-              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49322] hover:-translate-y-1"
+              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49321] hover:-translate-y-1"
               aria-label="Instagram"
               ><i class="fab fa-instagram"></i
             ></a>
@@ -35,7 +35,7 @@
               :href="settings.social_x"
               target="_blank"
               rel="noopener"
-              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49322] hover:-translate-y-1"
+              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49321] hover:-translate-y-1"
               aria-label="X"
               ><i class="fab fa-x-twitter"></i
             ></a>
@@ -44,7 +44,7 @@
               :href="settings.social_youtube"
               target="_blank"
               rel="noopener"
-              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49322] hover:-translate-y-1"
+              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49321] hover:-translate-y-1"
               aria-label="YouTube"
               ><i class="fab fa-youtube"></i
             ></a>
@@ -53,7 +53,7 @@
               :href="settings.social_pinterest"
               target="_blank"
               rel="noopener"
-              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49322] hover:-translate-y-1"
+              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49321] hover:-translate-y-1"
               aria-label="Pinterest"
               ><i class="fab fa-pinterest-p"></i
             ></a>
@@ -180,14 +180,14 @@
             <!-- Hamburger -->
             <button
               type="button"
-              class="md:hidden flex flex-col justify-center gap-1.5 w-[42px] h-[42px] p-2 border border-[#0c2340] rounded-lg bg-white cursor-pointer"
+              class="md:hidden flex flex-col justify-center gap-1.5 w-[42px] h-[42px] p-2 border border-[#1C2D5B] rounded-lg bg-white cursor-pointer"
               :aria-expanded="mobileOpen"
               aria-label="Toggle menu"
               @click="mobileOpen = !mobileOpen"
             >
-              <span class="block h-[2px] w-full bg-[#0c2340] rounded-sm" />
-              <span class="block h-[2px] w-full bg-[#0c2340] rounded-sm" />
-              <span class="block h-[2px] w-full bg-[#0c2340] rounded-sm" />
+              <span class="block h-[2px] w-full bg-navy rounded-sm" />
+              <span class="block h-[2px] w-full bg-navy rounded-sm" />
+              <span class="block h-[2px] w-full bg-navy rounded-sm" />
             </button>
           </div>
         </div>
@@ -201,7 +201,7 @@
             <li>
               <NuxtLink
                 to="/"
-                class="block py-3 px-1 text-[#0c2340] no-underline font-semibold border-b border-gray-200 hover:text-[#F49322]"
+                class="block py-3 px-1 text-navy no-underline font-semibold border-b border-gray-200 hover:text-[#F49321]"
                 @click="mobileOpen = false"
                 >Home</NuxtLink
               >
@@ -209,7 +209,7 @@
             <li>
               <NuxtLink
                 to="/packages"
-                class="block py-3 px-1 text-[#0c2340] no-underline font-semibold border-b border-gray-200 hover:text-[#F49322]"
+                class="block py-3 px-1 text-navy no-underline font-semibold border-b border-gray-200 hover:text-[#F49321]"
                 @click="mobileOpen = false"
                 >Packages</NuxtLink
               >
@@ -217,7 +217,7 @@
             <li>
               <NuxtLink
                 to="/how-it-works"
-                class="block py-3 px-1 text-[#0c2340] no-underline font-semibold border-b border-gray-200 hover:text-[#F49322]"
+                class="block py-3 px-1 text-navy no-underline font-semibold border-b border-gray-200 hover:text-[#F49321]"
                 @click="mobileOpen = false"
                 >How It Works</NuxtLink
               >
@@ -225,7 +225,7 @@
             <li>
               <NuxtLink
                 to="/contact"
-                class="block py-3 px-1 text-[#0c2340] no-underline font-semibold border-b border-gray-200 hover:text-[#F49322]"
+                class="block py-3 px-1 text-navy no-underline font-semibold border-b border-gray-200 hover:text-[#F49321]"
                 @click="mobileOpen = false"
                 >Contact Us</NuxtLink
               >
@@ -286,7 +286,7 @@ watch(
 .highlight {
   position: relative;
   display: inline-block;
-  color: #ff890b;
+  color: #f49321;
   font-weight: 700;
 }
 
@@ -306,7 +306,7 @@ watch(
 
 .underline-svg path {
   fill: none;
-  stroke: #ff890b;
+  stroke: #f49321;
   stroke-width: 12;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -355,19 +355,19 @@ watch(
   padding: 8px 16px;
   border-radius: 8px;
   transition: all 0.3s ease;
-  background: #ff890b !important;
-  border: 3px solid #0c2340;
+  background: #f49321 !important;
+  border: 3px solid #1c2d5b;
 }
 
 .contact-box:hover {
-  background: #0c2340 !important;
-  color: #ff890b !important;
+  background: #1c2d5b !important;
+  color: #f49321 !important;
   animation-name: festive-express-animation-pulse-grow;
   animation-duration: 0.3s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
   animation-direction: alternate;
-  border: 3px solid #ff890b;
+  border: 3px solid #f49321;
 }
 
 /* 3D Glossy Contact Box Button */
@@ -381,7 +381,7 @@ watch(
   text-decoration: none;
   color: #ffffff;
   font-family: inherit;
-  background: linear-gradient(180deg, #ff890b 0%, #ff890b 50%, #ff890b 100%);
+  background: linear-gradient(180deg, #f49321 0%, #f49321 50%, #f49321 100%);
   border: none;
   box-shadow:
     0 6px 12px rgba(0, 0, 0, 0.35),
@@ -479,7 +479,7 @@ watch(
   gap: 8px;
   margin: 12px 0 8px;
   padding: 12px 14px;
-  background: #0c2340;
+  background: #1c2d5b;
   color: #fff !important;
   border-radius: 8px;
   font-weight: 600;

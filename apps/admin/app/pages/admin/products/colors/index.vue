@@ -24,33 +24,33 @@
       <!-- Left: form -->
       <div class="lg:col-span-5">
         <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-6">
-          <h3 class="text-lg font-semibold text-[#0c2340] mb-5">
+          <h3 class="text-lg font-semibold text-[#1C2D5B] mb-5">
             {{ editingId ? "Edit Color" : "Add New Color" }}
           </h3>
 
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-semibold text-[#0c2340] mb-1.5">
+              <label class="block text-sm font-semibold text-[#1C2D5B] mb-1.5">
                 Color Label <span class="text-red-500">*</span>
               </label>
               <input
                 v-model="form.color_label"
                 type="text"
                 placeholder="e.g. Warm White"
-                class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#F49322]/40 focus:border-[#F49322]"
+                class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/40 focus:border-[#F49321]"
                 @input="onLabelInput"
               />
             </div>
 
             <div>
-              <label class="block text-sm font-semibold text-[#0c2340] mb-1.5">
+              <label class="block text-sm font-semibold text-[#1C2D5B] mb-1.5">
                 Color Key <span class="text-red-500">*</span>
               </label>
               <input
                 v-model="form.color_key"
                 type="text"
                 placeholder="warm_white"
-                class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#F49322]/40 focus:border-[#F49322]"
+                class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/40 focus:border-[#F49321]"
               />
               <p class="text-xs text-gray-400 mt-1 mb-0">
                 Auto from label; used in code
@@ -59,7 +59,7 @@
 
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-sm font-semibold text-[#0c2340] mb-1.5"
+                <label class="block text-sm font-semibold text-[#1C2D5B] mb-1.5"
                   >Hex</label
                 >
                 <div class="flex items-center gap-2">
@@ -72,25 +72,25 @@
                     v-model="form.hex"
                     type="text"
                     placeholder="#f5e6c8"
-                    class="flex-1 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#F49322]/40 focus:border-[#F49322]"
+                    class="flex-1 px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/40 focus:border-[#F49321]"
                   />
                 </div>
               </div>
               <div>
-                <label class="block text-sm font-semibold text-[#0c2340] mb-1.5"
+                <label class="block text-sm font-semibold text-[#1C2D5B] mb-1.5"
                   >Sort order</label
                 >
                 <input
                   v-model.number="form.sort_order"
                   type="number"
                   min="0"
-                  class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#F49322]/40 focus:border-[#F49322]"
+                  class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/40 focus:border-[#F49321]"
                 />
               </div>
             </div>
 
             <div>
-              <label class="block text-sm font-semibold text-[#0c2340] mb-1.5">
+              <label class="block text-sm font-semibold text-[#1C2D5B] mb-1.5">
                 Swatch CSS
                 <span class="text-gray-400 font-normal">(optional)</span>
               </label>
@@ -98,7 +98,7 @@
                 v-model="form.swatch_css"
                 rows="2"
                 placeholder="repeating-linear-gradient(...) or conic-gradient(...)"
-                class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#F49322]/40 focus:border-[#F49322]"
+                class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/40 focus:border-[#F49321]"
               ></textarea>
               <p class="text-xs text-gray-400 mt-1 mb-0">
                 For Candy Cane / Multicolor. Leave empty to use hex.
@@ -124,7 +124,7 @@
                 class="w-7 h-7 rounded-full border border-gray-200 shrink-0"
                 :style="swatchStyle(form)"
               ></span>
-              <span class="text-sm font-medium text-[#0c2340]">
+              <span class="text-sm font-medium text-[#1C2D5B]">
                 {{ form.color_label || "Preview" }}
               </span>
             </div>
@@ -133,14 +133,14 @@
               <button
                 v-if="editingId"
                 type="button"
-                class="px-5 py-2.5 rounded-lg font-semibold text-[#0c2340] bg-gray-200 hover:bg-gray-300 transition-colors"
+                class="px-5 py-2.5 rounded-lg font-semibold text-[#1C2D5B] bg-gray-200 hover:bg-gray-300 transition-colors"
                 @click="resetForm"
               >
                 Cancel
               </button>
               <button
                 type="button"
-                class="px-5 py-2.5 rounded-lg font-semibold text-white bg-[#F49322] hover:bg-[#0c2340] transition-colors disabled:opacity-60"
+                class="px-5 py-2.5 rounded-lg font-semibold text-white bg-[#F49321] hover:bg-[#1C2D5B] transition-colors disabled:opacity-60"
                 :disabled="isSaving"
                 @click="saveColor"
               >
@@ -160,7 +160,7 @@
       <!-- Right: list -->
       <div class="lg:col-span-7">
         <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-6">
-          <h3 class="text-lg font-semibold text-[#0c2340] mb-5">
+          <h3 class="text-lg font-semibold text-[#1C2D5B] mb-5">
             Colors ({{ colors.length }})
           </h3>
 
@@ -187,7 +187,7 @@
                   :style="swatchStyle(c)"
                 ></span>
                 <div class="min-w-0">
-                  <p class="font-semibold text-[#0c2340] m-0 truncate">
+                  <p class="font-semibold text-[#1C2D5B] m-0 truncate">
                     {{ c.color_label }}
                   </p>
                   <p class="text-xs text-gray-500 m-0">{{ c.color_key }}</p>
@@ -213,7 +213,7 @@
               <div class="flex gap-2 shrink-0">
                 <button
                   type="button"
-                  class="px-3 py-1.5 text-sm rounded-md font-medium text-white bg-[#0c2340] hover:bg-[#F49322] transition-colors"
+                  class="px-3 py-1.5 text-sm rounded-md font-medium text-white bg-[#1C2D5B] hover:bg-[#F49321] transition-colors"
                   @click="editColor(c)"
                 >
                   Edit
@@ -239,7 +239,7 @@
       @click.self="showModal = false"
     >
       <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
-        <h3 class="text-lg font-semibold text-[#0c2340] m-0 mb-2">
+        <h3 class="text-lg font-semibold text-[#1C2D5B] m-0 mb-2">
           Delete color?
         </h3>
         <p class="font-semibold text-gray-800 mb-5">
@@ -248,7 +248,7 @@
         <div class="flex justify-end gap-2">
           <button
             type="button"
-            class="px-5 py-2.5 rounded-lg font-semibold text-[#0c2340] bg-gray-200 hover:bg-gray-300 transition-colors"
+            class="px-5 py-2.5 rounded-lg font-semibold text-[#1C2D5B] bg-gray-200 hover:bg-gray-300 transition-colors"
             @click="showModal = false"
           >
             Cancel

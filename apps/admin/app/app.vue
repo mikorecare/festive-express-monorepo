@@ -16,8 +16,9 @@
 <script setup lang="ts">
 // Global styles
 useHead({
-  style: [{
-    innerHTML: `
+  style: [
+    {
+      innerHTML: `
       * { 
         margin: 0; 
         padding: 0; 
@@ -36,13 +37,13 @@ useHead({
 
       .section-title {
         font-size: 2.6rem;
-        color: #0c2340;
+        color: #1C2D5B;
         text-align: center;
         margin-bottom: 50px;
       }
 
       .badge {
-        background: #0c2340;
+        background: #1C2D5B;
         color: white;
         padding: 8px 22px;
         border-radius: 50px;
@@ -52,7 +53,7 @@ useHead({
       }
 
       .btn-primary {
-        background: #F49322;
+        background: #F49321;
         color: white;
         border: none;
         padding: 14px 32px;
@@ -63,7 +64,7 @@ useHead({
       }
 
       .btn-primary:hover {
-        background: #0c2340;
+        background: #1C2D5B;
         transform: translateY(-3px);
       }
 
@@ -82,7 +83,7 @@ useHead({
       }
 
       .table th {
-        background: #0c2340;
+        background: #1C2D5B;
         color: white;
         padding: 16px;
         text-align: left;
@@ -94,7 +95,7 @@ useHead({
       }
 
       .export-btn {
-        background: #0c2340;
+        background: #1C2D5B;
         color: white;
         border: none;
         padding: 12px 28px;
@@ -109,13 +110,13 @@ useHead({
       }
 
       .export-btn:hover {
-        background: #F49322;
-        color: #0c2340;
+        background: #F49321;
+        color: #1C2D5B;
         transform: translateY(-2px);
       }
 
       .add-btn {
-        background: #F49322;
+        background: #F49321;
         color: white;
         border: none;
         padding: 12px 28px;
@@ -130,12 +131,13 @@ useHead({
       }
 
       .add-btn:hover {
-        background: #0c2340;
+        background: #1C2D5B;
         transform: translateY(-2px);
       }
 
 
-    `
-  }]
-})
+    `,
+    },
+  ],
+});
 </script>

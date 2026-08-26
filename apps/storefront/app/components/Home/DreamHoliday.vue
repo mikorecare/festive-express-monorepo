@@ -1,6 +1,5 @@
 <template>
   <section class="dream-holiday" id="how-it-works">
-  
     <div class="container">
       <div class="dream-content">
         <div class="dream-text">
@@ -9,12 +8,15 @@
             Your <span class="highlight">Dream Holiday</span> Starts here
           </h2>
           <p class="dream-desc">
-            This season's sale won't last long! Browse our full range of<br>
-            professional lighting rentals and lock in your discount before it's gone.
+            This season's sale won't last long! Browse our full range of<br />
+            professional lighting rentals and lock in your discount before it's
+            gone.
           </p>
-          
+
           <div class="dream-actions">
-            <NuxtLink to="/packages" class="primary-btn">Shop the Seasonal Sales</NuxtLink>
+            <NuxtLink to="/packages" class="primary-btn"
+              >Shop the Seasonal Sales</NuxtLink
+            >
             <NuxtLink to="/gallery" class="secondary-btn">Gallery</NuxtLink>
           </div>
         </div>
@@ -24,27 +26,26 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref } from "vue";
 
-const titleRef = ref(null)
-useScrollAnimate(titleRef) // Works instantly on any element!
+const titleRef = ref(null);
+useScrollAnimate(titleRef); // Works instantly on any element!
 </script>
 
 <style scoped>
 .dream-holiday {
   /* Set background image with overlay and fallbacks */
-  background: 
+  background:
     linear-gradient(rgba(23, 42, 80, 0.75), rgba(23, 42, 80, 0.85)),
-    url('/Images/Dream-Holiday.png') no-repeat center center / cover;
+    url("/Images/Dream-Holiday.png") no-repeat center center / cover;
   color: white;
   padding: 100px 0;
   position: relative;
   overflow: hidden;
   z-index: 2;
   scroll-margin-top: 110px;
-  font-family: 'Poppins', 'Roboto', sans-serif;
+  font-family: "Poppins", "Roboto", sans-serif;
 }
-
 
 .dream-content {
   position: relative;
@@ -57,7 +58,7 @@ useScrollAnimate(titleRef) // Works instantly on any element!
 
 .small-badge {
   background: transparent;
-  color: #f7941d;
+  color: #f49321;
   padding: 0;
   border-radius: 0;
   font-weight: 800;
@@ -68,7 +69,7 @@ useScrollAnimate(titleRef) // Works instantly on any element!
 }
 
 .dream-title {
-  font-family: 'Poppins', 'Roboto', sans-serif;
+  font-family: "Poppins", "Roboto", sans-serif;
   font-size: 3.5rem;
   line-height: 1.15;
   font-weight: 800;
@@ -93,7 +94,7 @@ useScrollAnimate(titleRef) // Works instantly on any element!
 
 .primary-btn {
   display: inline-block;
-  background: #f7941d;
+  background: #f49321;
   color: #ffffff;
   border: 2px solid #ffffff;
   padding: 14px 32px;
@@ -116,7 +117,7 @@ useScrollAnimate(titleRef) // Works instantly on any element!
   display: inline-block;
   background: rgba(23, 42, 80, 0.85);
   color: #ffffff;
-  border: 2px solid #f7941d;
+  border: 2px solid #f49321;
   padding: 14px 42px;
   border-radius: 8px;
   font-size: 1rem;
@@ -127,7 +128,7 @@ useScrollAnimate(titleRef) // Works instantly on any element!
 }
 
 .secondary-btn:hover {
-  background: #f7941d;
+  background: #f49321;
   color: #ffffff;
   transform: translateY(-2px);
 }
@@ -147,10 +148,10 @@ useScrollAnimate(titleRef) // Works instantly on any element!
     flex-direction: column;
     align-items: center;
   }
-  .primary-btn, .secondary-btn {
+  .primary-btn,
+  .secondary-btn {
     width: 100%;
     max-width: 320px;
   }
 }
-
 </style>

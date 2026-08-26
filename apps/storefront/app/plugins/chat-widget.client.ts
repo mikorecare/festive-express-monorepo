@@ -1,8 +1,8 @@
 declare global {
   interface Window {
     ChatWidget?: {
-      initChatWidget: (config: { agentId: string }) => void
-    }
+      initChatWidget: (config: { agentId: string }) => void;
+    };
   }
 }
 
@@ -10,41 +10,46 @@ export default defineNuxtPlugin(() => {
   useHead({
     link: [
       {
-        rel: 'stylesheet',
-        href: 'https://embeddable-widgets.pages.dev/chat-widget.css'
-      }
+        rel: "stylesheet",
+        href: "https://embeddable-widgets.pages.dev/chat-widget.css",
+      },
     ],
     script: [
       {
-        src: 'https://embeddable-widgets.pages.dev/chat-widget.umd.js',
+        src: "https://embeddable-widgets.pages.dev/chat-widget.umd.js",
         async: true,
         defer: true,
         onload: () => {
           if (window.ChatWidget?.initChatWidget) {
             window.ChatWidget.initChatWidget({
-              agentId: 'd97c2ca5-19fc-47c9-90fb-ee552735f8e9'
-            })
+              agentId: "d97c2ca5-19fc-47c9-90fb-ee552735f8e9",
+            });
           }
 
           const replaceIcon = () => {
-            const widget = document.querySelector('#frontdesk-widget-root')
-            if (!widget) return
+            const widget = document.querySelector("#frontdesk-widget-root");
+            if (!widget) return;
 
-            const shadowRoot = (widget as any).shadowRoot
-            if (!shadowRoot) return
+            const shadowRoot = (widget as any).shadowRoot;
+            if (!shadowRoot) return;
 
-            const headerIcon = shadowRoot.querySelector('.frontdesk-header__icon')
-            if (!headerIcon) return
+            const headerIcon = shadowRoot.querySelector(
+              ".frontdesk-header__icon",
+            );
+            if (!headerIcon) return;
 
-            headerIcon.innerHTML = ''
+            headerIcon.innerHTML = "";
 
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-            svg.setAttribute('width', '24')
-            svg.setAttribute('height', '24')
-            svg.setAttribute('viewBox', '0 0 122 125')
-            svg.setAttribute('fill', 'none')
-            svg.style.width = '28px'
-            svg.style.height = '28px'
+            const svg = document.createElementNS(
+              "http://www.w3.org/2000/svg",
+              "svg",
+            );
+            svg.setAttribute("width", "24");
+            svg.setAttribute("height", "24");
+            svg.setAttribute("viewBox", "0 0 122 125");
+            svg.setAttribute("fill", "none");
+            svg.style.width = "28px";
+            svg.style.height = "28px";
             svg.innerHTML = `
               <g filter="url(#filter0_f_72_251)">
                 <ellipse cx="60.8008" cy="62.3" rx="30" ry="31.5" fill="#F69320"/>
@@ -70,23 +75,23 @@ export default defineNuxtPlugin(() => {
                   <feGaussianBlur stdDeviation="15.4" result="effect1_foregroundBlur_72_251"/>
                 </filter>
               </defs>
-            `
+            `;
 
-            headerIcon.appendChild(svg)
-          }
+            headerIcon.appendChild(svg);
+          };
 
           const injectStyles = () => {
-            const widget = document.querySelector('#frontdesk-widget-root')
+            const widget = document.querySelector("#frontdesk-widget-root");
             if (widget) {
-              const shadowRoot = (widget as any).shadowRoot
+              const shadowRoot = (widget as any).shadowRoot;
               if (shadowRoot) {
-                if (shadowRoot.querySelector('#custom-chat-styles')) {
-                  replaceIcon() // Still try to replace icon even if styles exist
-                  return
+                if (shadowRoot.querySelector("#custom-chat-styles")) {
+                  replaceIcon(); // Still try to replace icon even if styles exist
+                  return;
                 }
 
-                const style = document.createElement('style')
-                style.id = 'custom-chat-styles'
+                const style = document.createElement("style");
+                style.id = "custom-chat-styles";
                 style.textContent = `
                   /* ===== HIDE BANNER ===== */
                   .frontdesk-banner {
@@ -104,10 +109,10 @@ export default defineNuxtPlugin(() => {
 
                   /* ===== CUSTOM WATERMARK ===== */
                   .frontdesk-watermark {
-                    background: #0c2340 !important;
+                    background: #1C2D5B !important;
                     padding: 8px 16px !important;
                     text-align: center !important;
-                    border-top: 2px solid #ff890b !important;
+                    border-top: 2px solid #F49321 !important;
                     text-decoration: none !important;
                     display: flex !important;
                     align-items: center !important;
@@ -142,9 +147,9 @@ export default defineNuxtPlugin(() => {
 
                   /* ===== HEADER ===== */
                   .frontdesk-header {
-                    background: linear-gradient(135deg, #0c2340 0%, #1a3a6b 100%) !important;
+                    background: linear-gradient(135deg, #1C2D5B 0%, #1a3a6b 100%) !important;
                     padding: 16px 20px !important;
-                    border-bottom: 3px solid #ff890b !important;
+                    border-bottom: 3px solid #F49321 !important;
                   }
 
                   .frontdesk-header__title {
@@ -156,7 +161,7 @@ export default defineNuxtPlugin(() => {
 
                   .frontdesk-header__icon {
                    padding-bottom: 4px !important;
-                    color: #ff890b !important;
+                    color: #F49321 !important;
                   }
 
                   .frontdesk-header__close {
@@ -185,7 +190,7 @@ export default defineNuxtPlugin(() => {
                   }
 
                   .frontdesk-button--primary {
-                    background: linear-gradient(180deg, #ff890b 0%, #e07a0a 100%) !important;
+                    background: linear-gradient(180deg, #F49321 0%, #e07a0a 100%) !important;
                     color: #ffffff !important;
                     font-weight: 700 !important;
                     padding: 12px 24px !important;
@@ -213,14 +218,14 @@ export default defineNuxtPlugin(() => {
 
                   /* ===== LAUNCHER BUTTON ===== */
                   .frontdesk-launcher__button {
-                    background: linear-gradient(135deg, #0c2340 0%, #1a3a6b 100%) !important;
+                    background: linear-gradient(135deg, #1C2D5B 0%, #1a3a6b 100%) !important;
                     color: #ffffff !important;
                     width: 60px !important;
                     height: 60px !important;
                     border-radius: 50% !important;
                     box-shadow: 0 8px 24px rgba(12, 35, 64, 0.4) !important;
                     transition: all 0.3s !important;
-                    border: 2px solid #ff890b !important;
+                    border: 2px solid #F49321 !important;
                   }
 
                   .frontdesk-launcher__button:hover {
@@ -265,56 +270,57 @@ export default defineNuxtPlugin(() => {
                       margin: 0 !important;
                     }
                   }
-                `
+                `;
 
-                shadowRoot.appendChild(style)
-                replaceIcon()
+                shadowRoot.appendChild(style);
+                replaceIcon();
 
-                const banner = shadowRoot.querySelector('.frontdesk-banner')
+                const banner = shadowRoot.querySelector(".frontdesk-banner");
                 if (banner) {
-                  (banner as HTMLElement).style.cssText = 'display: none !important; visibility: hidden !important;'
+                  (banner as HTMLElement).style.cssText =
+                    "display: none !important; visibility: hidden !important;";
                 }
               }
             }
-          }
+          };
 
           // Try multiple times
-          setTimeout(injectStyles, 500)
-          setTimeout(injectStyles, 1000)
-          setTimeout(injectStyles, 1500)
-          setTimeout(injectStyles, 2000)
-          setTimeout(injectStyles, 3000)
+          setTimeout(injectStyles, 500);
+          setTimeout(injectStyles, 1000);
+          setTimeout(injectStyles, 1500);
+          setTimeout(injectStyles, 2000);
+          setTimeout(injectStyles, 3000);
 
           // Also run replaceIcon directly multiple times
-          setTimeout(replaceIcon, 400)
-          setTimeout(replaceIcon, 900)
-          setTimeout(replaceIcon, 1400)
-          setTimeout(replaceIcon, 1900)
-          setTimeout(replaceIcon, 2900)
+          setTimeout(replaceIcon, 400);
+          setTimeout(replaceIcon, 900);
+          setTimeout(replaceIcon, 1400);
+          setTimeout(replaceIcon, 1900);
+          setTimeout(replaceIcon, 2900);
 
           const observer = new MutationObserver(() => {
-            const widget = document.querySelector('#frontdesk-widget-root')
+            const widget = document.querySelector("#frontdesk-widget-root");
             if (widget) {
-              const shadowRoot = (widget as any).shadowRoot
+              const shadowRoot = (widget as any).shadowRoot;
               if (shadowRoot) {
-                if (!shadowRoot.querySelector('#custom-chat-styles')) {
-                  injectStyles()
+                if (!shadowRoot.querySelector("#custom-chat-styles")) {
+                  injectStyles();
                 } else {
-                  replaceIcon()
+                  replaceIcon();
                 }
               }
             }
-          })
+          });
 
           observer.observe(document.body, {
             childList: true,
-            subtree: true
-          })
+            subtree: true,
+          });
         },
         onerror: (e) => {
-          console.error('Failed to load chat widget:', e)
-        }
-      }
-    ]
-  })
-})
+          console.error("Failed to load chat widget:", e);
+        },
+      },
+    ],
+  });
+});

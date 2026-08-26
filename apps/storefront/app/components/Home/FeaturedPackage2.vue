@@ -48,7 +48,7 @@
         >
           <!-- Header -->
           <div
-            class="p-[20px] flex items-center justify-between bg-[#0c2340] min-h-[90px]"
+            class="p-[20px] flex items-center justify-between bg-[#1C2D5B] min-h-[90px]"
           >
             <div class="flex items-center flex-1">
               <img
@@ -107,7 +107,7 @@
                   </div>
                   <div>
                     <strong
-                      class="text-[0.95rem] text-[#0c2340] font-extrabold leading-[1.3] block"
+                      class="text-[0.95rem] text-[#1C2D5B] font-extrabold leading-[1.3] block"
                     >
                       {{ row.name }}
                     </strong>
@@ -126,7 +126,7 @@
           >
             <button
               type="button"
-              class="pkg-select-btn group relative overflow-hidden w-[85%] bg-brand-orange border-2 border-white rounded-[50px] py-[12px] px-[16px] text-[0.95rem] font-black tracking-[0.5px] cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out hover:bg-[#0c2340] -mt-[30px] before:content-[''] before:absolute before:inset-0 before:z-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
+              class="pkg-select-btn group relative overflow-hidden w-[85%] bg-brand-orange border-2 border-white rounded-[50px] py-[12px] px-[16px] text-[0.95rem] font-black tracking-[0.5px] cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out hover:bg-[#1C2D5B] -mt-[30px] before:content-[''] before:absolute before:inset-0 before:z-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
               @click="selectPackage(pkg)"
             >
               <span

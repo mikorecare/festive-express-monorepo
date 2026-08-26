@@ -35,7 +35,7 @@
             class="group flex-1 text-center flex flex-col items-center cursor-pointer"
           >
             <div
-              class="w-[68px] h-[68px] rounded-full flex items-center justify-center mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#f7941d]"
+              class="w-[68px] h-[68px] rounded-full flex items-center justify-center mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
             >
               <img
                 src="/Images/Icons/trained.png"
@@ -49,7 +49,7 @@
               Full-Service<br class="hidden sm:inline" />Installation
             </h3>
             <p
-              class="text-[#ff890b] text-[0.9rem] font-semibold leading-[1.25] m-0"
+              class="text-[#F49321] text-[0.9rem] font-semibold leading-[1.25] m-0"
             >
               Installed Safely by<br class="hidden sm:inline" />Trained
               Technicians
@@ -62,7 +62,7 @@
             class="group flex-1 text-center flex flex-col items-center cursor-pointer"
           >
             <div
-              class="w-[68px] h-[68px] rounded-full flex items-center justify-center mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#f7941d]"
+              class="w-[68px] h-[68px] rounded-full flex items-center justify-center mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
             >
               <img
                 src="/Images/Icons/secured.png"
@@ -76,7 +76,7 @@
               Licensed &amp;<br class="hidden sm:inline" />Insured
             </h3>
             <p
-              class="text-[#ff890b] text-[0.9rem] font-semibold leading-[1.25] m-0"
+              class="text-[#F49321] text-[0.9rem] font-semibold leading-[1.25] m-0"
             >
               Your Home Is<br class="hidden sm:inline" />Fully Protected
             </p>
@@ -88,7 +88,7 @@
             class="group flex-1 text-center flex flex-col items-center cursor-pointer"
           >
             <div
-              class="w-[68px] h-[68px] rounded-full flex items-center justify-center mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#f7941d]"
+              class="w-[68px] h-[68px] rounded-full flex items-center justify-center mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
             >
               <img
                 src="/Images/Icons/service.png"
@@ -102,7 +102,7 @@
               Professional<br class="hidden sm:inline" />Grade Lighting
             </h3>
             <p
-              class="text-[#ff890b] text-[0.9rem] font-semibold leading-[1.25] m-0"
+              class="text-[#F49321] text-[0.9rem] font-semibold leading-[1.25] m-0"
             >
               Built to Last Year<br class="hidden sm:inline" />After Year
             </p>
@@ -114,7 +114,7 @@
             class="group flex-1 text-center flex flex-col items-center cursor-pointer"
           >
             <div
-              class="w-[68px] h-[68px] rounded-full flex items-center justify-center mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#f7941d]"
+              class="w-[68px] h-[68px] rounded-full flex items-center justify-center mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
             >
               <img
                 src="/Images/Icons/location.png"
@@ -128,7 +128,7 @@
               Ongoing Local<br class="hidden sm:inline" />Support
             </h3>
             <p
-              class="text-[#ff890b] text-[0.9rem] font-semibold leading-[1.25] m-0"
+              class="text-[#F49321] text-[0.9rem] font-semibold leading-[1.25] m-0"
             >
               We're Here<br class="hidden sm:inline" />Long After Install
             </p>

@@ -4,16 +4,25 @@
       <div class="section-header">
         <span class="badge">READY TO RENT</span>
         <h2 class="section-title">Featured Bundles</h2>
-        <p class="subtitle">Curated packages combining our most loved products — pick one and we'll handle the rest.</p>
+        <p class="subtitle">
+          Curated packages combining our most loved products — pick one and
+          we'll handle the rest.
+        </p>
       </div>
 
       <div class="bundles-grid">
         <!-- Bundle 1 -->
         <div class="bundle-card">
-          <img src="/Images/olympia-pine-wreath-bow-768x768.jpg" alt="Holiday Wreath & Bow Set">
+          <img
+            src="/Images/olympia-pine-wreath-bow-768x768.jpg"
+            alt="Holiday Wreath & Bow Set"
+          />
           <div class="bundle-info">
             <h3>Holiday Wreath & Bow Set (1 Year Rental)</h3>
-            <p class="description">Add timeless holiday charm to your door or wall with our perfectly matched wreath and bow set.</p>
+            <p class="description">
+              Add timeless holiday charm to your door or wall with our perfectly
+              matched wreath and bow set.
+            </p>
             <div class="price">$24.99</div>
             <button class="details-btn">Details</button>
           </div>
@@ -21,10 +30,13 @@
 
         <!-- Bundle 2 -->
         <div class="bundle-card">
-          <img src="/Images/roofline-bundle.jpg" alt="Roofline Lighting">
+          <img src="/Images/roofline-bundle.jpg" alt="Roofline Lighting" />
           <div class="bundle-info">
             <h3>Roofline Lighting (1 Year Rental)</h3>
-            <p class="description">Transform your home's roofline with this all-in-one lighting bundle! The set includes durable C9 bulbs.</p>
+            <p class="description">
+              Transform your home's roofline with this all-in-one lighting
+              bundle! The set includes durable C9 bulbs.
+            </p>
             <div class="price">$145.98</div>
             <button class="details-btn">Details</button>
           </div>
@@ -32,10 +44,14 @@
 
         <!-- Bundle 3 -->
         <div class="bundle-card">
-          <img src="/Images/ground-bundle.jpg" alt="Ground Lighting">
+          <img src="/Images/ground-bundle.jpg" alt="Ground Lighting" />
           <div class="bundle-info">
             <h3>Ground Lighting (1 Year Rental)</h3>
-            <p class="description">Illuminate your landscape from the ground up! Our Ground Lighting Bundle includes everything you need to brighten driveways, sidewalks, and more.</p>
+            <p class="description">
+              Illuminate your landscape from the ground up! Our Ground Lighting
+              Bundle includes everything you need to brighten driveways,
+              sidewalks, and more.
+            </p>
             <div class="price">$258.96</div>
             <button class="details-btn">Details</button>
           </div>
@@ -57,7 +73,7 @@
 }
 
 .badge {
-  background: #0c2340;
+  background: #1c2d5b;
   color: white;
   padding: 6px 16px;
   border-radius: 30px;
@@ -69,7 +85,7 @@
 
 .section-title {
   font-size: 2.5rem;
-  color: #0c2340;
+  color: #1c2d5b;
   margin-bottom: 12px;
 }
 
@@ -89,12 +105,14 @@
   border: 1px solid #eee;
   border-radius: 12px;
   overflow: hidden;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
 }
 
 .bundle-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
 }
 
 .bundle-card img {
@@ -123,13 +141,13 @@
 .price {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #0c2340;
+  color: #1c2d5b;
   margin-bottom: 16px;
 }
 
 .details-btn {
   width: 100%;
-  background: #0c2340;
+  background: #1c2d5b;
   color: white;
   border: none;
   padding: 14px;
@@ -140,7 +158,7 @@
 }
 
 .details-btn:hover {
-  background: #F49322;
+  background: #f49321;
   color: #fff;
 }
 

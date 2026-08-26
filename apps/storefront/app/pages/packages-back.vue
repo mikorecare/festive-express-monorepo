@@ -6,7 +6,9 @@
         <div class="container">
           <div class="hero-content text-center">
             <h1 v-fade>Holiday Lighting Package Programs</h1>
-            <p v-fade class="breadcrumb">Choose the perfect package for your home</p>
+            <p v-fade class="breadcrumb">
+              Choose the perfect package for your home
+            </p>
           </div>
         </div>
       </div>
@@ -24,7 +26,10 @@
         :key="pkg.id"
         :id="getPackageSlug(pkg.name)"
         class="package-section"
-        :class="[getPackageSlug(pkg.name), { 'bg-alt': getPackageSlug(pkg.name) === 'jolly' }]"
+        :class="[
+          getPackageSlug(pkg.name),
+          { 'bg-alt': getPackageSlug(pkg.name) === 'jolly' },
+        ]"
       >
         <div class="container">
           <!-- Package Section Header -->
@@ -38,10 +43,10 @@
                 class="pkg-title-img"
                 :src="getPackageTitleImage(pkg.name)"
                 :alt="pkg.name"
-              >
+              />
             </div>
             <div class="package-price font-color-orange">
-              ${{ pkg.price || '0.00' }}
+              ${{ pkg.price || "0.00" }}
             </div>
           </div>
 
@@ -62,12 +67,12 @@
                     class="sparkle-img"
                     src="/Images/Holiday-Lighting-Package/starburst.png"
                     alt=""
-                  >
+                  />
                   <img
                     class="lights-icon-img"
                     :src="getPackageIcon(pkg.name)"
                     alt=""
-                  >
+                  />
                 </div>
 
                 <!-- Hotspots -->
@@ -88,25 +93,33 @@
                 <div
                   v-if="getActiveSpot(pkg.id, pkg.name)"
                   class="hotspot-popup"
-                  :style="{ top: getActiveSpot(pkg.id, pkg.name)?.top, left: getActiveSpot(pkg.id, pkg.name)?.left }"
+                  :style="{
+                    top: getActiveSpot(pkg.id, pkg.name)?.top,
+                    left: getActiveSpot(pkg.id, pkg.name)?.left,
+                  }"
                   @click.stop
                 >
-                  <button 
-                    type="button" 
-                    class="hotspot-close" 
+                  <button
+                    type="button"
+                    class="hotspot-close"
                     @click.stop="activeInclusions[pkg.id] = null"
                   >
                     ×
                   </button>
-                  <div class="hotspot-popup-img-wrap" v-if="getActiveSpot(pkg.id, pkg.name)?.thumb">
-                    <img 
-                      :src="getActiveSpot(pkg.id, pkg.name)?.thumb" 
-                      :alt="getActiveSpot(pkg.id, pkg.name)?.label" 
-                      class="hotspot-popup-img" 
+                  <div
+                    class="hotspot-popup-img-wrap"
+                    v-if="getActiveSpot(pkg.id, pkg.name)?.thumb"
+                  >
+                    <img
+                      :src="getActiveSpot(pkg.id, pkg.name)?.thumb"
+                      :alt="getActiveSpot(pkg.id, pkg.name)?.label"
+                      class="hotspot-popup-img"
                     />
                   </div>
                   <div class="hotspot-popup-body">
-                    <h4 class="hotspot-popup-title">{{ getActiveSpot(pkg.id, pkg.name)?.label }}</h4>
+                    <h4 class="hotspot-popup-title">
+                      {{ getActiveSpot(pkg.id, pkg.name)?.label }}
+                    </h4>
                   </div>
                 </div>
               </div>
@@ -122,7 +135,10 @@
                     :class="{ active: selectedColors[pkg.id] === color.name }"
                     @click="selectedColors[pkg.id] = color.name"
                   >
-                    <div class="color-swatch" :style="{ backgroundColor: color.hex }"></div>
+                    <div
+                      class="color-swatch"
+                      :style="{ backgroundColor: color.hex }"
+                    ></div>
                     <span class="color-label">{{ color.name }}</span>
                   </div>
                 </div>
@@ -131,16 +147,22 @@
 
             <!-- Right Column: Details, Inclusions & Purchase Action -->
             <div class="details-column">
-              <div 
-                v-if="pkg.description" 
-                class="package-description" 
+              <div
+                v-if="pkg.description"
+                class="package-description"
                 v-html="pkg.description"
               ></div>
 
               <div class="inclusions-block mt-4">
                 <h3>Package Inclusions:</h3>
-                <ul v-if="pkg.variations && pkg.variations.length" class="inclusions-list">
-                  <li v-for="(variation, vIndex) in pkg.variations" :key="vIndex">
+                <ul
+                  v-if="pkg.variations && pkg.variations.length"
+                  class="inclusions-list"
+                >
+                  <li
+                    v-for="(variation, vIndex) in pkg.variations"
+                    :key="vIndex"
+                  >
                     <div
                       v-for="(option, oIndex) in variation.options"
                       :key="oIndex"
@@ -153,7 +175,7 @@
                         :src="getImageUrl(option.image_url)"
                         class="option-preview"
                         :alt="option.name"
-                      >
+                      />
                       <span>{{ option.name }}</span>
                     </div>
                   </li>
@@ -168,7 +190,8 @@
               <div class="p-info-card">
                 <p class="info-text">
                   <i class="fas fa-info-circle text-secondary"></i>
-                  Includes commercial-grade LEDs, custom fit sizing, professional installation, maintenance, and seasonal removal.
+                  Includes commercial-grade LEDs, custom fit sizing,
+                  professional installation, maintenance, and seasonal removal.
                 </p>
               </div>
 
@@ -190,10 +213,13 @@
                     <i class="fas fa-spinner fa-spin"></i> Adding...
                   </span>
                   <span v-else>
-                    {{ pkg.stock <= 0 ? 'Out of Stock' : `Add ${pkg.name} to Cart` }}
+                    {{
+                      pkg.stock <= 0
+                        ? "Out of Stock"
+                        : `Add ${pkg.name} to Cart`
+                    }}
                   </span>
                 </button>
-
               </div>
             </div>
           </div>
@@ -201,233 +227,280 @@
       </section>
 
       <!-- Product Information Section -->
-    <section id="product-specs" class="product-info-section">
-      <div class="container">
-        <div class="section-header2 text-center">
-          <h2>Product Specifications</h2>
-          <p class="section-subtitle">Discover the professional-grade materials and engineering behind every installation.</p>
+      <section id="product-specs" class="product-info-section">
+        <div class="container">
+          <div class="section-header2 text-center">
+            <h2>Product Specifications</h2>
+            <p class="section-subtitle">
+              Discover the professional-grade materials and engineering behind
+              every installation.
+            </p>
+          </div>
+
+          <div class="product-grid">
+            <!-- C-9 Roofline Lights -->
+            <div class="product-card">
+              <div class="product-header">
+                <h3>C-9 Roofline Lights</h3>
+                <span class="badge">Roofline & Trim</span>
+              </div>
+              <div class="product-body">
+                <p class="description">
+                  Professional quality, durability, and energy efficiency.
+                  Polystyrene lenses make them ultra-strong, while SMD
+                  technology delivers brilliant brightness. These
+                  cool-to-the-touch bulbs are built to last season after season.
+                </p>
+                <div class="options-tag">
+                  <strong>Color Options:</strong> Warm White, Pure White,
+                  Champagne
+                </div>
+
+                <div class="spec-block">
+                  <h4>Features</h4>
+                  <ul>
+                    <li>C-9 LED Premium Bulbs with E17 base</li>
+                    <li>SMD LED technology for brilliant light</li>
+                    <li>Diamond-cut pattern facets generating light halos</li>
+                    <li>Average bulb life: 60,000 hours</li>
+                    <li>Nickel base to prevent corrosion</li>
+                    <li>Rated for Indoor & Outdoor use</li>
+                  </ul>
+                </div>
+
+                <div class="spec-block">
+                  <h4>Specifications</h4>
+                  <div class="spec-grid">
+                    <div><span>Voltage:</span> 120V</div>
+                    <div><span>Watts/Bulb:</span> 0.65W</div>
+                    <div><span>Kelvin:</span> 3000K</div>
+                    <div><span>Lumens:</span> 37</div>
+                    <div><span>Dimmable:</span> Yes</div>
+                    <div><span>Diode Count:</span> 3</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 5mm Wide Angle LED String Lights -->
+            <div class="product-card">
+              <div class="product-header">
+                <h3>5mm Wide Angle LED Lights</h3>
+                <span class="badge">Commercial Grade</span>
+              </div>
+              <div class="product-body">
+                <p class="description">
+                  IP67 water-tight string lights engineered for the harshest
+                  weather conditions. Features shatterproof acrylic bulbs with
+                  non-fading infused color and heavy-duty 20 gauge wire for
+                  end-to-end reliability.
+                </p>
+                <div class="options-tag">
+                  <strong>Color Options:</strong> Warm White, Pure White,
+                  Champagne
+                </div>
+
+                <div class="spec-block">
+                  <h4>Features</h4>
+                  <ul>
+                    <li>IP67 Rated: Waterproof and dust-tight</li>
+                    <li>Bulb lifespan up to 100,000 hours</li>
+                    <li>ENERGY STAR® certified (Up to 90% energy savings)</li>
+                    <li>Heavy-duty 20 gauge wire with tighter wire twists</li>
+                    <li>Connect up to 432 watts end-to-end</li>
+                    <li>
+                      Contractor Pack pre-balled sets for efficient install
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="spec-block">
+                  <h4>Specifications</h4>
+                  <div class="spec-grid">
+                    <div><span>Spacing:</span> 4" apart</div>
+                    <div><span>Length:</span> 17 ft total</div>
+                    <div><span>Wire:</span> 20 Gauge Green</div>
+                    <div><span>Voltage:</span> 120V</div>
+                    <div><span>Color Temp:</span> 3000K</div>
+                    <div><span>Rating:</span> WeatherPRO™ Commercial</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 24" Prelit Wreath -->
+            <div class="product-card">
+              <div class="product-header">
+                <h3>24” Sequoia Fir Wreath</h3>
+                <span class="badge">Greenery & Decor</span>
+              </div>
+              <div class="product-body">
+                <p class="description">
+                  Features 200 PVC tips on a galvanized metal wire frame that
+                  will not rust. Flame retardant, non-allergenic, fade- and
+                  crush-resistant 2-ply needles maintain a lush, full appearance
+                  every season.
+                </p>
+                <div class="options-tag">
+                  <strong>Color Options:</strong> Warm White, Pure White
+                </div>
+
+                <div class="spec-block">
+                  <h4>Features</h4>
+                  <ul>
+                    <li>
+                      Sequoia Fir artificial Christmas wreath with 200 PVC tips
+                    </li>
+                    <li>Galvanized metal wire frame prevents rust</li>
+                    <li>Flame retardant and non-allergenic materials</li>
+                    <li>Prelit with 50 energy-saving LED lights</li>
+                    <li>UL Listed for quality and safety assurance</li>
+                  </ul>
+                </div>
+
+                <div class="spec-block">
+                  <h4>Specifications</h4>
+                  <div class="spec-grid">
+                    <div><span>Size:</span> 24" Outer Diameter</div>
+                    <div><span>Inner Dia:</span> 6 in</div>
+                    <div><span>Frame Dia:</span> 14 in</div>
+                    <div><span>Weight:</span> 6 lbs</div>
+                    <div><span>Lights:</span> 50 LEDs</div>
+                    <div><span>Rating:</span> Indoor / Outdoor</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 18" Commercial Bow -->
+            <div class="product-card">
+              <div class="product-header">
+                <h3>12” Structural Bow</h3>
+                <span class="badge">Greenery & Decor</span>
+              </div>
+              <div class="product-body">
+                <p class="description">
+                  A sturdy, commercial-grade structural bow featuring a durable
+                  3D nylon design in vibrant red with gold trim. Designed to
+                  keep its shape and hold securely on large outdoor wreaths all
+                  season.
+                </p>
+
+                <div class="spec-block">
+                  <h4>Features</h4>
+                  <ul>
+                    <li>Sturdy commercial-grade 3D nylon design</li>
+                    <li>Red finish with rich gold trim</li>
+                    <li>4-loop structural construction</li>
+                    <li>Indoor / Outdoor weather resistant</li>
+                  </ul>
+                </div>
+
+                <div class="spec-block">
+                  <h4>Specifications</h4>
+                  <div class="spec-grid">
+                    <div><span>Color:</span> Red / Gold Trim</div>
+                    <div><span>Loop Count:</span> 4</div>
+                    <div><span>Material:</span> 3D Nylon</div>
+                    <div><span>Application:</span> Wreaths & Displays</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Ground Lights & Stakes -->
+            <div class="product-card">
+              <div class="product-header">
+                <h3>Ground & Pathway Lights</h3>
+                <span class="badge">Landscaping</span>
+              </div>
+              <div class="product-body">
+                <p class="description">
+                  Utilizes the same ultra-bright C-9 bulbs as our roofline
+                  displays. Mounted with professional-grade offset stakes
+                  engineered to hammer easily into tough soil, keeping walkways
+                  straight and secure.
+                </p>
+
+                <div class="spec-block">
+                  <h4>Features</h4>
+                  <ul>
+                    <li>
+                      Manufactured with UV-additive polymers for weather
+                      durability
+                    </li>
+                    <li>
+                      Special offset stake design for easy installation in hard
+                      ground
+                    </li>
+                    <li>
+                      Keeps lights upright and perfectly aligned all season
+                    </li>
+                    <li>Gives driveways and paths a clean, crisp border</li>
+                  </ul>
+                </div>
+
+                <div class="spec-block">
+                  <h4>Specifications</h4>
+                  <div class="spec-grid">
+                    <div><span>Bulb Compatibility:</span> C7, C9</div>
+                    <div><span>Bulb Type:</span> C9 LED</div>
+                    <div><span>Stake Type:</span> Heavy Duty Offset</div>
+                    <div><span>Application:</span> Walkways & Driveways</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Light Bursts -->
+            <div class="product-card">
+              <div class="product-header">
+                <h3>36" LED Light Bursts</h3>
+                <span class="badge">Landscaping</span>
+              </div>
+              <div class="product-body">
+                <p class="description">
+                  Natural-looking brown lighted branches with warm white LEDs.
+                  Features a 1-in-5 twinkle effect that adds depth, warmth, and
+                  organic elegance to garden beds, walkways, or floral
+                  arrangements.
+                </p>
+
+                <div class="spec-block">
+                  <h4>Features</h4>
+                  <ul>
+                    <li>36" brown branches with 140 warm white LED lights</li>
+                    <li>Dynamic 1-in-5 twinkle lighting effect</li>
+                    <li>
+                      Continuous-lit technology (if one light goes out, rest
+                      stay lit)
+                    </li>
+                    <li>Includes mounting ground stakes</li>
+                  </ul>
+                </div>
+
+                <div class="spec-block">
+                  <h4>Specifications</h4>
+                  <div class="spec-grid">
+                    <div><span>Height:</span> 36 in</div>
+                    <div><span>Quantity:</span> 6 per order</div>
+                    <div><span>Lead Wire:</span> 120 in</div>
+                    <div><span>Voltage:</span> Low Voltage (Transformer)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-
-        <div class="product-grid">
-          <!-- C-9 Roofline Lights -->
-          <div class="product-card">
-            <div class="product-header">
-              <h3>C-9 Roofline Lights</h3>
-              <span class="badge">Roofline & Trim</span>
-            </div>
-            <div class="product-body">
-              <p class="description">
-                Professional quality, durability, and energy efficiency. Polystyrene lenses make them ultra-strong, while SMD technology delivers brilliant brightness. These cool-to-the-touch bulbs are built to last season after season.
-              </p>
-              <div class="options-tag"><strong>Color Options:</strong> Warm White, Pure White, Champagne</div>
-              
-              <div class="spec-block">
-                <h4>Features</h4>
-                <ul>
-                  <li>C-9 LED Premium Bulbs with E17 base</li>
-                  <li>SMD LED technology for brilliant light</li>
-                  <li>Diamond-cut pattern facets generating light halos</li>
-                  <li>Average bulb life: 60,000 hours</li>
-                  <li>Nickel base to prevent corrosion</li>
-                  <li>Rated for Indoor & Outdoor use</li>
-                </ul>
-              </div>
-
-              <div class="spec-block">
-                <h4>Specifications</h4>
-                <div class="spec-grid">
-                  <div><span>Voltage:</span> 120V</div>
-                  <div><span>Watts/Bulb:</span> 0.65W</div>
-                  <div><span>Kelvin:</span> 3000K</div>
-                  <div><span>Lumens:</span> 37</div>
-                  <div><span>Dimmable:</span> Yes</div>
-                  <div><span>Diode Count:</span> 3</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 5mm Wide Angle LED String Lights -->
-          <div class="product-card">
-            <div class="product-header">
-              <h3>5mm Wide Angle LED Lights</h3>
-              <span class="badge">Commercial Grade</span>
-            </div>
-            <div class="product-body">
-              <p class="description">
-                IP67 water-tight string lights engineered for the harshest weather conditions. Features shatterproof acrylic bulbs with non-fading infused color and heavy-duty 20 gauge wire for end-to-end reliability.
-              </p>
-              <div class="options-tag"><strong>Color Options:</strong> Warm White, Pure White, Champagne</div>
-
-              <div class="spec-block">
-                <h4>Features</h4>
-                <ul>
-                  <li>IP67 Rated: Waterproof and dust-tight</li>
-                  <li>Bulb lifespan up to 100,000 hours</li>
-                  <li>ENERGY STAR® certified (Up to 90% energy savings)</li>
-                  <li>Heavy-duty 20 gauge wire with tighter wire twists</li>
-                  <li>Connect up to 432 watts end-to-end</li>
-                  <li>Contractor Pack pre-balled sets for efficient install</li>
-                </ul>
-              </div>
-
-              <div class="spec-block">
-                <h4>Specifications</h4>
-                <div class="spec-grid">
-                  <div><span>Spacing:</span> 4" apart</div>
-                  <div><span>Length:</span> 17 ft total</div>
-                  <div><span>Wire:</span> 20 Gauge Green</div>
-                  <div><span>Voltage:</span> 120V</div>
-                  <div><span>Color Temp:</span> 3000K</div>
-                  <div><span>Rating:</span> WeatherPRO™ Commercial</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 24" Prelit Wreath -->
-          <div class="product-card">
-            <div class="product-header">
-              <h3>24” Sequoia Fir Wreath</h3>
-              <span class="badge">Greenery & Decor</span>
-            </div>
-            <div class="product-body">
-              <p class="description">
-                Features 200 PVC tips on a galvanized metal wire frame that will not rust. Flame retardant, non-allergenic, fade- and crush-resistant 2-ply needles maintain a lush, full appearance every season.
-              </p>
-              <div class="options-tag"><strong>Color Options:</strong> Warm White, Pure White</div>
-
-              <div class="spec-block">
-                <h4>Features</h4>
-                <ul>
-                  <li>Sequoia Fir artificial Christmas wreath with 200 PVC tips</li>
-                  <li>Galvanized metal wire frame prevents rust</li>
-                  <li>Flame retardant and non-allergenic materials</li>
-                  <li>Prelit with 50 energy-saving LED lights</li>
-                  <li>UL Listed for quality and safety assurance</li>
-                </ul>
-              </div>
-
-              <div class="spec-block">
-                <h4>Specifications</h4>
-                <div class="spec-grid">
-                  <div><span>Size:</span> 24" Outer Diameter</div>
-                  <div><span>Inner Dia:</span> 6 in</div>
-                  <div><span>Frame Dia:</span> 14 in</div>
-                  <div><span>Weight:</span> 6 lbs</div>
-                  <div><span>Lights:</span> 50 LEDs</div>
-                  <div><span>Rating:</span> Indoor / Outdoor</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 18" Commercial Bow -->
-          <div class="product-card">
-            <div class="product-header">
-              <h3>12” Structural Bow</h3>
-              <span class="badge">Greenery & Decor</span>
-            </div>
-            <div class="product-body">
-              <p class="description">
-                A sturdy, commercial-grade structural bow featuring a durable 3D nylon design in vibrant red with gold trim. Designed to keep its shape and hold securely on large outdoor wreaths all season.
-              </p>
-
-              <div class="spec-block">
-                <h4>Features</h4>
-                <ul>
-                  <li>Sturdy commercial-grade 3D nylon design</li>
-                  <li>Red finish with rich gold trim</li>
-                  <li>4-loop structural construction</li>
-                  <li>Indoor / Outdoor weather resistant</li>
-                </ul>
-              </div>
-
-              <div class="spec-block">
-                <h4>Specifications</h4>
-                <div class="spec-grid">
-                  <div><span>Color:</span> Red / Gold Trim</div>
-                  <div><span>Loop Count:</span> 4</div>
-                  <div><span>Material:</span> 3D Nylon</div>
-                  <div><span>Application:</span> Wreaths & Displays</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Ground Lights & Stakes -->
-          <div class="product-card">
-            <div class="product-header">
-              <h3>Ground & Pathway Lights</h3>
-              <span class="badge">Landscaping</span>
-            </div>
-            <div class="product-body">
-              <p class="description">
-                Utilizes the same ultra-bright C-9 bulbs as our roofline displays. Mounted with professional-grade offset stakes engineered to hammer easily into tough soil, keeping walkways straight and secure.
-              </p>
-
-              <div class="spec-block">
-                <h4>Features</h4>
-                <ul>
-                  <li>Manufactured with UV-additive polymers for weather durability</li>
-                  <li>Special offset stake design for easy installation in hard ground</li>
-                  <li>Keeps lights upright and perfectly aligned all season</li>
-                  <li>Gives driveways and paths a clean, crisp border</li>
-                </ul>
-              </div>
-
-              <div class="spec-block">
-                <h4>Specifications</h4>
-                <div class="spec-grid">
-                  <div><span>Bulb Compatibility:</span> C7, C9</div>
-                  <div><span>Bulb Type:</span> C9 LED</div>
-                  <div><span>Stake Type:</span> Heavy Duty Offset</div>
-                  <div><span>Application:</span> Walkways & Driveways</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Light Bursts -->
-          <div class="product-card">
-            <div class="product-header">
-              <h3>36" LED Light Bursts</h3>
-              <span class="badge">Landscaping</span>
-            </div>
-            <div class="product-body">
-              <p class="description">
-                Natural-looking brown lighted branches with warm white LEDs. Features a 1-in-5 twinkle effect that adds depth, warmth, and organic elegance to garden beds, walkways, or floral arrangements.
-              </p>
-
-              <div class="spec-block">
-                <h4>Features</h4>
-                <ul>
-                  <li>36" brown branches with 140 warm white LED lights</li>
-                  <li>Dynamic 1-in-5 twinkle lighting effect</li>
-                  <li>Continuous-lit technology (if one light goes out, rest stay lit)</li>
-                  <li>Includes mounting ground stakes</li>
-                </ul>
-              </div>
-
-              <div class="spec-block">
-                <h4>Specifications</h4>
-                <div class="spec-grid">
-                  <div><span>Height:</span> 36 in</div>
-                  <div><span>Quantity:</span> 6 per order</div>
-                  <div><span>Lead Wire:</span> 120 in</div>
-                  <div><span>Voltage:</span> Low Voltage (Transformer)</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
+      </section>
     </div>
 
     <!-- Lightbox Modal -->
-    <div v-if="activeLightboxImage" class="lightbox" @click.self="closeLightbox">
+    <div
+      v-if="activeLightboxImage"
+      class="lightbox"
+      @click.self="closeLightbox"
+    >
       <button class="lightbox-close" @click="closeLightbox">×</button>
       <img
         :src="activeLightboxImage"
@@ -439,269 +512,277 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { toast } from 'vue-sonner'
+import { ref, computed, onMounted, onUnmounted } from "vue";
+import { toast } from "vue-sonner";
 
-const config = useRuntimeConfig()
-const { addToCart } = useCart()
+const config = useRuntimeConfig();
+const { addToCart } = useCart();
 
 interface PackageProduct {
-  id: number
-  name: string
-  description: string
-  price: number
-  stock: number
-  image_url: string | null
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  image_url: string | null;
   variations: Array<{
-    name: string
+    name: string;
     options: Array<{
-      name: string
-      image_url: string
-    }>
-  }>
+      name: string;
+      image_url: string;
+    }>;
+  }>;
 }
 
-const packages = ref<PackageProduct[]>([])
-const loading = ref(true)
+const packages = ref<PackageProduct[]>([]);
+const loading = ref(true);
 
-const selectedColors = ref<Record<number, string>>({})
-const activeInclusions = ref<Record<number, string | null>>({})
-const activeLightboxImage = ref<string | null>(null)
+const selectedColors = ref<Record<number, string>>({});
+const activeInclusions = ref<Record<number, string | null>>({});
+const activeLightboxImage = ref<string | null>(null);
 
 const colors = [
-  { name: 'Warm White', hex: '#f5e8c7' },
-  { name: 'Pure White', hex: '#f8f9fa' },
-  { name: 'Champagne', hex: '#f0e4d2' }
-]
+  { name: "Warm White", hex: "#f5e8c7" },
+  { name: "Pure White", hex: "#f8f9fa" },
+  { name: "Champagne", hex: "#f0e4d2" },
+];
 
 useHead({
-  title: 'Holiday Lighting Packages - Festive Express'
-})
+  title: "Holiday Lighting Packages - Festive Express",
+});
 
 // Hotspots Definition
 type Hotspot = {
-  key: string
-  label: string
-  top: string
-  left: string
-  thumb?: string
-  packages: string[]
-}
+  key: string;
+  label: string;
+  top: string;
+  left: string;
+  thumb?: string;
+  packages: string[];
+};
 
 const allHotspots: Hotspot[] = [
   {
-    key: 'c9',
-    label: 'C-9 Roofline Lights',
-    top: '33%',
-    left: '72%',
-    thumb: '/Images/Holiday-Lighting-Package/c9lights.png',
-    packages: ['joy', 'jolly', 'merry']
+    key: "c9",
+    label: "C-9 Roofline Lights",
+    top: "33%",
+    left: "72%",
+    thumb: "/Images/Holiday-Lighting-Package/c9lights.png",
+    packages: ["joy", "jolly", "merry"],
   },
   {
-    key: 'wreath',
+    key: "wreath",
     label: '24" Mixed Noble Wreath',
-    top: '33%',
-    left: '55%',
-    thumb: '/Images/Holiday-Lighting-Package/mixed-noble-wreath.png',
-    packages: ['jolly', 'merry']
+    top: "33%",
+    left: "55%",
+    thumb: "/Images/Holiday-Lighting-Package/mixed-noble-wreath.png",
+    packages: ["jolly", "merry"],
   },
   {
-    key: 'bow',
+    key: "bow",
     label: '12" Velvet Red Bow',
-    top: '30%',
-    left: '57%',
-    thumb: '/Images/Holiday-Lighting-Package/velvet-red-bow.png',
-    packages: ['jolly', 'merry']
+    top: "30%",
+    left: "57%",
+    thumb: "/Images/Holiday-Lighting-Package/velvet-red-bow.png",
+    packages: ["jolly", "merry"],
   },
   {
-    key: 'ground',
-    label: 'Ground Stake Lights',
-    top: '86%',
-    left: '45%',
-    thumb: '/Images/Holiday-Lighting-Package/ground-lights.png',
-    packages: ['jolly', 'merry']
+    key: "ground",
+    label: "Ground Stake Lights",
+    top: "86%",
+    left: "45%",
+    thumb: "/Images/Holiday-Lighting-Package/ground-lights.png",
+    packages: ["jolly", "merry"],
   },
   {
-    key: 'minis',
-    label: '5mm Mini Lights',
-    top: '65%',
-    left: '88%',
-    thumb: '/Images/Holiday-Lighting-Package/5mm-minis.png',
-    packages: ['merry']
+    key: "minis",
+    label: "5mm Mini Lights",
+    top: "65%",
+    left: "88%",
+    thumb: "/Images/Holiday-Lighting-Package/5mm-minis.png",
+    packages: ["merry"],
   },
   {
-    key: 'bursts',
-    label: 'Light Bursts',
-    top: '74%',
-    left: '66%',
-    thumb: '/Images/Holiday-Lighting-Package/light-bursts.png',
-    packages: ['merry']
-  }
-]
+    key: "bursts",
+    label: "Light Bursts",
+    top: "74%",
+    left: "66%",
+    thumb: "/Images/Holiday-Lighting-Package/light-bursts.png",
+    packages: ["merry"],
+  },
+];
 
 const getPackageSlug = (name: string) => {
-  const n = name.toLowerCase()
-  if (n.includes('merry')) return 'merry'
-  if (n.includes('jolly')) return 'jolly'
-  return 'joy'
-}
+  const n = name.toLowerCase();
+  if (n.includes("merry")) return "merry";
+  if (n.includes("jolly")) return "jolly";
+  return "joy";
+};
 
 // Ensures correct display order: Joy -> Jolly -> Merry
 const orderedPackages = computed(() => {
-  const order = ['joy', 'jolly', 'merry']
+  const order = ["joy", "jolly", "merry"];
   return [...packages.value].sort((a, b) => {
-    return order.indexOf(getPackageSlug(a.name)) - order.indexOf(getPackageSlug(b.name))
-  })
-})
+    return (
+      order.indexOf(getPackageSlug(a.name)) -
+      order.indexOf(getPackageSlug(b.name))
+    );
+  });
+});
 
 const getBadgeText = (name: string) => {
-  const slug = getPackageSlug(name)
-  if (slug === 'joy') return 'STANDARD PACKAGE'
-  if (slug === 'jolly') return 'MOST POPULAR PACKAGE'
-  if (slug === 'merry') return 'PREMIUM PACKAGE'
-  return 'FEATURED PACKAGE'
-}
+  const slug = getPackageSlug(name);
+  if (slug === "joy") return "STANDARD PACKAGE";
+  if (slug === "jolly") return "MOST POPULAR PACKAGE";
+  if (slug === "merry") return "PREMIUM PACKAGE";
+  return "FEATURED PACKAGE";
+};
 
 const getImageUrl = (url: string | null | undefined) => {
-  if (!url) return '/Images/Colors/default-house.jpg'
-  return `${config.public.imageBase.replace(/\/$/, '')}/${url.replace(/^\//, '')}`
-}
+  if (!url) return "/Images/Colors/default-house.jpg";
+  return `${config.public.imageBase.replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
+};
 
 const handleImageError = (e: Event) => {
-  const img = e.target as HTMLImageElement
-  if (img) img.src = '/Images/Colors/default-house.jpg'
-}
+  const img = e.target as HTMLImageElement;
+  if (img) img.src = "/Images/Colors/default-house.jpg";
+};
 
 const getColorImageUrl = (pkgName: string, colorName?: string) => {
-  const packageSlug = getPackageSlug(pkgName).charAt(0).toUpperCase() + getPackageSlug(pkgName).slice(1)
-  const colorSlug = (colorName || 'Warm White')
+  const packageSlug =
+    getPackageSlug(pkgName).charAt(0).toUpperCase() +
+    getPackageSlug(pkgName).slice(1);
+  const colorSlug = (colorName || "Warm White")
     .trim()
     .split(/\s+/)
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join('-')
-  
-  return `/Images/Colors/${packageSlug}-${colorSlug}.jpg`
-}
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join("-");
+
+  return `/Images/Colors/${packageSlug}-${colorSlug}.jpg`;
+};
 
 const getHotspotsForPackage = (pkgName: string) => {
-  const slug = getPackageSlug(pkgName)
-  return allHotspots.filter(s => s.packages.includes(slug))
-}
+  const slug = getPackageSlug(pkgName);
+  return allHotspots.filter((s) => s.packages.includes(slug));
+};
 
 const getActiveSpot = (pkgId: number, pkgName: string) => {
-  const key = activeInclusions.value[pkgId]
-  if (!key) return null
-  return getHotspotsForPackage(pkgName).find(s => s.key === key) || null
-}
+  const key = activeInclusions.value[pkgId];
+  if (!key) return null;
+  return getHotspotsForPackage(pkgName).find((s) => s.key === key) || null;
+};
 
 const activateHotspot = (pkgId: number, key: string) => {
   if (activeInclusions.value[pkgId] === key) {
-    activeInclusions.value[pkgId] = null
+    activeInclusions.value[pkgId] = null;
   } else {
-    activeInclusions.value[pkgId] = key
+    activeInclusions.value[pkgId] = key;
   }
-}
+};
 
 const highlightInclusion = (pkgId: number, optionName: string) => {
-  const n = optionName.toLowerCase()
-  let key: string | null = null
-  if (n.includes('c-9') || n.includes('roofline')) key = 'c9'
-  else if (n.includes('wreath')) key = 'wreath'
-  else if (n.includes('bow')) key = 'bow'
-  else if (n.includes('ground') || n.includes('stake')) key = 'ground'
-  else if (n.includes('mini')) key = 'minis'
-  else if (n.includes('burst')) key = 'bursts'
+  const n = optionName.toLowerCase();
+  let key: string | null = null;
+  if (n.includes("c-9") || n.includes("roofline")) key = "c9";
+  else if (n.includes("wreath")) key = "wreath";
+  else if (n.includes("bow")) key = "bow";
+  else if (n.includes("ground") || n.includes("stake")) key = "ground";
+  else if (n.includes("mini")) key = "minis";
+  else if (n.includes("burst")) key = "bursts";
 
-  activeInclusions.value[pkgId] = key
-}
+  activeInclusions.value[pkgId] = key;
+};
 
 const openLightbox = (pkg: PackageProduct) => {
-  activeLightboxImage.value = getColorImageUrl(pkg.name, selectedColors.value[pkg.id])
-  document.body.style.overflow = 'hidden'
-}
+  activeLightboxImage.value = getColorImageUrl(
+    pkg.name,
+    selectedColors.value[pkg.id],
+  );
+  document.body.style.overflow = "hidden";
+};
 
 const closeLightbox = () => {
-  activeLightboxImage.value = null
-  document.body.style.overflow = ''
-}
+  activeLightboxImage.value = null;
+  document.body.style.overflow = "";
+};
 
 // Track loading state per package ID
-const addingToCartId = ref<number | null>(null)
+const addingToCartId = ref<number | null>(null);
 
 const addToCartHandler = async (pkg: PackageProduct) => {
-  if (addingToCartId.value === pkg.id) return
-  
-  addingToCartId.value = pkg.id
-  const color = selectedColors.value[pkg.id] || 'Warm White'
-  
+  if (addingToCartId.value === pkg.id) return;
+
+  addingToCartId.value = pkg.id;
+  const color = selectedColors.value[pkg.id] || "Warm White";
+
   try {
-    await addToCart(pkg.id, 1, true, { c9_color: color })
-    toast.success('Added to cart!', {
-      description: `${pkg.name} (${color})`
-    })
+    await addToCart(pkg.id, 1, true, { c9_color: color });
+    toast.success("Added to cart!", {
+      description: `${pkg.name} (${color})`,
+    });
   } catch (error) {
-    console.error('Failed to add to cart:', error)
+    console.error("Failed to add to cart:", error);
   } finally {
-    addingToCartId.value = null
+    addingToCartId.value = null;
   }
-}
+};
 
 onMounted(async () => {
   try {
-    const res: any = await $fetch('/products?type=packages', {
-      baseURL: config.public.apiBase
-    })
-    
-    const allProducts: PackageProduct[] = res?.data || res || []
-    packages.value = allProducts.filter(p => 
-      ['joy', 'jolly', 'merry'].some(k => p.name.toLowerCase().includes(k))
-    )
+    const res: any = await $fetch("/products?type=packages", {
+      baseURL: config.public.apiBase,
+    });
 
-    packages.value.forEach(pkg => {
-      selectedColors.value[pkg.id] = 'Warm White'
-      activeInclusions.value[pkg.id] = null
-    })
+    const allProducts: PackageProduct[] = res?.data || res || [];
+    packages.value = allProducts.filter((p) =>
+      ["joy", "jolly", "merry"].some((k) => p.name.toLowerCase().includes(k)),
+    );
+
+    packages.value.forEach((pkg) => {
+      selectedColors.value[pkg.id] = "Warm White";
+      activeInclusions.value[pkg.id] = null;
+    });
   } catch (error) {
-    console.error('Failed to load package programs:', error)
+    console.error("Failed to load package programs:", error);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 
   const onKey = (e: KeyboardEvent) => {
-    if (e.key === 'Escape') closeLightbox()
-  }
-  window.addEventListener('keydown', onKey)
-  onUnmounted(() => window.removeEventListener('keydown', onKey))
-})
+    if (e.key === "Escape") closeLightbox();
+  };
+  window.addEventListener("keydown", onKey);
+  onUnmounted(() => window.removeEventListener("keydown", onKey));
+});
 
-const BASE = '/Images/Holiday-Lighting-Package'
+const BASE = "/Images/Holiday-Lighting-Package";
 const getPackageTitleImage = (name: string) => {
-  const n = name.toLowerCase()
-  if (n.includes('jolly')) return `${BASE}/Jolly.png`
-  if (n.includes('merry')) return `${BASE}/Merry.png`
-  return `${BASE}/Joy.png`
-}
+  const n = name.toLowerCase();
+  if (n.includes("jolly")) return `${BASE}/Jolly.png`;
+  if (n.includes("merry")) return `${BASE}/Merry.png`;
+  return `${BASE}/Joy.png`;
+};
 
 const getPackageIcon = (name: string) => {
-  const n = name.toLowerCase()
-  if (n.includes('jolly')) return `${BASE}/Icon2.png`
-  if (n.includes('merry')) return `${BASE}/Icon3.png`
-  return `${BASE}/Icon1.png`
-}
+  const n = name.toLowerCase();
+  if (n.includes("jolly")) return `${BASE}/Icon2.png`;
+  if (n.includes("merry")) return `${BASE}/Icon3.png`;
+  return `${BASE}/Icon1.png`;
+};
 
 const scrollToSpecs = () => {
-  const el = document.getElementById('product-specs')
+  const el = document.getElementById("product-specs");
   if (el) {
-    el.scrollIntoView({ behavior: 'smooth' })
+    el.scrollIntoView({ behavior: "smooth" });
   }
-}
+};
 </script>
 
 <style scoped>
 /* .page-hero {
   position: relative;
   height: 220px;
-  background: #0c2340;
+  background: #1C2D5B;
   color: #fff;
   display: flex;
   align-items: center;
@@ -758,7 +839,7 @@ const scrollToSpecs = () => {
 .package-title {
   font-size: 2.25rem;
   font-weight: 800;
-  color: #0c2340;
+  color: #1c2d5b;
   margin: 0;
 }
 
@@ -807,7 +888,7 @@ const scrollToSpecs = () => {
 .package-price {
   font-size: 2.25rem;
   font-weight: 800;
-  color: #F49322;
+  color: #f49321;
 }
 
 .badge {
@@ -817,12 +898,12 @@ const scrollToSpecs = () => {
   font-size: 0.8rem;
   font-weight: 800;
   color: #fff;
-  background: #0c2340;
+  background: #1c2d5b;
   letter-spacing: 0.05em;
 }
 
 .badge.jolly {
-  background: #F49322;
+  background: #f49321;
 }
 
 .badge.merry {
@@ -842,7 +923,7 @@ const scrollToSpecs = () => {
     grid-template-columns: 1fr;
     gap: 32px;
   }
-  
+
   .section-header {
     flex-direction: column;
     align-items: flex-start;
@@ -865,7 +946,6 @@ const scrollToSpecs = () => {
   position: relative;
   background: #f1f5f9;
   cursor: zoom-in;
-  
 }
 
 .main-image {
@@ -897,15 +977,17 @@ const scrollToSpecs = () => {
   height: 16px;
   margin: 6px auto;
   border-radius: 50%;
-  background: #0c2340;
+  background: #1c2d5b;
   border: 3px solid #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
-  transition: background 0.2s, transform 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  transition:
+    background 0.2s,
+    transform 0.2s;
 }
 
 .hotspot.active .hotspot-dot,
 .hotspot:hover .hotspot-dot {
-  background: #F49322;
+  background: #f49321;
   transform: scale(1.15);
 }
 
@@ -913,7 +995,7 @@ const scrollToSpecs = () => {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 2px solid #F49322;
+  border: 2px solid #f49321;
   opacity: 0;
   animation: none;
 }
@@ -923,8 +1005,14 @@ const scrollToSpecs = () => {
 }
 
 @keyframes pulseRing {
-  0%   { transform: scale(0.6); opacity: 0.7; }
-  100% { transform: scale(1.8); opacity: 0; }
+  0% {
+    transform: scale(0.6);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
 }
 
 /* Popup Card */
@@ -941,14 +1029,14 @@ const scrollToSpecs = () => {
 }
 
 .hotspot-popup::after {
-  content: '';
+  content: "";
   position: absolute;
   left: 50%;
   bottom: -8px;
   transform: translateX(-50%);
   border: 8px solid transparent;
   border-top-color: #fff;
-  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.08));
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.08));
 }
 
 @keyframes popupIn {
@@ -971,7 +1059,7 @@ const scrollToSpecs = () => {
   height: 22px;
   border: none;
   border-radius: 50%;
-  background: #0c2340;
+  background: #1c2d5b;
   color: #fff;
   font-size: 0.9rem;
   cursor: pointer;
@@ -982,7 +1070,7 @@ const scrollToSpecs = () => {
 }
 
 .hotspot-close:hover {
-  background: #F49322;
+  background: #f49321;
 }
 
 .hotspot-popup-img-wrap {
@@ -1007,7 +1095,7 @@ const scrollToSpecs = () => {
   margin: 0;
   font-size: 0.8rem;
   font-weight: 700;
-  color: #0c2340;
+  color: #1c2d5b;
   text-align: center;
 }
 
@@ -1023,7 +1111,7 @@ const scrollToSpecs = () => {
   font-size: 0.95rem;
   font-weight: 700;
   margin-bottom: 12px;
-  color: #0c2340;
+  color: #1c2d5b;
 }
 
 .color-options {
@@ -1046,7 +1134,7 @@ const scrollToSpecs = () => {
 }
 
 .color-option.active {
-  border-color: #F49322;
+  border-color: #f49321;
   background: #fff7ed;
 }
 
@@ -1080,7 +1168,7 @@ const scrollToSpecs = () => {
 .inclusions-block h3 {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #0c2340;
+  color: #1c2d5b;
   margin-bottom: 12px;
 }
 
@@ -1102,11 +1190,13 @@ const scrollToSpecs = () => {
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
 }
 
 .feature-line:hover {
-  border-color: #F49322;
+  border-color: #f49321;
   background: #fff7ed;
 }
 
@@ -1173,7 +1263,6 @@ const scrollToSpecs = () => {
   cursor: pointer;
 }
 
-
 .button-loader {
   display: inline-flex;
   align-items: center;
@@ -1186,8 +1275,8 @@ const scrollToSpecs = () => {
   align-items: center;
   gap: 8px;
   background-color: transparent;
-  color: #0c2340;
-  border: 2px solid #0c2340;
+  color: #1c2d5b;
+  border: 2px solid #1c2d5b;
   padding: 12px 24px;
   font-size: 1rem;
   font-weight: 600;
@@ -1197,7 +1286,7 @@ const scrollToSpecs = () => {
 }
 
 .info-btn:hover {
-  background-color: #0c2340;
+  background-color: #1c2d5b;
   color: #ffffff;
   transform: translateY(-2px);
 }
@@ -1224,7 +1313,7 @@ const scrollToSpecs = () => {
 
 .section-header2 h2 {
   font-size: 2.2rem;
-  color: #0c2340;
+  color: #1c2d5b;
   font-weight: 700;
   margin-bottom: 12px;
 }
@@ -1248,7 +1337,9 @@ const scrollToSpecs = () => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .product-card:hover {
@@ -1257,7 +1348,7 @@ const scrollToSpecs = () => {
 }
 
 .product-header {
-  background-color: #0c2340;
+  background-color: #1c2d5b;
   color: #ffffff;
   padding: 20px 24px;
   display: flex;
@@ -1273,7 +1364,7 @@ const scrollToSpecs = () => {
 }
 
 .badge {
-  background-color: #f49322;
+  background-color: #f49321;
   color: #ffffff;
   font-size: 0.75rem;
   font-weight: 700;
@@ -1299,7 +1390,7 @@ const scrollToSpecs = () => {
 
 .options-tag {
   background-color: #f0f4f8;
-  color: #0c2340;
+  color: #1c2d5b;
   padding: 8px 12px;
   border-radius: 6px;
   font-size: 0.88rem;
@@ -1312,9 +1403,9 @@ const scrollToSpecs = () => {
 
 .spec-block h4 {
   font-size: 1rem;
-  color: #0c2340;
+  color: #1c2d5b;
   margin-bottom: 10px;
-  border-bottom: 2px solid #f49322;
+  border-bottom: 2px solid #f49321;
   display: inline-block;
   padding-bottom: 3px;
 }
@@ -1344,14 +1435,14 @@ const scrollToSpecs = () => {
 
 .spec-grid span {
   font-weight: 600;
-  color: #0c2340;
+  color: #1c2d5b;
 }
 
 @media (max-width: 768px) {
   .product-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .product-header {
     flex-direction: column;
     align-items: flex-start;

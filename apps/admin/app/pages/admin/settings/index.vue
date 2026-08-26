@@ -12,7 +12,7 @@
       </div>
       <button
         type="button"
-        class="inline-flex items-center justify-center rounded-lg bg-[#F49322] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0c2340] disabled:opacity-60 disabled:cursor-not-allowed"
+        class="inline-flex items-center justify-center rounded-lg bg-[#F49321] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#1C2D5B] disabled:opacity-60 disabled:cursor-not-allowed"
         :disabled="saving || loading"
         @click="saveSettings"
       >
@@ -27,7 +27,7 @@
     <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       <!-- Contact -->
       <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-        <h2 class="text-lg font-semibold text-[#0c2340] mb-5">Contact Us</h2>
+        <h2 class="text-lg font-semibold text-[#1C2D5B] mb-5">Contact Us</h2>
 
         <div class="mb-4">
           <label class="block text-sm font-semibold text-gray-700 mb-1.5"
@@ -36,7 +36,7 @@
           <input
             v-model="form.contact_email"
             type="email"
-            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49322]/30 focus:border-[#F49322]"
+            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
             placeholder="info@example.com"
           />
         </div>
@@ -48,7 +48,7 @@
           <input
             v-model="form.contact_phone"
             type="text"
-            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49322]/30 focus:border-[#F49322]"
+            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
             placeholder="+19412221012"
           />
           <p class="mt-1 text-xs text-slate-500">
@@ -63,7 +63,7 @@
           <input
             v-model="form.contact_phone_display"
             type="text"
-            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49322]/30 focus:border-[#F49322]"
+            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
             placeholder="(941) 222-1012"
           />
           <p class="mt-1 text-xs text-slate-500">
@@ -78,7 +78,7 @@
           <textarea
             v-model="form.contact_address"
             rows="3"
-            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49322]/30 focus:border-[#F49322]"
+            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
             placeholder="Sarasota, FL"
           />
         </div>
@@ -114,7 +114,7 @@
 
       <!-- Social -->
       <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-        <h2 class="text-lg font-semibold text-[#0c2340] mb-5">
+        <h2 class="text-lg font-semibold text-[#1C2D5B] mb-5">
           Social Media Links
         </h2>
 
@@ -129,7 +129,7 @@
           <input
             v-model="form[field.key]"
             type="url"
-            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49322]/30 focus:border-[#F49322]"
+            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
             :placeholder="field.placeholder"
           />
         </div>
@@ -137,7 +137,7 @@
 
       <!-- Checkout / Tax -->
       <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-        <h2 class="text-lg font-semibold text-[#0c2340] mb-5">Checkout</h2>
+        <h2 class="text-lg font-semibold text-[#1C2D5B] mb-5">Checkout</h2>
 
         <div class="mb-3">
           <label class="block text-sm font-semibold text-gray-700 mb-1.5">
@@ -149,7 +149,7 @@
             step="0.01"
             min="0"
             max="100"
-            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49322]/30 focus:border-[#F49322]"
+            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
             placeholder="7"
           />
           <p class="mt-1 text-xs text-slate-500">

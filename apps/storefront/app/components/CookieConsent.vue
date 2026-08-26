@@ -2,24 +2,24 @@
   <Teleport to="body">
     <div
       v-if="visible"
-      class="fixed inset-0 z-[9999] flex pointer-events-none items-end justify-start p-4 md:p-6 max-md:items-end max-md:justify-center max-md:pb-6 max-md:px-3"
+      class="fixed inset-0 z-[2147483648] flex pointer-events-none items-end justify-start p-4 md:p-6 max-md:items-end max-md:justify-center max-md:px-3 max-md:pb-5"
       role="dialog"
       aria-labelledby="cookie-title"
       aria-modal="true"
     >
       <div
-        class="absolute inset-0 pointer-events-auto bg-[#0c2340]/35 max-md:bg-[#0c2340]/50"
+        class="absolute inset-0 pointer-events-auto bg-[#1C2D5B]/35 max-md:bg-[#1C2D5B]/50"
         @click="continueWithout"
       />
 
       <div
-        class="relative z-10 pointer-events-auto w-full max-w-[520px] rounded-2xl bg-white p-4 shadow-2xl shadow-[#0c2340]/20 max-md:max-w-[calc(100%-0.5rem)]"
+        class="relative z-10 pointer-events-auto w-full max-w-[520px] rounded-2xl bg-white p-4 shadow-2xl shadow-[#1C2D5B]/20 max-md:max-w-[calc(100%-0.5rem)]"
       >
         <!-- Top: Continue without accepting -->
         <div class="mb-3 flex justify-end">
           <button
             type="button"
-            class="inline-flex cursor-pointer items-center gap-1 border-0 bg-transparent text-sm font-medium text-[#0c2340] underline"
+            class="inline-flex cursor-pointer items-center gap-1 border-0 bg-transparent text-sm font-medium text-[#1C2D5B] underline"
             @click="continueWithout"
           >
             Continue without accepting
@@ -27,7 +27,7 @@
           </button>
         </div>
 
-        <h2 id="cookie-title" class="mb-2 text-lg font-bold text-[#0c2340]">
+        <h2 id="cookie-title" class="mb-2 text-lg font-bold text-[#1C2D5B]">
           Privacy Settings
         </h2>
 
@@ -42,7 +42,7 @@
           class="mb-5 flex flex-wrap items-center gap-x-5 gap-y-3 max-md:flex-col max-md:items-stretch"
         >
           <div class="flex items-center justify-between gap-2 max-md:w-full">
-            <span class="text-sm font-medium text-[#0c2340]">Marketing</span>
+            <span class="text-sm font-medium text-[#1C2D5B]">Marketing</span>
             <button
               type="button"
               role="switch"
@@ -50,7 +50,7 @@
               class="relative h-6 w-11 shrink-0 cursor-pointer rounded-full border border-slate-300 p-0 transition-colors"
               :class="
                 prefs.marketing
-                  ? 'border-[#F49322] bg-[#F49322]'
+                  ? 'border-[#F49321] bg-[#F49321]'
                   : 'bg-slate-100'
               "
               @click="prefs.marketing = !prefs.marketing"
@@ -63,7 +63,7 @@
           </div>
 
           <div class="flex items-center justify-between gap-2 max-md:w-full">
-            <span class="text-sm font-medium text-[#0c2340]">Functional</span>
+            <span class="text-sm font-medium text-[#1C2D5B]">Functional</span>
             <button
               type="button"
               role="switch"
@@ -71,7 +71,7 @@
               class="relative h-6 w-11 shrink-0 cursor-pointer rounded-full border border-slate-300 p-0 transition-colors"
               :class="
                 prefs.functional
-                  ? 'border-[#F49322] bg-[#F49322]'
+                  ? 'border-[#F49321] bg-[#F49321]'
                   : 'bg-slate-100'
               "
               @click="prefs.functional = !prefs.functional"
@@ -84,7 +84,7 @@
           </div>
 
           <div class="flex items-center justify-between gap-2 max-md:w-full">
-            <span class="text-sm font-medium text-[#0c2340]">Essential</span>
+            <span class="text-sm font-medium text-[#1C2D5B]">Essential</span>
             <button
               type="button"
               role="switch"
@@ -103,13 +103,13 @@
         <div class="mb-3 flex gap-4 text-sm">
           <NuxtLink
             to="/privacy-policy"
-            class="font-medium text-[#0c2340] underline"
+            class="font-medium text-[#1C2D5B] underline"
           >
             Privacy Policy
           </NuxtLink>
           <NuxtLink
             to="/cookie-policy"
-            class="font-medium text-[#0c2340] underline"
+            class="font-medium text-[#1C2D5B] underline"
           >
             More Information
           </NuxtLink>
@@ -119,25 +119,27 @@
           Cookie preferences · Festive Express
         </p>
 
-        <!-- Desktop: row Save | Deny | Accept All · Mobile: column -->
-        <div class="flex flex-row items-center gap-2 max-md:gap-1.5">
+        <!-- Desktop: row · Mobile: column full width like screenshot -->
+        <div
+          class="flex flex-row items-center justify-end gap-2 max-md:!flex-col max-md:!items-stretch max-md:!gap-2.5"
+        >
           <button
             type="button"
-            class="cursor-pointer rounded-lg border-0 bg-[#F49322] px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0c2340] max-md:flex-1 max-md:px-2 max-md:text-[13px]"
+            class="cursor-pointer rounded-lg border-0 bg-[#F49321] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1C2D5B] max-md:order-1 max-md:w-full max-md:py-3"
             @click="acceptAll"
           >
             Accept All
           </button>
           <button
             type="button"
-            class="cursor-pointer rounded-lg border-0 bg-[#F49322] px-3 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0c2340] max-md:flex-1 max-md:px-2 max-md:text-[13px]"
+            class="cursor-pointer rounded-lg border-0 bg-[#F49321] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1C2D5B] max-md:order-2 max-md:w-full max-md:py-3"
             @click="denyAll"
           >
             Deny
           </button>
           <button
             type="button"
-            class="cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm font-semibold text-[#0c2340] transition hover:border-[#0c2340] max-md:flex-1 max-md:px-2 max-md:text-[13px]"
+            class="cursor-pointer rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-[#1C2D5B] transition hover:border-[#1C2D5B] max-md:order-3 max-md:w-full max-md:py-3"
             @click="saveSettings"
           >
             Save Settings

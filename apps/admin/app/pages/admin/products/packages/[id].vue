@@ -4,7 +4,7 @@
       class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6"
     >
       <div>
-        <h1 class="text-2xl font-bold text-[#0c2340]">
+        <h1 class="text-2xl font-bold text-[#1C2D5B]">
           {{ loading ? "Edit Package" : `Edit: ${form.name || "Package"}` }}
         </h1>
         <p class="text-slate-500 text-sm mt-1">Program details + inclusions</p>
@@ -18,13 +18,13 @@
         </NuxtLink>
         <NuxtLink
           :to="`/admin/products/package-skus?package_id=${id}`"
-          class="px-4 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-slate-700 no-underline hover:border-[#F49322]"
+          class="px-4 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-slate-700 no-underline hover:border-[#F49321]"
         >
           View SKUs
         </NuxtLink>
         <button
           type="button"
-          class="px-5 py-2 rounded-lg bg-[#F49322] text-white text-sm font-semibold hover:bg-[#0c2340] disabled:opacity-60"
+          class="px-5 py-2 rounded-lg bg-[#F49321] text-white text-sm font-semibold hover:bg-[#1C2D5B] disabled:opacity-60"
           :disabled="saving"
           @click="saveAll"
         >
@@ -45,7 +45,7 @@
           class="px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors"
           :class="
             tab === 'details'
-              ? 'border-[#F49322] text-[#0c2340]'
+              ? 'border-[#F49321] text-[#1C2D5B]'
               : 'border-transparent text-slate-500'
           "
           @click="tab = 'details'"
@@ -57,7 +57,7 @@
           class="px-4 py-2 text-sm font-semibold border-b-2 -mb-px transition-colors"
           :class="
             tab === 'inclusions'
-              ? 'border-[#F49322] text-[#0c2340]'
+              ? 'border-[#F49321] text-[#1C2D5B]'
               : 'border-transparent text-slate-500'
           "
           @click="tab = 'inclusions'"
@@ -159,7 +159,7 @@
               Featured image (card)
             </label>
             <div
-              class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center cursor-pointer hover:border-[#F49322]"
+              class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center cursor-pointer hover:border-[#F49321]"
               @click="imageFileInput?.click()"
             >
               <img
@@ -229,7 +229,7 @@
               >Title image</label
             >
             <div
-              class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center cursor-pointer hover:border-[#F49322]"
+              class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center cursor-pointer hover:border-[#F49321]"
               @click="titleFileInput?.click()"
             >
               <img
@@ -267,7 +267,7 @@
               >Icon</label
             >
             <div
-              class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center cursor-pointer hover:border-[#F49322]"
+              class="border-2 border-dashed border-slate-200 rounded-xl p-4 text-center cursor-pointer hover:border-[#F49321]"
               @click="iconFileInput?.click()"
             >
               <img
@@ -315,7 +315,7 @@
           No inclusion items yet. Add some under
           <NuxtLink
             to="/admin/products/inclusions"
-            class="text-[#F49322] font-semibold"
+            class="text-[#F49321] font-semibold"
             >Inclusion Items</NuxtLink
           >.
         </div>
@@ -324,7 +324,7 @@
           <li
             v-for="item in inclusionItems"
             :key="item.id"
-            class="flex flex-wrap items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-[#F49322]/50"
+            class="flex flex-wrap items-center gap-3 p-3 rounded-xl border border-slate-200 hover:border-[#F49321]/50"
           >
             <input
               type="checkbox"
@@ -346,7 +346,7 @@
             />
 
             <div class="flex-1 min-w-[140px]">
-              <div class="font-semibold text-sm text-[#0c2340]">
+              <div class="font-semibold text-sm text-[#1C2D5B]">
                 {{ item.name }}
               </div>
               <div class="text-xs text-slate-400">{{ item.slug }}</div>
@@ -681,7 +681,7 @@ onMounted(load);
 }
 .field:focus {
   outline: none;
-  border-color: #f49322;
+  border-color: #f49321;
   box-shadow: 0 0 0 3px rgba(244, 147, 34, 0.2);
 }
 </style>

@@ -113,17 +113,17 @@ onMounted(load);
 
 .about-body :deep(p strong),
 .about-body :deep(.intro-orange) {
-  color: #f49322;
+  color: #f49321;
   font-size: 1.25rem;
   font-weight: 600;
 }
 
 .about-body :deep(blockquote),
 .about-body :deep(.about-quote) {
-  border-left: 4px solid #f49322;
+  border-left: 4px solid #f49321;
   padding-left: 1rem;
   margin-top: 1.5rem;
-  color: #0c2340;
+  color: #1c2d5b;
   font-weight: 600;
   font-size: 1.05rem;
   line-height: 1.7;
