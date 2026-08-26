@@ -13,12 +13,12 @@ export default defineEventHandler(async (event) => {
 
         const htmlContent = html
             .replace(
-                /src="widget\.js"/g,
-                `src="${config.estimatorApiUrl}/widget.js"`
+                /<script\s+src=["']widget\.js["']\s*><\/script>/gi,
+                '<script src="/estimator/widget.js"></script>'
             )
             .replace(
-                /href="widget\.css"/g,
-                `href="${config.estimatorApiUrl}/widget.css"`
+                /<link\s+rel=["']stylesheet["']\s+href=["']widget\.css["']\s*\/?>/gi,
+                '<link rel="stylesheet" href="/estimator/widget.css">'
             );
 
         setResponseHeader(
