@@ -33,16 +33,33 @@ jobs:
             echo "Building Storefront..."
             cd /var/www/festive-express/festive-express-monorepo/apps/storefront
             npm install
+            # Clean previous build to ensure fresh build
+            rm -rf .output .nuxt
             npm run build
 
             # 4. BUILD & DEPLOY APP 2: Admin
             echo "Building Admin..."
             cd /var/www/festive-express/festive-express-monorepo/apps/admin
             npm install
+            # Clean previous build to ensure fresh build
+            rm -rf .output .nuxt
             npm run build
 
-            # 5. ZERO-DOWNTIME RELOAD VIA PM2
-            # We target the root ecosystem file to reload both distinct processes safely
+            # 5. RELOAD VIA PM2
             echo "Reloading applications with PM2..."
             cd /var/www/festive-express/festive-express-monorepo
-            pm2 reload ecosystem.config.js --update-env
+            
+            # Option A: Use restart instead of reload (more reliable)
+            pm2 restart ecosystem.config.js --update-env
+            
+            # Option B: If you want zero-downtime, use reload but with force
+            # pm2 reload ecosystem.config.js --update-env --force
+
+            # 6. Save PM2 process list
+            pm2 save
+
+            # 7. Check status
+            pm2 list
+
+            # 8. Show recent logs for verification
+            pm2 logs --lines 20 --nostream
