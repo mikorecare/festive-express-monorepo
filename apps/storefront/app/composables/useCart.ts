@@ -19,7 +19,6 @@ export interface CartItem {
 
 export const useCart = () => {
   const supabase = useSupabaseClient();
-
   const cartItems = useState<CartItem[]>("cartItems", () => []);
   const cartCount = useState<number>("cartCount", () => 0);
 
