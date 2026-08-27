@@ -82,6 +82,7 @@ useHead({
   title: "Checkout",
 });
 import CheckoutTurnstileWidget from "../components/Checkout/TurnstileWidget.vue";
+import { usePaymentError } from "~/composables/usePaymentError";
 
 interface OrderResponse {
   success: boolean;
@@ -119,6 +120,7 @@ const FL_TAX_RATE = computed(() => {
 
 const { cartItems, cartTotal, loadCart, clearCart } = useCart();
 const { isServiceZip } = useServiceZips();
+const { handlePaymentError } = usePaymentError();
 
 import { toast } from "vue-sonner";
 
@@ -776,28 +778,66 @@ const payWithConverge = async () => {
       promo_code_id: promoCodeId,
     };
 
-    const tokenRes = (await $fetch("/api/elavon/session", {
-      method: "POST",
-      body: {
-        amount: grandTotal.value,
-        first_name: firstName,
-        last_name: lastName,
-        email: email,
-        invoice_number: `F-EX-${Date.now()}`,
-        billing_address: form.value.shipping_address_1,
-        billing_city: city,
-        billing_state: "FL",
-        billing_zip: form.value.billing_postcode,
-        billing_country: "USA",
-        billing_phone: form.value.billing_phone,
-      },
-    })) as any;
-
-    if (!tokenRes.success || !tokenRes.token) {
-      throw new Error(tokenRes.error || "Failed to get payment token");
+    let tokenRes: any;
+    try {
+      tokenRes = await $fetch("/api/elavon/session", {
+        method: "POST",
+        body: {
+          amount: grandTotal.value,
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          invoice_number: `F-EX-${Date.now()}`,
+          billing_address: form.value.shipping_address_1,
+          billing_city: city,
+          billing_state: "FL",
+          billing_zip: form.value.billing_postcode,
+          billing_country: "USA",
+          billing_phone: form.value.billing_phone,
+        },
+      });
+    } catch (fetchError: any) {
+      const { userMessage } = handlePaymentError(fetchError, "session_api");
+      console.error("Session API fetch error:", fetchError);
+      toast.error(userMessage);
+      isPaying.value = false;
+      resetTurnstile();
+      return;
     }
 
-    await loadCheckoutScript();
+    // Check if session response has error
+    if (!tokenRes || !tokenRes.success) {
+      // USING THE COMPOSABLE HERE
+      const { userMessage } = handlePaymentError(tokenRes, "session_response");
+      console.error("Session error:", tokenRes);
+      toast.error(userMessage);
+      isPaying.value = false;
+      resetTurnstile();
+      return;
+    }
+
+    if (!tokenRes.token) {
+      const { userMessage } = handlePaymentError(
+        { error: "No session token returned" },
+        "missing_token",
+      );
+      console.error("No token in response:", tokenRes);
+      toast.error(userMessage);
+      isPaying.value = false;
+      resetTurnstile();
+      return;
+    }
+
+    try {
+      await loadCheckoutScript();
+    } catch (scriptError) {
+      const { userMessage } = handlePaymentError(scriptError, "load_script");
+      console.error("Checkout.js load error:", scriptError);
+      toast.error(userMessage);
+      isPaying.value = false;
+      resetTurnstile();
+      return;
+    }
 
     const paymentData = {
       ssl_txn_auth_token: tokenRes.token,
@@ -820,14 +860,19 @@ const payWithConverge = async () => {
 
     const callback = {
       onError: function (error: any) {
+        const { userMessage } = handlePaymentError(error, "converge_error");
         console.error("Payment error:", error);
-        toast.error("Payment error occurred");
+        toast.error(userMessage);
         isPaying.value = false;
         resetTurnstile();
       },
       onDeclined: function (response: any) {
+        const { userMessage } = handlePaymentError(
+          response,
+          "converge_declined",
+        );
         console.log("Payment declined:", response);
-        toast.error(response.ssl_result_message || "Card declined");
+        toast.error(userMessage);
         isPaying.value = false;
         resetTurnstile();
       },
@@ -846,8 +891,8 @@ const payWithConverge = async () => {
             },
           })) as any;
 
-          if (!orderRes.success) {
-            throw new Error("Order creation failed");
+          if (!orderRes || !orderRes.success) {
+            throw new Error(orderRes?.error || "Order creation failed");
           }
 
           await clearCart();
@@ -856,19 +901,40 @@ const payWithConverge = async () => {
           navigateTo(
             `/thank-you?order=${orderRes.order.order_number}&email=${encodeURIComponent(email)}`,
           );
-        } catch (error: any) {
-          console.error("Order creation error:", error);
-          toast.error("Payment successful but order creation failed");
+        } catch (orderError: any) {
+          const { userMessage } = handlePaymentError(
+            orderError,
+            "order_creation",
+          );
+          toast.error(
+            "Payment successful but order creation failed. Please contact support.",
+          );
+          isPaying.value = false;
+          resetTurnstile();
         } finally {
           isPaying.value = false;
         }
       },
     };
 
+    // Check if ConvergeEmbeddedPayment is available
+    if (!(window as any).ConvergeEmbeddedPayment) {
+      // USING THE COMPOSABLE HERE
+      const { userMessage } = handlePaymentError(
+        { error: "ConvergeEmbeddedPayment not available" },
+        "missing_payment_object",
+      );
+      toast.error(userMessage);
+      isPaying.value = false;
+      resetTurnstile();
+      return;
+    }
+
     (window as any).ConvergeEmbeddedPayment.pay(paymentData, callback);
   } catch (error: any) {
+    const { userMessage } = handlePaymentError(error, "general");
     console.error("Payment error:", error);
-    toast.error(error.message || "Payment failed");
+    toast.error(userMessage);
     isPaying.value = false;
     resetTurnstile();
   }

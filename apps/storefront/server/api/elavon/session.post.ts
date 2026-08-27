@@ -1,4 +1,3 @@
-// server/api/elavon/session.post.ts
 import { defineEventHandler, readBody } from 'h3'
 
 export default defineEventHandler(async (event) => {
@@ -87,7 +86,10 @@ export default defineEventHandler(async (event) => {
         if (billing_country) formData.append('ssl_country', String(billing_country).trim());
         if (billing_phone) formData.append('ssl_phone', String(billing_phone).trim());
 
-        const apiUrl = 'https://api.demo.convergepay.com/hosted-payments/transaction_token';
+        const apiUrl = config.elavonDemo === 'false'
+            ? 'https://api.convergepay.com/hosted-payments/transaction_token'
+            : 'https://api.demo.convergepay.com/hosted-payments/transaction_token';
+
         console.log('Calling Converge API:', apiUrl);
 
         const response = await fetch(apiUrl, {
@@ -117,47 +119,54 @@ export default defineEventHandler(async (event) => {
             };
         }
 
-        // FIX: Handle both response formats
-        let token = null;
-        let transactionId = null;
-        let approvalCode = null;
-
-        // Check if response is URL-encoded (key=value&key2=value2)
+        // Handle URL-encoded response
         if (responseText.includes('=') && responseText.includes('&')) {
-            // URL-encoded format
             const params = new URLSearchParams(responseText);
             const parsed = Object.fromEntries(params.entries());
             console.log('Parsed URL-encoded response:', parsed);
 
+            // Check for error response
             if (parsed.ssl_result && parsed.ssl_result !== '0') {
                 return {
                     success: false,
                     error: parsed.ssl_result_message || 'Payment initialization failed',
-                    errorCode: parsed.errorCode || parsed.ssl_result,
+                    errorCode: parsed.ssl_result,
                     details: parsed
                 };
             }
 
+            // Check for errorCode
             if (parsed.errorCode) {
                 return {
                     success: false,
-                    error: parsed.errorMessage || 'Payment initialization failed',
+                    error: parsed.errorMessage || parsed.errorCode || 'Payment initialization failed',
                     errorCode: parsed.errorCode,
                     details: parsed
                 };
             }
 
-            token = parsed.ssl_txn_auth_token || parsed.ssl_token;
-            transactionId = parsed.ssl_txn_id;
-            approvalCode = parsed.ssl_approval_code;
-        } else {
-            // Plain text format - the response itself is the token!
-            console.log('Response is plain text token format');
+            const token = parsed.ssl_txn_auth_token || parsed.ssl_token;
 
-            // Check if it looks like an error message
+            if (!token) {
+                return {
+                    success: false,
+                    error: 'No session token returned',
+                    details: parsed
+                };
+            }
+
+            return {
+                success: true,
+                token: token,
+                transactionId: parsed.ssl_txn_id || null,
+                approvalCode: parsed.ssl_approval_code || null
+            };
+        } else {
+            // Plain text response - might be token or error
             if (responseText.toLowerCase().includes('error') ||
                 responseText.toLowerCase().includes('invalid') ||
-                responseText.toLowerCase().includes('failed')) {
+                responseText.toLowerCase().includes('failed') ||
+                responseText.toLowerCase().includes('declined')) {
                 return {
                     success: false,
                     error: 'Payment initialization failed',
@@ -165,28 +174,20 @@ export default defineEventHandler(async (event) => {
                 };
             }
 
-            // The entire response is the token
-            token = responseText.trim();
-            console.log('Token extracted from plain text response:', token);
-        }
+            const token = responseText.trim();
+            if (!token || token.length < 10) {
+                return {
+                    success: false,
+                    error: 'Invalid session token received',
+                    details: responseText
+                };
+            }
 
-        // Check if we have a token
-        if (!token) {
-            console.error('No token found in response:', responseText);
             return {
-                success: false,
-                error: 'No session token returned',
-                details: responseText
+                success: true,
+                token: token
             };
         }
-
-        console.log('Session token generated successfully');
-        return {
-            success: true,
-            token: token,
-            transactionId: transactionId || null,
-            approvalCode: approvalCode || null
-        };
 
     } catch (error: any) {
         console.error('Unexpected error:', error);
