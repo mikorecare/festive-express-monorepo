@@ -53,72 +53,6 @@ export default defineEventHandler(async (event) => {
         };
     }
 
-    try {
-        const elavonConfig = {
-            accountId: config.elavonAccountId,
-            userId: config.elavonUserId,
-            pin: config.elavonPin,
-            demo: config.elavonDemo,
-        };
-
-        const apiUrl = elavonConfig.demo
-            ? 'https://api.demo.convergepay.com/transaction/verify'
-            : 'https://api.convergepay.com/transaction/verify';
-
-        const verifyResponse = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-                ssl_account_id: elavonConfig.accountId,
-                ssl_user_id: elavonConfig.userId,
-                ssl_pin: elavonConfig.pin,
-                ssl_txn_id: body.transaction_id,
-            }),
-        });
-
-        const verifyText = await verifyResponse.text();
-        const params = new URLSearchParams(verifyText);
-        const parsed = Object.fromEntries(params.entries());
-
-        if (parsed.ssl_result !== '0') {
-            console.warn('Transaction not approved:', parsed);
-            return {
-                success: false,
-                error: 'Transaction not approved',
-                details: parsed.ssl_result_message || 'Transaction declined'
-            };
-        }
-
-        if (Number(parsed.ssl_amount) !== Number(body.total)) {
-            console.warn('Amount mismatch:', {
-                converge: parsed.ssl_amount,
-                order: body.total
-            });
-            return {
-                success: false,
-                error: 'Amount mismatch'
-            };
-        }
-
-        const cvvResponse = parsed.ssl_cvv2_response;
-        if (cvvResponse && cvvResponse !== 'M') {
-            console.warn('CVV verification failed:', cvvResponse);
-            return {
-                success: false,
-                error: 'CVV verification failed',
-                cvv_response: cvvResponse
-            };
-        }
-    } catch (error) {
-        console.error('Converge verification error:', error);
-        return {
-            success: false,
-            error: 'Payment verification failed'
-        };
-    }
-
     const supabaseUrl = config.public.supabaseUrl;
     const supabaseServiceKey = config.supabaseServiceKey;
 
@@ -131,7 +65,6 @@ export default defineEventHandler(async (event) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
     const { data: existingOrder } = await supabase
         .from('orders')
         .select('id, order_number')
