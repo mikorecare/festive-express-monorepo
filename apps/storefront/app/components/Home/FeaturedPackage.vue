@@ -237,7 +237,7 @@ const config = useRuntimeConfig();
 const supabase = useSupabaseClient();
 import { ref, onMounted, computed, nextTick } from "vue";
 import HomeFestivoAnimation from "./FestivoAnimation.vue";
-import type { FestivoConfig } from "./Festivo";
+import type { FestivoConfig, FestivoState } from "./Festivo";
 
 import { ShoppingCartIcon, GiftIcon } from "@heroicons/vue/24/outline";
 
@@ -276,8 +276,12 @@ const festivoConfig = computed<FestivoConfig>(() => {
       `/Images/Festivo/${state}-3d-${frame}.png`,
     moveOffsetX: isMobile ? -50 : -100,
     moveOffsetY: 100,
-    joyOffsetX: 50,
+    joyOffsetX: 120,
     joyOffsetY: 120,
+    jollyOffsetX: 120,
+    jollyOffsetY: 120,
+    merryOffsetX: 120,
+    merryOffsetY: 120,
     jumpPeakHeight: 80,
   };
 });
@@ -406,7 +410,11 @@ const handleCardHover = (event: MouseEvent) => {
   }
 };
 
-// ONLY joyToPosition - no jump
+const getStateByIndex = (index: number): FestivoState => {
+  const states: FestivoState[] = ["joy", "jolly", "merry"];
+  return states[index] || "joy";
+};
+
 const handleExploreClick = async (packageId: number, event: MouseEvent) => {
   const isOpening = openTooltipId.value !== packageId;
 
@@ -427,10 +435,19 @@ const handleExploreClick = async (packageId: number, event: MouseEvent) => {
       await nextTick();
 
       if (festivoRef.value) {
-        // ONLY joyToPosition
-        festivoRef.value.joyToPosition(targetRect);
-      } else {
-        console.log("festivoRef is null!");
+        const pkgIndex = packageProducts.value.findIndex(
+          (p) => p.id === packageId,
+        );
+
+        if (pkgIndex === 0) {
+          festivoRef.value.joyToPosition(targetRect);
+        } else if (pkgIndex === 1) {
+          festivoRef.value.jollyToPosition(targetRect);
+        } else if (pkgIndex === 2) {
+          festivoRef.value.merryToPosition(targetRect);
+        } else {
+          festivoRef.value.joyToPosition(targetRect); // fallback
+        }
       }
 
       openTooltipId.value = packageId;
@@ -438,13 +455,6 @@ const handleExploreClick = async (packageId: number, event: MouseEvent) => {
       setTimeout(() => {
         isAnimating.value = false;
       }, 2200);
-    } else {
-      const button = event.currentTarget as HTMLElement;
-      const card = button?.closest(".package-card-v2") as HTMLElement;
-      if (card) {
-        const cardRect = card.getBoundingClientRect();
-        activeCardRect.value = cardRect;
-      }
     }
   } else {
     openTooltipId.value = null;

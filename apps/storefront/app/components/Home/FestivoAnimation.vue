@@ -26,6 +26,8 @@ const scaleX = ref(1);
 const isVisible = ref(false);
 const isJumping = ref(false);
 const isJoy = ref(false);
+const isJolly = ref(false);
+const isMerry = ref(false);
 const imageScale = ref(1);
 const isOnCard = ref(false);
 const isTalking = ref(false);
@@ -40,6 +42,8 @@ const preloadMascotImages = async () => {
     talk: 4,
     jump: 5,
     joy: 8,
+    jolly: 6,
+    merry: 10,
   };
 
   const imageUrls: string[] = [];
@@ -72,12 +76,13 @@ const interruptCurrentAnimation = () => {
     mascot.value.cleanup();
     isJumping.value = false;
     isJoy.value = false;
+    isJolly.value = false;
+    isMerry.value = false;
     isInterrupted.value = true;
     mascot.value.isMoving = false;
     mascot.value.currentState = "talk";
     mascot.value.currentFrame = 1;
     imageScale.value = 1;
-    scaleX.value = props.forceScaleX ?? 1;
 
     if (mascot.value.onFrameChange) {
       mascot.value.onFrameChange();
@@ -96,6 +101,8 @@ defineExpose({
 
       isJumping.value = true;
       isJoy.value = false;
+      isJolly.value = false;
+      isMerry.value = false;
       isOnCard.value = false;
       isTalking.value = false;
       imageScale.value = props.disableShrink ? 1 : 1;
@@ -114,7 +121,7 @@ defineExpose({
             isOnCard.value = true;
           }
         },
-        props.forceScaleX ?? 1,
+        1,
       );
     } else {
       console.log("Component: No mascot instance!");
@@ -126,6 +133,8 @@ defineExpose({
 
       isJumping.value = false;
       isJoy.value = true;
+      isJolly.value = false;
+      isMerry.value = false;
       isOnCard.value = false;
       isTalking.value = false;
       imageScale.value = 1;
@@ -139,10 +148,77 @@ defineExpose({
             isOnCard.value = true;
           }
         },
-        props.forceScaleX ?? 1,
+        1,
       );
     } else {
       console.log("Component: No mascot instance!");
+    }
+  },
+  jollyToPosition: (rect: DOMRect) => {
+    if (mascot.value) {
+      interruptCurrentAnimation();
+
+      isJumping.value = false;
+      isJoy.value = false;
+      isJolly.value = true;
+      isMerry.value = false;
+      isOnCard.value = false;
+      isTalking.value = false;
+      imageScale.value = 1;
+
+      mascot.value.jollyToPosition(
+        rect,
+        (progress: number) => {
+          imageScale.value = 1;
+
+          if (progress > 0.9 && !isOnCard.value) {
+            isOnCard.value = true;
+          }
+        },
+        1,
+      );
+    } else {
+      console.log("Component: No mascot instance!");
+    }
+  },
+  merryToPosition: (rect: DOMRect) => {
+    if (mascot.value) {
+      interruptCurrentAnimation();
+
+      isJumping.value = false;
+      isJoy.value = false;
+      isJolly.value = false;
+      isMerry.value = true;
+      isOnCard.value = false;
+      isTalking.value = false;
+      imageScale.value = 1;
+
+      mascot.value.merryToPosition(
+        rect,
+        (progress: number) => {
+          imageScale.value = 1;
+
+          if (progress > 0.9 && !isOnCard.value) {
+            isOnCard.value = true;
+          }
+        },
+        1,
+      );
+    } else {
+      console.log("Component: No mascot instance!");
+    }
+  },
+  startJoyJollyMerry: () => {
+    if (mascot.value) {
+      interruptCurrentAnimation();
+      isJoy.value = false;
+      isJolly.value = false;
+      isMerry.value = false;
+      isJumping.value = false;
+      isOnCard.value = false;
+      isTalking.value = false;
+      imageScale.value = 1;
+      mascot.value.startJoyJollyMerry();
     }
   },
   interrupt: interruptCurrentAnimation,
@@ -164,6 +240,8 @@ onMounted(async () => {
       const wasTalking = isTalking.value;
       isTalking.value = mascot.value.currentState === "talk";
       isJoy.value = mascot.value.currentState === "joy";
+      isJolly.value = mascot.value.currentState === "jolly";
+      isMerry.value = mascot.value.currentState === "merry";
       isJumping.value = mascot.value.currentState === "jump";
 
       if (wasTalking !== isTalking.value) {
@@ -186,6 +264,8 @@ onMounted(async () => {
   instance.onMoveComplete = () => {
     isJumping.value = false;
     isJoy.value = false;
+    isJolly.value = false;
+    isMerry.value = false;
     if (mascot.value) {
       isTalking.value = mascot.value.currentState === "talk";
     }
@@ -228,7 +308,7 @@ const updateScaleBasedOnState = () => {
     return;
   }
 
-  if (isJoy.value) {
+  if (isJoy.value || isJolly.value || isMerry.value) {
     imageScale.value = 1;
     return;
   }
@@ -253,7 +333,13 @@ watch(
   (newRect) => {
     if (!newRect || !mascot.value) return;
 
-    if (isJumping.value || isTalking.value || isJoy.value) {
+    if (
+      isJumping.value ||
+      isTalking.value ||
+      isJoy.value ||
+      isJolly.value ||
+      isMerry.value
+    ) {
       interruptCurrentAnimation();
     }
 
@@ -263,14 +349,12 @@ watch(
       isTalking.value = false;
     }
 
-    if (!isJumping.value && !isJoy.value) {
+    if (!isJumping.value && !isJoy.value && !isJolly.value && !isMerry.value) {
       if (props.useJump) {
-        if (props.forceScaleX !== undefined) {
-          scaleX.value = props.forceScaleX;
-        }
-
         isJumping.value = true;
         isJoy.value = false;
+        isJolly.value = false;
+        isMerry.value = false;
         isOnCard.value = false;
         isTalking.value = false;
         imageScale.value = props.disableShrink ? 1 : 1;
@@ -289,7 +373,7 @@ watch(
               isOnCard.value = true;
             }
           },
-          props.forceScaleX ?? 1,
+          1,
         );
       } else {
         mascot.value.moveTo(newRect);
@@ -303,7 +387,13 @@ watch(
 );
 
 const onMoveComplete = () => {
-  if (mascot.value && !isJumping.value && !isJoy.value) {
+  if (
+    mascot.value &&
+    !isJumping.value &&
+    !isJoy.value &&
+    !isJolly.value &&
+    !isMerry.value
+  ) {
     mascot.value.isMoving = false;
     mascot.value.cleanup();
     mascot.value.scaleX = 1;
@@ -329,6 +419,8 @@ const onMoveComplete = () => {
       'opacity-100': isVisible,
       jumping: isJumping,
       joy: isJoy,
+      jolly: isJolly,
+      merry: isMerry,
       'on-card': isOnCard,
       talking: isTalking,
     }"
@@ -337,18 +429,27 @@ const onMoveComplete = () => {
     }"
     @transitionend="onMoveComplete"
   >
+    <!-- Flip wrapper - NO transition, flips instantly -->
     <div
-      class="festivo-scale-wrapper"
+      class="festivo-flip-wrapper"
       :style="{
-        transform: `scaleX(${scaleX}) scale(${imageScale})`,
+        transform: `scaleX(${scaleX})`,
       }"
     >
-      <img
-        :src="currentImageSrc"
-        alt="Festivo Mascot"
-        loading="lazy"
-        class="festivo-img"
-      />
+      <!-- Scale wrapper - has transition for smooth shrink/grow -->
+      <div
+        class="festivo-scale-wrapper"
+        :style="{
+          transform: `scale(${imageScale})`,
+        }"
+      >
+        <img
+          :src="currentImageSrc"
+          alt="Festivo Mascot"
+          loading="lazy"
+          class="festivo-img"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -374,6 +475,21 @@ const onMoveComplete = () => {
   transition: none !important;
 }
 
+.festivo-mascot-wrapper.jolly {
+  transition: none !important;
+}
+
+.festivo-mascot-wrapper.merry {
+  transition: none !important;
+}
+
+/* Flip wrapper - NO transition, instant flip */
+.festivo-flip-wrapper {
+  transform-origin: center;
+  transition: none !important;
+}
+
+/* Scale wrapper - smooth transition for shrink/grow */
 .festivo-scale-wrapper {
   transform-origin: center;
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
@@ -381,6 +497,23 @@ const onMoveComplete = () => {
 
 .festivo-mascot-wrapper.on-card.talking .festivo-scale-wrapper {
   transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* When in special states, make scale transition instant too */
+.festivo-mascot-wrapper.jumping .festivo-scale-wrapper {
+  transition: none !important;
+}
+
+.festivo-mascot-wrapper.joy .festivo-scale-wrapper {
+  transition: none !important;
+}
+
+.festivo-mascot-wrapper.jolly .festivo-scale-wrapper {
+  transition: none !important;
+}
+
+.festivo-mascot-wrapper.merry .festivo-scale-wrapper {
+  transition: none !important;
 }
 
 .festivo-img {

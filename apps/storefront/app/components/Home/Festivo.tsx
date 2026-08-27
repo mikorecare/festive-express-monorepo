@@ -1,4 +1,4 @@
-export type FestivoState = "run" | "talk" | "jump" | "joy";
+export type FestivoState = "run" | "talk" | "jump" | "joy" | "jolly" | "merry";
 
 interface StateConfig {
   readonly totalFrames: number;
@@ -15,6 +15,10 @@ export interface FestivoConfig {
   jumpPeakHeight?: number;
   joyOffsetX?: number;
   joyOffsetY?: number;
+  jollyOffsetX?: number;
+  jollyOffsetY?: number;
+  merryOffsetX?: number;
+  merryOffsetY?: number;
   runFrameDurations?: number[];
   stateConfigs?: Partial<Record<FestivoState, StateConfig>>;
 }
@@ -23,7 +27,9 @@ const DEFAULT_STATE_CONFIGS: Record<FestivoState, StateConfig> = {
   run: { totalFrames: 7, speed: 200 },
   talk: { totalFrames: 4, speed: 200, maxLoops: 1 },
   jump: { totalFrames: 5, speed: 200 },
-  joy: { totalFrames: 8, speed: 100, maxLoops: 0 }, // 0 = infinite loop
+  joy: { totalFrames: 8, speed: 100, maxLoops: 0 },
+  jolly: { totalFrames: 6, speed: 100, maxLoops: 0 },
+  merry: { totalFrames: 10, speed: 100, maxLoops: 0 },
 };
 
 const DEFAULT_RUN_FRAME_DURATIONS = [30, 40, 60, 100, 150, 250, 630];
@@ -43,7 +49,12 @@ export class Festivo {
   private loopCount: number = 0;
   private jumpAnimationId: number | null = null;
   private joyAnimationId: number | null = null;
+  private jollyAnimationId: number | null = null;
+  private merryAnimationId: number | null = null;
   private isRunActive: boolean = false;
+  private stateSequence: FestivoState[] = [];
+  private sequenceIndex: number = 0;
+  private isSequenceRunning: boolean = false;
 
   public onFrameChange: (() => void) | null = null;
   public onPositionChange: (() => void) | null = null;
@@ -162,7 +173,6 @@ export class Festivo {
     this.animateJump(startX, startY, endX, endY, 800, onScaleUpdate);
   }
 
-  // JOY METHOD - moves to position with bounce, keeps full size, loops animation
   public joyToPosition(
     targetRect: DOMRect,
     onProgressUpdate?: (progress: number) => void,
@@ -201,12 +211,101 @@ export class Festivo {
     }
 
     this.isMoving = true;
-    // Set joy state WITHOUT clearing the animation (it will loop)
     this.currentState = "joy";
     this.currentFrame = 1;
     if (this.onFrameChange) this.onFrameChange();
 
     this.animateJoy(startX, startY, endX, endY, 1000, onProgressUpdate);
+  }
+
+  public jollyToPosition(
+    targetRect: DOMRect,
+    onProgressUpdate?: (progress: number) => void,
+    forceScaleX?: number,
+  ) {
+    if (!targetRect) {
+      console.log("No targetRect");
+      return;
+    }
+
+    if (this.jollyAnimationId) {
+      cancelAnimationFrame(this.jollyAnimationId);
+      this.jollyAnimationId = null;
+    }
+
+    this.isVisible = true;
+    if (this.onVisibilityChange) this.onVisibilityChange();
+
+    const startX = this.position.x;
+    const startY = this.position.y;
+
+    const jollyOffsetX = this.config.jollyOffsetX ?? -80;
+    const jollyOffsetY = this.config.jollyOffsetY ?? -100;
+
+    const endX =
+      window.scrollX + targetRect.left + targetRect.width / 2 + jollyOffsetX;
+    const endY = window.scrollY + targetRect.top + jollyOffsetY;
+
+    if (forceScaleX === undefined && this.position.x !== -200) {
+      const newDirection = endX > this.position.x ? "right" : "left";
+      this.scaleX = newDirection === "right" ? 1 : -1;
+      if (this.onPositionChange) this.onPositionChange();
+    } else if (forceScaleX !== undefined) {
+      this.scaleX = forceScaleX;
+      if (this.onPositionChange) this.onPositionChange();
+    }
+
+    this.isMoving = true;
+    this.currentState = "joy";
+    this.currentFrame = 1;
+    if (this.onFrameChange) this.onFrameChange();
+
+    this.animateJolly(startX, startY, endX, endY, 1000, onProgressUpdate);
+  }
+
+  public merryToPosition(
+    targetRect: DOMRect,
+    onProgressUpdate?: (progress: number) => void,
+    forceScaleX?: number,
+  ) {
+    if (!targetRect) {
+      console.log("No targetRect");
+      return;
+    }
+
+    if (this.merryAnimationId) {
+      cancelAnimationFrame(this.merryAnimationId);
+      this.merryAnimationId = null;
+    }
+
+    this.isVisible = true;
+    if (this.onVisibilityChange) this.onVisibilityChange();
+
+    const startX = this.position.x;
+    const startY = this.position.y;
+
+    const merryOffsetX = this.config.merryOffsetX ?? -80;
+    const merryOffsetY = this.config.merryOffsetY ?? -100;
+
+    const endX =
+      window.scrollX + targetRect.left + targetRect.width / 2 + merryOffsetX;
+    const endY = window.scrollY + targetRect.top + merryOffsetY;
+
+    if (forceScaleX === undefined && this.position.x !== -200) {
+      const newDirection = endX > this.position.x ? "right" : "left";
+      this.scaleX = newDirection === "right" ? 1 : -1;
+      if (this.onPositionChange) this.onPositionChange();
+    } else if (forceScaleX !== undefined) {
+      this.scaleX = forceScaleX;
+      if (this.onPositionChange) this.onPositionChange();
+    }
+
+    this.isMoving = true;
+    this.currentState = "joy";
+    this.currentFrame = 1;
+    if (this.onFrameChange) this.onFrameChange();
+
+    this.animateMerry(startX, startY, endX, endY, 1000, onProgressUpdate);
   }
 
   private animateJump(
@@ -283,12 +382,10 @@ export class Festivo {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
 
-      // Ease out for smooth landing
       const eased = 1 - Math.pow(1 - progress, 3);
 
       const currentX = startX + (endX - startX) * eased;
 
-      // Gentle bounce
       const baseY = startY + (endY - startY) * eased;
       const bounce =
         bounceHeight * Math.sin(progress * Math.PI * 1.5) * (1 - progress);
@@ -311,56 +408,185 @@ export class Festivo {
         this.joyAnimationId = null;
         this.cleanup();
 
-        // DON'T go to talk - STAY in joy and loop
-        this.currentState = "joy";
-        this.currentFrame = 1;
-        if (this.onFrameChange) this.onFrameChange();
-
-        if (onProgressUpdate) {
-          onProgressUpdate(1);
-        }
-
-        if (this.onMoveComplete) {
-          this.onMoveComplete();
-        }
-
-        // Start the joy loop animation
-        this.startJoyLoop();
+        // Just loop joy (infinite)
+        this.setState("joy");
       }
     };
 
     this.joyAnimationId = requestAnimationFrame(animateFrame);
   }
 
-  // NEW: Start the joy loop animation (infinite)
-  private startJoyLoop() {
-    const config = this.stateConfigs.joy;
-    this.loopCount = 0;
+  private animateJolly(
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+    duration: number,
+    onProgressUpdate?: (progress: number) => void,
+  ) {
+    const startTime = performance.now();
+    const bounceHeight = this.config.jumpPeakHeight ?? 80;
 
-    // Clear any existing interval
+    const animateFrame = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      const eased = 1 - Math.pow(1 - progress, 3);
+
+      const currentX = startX + (endX - startX) * eased;
+
+      const baseY = startY + (endY - startY) * eased;
+      const bounce =
+        bounceHeight * Math.sin(progress * Math.PI * 1.5) * (1 - progress);
+      const currentY = baseY - bounce;
+
+      this.position = { x: currentX, y: currentY };
+      if (this.onPositionChange) this.onPositionChange();
+
+      if (onProgressUpdate) {
+        onProgressUpdate(progress);
+      }
+
+      if (progress < 1) {
+        this.jollyAnimationId = requestAnimationFrame(animateFrame);
+      } else {
+        this.position = { x: endX, y: endY };
+        if (this.onPositionChange) this.onPositionChange();
+
+        this.isMoving = false;
+        this.jollyAnimationId = null;
+        this.cleanup();
+
+        // Start sequence: joy → jolly (loops)
+        this.startJollySequence();
+      }
+    };
+
+    this.jollyAnimationId = requestAnimationFrame(animateFrame);
+  }
+
+  private animateMerry(
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+    duration: number,
+    onProgressUpdate?: (progress: number) => void,
+  ) {
+    const startTime = performance.now();
+    const bounceHeight = this.config.jumpPeakHeight ?? 80;
+
+    const animateFrame = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      const eased = 1 - Math.pow(1 - progress, 3);
+
+      const currentX = startX + (endX - startX) * eased;
+
+      const baseY = startY + (endY - startY) * eased;
+      const bounce =
+        bounceHeight * Math.sin(progress * Math.PI * 1.5) * (1 - progress);
+      const currentY = baseY - bounce;
+
+      this.position = { x: currentX, y: currentY };
+      if (this.onPositionChange) this.onPositionChange();
+
+      if (onProgressUpdate) {
+        onProgressUpdate(progress);
+      }
+
+      if (progress < 1) {
+        this.merryAnimationId = requestAnimationFrame(animateFrame);
+      } else {
+        this.position = { x: endX, y: endY };
+        if (this.onPositionChange) this.onPositionChange();
+
+        this.isMoving = false;
+        this.merryAnimationId = null;
+        this.cleanup();
+
+        // Start sequence: joy → jolly → merry (loops)
+        this.startMerrySequence();
+      }
+    };
+
+    this.merryAnimationId = requestAnimationFrame(animateFrame);
+  }
+
+  private startJollySequence() {
+    this.stateSequence = ["joy", "jolly"];
+    this.sequenceIndex = 0;
+    this.isSequenceRunning = true;
+    this.loopCount = 0;
+    this.playNextInSequence();
+  }
+
+  private startMerrySequence() {
+    this.stateSequence = ["joy", "jolly", "merry"];
+    this.sequenceIndex = 0;
+    this.isSequenceRunning = true;
+    this.loopCount = 0;
+    this.playNextInSequence();
+  }
+
+  private playNextInSequence() {
+    if (this.sequenceIndex >= this.stateSequence.length) {
+      this.sequenceIndex = 0;
+      this.loopCount++;
+    }
+
+    const state = this.stateSequence[this.sequenceIndex];
+
+    if (!state) {
+      console.warn("No state found in sequence, resetting to joy");
+      this.setState("joy");
+      return;
+    }
+
+    const validStates: FestivoState[] = [
+      "run",
+      "talk",
+      "jump",
+      "joy",
+      "jolly",
+      "merry",
+    ];
+    if (!validStates.includes(state)) {
+      console.warn("Invalid state in sequence, resetting to joy");
+      this.setState("joy");
+      return;
+    }
+
+    const config = this.stateConfigs[state];
+
+    this.currentState = state;
+    this.currentFrame = 1;
+    if (this.onFrameChange) this.onFrameChange();
+
     if (this.frameInterval) {
       clearInterval(this.frameInterval);
       this.frameInterval = null;
     }
 
-    // Start infinite loop for joy
     this.frameInterval = setInterval(() => {
-      // Move to next frame
       if (this.currentFrame >= config.totalFrames) {
-        // Loop back to frame 1
-        this.currentFrame = 1;
-        this.loopCount++;
+        this.sequenceIndex++;
+        this.playNextInSequence();
+        return;
       } else {
         this.currentFrame++;
+        if (this.onFrameChange) this.onFrameChange();
       }
-
-      if (this.onFrameChange) this.onFrameChange();
     }, config.speed);
   }
 
   public setState(newState: FestivoState, delayMs: number = 0) {
     this.cleanup();
     this.loopCount = 0;
+    this.isSequenceRunning = false;
+    this.stateSequence = [];
+    this.sequenceIndex = 0;
 
     const applyState = () => {
       this.currentState = newState;
@@ -375,8 +601,11 @@ export class Festivo {
           this.runAnimation(config);
         } else if (newState === "jump") {
           this.jumpAnimation(config);
-        } else if (newState === "joy") {
-          // Joy uses loopAnimation but with infinite looping
+        } else if (
+          newState === "joy" ||
+          newState === "jolly" ||
+          newState === "merry"
+        ) {
           this.loopAnimation(config);
         } else {
           this.loopAnimation(config);
@@ -446,13 +675,16 @@ export class Festivo {
   }
 
   private loopAnimation(config: StateConfig) {
-    // FIX: Use nullish coalescing to handle undefined maxLoops
     const maxLoops = config.maxLoops ?? Infinity;
     const isInfinite = maxLoops === 0 || maxLoops === Infinity;
 
+    if (this.frameInterval) {
+      clearInterval(this.frameInterval);
+      this.frameInterval = null;
+    }
+
     this.frameInterval = setInterval(() => {
       if (this.currentFrame >= config.totalFrames) {
-        // If infinite, always loop
         if (isInfinite) {
           this.currentFrame = 1;
           this.loopCount++;
@@ -460,7 +692,6 @@ export class Festivo {
           this.currentFrame = 1;
           this.loopCount++;
         } else {
-          // Only stop if maxLoops is reached
           this.cleanup();
           this.currentFrame = 1;
           if (this.onFrameChange) this.onFrameChange();
@@ -486,8 +717,24 @@ export class Festivo {
     this.setState("joy");
   }
 
+  public jolly() {
+    this.setState("jolly");
+  }
+
+  public merry() {
+    this.setState("merry");
+  }
+
+  public startJoyJollyMerry() {
+    this.cleanup();
+    this.isVisible = true;
+    if (this.onVisibilityChange) this.onVisibilityChange();
+    this.startMerrySequence();
+  }
+
   public cleanup() {
     this.isRunActive = false;
+    this.isSequenceRunning = false;
     if (this.jumpAnimationId) {
       cancelAnimationFrame(this.jumpAnimationId);
       this.jumpAnimationId = null;
@@ -495,6 +742,14 @@ export class Festivo {
     if (this.joyAnimationId) {
       cancelAnimationFrame(this.joyAnimationId);
       this.joyAnimationId = null;
+    }
+    if (this.jollyAnimationId) {
+      cancelAnimationFrame(this.jollyAnimationId);
+      this.jollyAnimationId = null;
+    }
+    if (this.merryAnimationId) {
+      cancelAnimationFrame(this.merryAnimationId);
+      this.merryAnimationId = null;
     }
     if (this.frameInterval) {
       clearTimeout(this.frameInterval);
