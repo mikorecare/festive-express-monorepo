@@ -72,7 +72,9 @@
         <div
           class="section-header flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 pb-4 border-b-2 border-slate-200 gap-4"
         >
-          <div class="header-left relative flex items-center gap-4">
+          <div
+            class="header-left relative flex items-center flex-1 min-w-0 gap-4"
+          >
             <img
               v-if="pkg.title_image_url || pkg.icon_url"
               class="pkg-title-img h-16 md:h-24 w-auto object-contain drop-shadow-md"
@@ -83,36 +85,60 @@
               {{ pkg.name }}
             </h2>
           </div>
-          <!-- <div
-            class="package-price text-3xl md:text-4xl font-extrabold text-[#f59e0b]"
-          >
-            ${{ Math.round(Number(selectedPrice(pkg)) || 0) }} / season
-          </div> -->
 
           <div
-            class="package-price flex items-center justify-between gap-4 text-[#f59e0b]"
+            v-if="showSale(selectedSku(pkg)?.sale_price)"
+            class="package-price flex flex-col items-center shrink-0"
           >
-            <div class="text-left">
-              <template
-                v-if="
-                  selectedSku(pkg)?.sale_price != null &&
-                  Number(selectedSku(pkg)?.sale_price) > 0
-                "
+            <div class="relative mb-1">
+              <img
+                :src="EarlyBirdSpecialRibbonSrc"
+                alt="Early Bird Special"
+                class="relative z-[2] h-16 md:h-20 lg:h-24 w-auto object-contain -my-3 md:-my-4 scale-[1.35] origin-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
+              />
+              <img
+                :src="starburstSrc"
+                alt=""
+                class="absolute z-[1] -top-[54%] right-[-24px] md:right-[-29px] lg:right-[-34px] h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 object-contain pointer-events-none"
+              />
+            </div>
+
+            <div class="text-center leading-[1.35]">
+              <span
+                class="block text-[0.9rem] max-sm:text-[0.75rem] font-bold text-[#1C2D5B] leading-[1.4]"
               >
-                <div class="text-3xl md:text-4xl font-extrabold leading-none">
-                  ${{ Math.round(Number(selectedPrice(pkg)) || 0) }}
-                </div>
-                <div
-                  class="mt-1 text-base md:text-lg font-semibold text-slate-400 line-through"
-                >
+                was
+                <span class="line-through decoration-brand-orange decoration-2">
                   ${{ Math.round(Number(selectedSku(pkg)?.price) || 0) }}
-                </div>
-              </template>
-              <template v-else>
-                <div class="text-3xl md:text-4xl font-extrabold leading-none">
+                </span>
+              </span>
+
+              <span class="block leading-[1.25]">
+                <span
+                  class="text-[0.9rem] max-sm:text-[0.75rem] font-bold text-[#1C2D5B]"
+                >
+                  now
+                </span>
+                <span
+                  class="text-[1.15rem] md:text-[1.5rem] font-black text-[#F49321] ml-1"
+                >
                   ${{ Math.round(Number(selectedPrice(pkg)) || 0) }}
-                </div>
-              </template>
+                </span>
+                <span
+                  class="text-[0.7rem] md:text-[0.8rem] font-semibold text-slate-600 ml-1"
+                >
+                  / Season
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <div
+            v-else
+            class="package-price flex items-center justify-between gap-2 text-[#f59e0b]"
+          >
+            <div class="text-3xl md:text-4xl font-extrabold leading-none">
+              ${{ Math.round(Number(selectedPrice(pkg)) || 0) }}
             </div>
             <div
               class="text-sm md:text-base font-semibold text-slate-600 shrink-0 pb-1"
@@ -584,6 +610,10 @@ const observerMap = new WeakMap<HTMLElement, IntersectionObserver>();
 
 const inclusionItems = ref<any[]>([]);
 const specsLoading = ref(true);
+
+const { loadEarlyBird, showSale, effectivePrice } = useEarlyBirdSpecial();
+const starburstSrc = "/Images/Holiday-Lighting-Package/starburst.png";
+const EarlyBirdSpecialRibbonSrc = "/Images/Artboard-1ribbon.svg";
 
 const settings = ref<{ hero_subtitle?: string } | null>(null);
 const subtitleParts = computed(() => {
@@ -1147,6 +1177,7 @@ onMounted(async () => {
   await loadColors();
   await load();
   await loadInclusionSpecs();
+  await loadEarlyBird();
 
   if (!import.meta.client) return;
 

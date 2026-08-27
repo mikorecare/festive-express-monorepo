@@ -48,6 +48,7 @@
             :disableShrink="true"
           />
         </ClientOnly>
+
         <div
           v-for="pkg in packageProducts"
           :key="pkg.id"
@@ -60,7 +61,7 @@
               class="rounded-[22px] border-4 border-brand-orange overflow-hidden relative leading-none"
             >
               <img
-                class="absolute pointer-events-none object-contain z-[9999] w-16 h-16 top-[119px] -left-2 sm:w-20 sm:h-20 sm:top-[100px] sm:-left-12 lg:w-[100px] lg:h-[100px] lg:top-[111px] lg:left-1"
+                class="absolute pointer-events-none object-contain z-[1] w-14 h-14 top-[157px] left-0 md:w-20 md:h-20 md:top-[142px] md:left-0 lg:w-[100px] lg:h-[100px] lg:top-[130px] lg:-left-3"
                 :src="starburstSrc"
                 alt=""
               />
@@ -70,40 +71,61 @@
                 :alt="pkg.name"
                 class="w-full h-[200px] object-cover block"
               />
-
-              <!-- Glossy Shine Overlay -->
               <div
                 class="absolute -top-1/2 -left-[150%] w-[200%] h-[200%] bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] rotate-[25deg] pointer-events-none animate-[glossyShineContinuous_3s_linear_infinite]"
-              ></div>
+              />
             </div>
 
-            <img
-              class="absolute left-[45px] max-sm:left-5 -bottom-[38px] max-sm:-bottom-[28px] h-[90px] max-sm:h-[90px] w-auto z-[2] pointer-events-none drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)]"
-              :src="getPackageTitleImage(pkg)"
-              :alt="pkg.name"
-            />
-
+            <!-- Icon always left when on sale; right when not -->
             <div
-              class="absolute right-[16px] max-sm:right-3 -bottom-[30px] max-sm:-bottom-[24px] w-[76px] h-[76px] max-sm:w-[64px] max-sm:h-[64px] rounded-full bg-brand-orange flex items-center justify-center z-[3] shadow-[0_6px_16px_rgba(244,147,33,0.45)]"
+              class="absolute z-[1] rounded-full bg-brand-orange flex items-center justify-center shadow-[0_6px_16px_rgba(244,147,33,0.45)]"
+              :class="
+                showSale(pkg.sale_price)
+                  ? 'left-3 -bottom-[18px] w-[42px] h-[42px] md:left-4 md:-bottom-[20px] md:w-[49px] md:h-[49px] lg:left-[18px] lg:-bottom-[20px]'
+                  : 'right-[16px] max-sm:right-3 -bottom-[30px] max-sm:-bottom-[24px] w-[76px] h-[76px] max-sm:w-[64px] max-sm:h-[64px]'
+              "
               aria-hidden="true"
             >
               <img
-                class="w-[76px] h-[76px] max-sm:w-[64px] max-sm:h-[64px] object-contain"
+                class="object-contain"
+                :class="
+                  showSale(pkg.sale_price)
+                    ? 'w-[42px] h-[42px] md:w-[49px] md:h-[49px]'
+                    : 'w-[76px] h-[76px] max-sm:w-[64px] max-sm:h-[64px]'
+                "
                 :src="getPackageIcon(pkg)"
                 alt=""
               />
             </div>
+
+            <!-- One title; only left offset changes -->
+            <img
+              class="absolute z-[2] pointer-events-none w-auto drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)] -bottom-[28px] h-[60px] md:-bottom-[34px] md:h-[68px] lg:-bottom-[38px] lg:h-[72px]"
+              :class="
+                showSale(pkg.sale_price)
+                  ? 'left-16 md:left-[58px] lg:left-[70px]'
+                  : 'left-8 md:left-[30px] lg:left-[28px]'
+              "
+              :src="getPackageTitleImage(pkg)"
+              :alt="pkg.name"
+            />
+
+            <img
+              v-if="showSale(pkg.sale_price)"
+              :src="EarlyBirdSpecialRibbonSrc"
+              alt="Early Bird Special"
+              class="absolute z-[3] pointer-events-none w-auto drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)] right-2 -bottom-[55px] h-[120px] md:right-2 md:-bottom-[55px] md:h-[120px] lg:right-[18px] lg:-bottom-[75px] lg:h-[120px]"
+            />
           </div>
 
           <!-- Card Panel -->
           <div
-            class="flex items-end justify-between gap-3 pb-[22px] pt-[140px] max-sm:pt-[100px] -mt-[90px] max-sm:-mt-[70px] rounded-[28px] bg-navy max-sm:flex-wrap max-sm:gap-2.5 px-[18px] max-sm:px-[14px]"
+            class="flex items-end justify-between gap-2 pb-[22px] pt-[140px] max-sm:pt-[100px] -mt-[90px] max-sm:-mt-[70px] rounded-[28px] bg-navy max-sm:flex-wrap max-sm:gap-2.5 px-[18px] max-sm:px-[14px]"
           >
-            <!-- Tooltip Action Button -->
             <div class="relative">
               <button
                 type="button"
-                class="btn-inclusions flex flex-col items-center justify-center gap-1.5 bg-transparent border-2 border-white/90 rounded-xl text-white text-[0.75rem] max-sm:text-[0.72rem] font-semibold leading-[1.25] text-center py-3 px-4 max-sm:py-2.5 max-sm:px-3 cursor-pointer transition-colors duration-200"
+                class="btn-inclusions flex flex-col items-center justify-center gap-1.5 bg-transparent border-2 border-white/90 rounded-xl text-white text-[0.72rem] max-sm:text-[0.72rem] font-semibold leading-[1.25] text-center py-2.5 px-3 max-sm:py-2.5 max-sm:px-3 cursor-pointer transition-colors duration-200"
                 @click.stop="handleExploreClick(pkg.id, $event)"
               >
                 <GiftIcon
@@ -115,7 +137,6 @@
                 >
               </button>
 
-              <!-- Tooltip Content -->
               <div
                 class="absolute top-full left-0 bg-white border border-gray-300 rounded-xl p-3.5 w-[280px] max-w-[90vw] shadow-[0_10px_25px_rgba(28,45,91,0.15)] opacity-0 invisible transition-all duration-250 z-30 mt-2 text-left text-navy"
                 :class="{ '!opacity-100 !visible': openTooltipId === pkg.id }"
@@ -144,40 +165,35 @@
               </div>
             </div>
 
-            <!-- Price & Cart Actions -->
-            <!-- <div class="flex flex-col items-end gap-2.5">
-              <div
-                class="text-[1rem] max-sm:text-[1rem] font-extrabold text-white"
-              >
-                ${{ Math.round(Number(pkg.price) || 0) }} / season
-              </div>
-              <button
-                type="button"
-                class="w-12 h-12 border-none rounded-xl bg-brand-orange text-white cursor-pointer flex items-center justify-center transition-colors duration-200 hover:bg-[#F49321] hover:animate-[festive-express-animation-pulse-grow_0.3s_linear_infinite_alternate]"
-                :aria-label="`Select ${pkg.name}`"
-                @click="selectPackage(pkg)"
-              >
-                <ShoppingCartIcon class="w-7 h-7" aria-hidden="true" />
-              </button>
-            </div> -->
-            <!-- Price & Cart Actions -->
             <div class="flex flex-col items-end gap-2">
               <template v-if="showSale(pkg.sale_price)">
-                <span
-                  class="inline-block rounded-full bg-white/15 px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide text-white"
-                >
-                  Early Bird Special
-                </span>
-                <div class="text-right leading-tight">
-                  <span class="block text-xs text-white/70 line-through">
-                    was ${{ Math.round(Number(pkg.price) || 0) }}
+                <div class="text-center leading-tight text-white">
+                  <span
+                    class="block text-[0.9rem] max-sm:text-[0.75rem] font-bold text-white"
+                  >
+                    was
+                    <span
+                      class="line-through decoration-brand-orange decoration-2"
+                    >
+                      ${{ Math.round(Number(pkg.price) || 0) }}
+                    </span>
                   </span>
                   <span
-                    class="text-[1rem] max-sm:text-[1rem] font-extrabold text-white"
+                    class="block text-[1.3rem] max-sm:text-[1.3rem] font-extrabold text-white"
                   >
-                    is ${{
-                      Math.round(effectivePrice(pkg.price, pkg.sale_price))
-                    }}/season
+                    <span
+                      class="text-[0.9rem] max-sm:text-[0.75rem] font-bold text-white"
+                    >
+                      now
+                    </span>
+                    <span class="text-brand-orange">
+                      ${{
+                        Math.round(effectivePrice(pkg.price, pkg.sale_price))
+                      }}
+                    </span>
+                    <span class="text-[0.85rem] font-semibold text-white/90"
+                      >/ Season</span
+                    >
                   </span>
                 </div>
               </template>
@@ -185,9 +201,18 @@
                 <div
                   class="text-[1rem] max-sm:text-[1rem] font-extrabold text-white"
                 >
-                  ${{ Math.round(Number(pkg.price) || 0) }}/season
+                  <!-- ${{ Math.round(Number(pkg.price) || 0) }}/season -->
+                  <span
+                    class="text-brand-orange text-[1.3rem] max-sm:text-[1.3rem]"
+                  >
+                    ${{ Math.round(Number(pkg.price) || 0) }}
+                  </span>
+                  <span class="text-[0.85rem] font-semibold text-white/90"
+                    >/ Season</span
+                  >
                 </div>
               </template>
+
               <button
                 type="button"
                 class="w-12 h-12 border-none rounded-xl bg-brand-orange text-white cursor-pointer flex items-center justify-center transition-colors duration-200 hover:bg-[#F49321] hover:animate-[festive-express-animation-pulse-grow_0.3s_linear_infinite_alternate]"
@@ -199,6 +224,10 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <div class="flex justify-center my-5">
+        <EarlyBirdEndsBanner />
       </div>
 
       <!-- Footer Note -->
@@ -288,6 +317,7 @@ const festivoConfig = computed<FestivoConfig>(() => {
 
 const BASE = "/Images/Holiday-Lighting-Package";
 const starburstSrc = "/Images/Holiday-Lighting-Package/starburst.png";
+const EarlyBirdSpecialRibbonSrc = "/Images/Artboard-1ribbon.svg";
 
 interface InclusionItem {
   id?: number;

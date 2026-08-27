@@ -32,9 +32,7 @@
         </h2>
 
         <p class="mb-4 text-sm leading-relaxed text-slate-600">
-          This site uses third-party website tracking technologies to provide
-          and continually improve your experience on our website and our
-          services. You may revoke or change your consent at any time.
+          {{ cookieIntro }}
         </p>
 
         <!-- Desktop: one row · Mobile: stack -->
@@ -111,7 +109,7 @@
             to="/cookie-policy"
             class="font-medium text-[#1C2D5B] underline"
           >
-            More Information
+            Cookie Policy
           </NuxtLink>
         </div>
 
@@ -214,20 +212,41 @@ const continueWithout = () => {
   });
 };
 
-onMounted(() => {
+const cookieIntro = ref("");
+const supabase = useSupabaseClient();
+
+onMounted(async () => {
   if (!import.meta.client) return;
+
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const saved = JSON.parse(raw);
       prefs.marketing = !!saved.marketing;
       prefs.functional = !!saved.functional;
-      return;
+    } else {
+      visible.value = true;
     }
   } catch {
-    /* ignore */
+    visible.value = true;
   }
-  visible.value = true;
+
+  try {
+    const { data, error } = await supabase
+      .from("cookie_policy")
+      .select("short_description")
+      .eq("is_active", true)
+      .limit(1)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    cookieIntro.value =
+      (data as { short_description?: string } | null)?.short_description || "";
+  } catch (e) {
+    console.error(e);
+    cookieIntro.value = "";
+  }
 });
 
 if (import.meta.client) {

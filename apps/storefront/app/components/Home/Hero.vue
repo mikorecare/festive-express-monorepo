@@ -26,6 +26,8 @@
       :format-number="formatNumber"
     />
 
+    <EarlyBirdSpecialCountdownWidget class="desktop-widget max-lg:hidden" />
+
     <div
       class="hero-content-container relative z-[3] w-full max-w-[1200px] mx-auto px-6 flex justify-between items-center gap-5 max-lg:flex-col max-lg:items-start max-lg:gap-24 max-lg:px-[5%]"
     >
@@ -52,15 +54,50 @@
           >
         </p>
 
-        <NuxtLink
+        <!-- <NuxtLink
           to="/packages"
           class="btn-primary-card bg-[#F49321] text-white font-bold py-3 px-6 rounded-xl inline-block hover:bg-[#e0850a] transition-colors shadow-lg hover:shadow-xl max-lg:text-[0.82rem] max-lg:py-2 max-lg:px-3 max-lg:rounded-lg max-lg:float-left max-lg:clear-both max-lg:!ml-1 max-lg:!mr-auto max-lg:relative max-lg:overflow-hidden max-lg:after:content-[''] max-lg:after:absolute max-lg:after:-top-1/2 max-lg:after:-left-[150%] max-lg:after:w-[200%] max-lg:after:h-[200%] max-lg:after:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] max-lg:after:rotate-[25deg] max-lg:after:pointer-events-none max-lg:after:animate-[glossyShineContinuous_3s_linear_infinite]"
         >
+          Explore the Packages
+          <p
+            v-if="isEarlyBirdActive(earlyBirdEnabled, earlyBirdExpiresAt)"
+            class="mb-0 text-sm italic text-white max-lg:text-[0.75rem]"
+          >
+            Early Bird Special
+          </p>
+        </NuxtLink> -->
+
+        <NuxtLink
+          to="/packages"
+          class="relative inline-flex items-center justify-center bg-[#F49321] text-white font-extrabold text-lg rounded-2xl border-[3px] border-[#1C2D5B] shadow-[0_0_0_4px_#F49321] px-12 pt-7 pb-3.5 hover:bg-[#e0850a] transition-colors max-lg:text-[0.82rem] max-lg:px-3 max-lg:pt-6 max-lg:pb-2 max-lg:rounded-lg max-lg:border-2 max-lg:shadow-[0_0_0_3px_#F49321] max-lg:float-left max-lg:clear-both max-lg:!ml-1 max-lg:!mr-auto max-lg:mb-3 max-lg:overflow-visible"
+        >
+          <span
+            v-if="isEarlyBirdActive(earlyBirdEnabled, earlyBirdExpiresAt)"
+            class="pointer-events-none absolute left-1/2 z-20 -translate-x-1/2 -top-2 -translate-y-[45%] lg:top-[-4.25rem] lg:translate-y-0"
+          >
+            <img
+              src="/Images/Artboard-2ribbon.svg"
+              alt="Early Bird Special"
+              class="relative z-10 w-auto h-[10rem] lg:h-[8rem]"
+            />
+            <!-- <img
+              src="/Images/starburst-small.png"
+              alt=""
+              class="absolute left-0 top-1/2 z-20 h-8 w-8 -translate-x-[70%] -translate-y-1/2 max-lg:h-6 max-lg:w-6"
+            /> -->
+          </span>
+
           Explore the Packages
         </NuxtLink>
       </div>
 
       <CountdownWidget
+        class="mobile-widget max-lg:block hidden"
+        :time-left="timeLeft"
+        :format-number="formatNumber"
+      />
+
+      <EarlyBirdSpecialCountdownWidget
         class="mobile-widget max-lg:block hidden"
         :time-left="timeLeft"
         :format-number="formatNumber"
@@ -153,7 +190,15 @@ const familyStyle = computed(() => {
 let animationFrameId: number | null = null;
 let intersectionObserver: IntersectionObserver | null = null;
 
+const {
+  isEarlyBirdActive,
+  loadEarlyBird,
+  earlyBirdEnabled,
+  earlyBirdExpiresAt,
+} = useEarlyBirdSpecial();
+
 onMounted(() => {
+  loadEarlyBird();
   isMobile.value = window.innerWidth <= 992;
 
   calculateTimeLeft();
