@@ -2,7 +2,7 @@
   <div
     class="min-h-screen bg-gradient-to-b from-[#fef9f4] to-[#f3f4f6] py-6 md:py-12"
   >
-    <div class="w-full mx-auto px-4 lg:px-[84px] max-w-[2048px]">
+    <div class="w-full mx-auto px-0.5 lg:px-[84px] max-w-[2048px]">
       <!-- Loading -->
       <div v-if="isLoading" class="text-center py-20">
         <div
@@ -14,7 +14,7 @@
       <!-- Error -->
       <div
         v-else-if="error"
-        class="bg-white rounded-2xl p-8 md:p-12 text-center shadow-sm"
+        class="bg-white rounded-2xl p-0 md:p-12 text-center shadow-sm"
       >
         <SurveyComplete />
       </div>
