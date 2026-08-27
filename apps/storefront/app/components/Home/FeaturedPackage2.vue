@@ -48,38 +48,87 @@
         >
           <!-- Header -->
           <div
-            class="p-[20px] flex items-center justify-between bg-[#1C2D5B] min-h-[90px]"
+            class="p-4 md:p-5 flex items-center justify-between gap-3 bg-[#1C2D5B] min-h-[90px]"
           >
-            <div class="flex items-center flex-1">
+            <div class="relative flex items-center flex-1 min-w-0">
               <img
-                class="h-[60px] w-auto max-w-[160px] object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]"
+                class="h-14 md:h-[72px] lg:h-[80px] w-auto max-w-[140px] md:max-w-[200px] lg:max-w-[240px] object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]"
                 :src="getPackageTitleImage(pkg.name)"
                 :alt="pkg.name"
               />
             </div>
-            <div class="ml-3 text-right text-white">
-              <template v-if="showSale(pkg.sale_price)">
+
+            <div
+              v-if="showSale(pkg.sale_price)"
+              class="flex flex-col items-center shrink-0"
+            >
+              <div class="relative mb-1">
+                <img
+                  :src="EarlyBirdSpecialRibbonSrc"
+                  alt="Early Bird Special"
+                  class="relative z-[2] h-16 md:h-20 lg:h-24 w-auto object-contain -my-3 md:-my-4 scale-[1.35] origin-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
+                />
+                <img
+                  :src="starburstSrc"
+                  alt=""
+                  class="absolute z-[1] -top-[54%] right-[-24px] md:right-[-29px] lg:right-[-34px] h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 object-contain pointer-events-none"
+                />
+              </div>
+
+              <div class="text-center leading-[1.35]">
                 <span
-                  class="mb-1 inline-block rounded-full bg-white/15 px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-wide"
+                  class="block text-[0.9rem] max-sm:text-[0.75rem] font-bold text-white leading-[1.4]"
                 >
-                  Early Bird Special
+                  was
+                  <span
+                    class="line-through decoration-brand-orange decoration-2"
+                  >
+                    ${{ Math.round(Number(pkg.price) || 0) }}
+                  </span>
                 </span>
-                <div class="leading-tight">
-                  <span class="block text-xs text-white/70 line-through">
-                    was ${{ Math.round(Number(pkg.price) || 0) }}
+
+                <span class="block leading-[1.25]">
+                  <span
+                    class="text-[0.9rem] max-sm:text-[0.75rem] font-bold text-white"
+                  >
+                    now
                   </span>
-                  <span class="text-[1.5rem] font-black">
-                    is ${{
-                      Math.round(effectivePrice(pkg.price, pkg.sale_price))
-                    }}/season
+                  <span
+                    class="text-[1.15rem] md:text-[1.5rem] font-black ml-1"
+                    :class="
+                      showSale(pkg.sale_price) ? 'text-[#F49321]' : 'text-white'
+                    "
+                  >
+                    ${{
+                      Math.round(
+                        showSale(pkg.sale_price)
+                          ? effectivePrice(pkg.price, pkg.sale_price)
+                          : Number(pkg.price) || 0,
+                      )
+                    }}
                   </span>
-                </div>
-              </template>
-              <template v-else>
-                <div class="text-[1.5rem] font-black">
-                  ${{ Math.round(Number(pkg.price) || 0) }}/season
-                </div>
-              </template>
+                  <span
+                    class="text-[0.7rem] md:text-[0.8rem] font-semibold text-white ml-1"
+                  >
+                    / Season
+                  </span>
+                </span>
+              </div>
+            </div>
+
+            <div v-else class="flex flex-col items-center shrink-0">
+              <div
+                class="text-[1rem] max-sm:text-[1rem] font-extrabold text-white"
+              >
+                <span
+                  class="text-brand-orange text-[1.3rem] max-sm:text-[1.3rem]"
+                >
+                  ${{ Math.round(Number(pkg.price) || 0) }}
+                </span>
+                <span class="text-[0.85rem] font-semibold text-white/90"
+                  >/ Season</span
+                >
+              </div>
             </div>
           </div>
 
@@ -143,6 +192,10 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="flex justify-center my-5">
+      <EarlyBirdEndsBanner />
     </div>
   </section>
 </template>
@@ -315,6 +368,9 @@ const getPackageButtonName = (pkg: { name: string }) => {
 };
 
 const { loadEarlyBird, showSale, effectivePrice } = useEarlyBirdSpecial();
+
+const starburstSrc = "/Images/Holiday-Lighting-Package/starburst.png";
+const EarlyBirdSpecialRibbonSrc = "/Images/Artboard-1ribbon.svg";
 
 onMounted(async () => {
   await Promise.all([fetchPackages(), loadEarlyBird()]);

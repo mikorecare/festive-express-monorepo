@@ -254,6 +254,28 @@
           </NuxtLink>
 
           <NuxtLink
+            to="/admin/configuration/faq"
+            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path.startsWith('/admin/configuration/faq')
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
+          >
+            FAQ's
+          </NuxtLink>
+          <NuxtLink
+            to="/admin/configuration/gallery"
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path.startsWith('/admin/configuration/gallery')
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
+          >
+            Gallery
+          </NuxtLink>
+          <NuxtLink
             to="/admin/configuration/privacy-policy"
             class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
             :class="
@@ -278,26 +300,15 @@
           </NuxtLink>
 
           <NuxtLink
-            to="/admin/configuration/faq"
+            to="/admin/configuration/cookie-policy"
             class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
             :class="
-              route.path.startsWith('/admin/configuration/faq')
+              route.path.startsWith('/admin/configuration/cookie-policy')
                 ? 'bg-brand-orange/20 text-white font-semibold'
                 : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
             "
           >
-            FAQ's
-          </NuxtLink>
-          <NuxtLink
-            to="/admin/configuration/gallery"
-            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path.startsWith('/admin/configuration/gallery')
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
-          >
-            Gallery
+            Cookie Policy
           </NuxtLink>
         </div>
       </div>
@@ -451,7 +462,9 @@ const isProductsSection = computed(() =>
 );
 
 const isCustomersSection = computed(() =>
-  ["/admin/customers", "/admin/customers/reviews"].some((p) => route.path.startsWith(p)),
+  ["/admin/customers", "/admin/customers/reviews"].some((p) =>
+    route.path.startsWith(p),
+  ),
 );
 
 const isConfigurationSection = computed(() =>
@@ -462,7 +475,10 @@ const isConfigurationSection = computed(() =>
 watch(
   () => route.path,
   () => {
-    if (route.path === "/admin/customers/reviews" || route.path === "/admin/customers") {
+    if (
+      route.path === "/admin/customers/reviews" ||
+      route.path === "/admin/customers"
+    ) {
       fetchPendingReviewsCount();
     }
   },
