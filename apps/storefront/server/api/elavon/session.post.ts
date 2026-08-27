@@ -86,7 +86,7 @@ export default defineEventHandler(async (event) => {
         if (billing_country) formData.append('ssl_country', String(billing_country).trim());
         if (billing_phone) formData.append('ssl_phone', String(billing_phone).trim());
 
-        const apiUrl = config.elavonDemo === 'false'
+        const apiUrl = config.elavonDemo === false
             ? 'https://api.convergepay.com/hosted-payments/transaction_token'
             : 'https://api.demo.convergepay.com/hosted-payments/transaction_token';
 

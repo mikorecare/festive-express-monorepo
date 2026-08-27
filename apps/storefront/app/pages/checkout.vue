@@ -807,7 +807,6 @@ const payWithConverge = async () => {
 
     // Check if session response has error
     if (!tokenRes || !tokenRes.success) {
-      // USING THE COMPOSABLE HERE
       const { userMessage } = handlePaymentError(tokenRes, "session_response");
       console.error("Session error:", tokenRes);
       toast.error(userMessage);
@@ -879,6 +878,36 @@ const payWithConverge = async () => {
       onApproval: async function (response: any) {
         console.log("Payment approved:", response);
 
+        // ✅ CHECK CVV RESPONSE
+        const cvvResponse = response.ssl_cvv2_response;
+
+        if (cvvResponse === "N") {
+          toast.error(
+            "CVV verification failed. Please check your CVV and try again.",
+          );
+          isPaying.value = false;
+          resetTurnstile();
+          return;
+        }
+
+        if (cvvResponse === "P") {
+          toast.error(
+            "CVV could not be processed. Please try a different card.",
+          );
+          isPaying.value = false;
+          resetTurnstile();
+          return;
+        }
+
+        if (cvvResponse === "U") {
+          toast.error(
+            "CVV verification unavailable. Please try a different card.",
+          );
+          isPaying.value = false;
+          resetTurnstile();
+          return;
+        }
+
         try {
           const orderRes = (await $fetch("/api/orders/create", {
             method: "POST",
@@ -888,6 +917,8 @@ const payWithConverge = async () => {
               approval_code: response.ssl_approval_code,
               payment_token: response.ssl_token || tokenRes.token,
               card_last4: form.value.card_number.replace(/\s/g, "").slice(-4),
+              turnstile_token: turnstileToken.value, // ← REQUIRED
+              cvv_response: cvvResponse, // ← For logging
             },
           })) as any;
 
@@ -919,7 +950,6 @@ const payWithConverge = async () => {
 
     // Check if ConvergeEmbeddedPayment is available
     if (!(window as any).ConvergeEmbeddedPayment) {
-      // USING THE COMPOSABLE HERE
       const { userMessage } = handlePaymentError(
         { error: "ConvergeEmbeddedPayment not available" },
         "missing_payment_object",

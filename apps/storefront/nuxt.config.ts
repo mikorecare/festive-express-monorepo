@@ -101,6 +101,9 @@ export default defineNuxtConfig({
     elavonPin:
       process.env.ELAVON_PIN || "",
 
+    elavonDemo: process.env.NUXT_ELAVON_DEMO !== "false",
+    elavonVendorId: process.env.ELAVON_VENDOR_ID || "",
+    elavonPartnerAppId: process.env.ELAVON_PARTNER_APP_ID || "",
     public: {
       supabaseUrl:
         process.env.SUPABASE_URL || "",
