@@ -83,6 +83,7 @@ useHead({
 });
 import CheckoutTurnstileWidget from "../components/Checkout/TurnstileWidget.vue";
 import { usePaymentError } from "~/composables/usePaymentError";
+import { useToast } from "~/composables/useToast";
 
 interface OrderResponse {
   success: boolean;
@@ -121,6 +122,7 @@ const FL_TAX_RATE = computed(() => {
 const { cartItems, cartTotal, loadCart, clearCart } = useCart();
 const { isServiceZip } = useServiceZips();
 const { handlePaymentError } = usePaymentError();
+const { showToast } = useToast();
 
 import { toast } from "vue-sonner";
 
@@ -800,18 +802,15 @@ const payWithConverge = async () => {
       });
     } catch (fetchError: any) {
       const { userMessage } = handlePaymentError(fetchError, "session_api");
-      console.error("Session API fetch error:", fetchError);
-      toast.error(userMessage);
+      showToast(userMessage, "error");
       isPaying.value = false;
       resetTurnstile();
       return;
     }
 
-    // Check if session response has error
     if (!tokenRes || !tokenRes.success) {
       const { userMessage } = handlePaymentError(tokenRes, "session_response");
-      console.error("Session error:", tokenRes);
-      toast.error(userMessage);
+      showToast(userMessage, "error");
       isPaying.value = false;
       resetTurnstile();
       return;
@@ -822,8 +821,7 @@ const payWithConverge = async () => {
         { error: "No session token returned" },
         "missing_token",
       );
-      console.error("No token in response:", tokenRes);
-      toast.error(userMessage);
+      showToast(userMessage, "error");
       isPaying.value = false;
       resetTurnstile();
       return;
@@ -833,8 +831,7 @@ const payWithConverge = async () => {
       await loadCheckoutScript();
     } catch (scriptError) {
       const { userMessage } = handlePaymentError(scriptError, "load_script");
-      console.error("Checkout.js load error:", scriptError);
-      toast.error(userMessage);
+      showToast(userMessage, "error");
       isPaying.value = false;
       resetTurnstile();
       return;
@@ -862,30 +859,41 @@ const payWithConverge = async () => {
     const callback = {
       onError: function (error: any) {
         const { userMessage } = handlePaymentError(error, "converge_error");
-        console.error("Payment error:", error);
-        toast.error(userMessage);
-        isPaying.value = false;
-        resetTurnstile();
-      },
-      onDeclined: function (response: any) {
-        const { userMessage } = handlePaymentError(
-          response,
-          "converge_declined",
+        showToast(
+          userMessage || "Payment error occurred. Please try again.",
+          "error",
         );
-        console.log("Payment declined:", response);
-        toast.error(userMessage);
         isPaying.value = false;
         resetTurnstile();
       },
-      onApproval: async function (response: any) {
-        console.log("Payment approved:", response);
 
-        // ✅ CHECK CVV RESPONSE
+      onDeclined: function (response: any) {
+        const declineMessage =
+          response?.ssl_result_message ||
+          response?.errorMessage ||
+          response?.message ||
+          "Your card was declined. Please try a different card.";
+        showToast(declineMessage, "error");
+        isPaying.value = false;
+        resetTurnstile();
+      },
+
+      onApproval: async function (response: any) {
+        if (response.ssl_result && response.ssl_result !== "0") {
+          const declineMessage =
+            response.ssl_result_message || "Transaction declined";
+          showToast(declineMessage, "error");
+          isPaying.value = false;
+          resetTurnstile();
+          return;
+        }
+
         const cvvResponse = response.ssl_cvv2_response;
 
         if (cvvResponse === "N") {
-          toast.error(
+          showToast(
             "CVV verification failed. Please check your CVV and try again.",
+            "error",
           );
           isPaying.value = false;
           resetTurnstile();
@@ -893,8 +901,9 @@ const payWithConverge = async () => {
         }
 
         if (cvvResponse === "P") {
-          toast.error(
+          showToast(
             "CVV could not be processed. Please try a different card.",
+            "error",
           );
           isPaying.value = false;
           resetTurnstile();
@@ -902,8 +911,9 @@ const payWithConverge = async () => {
         }
 
         if (cvvResponse === "U") {
-          toast.error(
+          showToast(
             "CVV verification unavailable. Please try a different card.",
+            "error",
           );
           isPaying.value = false;
           resetTurnstile();
@@ -929,18 +939,15 @@ const payWithConverge = async () => {
           }
 
           await clearCart();
-          toast.success("Payment successful!");
+          showToast("Payment successful!", "success");
 
           navigateTo(
             `/thank-you?order=${orderRes.order.order_number}&email=${encodeURIComponent(email)}`,
           );
         } catch (orderError: any) {
-          const { userMessage } = handlePaymentError(
-            orderError,
-            "order_creation",
-          );
-          toast.error(
+          showToast(
             "Payment successful but order creation failed. Please contact support.",
+            "error",
           );
           isPaying.value = false;
           resetTurnstile();
@@ -950,13 +957,11 @@ const payWithConverge = async () => {
       },
     };
 
-    // Check if ConvergeEmbeddedPayment is available
     if (!(window as any).ConvergeEmbeddedPayment) {
-      const { userMessage } = handlePaymentError(
-        { error: "ConvergeEmbeddedPayment not available" },
-        "missing_payment_object",
+      showToast(
+        "Payment system not available. Please refresh and try again.",
+        "error",
       );
-      toast.error(userMessage);
       isPaying.value = false;
       resetTurnstile();
       return;
@@ -965,8 +970,7 @@ const payWithConverge = async () => {
     (window as any).ConvergeEmbeddedPayment.pay(paymentData, callback);
   } catch (error: any) {
     const { userMessage } = handlePaymentError(error, "general");
-    console.error("Payment error:", error);
-    toast.error(userMessage);
+    showToast(userMessage, "error");
     isPaying.value = false;
     resetTurnstile();
   }
