@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 body: new URLSearchParams({
-                    secret: config.turnstileSecretKey || process.env.TURNSTILE_SECRET_KEY || '',
+                    secret: config.turnstile?.secretKey || process.env.NUXT_TURNSTILE_SECRET_KEY || "",
                     response: body.turnstile_token,
                     remoteip: event.node.req.socket.remoteAddress || '',
                 }),

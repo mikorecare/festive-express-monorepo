@@ -225,6 +225,8 @@ const onTurnstileError = () => {
   turnstileStatusType.value = "error";
   validationErrors.value.turnstile =
     "Please complete the security verification";
+  turnstileToken.value = "";
+  isTurnstileVerified.value = false;
 };
 
 const onTurnstileExpired = () => {
@@ -917,8 +919,8 @@ const payWithConverge = async () => {
               approval_code: response.ssl_approval_code,
               payment_token: response.ssl_token || tokenRes.token,
               card_last4: form.value.card_number.replace(/\s/g, "").slice(-4),
-              turnstile_token: turnstileToken.value, // ← REQUIRED
-              cvv_response: cvvResponse, // ← For logging
+              turnstile_token: turnstileToken.value,
+              cvv_response: cvvResponse,
             },
           })) as any;
 
