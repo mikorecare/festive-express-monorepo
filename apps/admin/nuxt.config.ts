@@ -11,12 +11,7 @@ export default defineNuxtConfig({
     '/confirm': { ssr: false },
   },
 
-  modules: [
-    '@vueuse/nuxt',
-    '@nuxtjs/tailwindcss',
-    '@nuxtjs/supabase',
-    '@nuxtjs/turnstile',
-  ],
+  modules: ['@vueuse/nuxt', '@nuxtjs/tailwindcss', '@nuxtjs/supabase', '@nuxtjs/turnstile', 'nuxt-security'],
 
   supabase: {
     redirect: false,
@@ -43,7 +38,7 @@ export default defineNuxtConfig({
       turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY,
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseKey: process.env.SUPABASE_KEY,
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://api.yourdomain.com',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api',
       storageBucket: process.env.NUXT_PUBLIC_STORAGE_BUCKET || 'Products',
       azureClientId: process.env.AZURE_CLIENT_ID,
     },
@@ -70,11 +65,6 @@ export default defineNuxtConfig({
           src: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js',
           defer: true
         },
-        // {
-        //   src: 'https://challenges.cloudflare.com/turnstile/v0/api.js',
-        //   defer: true,
-        //   async: true
-        // }
       ],
     }
   },
@@ -85,32 +75,86 @@ export default defineNuxtConfig({
     }
   },
 
+  security: {
+    nonce: true,
+
+    headers: {
+      contentSecurityPolicy: {
+        'default-src': ["'self'"],
+        'script-src': [
+          "'strict-dynamic'",
+          "'nonce-{{nonce}}'",
+          "'self'",
+          "https://cdnjs.cloudflare.com",
+          "https://cdn.jsdelivr.net",
+          "https://challenges.cloudflare.com"
+        ],
+        'style-src': [
+          "'nonce-{{nonce}}'",
+          "'self'",
+          "https://fonts.googleapis.com",
+          "https://cdnjs.cloudflare.com",
+          "https://challenges.cloudflare.com"
+        ],
+        'img-src': [
+          "'self'",
+          "data:",
+          "https:",
+          "blob:",
+          "https://*.supabase.co",
+          "https://*.cloudflare.com"
+        ],
+        'font-src': [
+          "'self'",
+          "https://fonts.gstatic.com",
+          "https://cdnjs.cloudflare.com"
+        ],
+        'connect-src': [
+          "'self'",
+          "https:",
+          "wss:",
+          "https://*.supabase.co",
+          "https://challenges.cloudflare.com"
+        ],
+        'frame-src': [
+          "'self'",
+          "https://challenges.cloudflare.com"
+        ],
+        'frame-ancestors': ["'self'"],
+        'object-src': ["'none'"],
+        'base-uri': ["'self'"],
+        'form-action': ["'self'"],
+        'upgrade-insecure-requests': true,
+      },
+
+      strictTransportSecurity: {
+        maxAge: 31536000,
+        includeSubdomains: true,
+        preload: true,
+      },
+
+      xFrameOptions: 'SAMEORIGIN',
+      xContentTypeOptions: 'nosniff',
+      referrerPolicy: 'strict-origin-when-cross-origin',
+
+      permissionsPolicy: {
+        camera: false,
+        microphone: false,
+        geolocation: false,
+        payment: false,
+        usb: false,
+      },
+
+      crossOriginResourcePolicy: 'cross-origin',
+      crossOriginEmbedderPolicy: 'credentialless',
+      crossOriginOpenerPolicy: 'same-origin',
+    },
+  },
+
   nitro: {
     routeRules: {
       '/**': {
         headers: {
-          'Content-Security-Policy': [
-            "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://challenges.cloudflare.com",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://challenges.cloudflare.com",
-            "img-src 'self' data: https: blob: https://*.supabase.co https://*.cloudflare.com",
-            "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com",
-            "connect-src 'self' https: wss: https://*.supabase.co https://challenges.cloudflare.com",
-            "frame-src 'self' https://challenges.cloudflare.com",
-            "frame-ancestors 'self'",
-            "object-src 'none'",
-            "base-uri 'self'",
-            "form-action 'self'",
-            "upgrade-insecure-requests",
-          ].join('; '),
-          'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
-          'X-Frame-Options': 'SAMEORIGIN',
-          'X-Content-Type-Options': 'nosniff',
-          'Referrer-Policy': 'strict-origin-when-cross-origin',
-          'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()',
-          'Cross-Origin-Resource-Policy': 'cross-origin',
-          'Cross-Origin-Embedder-Policy': 'credentialless',
-          'Cross-Origin-Opener-Policy': 'same-origin',
           'X-Powered-By': 'FLP Express Admin',
         }
       },

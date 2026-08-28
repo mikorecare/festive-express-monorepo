@@ -72,7 +72,7 @@
 
           <!-- Azure Login Button -->
           <NuxtLink
-            href="/api/auth/azure"
+            href="/api/auth/azure/azure"
             external
             class="flex items-center justify-center gap-3 w-full py-3.5 px-4 bg-[#2f2f2f] hover:bg-black text-white font-medium rounded-lg transition-colors no-underline"
           >
