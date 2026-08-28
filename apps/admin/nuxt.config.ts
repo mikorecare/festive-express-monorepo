@@ -15,6 +15,7 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     '@nuxtjs/tailwindcss',
     '@nuxtjs/supabase',
+    '@nuxtjs/turnstile',
   ],
 
   supabase: {
@@ -37,8 +38,9 @@ export default defineNuxtConfig({
     azureClientSecret: process.env.AZURE_CLIENT_SECRET,
     azureRedirectUri: process.env.AZURE_REDIRECT_URI,
     supabaseServiceKey: process.env.NUXT_SUPABASE_SECRET_KEY,
-
+    turnstileSecretKey: process.env.NUXT_TURNSTILE_SECRET_KEY,
     public: {
+      turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY,
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseKey: process.env.SUPABASE_KEY,
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'https://api.yourdomain.com',
@@ -67,7 +69,12 @@ export default defineNuxtConfig({
         {
           src: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js',
           defer: true
-        }
+        },
+        // {
+        //   src: 'https://challenges.cloudflare.com/turnstile/v0/api.js',
+        //   defer: true,
+        //   async: true
+        // }
       ],
     }
   },
@@ -84,11 +91,12 @@ export default defineNuxtConfig({
         headers: {
           'Content-Security-Policy': [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
-            "img-src 'self' data: https: blob: https://*.supabase.co",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://challenges.cloudflare.com",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://challenges.cloudflare.com",
+            "img-src 'self' data: https: blob: https://*.supabase.co https://*.cloudflare.com",
             "font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com",
-            "connect-src 'self' https: wss: https://*.supabase.co",
+            "connect-src 'self' https: wss: https://*.supabase.co https://challenges.cloudflare.com",
+            "frame-src 'self' https://challenges.cloudflare.com",
             "frame-ancestors 'self'",
             "object-src 'none'",
             "base-uri 'self'",
