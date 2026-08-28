@@ -23,7 +23,6 @@ export default defineEventHandler(async (event) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
     try {
         // Fetch order with promo code relation - using correct column names
         const { data: order, error: orderError } = await supabase
