@@ -39,7 +39,7 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/supabase", "@nuxtjs/turnstile"],
+  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/supabase", "@nuxtjs/turnstile", "nuxt-security"],
 
   turnstile: {
     siteKey:
@@ -117,25 +117,153 @@ export default defineNuxtConfig({
     },
   },
 
+  security: {
+    nonce: true,
+
+    headers: {
+      contentSecurityPolicy: {
+        'default-src': ["'self'"],
+
+        'script-src': [
+          "'strict-dynamic'",
+          "'nonce-{{nonce}}'",
+          "'self'",
+          "'unsafe-inline'",
+          "'unsafe-eval'",
+          "https://embeddable-widgets.pages.dev",
+          "https://cdnjs.cloudflare.com",
+          "https://cdn.jsdelivr.net",
+          "https://embeddable-widgets.pages.dev",
+          "https://us-assets.i.posthog.com",
+          "https://*.posthog.com",
+          "https://challenges.cloudflare.com",
+          "https://api.demo.convergepay.com",
+          "https://api.convergepay.com",
+          "https://checkout.demo.convergepay.com",
+          "https://checkout.convergepay.com",
+        ],
+
+        'style-src': [
+          "'self'",
+          "'unsafe-inline'",
+          "https://fonts.googleapis.com",
+          "https://fonts.gstatic.com",
+          "https://cdnjs.cloudflare.com",
+          "https://embeddable-widgets.pages.dev",
+          "https://challenges.cloudflare.com",
+          "https://api.demo.convergepay.com",
+          "https://api.convergepay.com",
+          "https://checkout.demo.convergepay.com",
+          "https://checkout.convergepay.com",
+        ],
+
+        'img-src': [
+          "'self'",
+          "data:",
+          "https:",
+          "blob:",
+          "https://*.supabase.co",
+          "https://phwcfiukyiexdvtccopt.supabase.co",
+          "https://*.googleapis.com",
+          "https://*.gstatic.com",
+          "https://*.posthog.com",
+          "https://api.demo.convergepay.com",
+          "https://api.convergepay.com",
+          "https://checkout.demo.convergepay.com",
+          "https://checkout.convergepay.com",
+        ],
+
+        'font-src': [
+          "'self'",
+          "https://fonts.gstatic.com",
+          "https://cdnjs.cloudflare.com",
+          "https://cdn.jsdelivr.net",
+        ],
+
+        'connect-src': [
+          "'self'",
+          "https:",
+          "wss:",
+          "https://*.supabase.co",
+          "https://embeddable-widgets.pages.dev",
+          "https://*.posthog.com",
+          "https://us-assets.i.posthog.com",
+          "https://challenges.cloudflare.com",
+          "https://api.demo.convergepay.com",
+          "https://api.convergepay.com",
+          "https://checkout.demo.convergepay.com",
+          "https://checkout.convergepay.com",
+          "https://*.challenges.cloudflare.com",
+          "https://brunhild.challenges.cloudflare.com",
+        ],
+
+        'frame-src': [
+          "'self'",
+          "https://*.google.com",
+          "https://embeddable-widgets.pages.dev",
+          "https://challenges.cloudflare.com",
+          "https://api.demo.convergepay.com",
+          "https://api.convergepay.com",
+          "https://checkout.demo.convergepay.com",
+          "https://checkout.convergepay.com",
+          "http://52.204.215.130",
+          "https://52.204.215.130",
+        ],
+
+        'frame-ancestors': ["'self'"],
+        'object-src': ["'none'"],
+        'base-uri': ["'self'"],
+        'form-action': [
+          "'self'",
+          "https://api.demo.convergepay.com",
+          "https://api.convergepay.com",
+        ],
+        'upgrade-insecure-requests': true,
+      },
+
+      strictTransportSecurity: {
+        maxAge: 31536000,
+        includeSubdomains: true,
+        preload: true,
+      },
+
+      xFrameOptions: 'SAMEORIGIN',
+      xContentTypeOptions: 'nosniff',
+      referrerPolicy: 'strict-origin-when-cross-origin',
+
+      permissionsPolicy: {
+        camera: false,
+        microphone: false,
+        geolocation: false,
+        payment: false,
+        usb: false,
+      },
+
+      crossOriginResourcePolicy: 'cross-origin',
+      crossOriginEmbedderPolicy: 'credentialless',
+      crossOriginOpenerPolicy: 'same-origin',
+    },
+  },
+
   nitro: {
     minify: true,
     compressPublicAssets: true,
     routeRules: {
-      "/**": {
+      '/**': {
         headers: {
-          "Strict-Transport-Security":
-            "max-age=31536000; includeSubDomains; preload",
-          "X-Frame-Options": "SAMEORIGIN",
-          "X-Content-Type-Options": "nosniff",
-          "Referrer-Policy": "strict-origin-when-cross-origin",
-          "Permissions-Policy":
-            "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()",
-          "Cross-Origin-Resource-Policy": "cross-origin",
-          "Cross-Origin-Embedder-Policy": "credentialless",
-          "Cross-Origin-Opener-Policy": "same-origin",
-          "X-Powered-By": "Festive Express",
-        },
+          'X-Powered-By': 'Festive Express',
+        }
       },
-    },
+      '/api/**': {
+        headers: {
+          'Cache-Control': 'no-store, must-revalidate',
+        }
+      },
+      '/_nuxt/**': {
+        headers: {
+          'Cache-Control': 'public, max-age=31536000, immutable',
+        }
+      }
+    }
   },
 });

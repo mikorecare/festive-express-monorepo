@@ -7,6 +7,9 @@ declare global {
 }
 
 export default defineNuxtPlugin(() => {
+
+  const nonce = useNonce()
+
   useHead({
     link: [
       {
@@ -19,6 +22,7 @@ export default defineNuxtPlugin(() => {
         src: "https://embeddable-widgets.pages.dev/chat-widget.umd.js",
         async: true,
         defer: true,
+        nonce: nonce,
         onload: () => {
           if (window.ChatWidget?.initChatWidget) {
             window.ChatWidget.initChatWidget({
