@@ -55,7 +55,6 @@
             <span class="flex-shrink mx-4 text-slate-400 text-xs font-semibold uppercase">Or continue with</span>
             <div class="flex-grow border-t border-slate-200"></div>
           </div>
-
           <NuxtLink 
             href="/api/auth/azure/azure" 
             external
