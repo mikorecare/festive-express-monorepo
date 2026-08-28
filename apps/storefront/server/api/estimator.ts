@@ -6,6 +6,7 @@ export default defineEventHandler(async (event) => {
     try {
         const response = await fetch(config.estimatorApiUrl);
         let html = await response.text();
+
         const nonce = event.context.security?.nonce || '';
 
         html = html
@@ -20,6 +21,14 @@ export default defineEventHandler(async (event) => {
 
         setResponseHeader(event, "Content-Type", "text/html; charset=utf-8");
         setResponseHeader(event, "X-Frame-Options", "SAMEORIGIN");
+        setResponseHeader(event, "Content-Security-Policy",
+            "default-src 'self'; " +
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' " +
+            "https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; " +
+            "style-src 'self' 'unsafe-inline' " +
+            "https://fonts.googleapis.com https://fonts.gstatic.com; " +
+            "frame-ancestors 'self';"
+        );
 
         return html;
     } catch (error) {
