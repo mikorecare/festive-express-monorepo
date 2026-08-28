@@ -4,27 +4,18 @@ export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
 
     try {
-        // Fetch the estimator HTML
-        const response = await fetch(config.estimatorApiUrl, {
-            headers: {
-                'Cache-Control': 'no-cache',
-            },
-        });
-
+        const response = await fetch(config.estimatorApiUrl);
         let html = await response.text();
+        const nonce = event.context.security?.nonce || '';
 
         html = html
             .replace(
-                /<script\s+src=["']widget\.js["']\s*><\/script>/gi,
-                '<script src="/estimator/widget.js"></script>'
+                /<style>/g,
+                `<style nonce="${nonce}">`
             )
             .replace(
-                /<link\s+rel=["']stylesheet["']\s+href=["']widget\.css["']\s*\/?>/gi,
-                '<link rel="stylesheet" href="/estimator/widget.css">'
-            )
-            .replace(
-                /(src|href)=["']\/(?!estimator\/)/gi,
-                '$1="http://52.204.215.130/'
+                /<script(?!\s+src)/g,
+                `<script nonce="${nonce}"`
             );
 
         setResponseHeader(event, "Content-Type", "text/html; charset=utf-8");
