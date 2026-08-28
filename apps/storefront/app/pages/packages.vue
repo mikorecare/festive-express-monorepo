@@ -626,6 +626,8 @@ const subtitleParts = computed(() => {
     .filter(Boolean);
 });
 
+const cartBump = useState("cart-bump", () => 0);
+
 const vIntersect = {
   mounted(el: HTMLElement, binding: any) {
     const observer = new IntersectionObserver(
@@ -1039,6 +1041,9 @@ const addPackageSku = async (pkg: PackageRow) => {
 
     if (ok !== false) {
       if (typeof cart.loadCart === "function") await cart.loadCart();
+
+      cartBump.value++;
+
       openCartModal(
         "success",
         "Added to cart",

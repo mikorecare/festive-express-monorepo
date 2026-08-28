@@ -78,42 +78,32 @@ export default defineNuxtConfig({
     convergeDemo: process.env.CONVERGE_DEMO !== "false",
 
     estimatorApiUrl:
-      process.env.NUXT_ESTIMATOR_API_URL ||
-      "http://52.204.215.130/estimator",
+      process.env.NUXT_ESTIMATOR_API_URL || "http://52.204.215.130/estimator",
 
     estimatorAssetUrl:
-      process.env.NUXT_ESTIMATOR_ASSET_URL ||
-      "http://52.204.215.130",
+      process.env.NUXT_ESTIMATOR_ASSET_URL || "http://52.204.215.130",
 
     turnstile: {
       secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY || "",
     },
 
-    supabaseServiceKey:
-      process.env.NUXT_SUPABASE_SECRET_KEY || "",
+    supabaseServiceKey: process.env.NUXT_SUPABASE_SECRET_KEY || "",
 
-    elavonAccountId:
-      process.env.ELAVON_ACCOUNT_ID || "",
+    elavonAccountId: process.env.ELAVON_ACCOUNT_ID || "",
 
-    elavonUserId:
-      process.env.ELAVON_USER_ID || "",
+    elavonUserId: process.env.ELAVON_USER_ID || "",
 
-    elavonPin:
-      process.env.ELAVON_PIN || "",
+    elavonPin: process.env.ELAVON_PIN || "",
 
     elavonDemo: process.env.NUXT_ELAVON_DEMO !== "false",
     elavonVendorId: process.env.ELAVON_VENDOR_ID || "",
     elavonPartnerAppId: process.env.ELAVON_PARTNER_APP_ID || "",
     public: {
-      supabaseUrl:
-        process.env.SUPABASE_URL || "",
+      supabaseUrl: process.env.SUPABASE_URL || "",
 
-      supabaseKey:
-        process.env.SUPABASE_KEY || "",
+      supabaseKey: process.env.SUPABASE_KEY || "",
 
-      apiBase:
-        process.env.NUXT_PUBLIC_API_BASE ||
-        "http://localhost:3000/api",
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || "http://localhost:3000/api",
     },
   },
 

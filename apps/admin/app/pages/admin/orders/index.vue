@@ -122,7 +122,12 @@
 
       <template #cell-total="{ item }">
         <span class="font-semibold text-navy"
-          >${{ Number(item.total).toFixed(2) }}</span
+          >${{
+            Number(item.total || 0).toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
+          }}</span
         >
       </template>
 

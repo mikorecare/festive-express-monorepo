@@ -85,6 +85,14 @@
         />
       </template>
 
+      <template #cell-price="{ item }">
+        {{ formatMoney(item.price) }}
+      </template>
+
+      <template #cell-sale_price="{ item }">
+        {{ formatMoney(item.sale_price) }}
+      </template>
+
       <template #cell-stock="{ item }">
         <span
           :class="
@@ -272,6 +280,22 @@ const loadProducts = async () => {
   } finally {
     isLoading.value = false;
   }
+};
+
+const formatMoney = (value: unknown) => {
+  const n = Number(value);
+  if (
+    value === null ||
+    value === undefined ||
+    value === "" ||
+    Number.isNaN(n)
+  ) {
+    return "—";
+  }
+  return `$${n.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 };
 
 const loadCategories = async () => {

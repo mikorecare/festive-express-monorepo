@@ -921,6 +921,8 @@ const payWithConverge = async () => {
         }
 
         try {
+          // const customerId = await upsertCustomer();
+
           const orderRes = (await $fetch("/api/orders/create", {
             method: "POST",
             body: {
@@ -974,6 +976,50 @@ const payWithConverge = async () => {
     isPaying.value = false;
     resetTurnstile();
   }
+};
+
+const supabase = useSupabaseClient();
+
+const upsertCustomer = async () => {
+  const email = form.value.billing_email.trim().toLowerCase();
+  const firstName = form.value.billing_first_name || "";
+  const lastName = form.value.billing_last_name || "";
+
+  const payload = {
+    email,
+    first_name: firstName,
+    last_name: lastName,
+    full_name: `${firstName} ${lastName}`.trim(),
+    phone: form.value.billing_phone,
+    address_line1: form.value.shipping_address_1,
+    postcode: form.value.billing_postcode,
+    city: getCityFromZip(form.value.billing_postcode),
+    state: "FL",
+    country: "US",
+    role: "customer",
+  };
+
+  const db = supabase as any;
+
+  const { data: existing } = await db
+    .from("customers")
+    .select("id")
+    .eq("email", email)
+    .maybeSingle();
+
+  if (existing?.id) {
+    await db.from("customers").update(payload).eq("id", existing.id);
+    return existing.id;
+  }
+
+  const { data: created, error } = await db
+    .from("customers")
+    .insert(payload)
+    .select("id")
+    .single();
+
+  if (error) throw error;
+  return created.id;
 };
 
 onMounted(async () => {

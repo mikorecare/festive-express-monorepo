@@ -101,9 +101,9 @@
       </template>
 
       <template #cell-price="{ item }">
-        <span class="font-semibold text-slate-900"
-          >${{ formatPrice(item.price) }}</span
-        >
+        <span class="font-semibold text-slate-900">{{
+          formatPrice(item.price)
+        }}</span>
       </template>
 
       <template #cell-stock="{ item }">
@@ -251,7 +251,11 @@ const deleting = ref(false);
 
 const formatPrice = (v: number | string | null | undefined) => {
   const n = typeof v === "string" ? parseFloat(v) : Number(v);
-  return Number.isFinite(n) ? n.toFixed(2) : "0.00";
+  if (!Number.isFinite(n)) return "$0.00";
+  return `$${n.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 };
 
 const packageName = (id: string | number | null | undefined) => {

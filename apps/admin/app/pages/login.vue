@@ -8,7 +8,11 @@
       >
         <h1 class="text-navy text-3xl font-bold mb-2">Admin Login</h1>
         <p class="text-slate-500 mb-8 font-medium">
+<<<<<<< HEAD
           Welcome back to FLP Express
+=======
+          Welcome back to Festive Express
+>>>>>>> adfd1e382fa5e69eb7b1bc5659ae9987e27fb20a
         </p>
 
         <!-- Email/Password Form -->
@@ -205,6 +209,7 @@ const login = async () => {
   }
 };
 </script>
+<<<<<<< HEAD
 
 <style scoped>
 .turnstile-wrapper {
@@ -213,3 +218,5 @@ const login = async () => {
   min-height: 65px;
 }
 </style>
+=======
+>>>>>>> adfd1e382fa5e69eb7b1bc5659ae9987e27fb20a

@@ -1,14 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2025-07-15',
+  compatibilityDate: "2025-07-15",
   devtools: { enabled: true },
 
   ssr: true,
 
   routeRules: {
-    '/admin/**': { ssr: false },
-    '/login': { ssr: false },
-    '/confirm': { ssr: false },
+    "/admin/**": { ssr: false },
+    "/login": { ssr: false },
+    "/confirm": { ssr: false },
   },
 
   modules: ['@vueuse/nuxt', '@nuxtjs/tailwindcss', '@nuxtjs/supabase', '@nuxtjs/turnstile', 'nuxt-security'],
@@ -16,15 +16,15 @@ export default defineNuxtConfig({
   supabase: {
     redirect: false,
     redirectOptions: {
-      login: '/login',
-      callback: '/confirm',
-      exclude: ['/login'],
+      login: "/login",
+      callback: "/confirm",
+      exclude: ["/login"],
     },
     cookieOptions: {
       maxAge: 60 * 60 * 8,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-    }
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+    },
   },
 
   runtimeConfig: {
@@ -44,21 +44,21 @@ export default defineNuxtConfig({
     },
   },
 
-  css: [
-    'bootstrap/dist/css/bootstrap.min.css',
-    '~/assets/css/main.css'
-  ],
+  css: ["bootstrap/dist/css/bootstrap.min.css", "~/assets/css/main.css"],
 
   app: {
     head: {
-      title: 'FLP Express Admin',
+      title: "Festive Express Admin",
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.png' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap' },
+        { rel: "icon", type: "image/x-icon", href: "/favicon.png" },
         {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap'
-        }
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap",
+        },
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap",
+        },
       ],
       script: [
         {
@@ -66,13 +66,13 @@ export default defineNuxtConfig({
           defer: true
         },
       ],
-    }
+    },
   },
 
   router: {
     options: {
-      strict: true
-    }
+      strict: true,
+    },
   },
 
   security: {
@@ -154,21 +154,21 @@ export default defineNuxtConfig({
 
   nitro: {
     routeRules: {
-      '/**': {
+      "/**": {
         headers: {
           'X-Powered-By': 'FLP Express Admin',
         }
       },
-      '/api/**': {
+      "/api/**": {
         headers: {
-          'Cache-Control': 'no-store, must-revalidate',
-        }
+          "Cache-Control": "no-store, must-revalidate",
+        },
       },
-      '/_nuxt/**': {
+      "/_nuxt/**": {
         headers: {
-          'Cache-Control': 'public, max-age=31536000, immutable',
-        }
-      }
-    }
-  }
-})
+          "Cache-Control": "public, max-age=31536000, immutable",
+        },
+      },
+    },
+  },
+});

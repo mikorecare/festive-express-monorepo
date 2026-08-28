@@ -1,5 +1,5 @@
 <template>
-  <footer class="bg-[#101518] text-white pt-5">
+  <footer class="bg-[#101518] text-white pt-5 !pt-12">
     <div class="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-7xl">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-5">
         <!-- Logo -->
