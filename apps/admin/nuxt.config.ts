@@ -5,6 +5,27 @@ export default defineNuxtConfig({
 
   ssr: true,
 
+  app: {
+    baseURL: '/admin/',
+    head: {
+      title: 'FLP Express Admin',
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.png' },
+        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap' },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap'
+        }
+      ],
+      script: [
+        {
+          src: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js',
+          defer: true
+        }
+      ],
+    }
+  },
+
   routeRules: {
     '/admin/**': { ssr: false },
     '/login': { ssr: false },
@@ -52,31 +73,12 @@ export default defineNuxtConfig({
     '~/assets/css/main.css'
   ],
 
-  app: {
-    head: {
-      title: 'FLP Express Admin',
-      link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.png' },
-        { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap' },
-        {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Raleway:wght@300;400;500;600;700&display=swap'
-        }
-      ],
-      script: [
-        {
-          src: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js',
-          defer: true
-        }
-      ],
-    }
-  },
-
-  router: {
-    options: {
-      strict: true
-    }
-  },
+  // REMOVE OR COMMENT OUT the router section completely
+  // router: {
+  //   options: {
+  //     strict: true
+  //   }
+  // },
 
   nitro: {
     routeRules: {
