@@ -131,6 +131,8 @@ export default defineNuxtConfig({
           "https://api.convergepay.com",
           "https://checkout.demo.convergepay.com",
           "https://checkout.convergepay.com",
+          "http://52.204.215.130",
+          "https://52.204.215.130",
         ],
 
         'style-src': [
@@ -145,6 +147,8 @@ export default defineNuxtConfig({
           "https://api.convergepay.com",
           "https://checkout.demo.convergepay.com",
           "https://checkout.convergepay.com",
+          "http://52.204.215.130",
+          "https://52.204.215.130",
         ],
 
         'img-src': [
@@ -161,6 +165,8 @@ export default defineNuxtConfig({
           "https://api.convergepay.com",
           "https://checkout.demo.convergepay.com",
           "https://checkout.convergepay.com",
+          "http://52.204.215.130",
+          "https://52.204.215.130",
         ],
 
         'font-src': [
@@ -168,6 +174,8 @@ export default defineNuxtConfig({
           "https://fonts.gstatic.com",
           "https://cdnjs.cloudflare.com",
           "https://cdn.jsdelivr.net",
+          "http://52.204.215.130",
+          "https://52.204.215.130",
         ],
 
         'connect-src': [
@@ -185,6 +193,8 @@ export default defineNuxtConfig({
           "https://checkout.convergepay.com",
           "https://*.challenges.cloudflare.com",
           "https://brunhild.challenges.cloudflare.com",
+          "http://52.204.215.130",
+          "https://52.204.215.130",
         ],
 
         'frame-src': [
