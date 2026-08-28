@@ -90,7 +90,6 @@ export default defineNuxtConfig({
           "https://challenges.cloudflare.com"
         ],
         'style-src': [
-          "'nonce-{{nonce}}'",
           "'self'",
           "'unsafe-inline'",
           "https://fonts.googleapis.com",
