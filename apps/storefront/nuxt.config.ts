@@ -245,6 +245,26 @@ export default defineNuxtConfig({
     },
   },
 
+  routeRules: {
+    '/api/estimator': {
+      security: {
+        headers: {
+          contentSecurityPolicy: false,
+          crossOriginEmbedderPolicy: 'unsafe-none',
+        },
+      },
+    },
+    '/api/estimator/**': {
+      security: {
+        headers: {
+          contentSecurityPolicy: false,
+          crossOriginEmbedderPolicy: 'unsafe-none',
+          crossOriginResourcePolicy: 'cross-origin',
+        },
+      },
+    },
+  },
+
   nitro: {
     minify: true,
     compressPublicAssets: true,
