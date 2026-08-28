@@ -38,25 +38,18 @@
             />
           </div>
 
-          <!-- Cloudflare Turnstile - FIXED -->
+          <!-- Cloudflare Turnstile -->
           <div class="flex justify-center">
             <NuxtTurnstile
               ref="turnstileRef"
               v-model="turnstileToken"
               :site-key="turnstileSiteKey"
               :options="{
-                size: 'compact',
                 theme: 'light',
               }"
-              @verify="isTurnstileVerified = true"
-              @error="
-                isTurnstileVerified = false;
-                turnstileRef?.reset();
-              "
-              @expired="
-                isTurnstileVerified = false;
-                turnstileRef?.reset();
-              "
+              @verify="onVerify"
+              @error="onError"
+              @expired="onExpired"
             />
           </div>
 
@@ -130,7 +123,37 @@ const turnstileToken = ref("");
 const config = useRuntimeConfig();
 const turnstileSiteKey = config.public.turnstileSiteKey || "YOUR_SITE_KEY";
 
+// ✅ Use proper handler functions
+const onVerify = (token: string) => {
+  console.log("Turnstile verified, token:", token);
+  isTurnstileVerified.value = true;
+  turnstileToken.value = token;
+  error.value = "";
+};
+
+const onError = () => {
+  console.log("Turnstile error");
+  isTurnstileVerified.value = false;
+  turnstileToken.value = "";
+  error.value = "Security verification failed. Please try again.";
+  if (turnstileRef.value) {
+    turnstileRef.value.reset();
+  }
+};
+
+const onExpired = () => {
+  console.log("Turnstile expired");
+  isTurnstileVerified.value = false;
+  turnstileToken.value = "";
+  error.value = "Security verification expired. Please try again.";
+  if (turnstileRef.value) {
+    turnstileRef.value.reset();
+  }
+};
+
 const login = async () => {
+  console.log("Login clicked, isTurnstileVerified:", isTurnstileVerified.value);
+
   if (!isTurnstileVerified.value) {
     error.value = "Please complete the security verification";
     return;
