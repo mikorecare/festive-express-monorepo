@@ -38,20 +38,15 @@
             />
           </div>
 
-          <!-- Cloudflare Turnstile -->
-          <div class="flex justify-center">
-            <NuxtTurnstile
-              ref="turnstileRef"
-              v-model="turnstileToken"
-              :site-key="turnstileSiteKey"
-              :options="{
-                theme: 'light',
-              }"
-              @verify="onVerify"
-              @error="onError"
-              @expired="onExpired"
-            />
-          </div>
+          <!-- Turnstile -->
+          <AdminTurnstile
+            ref="turnstileRef"
+            v-model="turnstileToken"
+            :site-key="turnstileSiteKey"
+            @success="onTurnstileSuccess"
+            @error="onTurnstileError"
+            @expired="onTurnstileExpired"
+          />
 
           <button
             type="submit"
@@ -123,36 +118,27 @@ const turnstileToken = ref("");
 const config = useRuntimeConfig();
 const turnstileSiteKey = config.public.turnstileSiteKey || "YOUR_SITE_KEY";
 
-// ✅ Use proper handler functions
-const onVerify = (token: string) => {
-  console.log("Turnstile verified, token:", token);
+const onTurnstileSuccess = (token: string) => {
   isTurnstileVerified.value = true;
   turnstileToken.value = token;
   error.value = "";
 };
 
-const onError = () => {
-  console.log("Turnstile error");
+const onTurnstileError = () => {
   isTurnstileVerified.value = false;
   turnstileToken.value = "";
   error.value = "Security verification failed. Please try again.";
-  if (turnstileRef.value) {
-    turnstileRef.value.reset();
-  }
 };
 
-const onExpired = () => {
-  console.log("Turnstile expired");
+const onTurnstileExpired = () => {
   isTurnstileVerified.value = false;
   turnstileToken.value = "";
   error.value = "Security verification expired. Please try again.";
-  if (turnstileRef.value) {
-    turnstileRef.value.reset();
-  }
 };
 
 const login = async () => {
   console.log("Login clicked, isTurnstileVerified:", isTurnstileVerified.value);
+  console.log("turnstileToken:", turnstileToken.value);
 
   if (!isTurnstileVerified.value) {
     error.value = "Please complete the security verification";
@@ -215,11 +201,3 @@ const login = async () => {
   }
 };
 </script>
-
-<style scoped>
-.turnstile-wrapper {
-  display: flex;
-  justify-content: center;
-  min-height: 65px;
-}
-</style>
