@@ -7,7 +7,7 @@
     <div class="p-6 flex items-center justify-center flex-shrink-0">
       <img
         loading="lazy"
-        src="/Images/FLP-Express-Transparent.png"
+        src="/Images/FE-Logo.png"
         alt="FLP Admin"
         class="max-h-20 w-auto my-4 block"
       />

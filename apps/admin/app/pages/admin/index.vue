@@ -3,7 +3,7 @@
     <!-- Welcome -->
     <div class="mb-10">
       <h1 class="text-3xl font-bold text-navy mb-2">
-        Welcome to FLP-Express Admin
+        Welcome to Festive Express Admin
       </h1>
       <h3 class="text-sm text-slate-500 font-medium">
         Dashboard Overview • {{ today }}
