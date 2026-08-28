@@ -9,23 +9,25 @@ export default defineEventHandler(async (event) => {
 
         const nonce = event.context.security?.nonce || '';
 
-        html = html
-            .replace(/<style>/g, `<style nonce="${nonce}">`)
-            .replace(/<script(?!\s+src)/g, `<script nonce="${nonce}"`);
+        if (nonce) {
+            html = html
+                .replace(/<style/g, `<style nonce="${nonce}"`)
+                .replace(/<script/g, `<script nonce="${nonce}"`);
+        }
 
         setResponseHeader(event, "Content-Type", "text/html; charset=utf-8");
-        setResponseHeader(event, "X-Frame-Options", "SAMEORIGIN");
         setResponseHeader(event, "Cross-Origin-Embedder-Policy", "unsafe-none");
-
         setResponseHeader(event, "Content-Security-Policy",
             "default-src 'self' data: blob: https: http:; " +
             "script-src 'self' 'unsafe-inline' 'unsafe-eval' https: http:; " +
             "style-src 'self' 'unsafe-inline' https: http:; " +
-            "frame-ancestors 'self';"
+            "frame-src 'self' https: http:; " +
+            "frame-ancestors 'self' https: http:;"
         );
 
         return html;
     } catch (error) {
+        console.error("Estimator proxy failed:", error);
         setResponseHeader(event, "Content-Type", "text/html; charset=utf-8");
         return `
       <!DOCTYPE html>

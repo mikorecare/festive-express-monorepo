@@ -251,6 +251,7 @@ export default defineNuxtConfig({
         headers: {
           contentSecurityPolicy: false,
           crossOriginEmbedderPolicy: 'unsafe-none',
+          xFrameOptions: false,
         },
       },
     },
@@ -260,6 +261,7 @@ export default defineNuxtConfig({
           contentSecurityPolicy: false,
           crossOriginEmbedderPolicy: 'unsafe-none',
           crossOriginResourcePolicy: 'cross-origin',
+          xFrameOptions: false,
         },
       },
     },
