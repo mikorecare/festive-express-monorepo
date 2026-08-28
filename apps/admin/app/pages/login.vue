@@ -8,14 +8,9 @@
       >
         <h1 class="text-navy text-3xl font-bold mb-2">Admin Login</h1>
         <p class="text-slate-500 mb-8 font-medium">
-<<<<<<< HEAD
-          Welcome back to FLP Express
-=======
           Welcome back to Festive Express
->>>>>>> adfd1e382fa5e69eb7b1bc5659ae9987e27fb20a
         </p>
 
-        <!-- Email/Password Form -->
         <form @submit.prevent="login" class="space-y-6 text-left">
           <div>
             <label class="block text-slate-700 font-semibold mb-2 text-sm"
@@ -43,16 +38,25 @@
             />
           </div>
 
-          <!-- Cloudflare Turnstile -->
+          <!-- Cloudflare Turnstile - FIXED -->
           <div class="flex justify-center">
             <NuxtTurnstile
               ref="turnstileRef"
+              v-model="turnstileToken"
               :site-key="turnstileSiteKey"
-              @verify="onVerify"
-              @error="onError"
-              @expired="onExpired"
-              class="turnstile-wrapper"
-              data-theme="light"
+              :options="{
+                size: 'compact',
+                theme: 'light',
+              }"
+              @verify="isTurnstileVerified = true"
+              @error="
+                isTurnstileVerified = false;
+                turnstileRef?.reset();
+              "
+              @expired="
+                isTurnstileVerified = false;
+                turnstileRef?.reset();
+              "
             />
           </div>
 
@@ -126,27 +130,6 @@ const turnstileToken = ref("");
 const config = useRuntimeConfig();
 const turnstileSiteKey = config.public.turnstileSiteKey || "YOUR_SITE_KEY";
 
-const onVerify = (token: string) => {
-  isTurnstileVerified.value = true;
-  turnstileToken.value = token;
-  error.value = "";
-  console.log("Turnstile verified successfully");
-};
-
-const onError = () => {
-  isTurnstileVerified.value = false;
-  turnstileToken.value = "";
-  error.value = "Security verification failed. Please try again.";
-  console.error("Turnstile verification failed");
-};
-
-const onExpired = () => {
-  isTurnstileVerified.value = false;
-  turnstileToken.value = "";
-  error.value = "Security verification expired. Please complete it again.";
-  console.log("Turnstile token expired");
-};
-
 const login = async () => {
   if (!isTurnstileVerified.value) {
     error.value = "Please complete the security verification";
@@ -209,7 +192,6 @@ const login = async () => {
   }
 };
 </script>
-<<<<<<< HEAD
 
 <style scoped>
 .turnstile-wrapper {
@@ -218,5 +200,3 @@ const login = async () => {
   min-height: 65px;
 }
 </style>
-=======
->>>>>>> adfd1e382fa5e69eb7b1bc5659ae9987e27fb20a
