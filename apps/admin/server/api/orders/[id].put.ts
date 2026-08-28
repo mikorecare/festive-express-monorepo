@@ -12,7 +12,6 @@ export default defineEventHandler(async (event) => {
     }
 
     const body = await readBody(event);
-
     const supabaseUrl = config.public.supabaseUrl;
     const supabaseServiceKey = config.supabaseServiceKey;
 
