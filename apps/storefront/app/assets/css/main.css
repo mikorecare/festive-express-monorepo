@@ -112,6 +112,34 @@
   }
 }
 
+@keyframes cartShake {
+  0%,
+  100% {
+    transform: rotate(0) scale(1);
+  }
+  20% {
+    transform: rotate(-12deg) scale(1.18);
+  }
+  40% {
+    transform: rotate(10deg) scale(1.2);
+  }
+  60% {
+    transform: rotate(-6deg) scale(1.1);
+  }
+  80% {
+    transform: rotate(4deg) scale(1.05);
+  }
+}
+.cart-shake {
+  animation: cartShake 1s ease-in-out;
+}
+.cart-icon .count {
+  transition: transform 0.2s;
+}
+.cart-shake .count {
+  transform: scale(1.25);
+}
+
 /* Optional reusable class */
 .pulse-grow {
   animation-name: festive-express-animation-pulse-grow;

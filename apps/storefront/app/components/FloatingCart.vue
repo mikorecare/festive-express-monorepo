@@ -4,6 +4,8 @@
     <button
       type="button"
       class="fixed bottom-[100px] right-[20px] z-[999] flex items-center justify-center bg-[#172a50] border-[3px] border-[#F49321] rounded-full w-[60px] h-[60px] p-0 shadow-[0_8px_24px_rgba(0,0,0,0.35)] cursor-pointer max-sm:bottom-[90px]"
+      :class="{ 'cart-shake': cartBump > 0 }"
+      :key="cartBump"
       aria-label="Open cart"
       @click="open = true"
     >
@@ -158,6 +160,9 @@ const config = useRuntimeConfig();
 const open = ref(false);
 
 const cartItems = computed(() => cart.cartItems.value);
+
+const cartBump = useState("cart-bump", () => 0);
+
 const displayTotal = computed(() =>
   Number(cart.cartTotal?.value || 0).toFixed(2),
 );
