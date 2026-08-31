@@ -48,10 +48,16 @@
       <button
         class="w-full bg-brand-orange hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         @click="bookConsultation"
-        :disabled="booking"
+        :disabled="booking || isBooked"
       >
         <i v-if="booking" class="fas fa-spinner fa-spin mr-2"></i>
-        {{ booking ? "Sending..." : "Book free consultation →" }}
+        {{
+          isBooked
+            ? "✓ Request sent"
+            : booking
+              ? "Sending..."
+              : "Book free consultation →"
+        }}
       </button>
       <button
         class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors"
@@ -67,6 +73,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import { useEstimator } from "~/composables/useEstimator";
 
 const {
@@ -76,7 +83,20 @@ const {
   booking,
   resultNote,
   formatMoney,
-  bookConsultation,
+  bookConsultation: originalBookConsultation,
   reset,
 } = useEstimator();
+
+const isBooked = ref(false);
+
+const bookConsultation = async () => {
+  if (isBooked.value) return;
+  await originalBookConsultation();
+  if (
+    resultNote.value ===
+    "Thanks — we received your design and contact info. We'll be in touch."
+  ) {
+    isBooked.value = true;
+  }
+};
 </script>
