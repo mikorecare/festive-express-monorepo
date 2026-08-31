@@ -94,13 +94,13 @@
               <img
                 :src="EarlyBirdSpecialRibbonSrc"
                 alt="Early Bird Special"
-                class="relative z-[2] h-16 md:h-20 lg:h-24 w-auto object-contain -my-3 md:-my-4 scale-[1.35] origin-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
+                class="relative z-[2] mb-2 h-8 md:h-10 lg:h-11 w-auto object-contain scale-100 origin-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
               />
-              <img
+              <!-- <img
                 :src="starburstSrc"
                 alt=""
                 class="absolute z-[1] -top-[54%] right-[-24px] md:right-[-29px] lg:right-[-34px] h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 object-contain pointer-events-none"
-              />
+              /> -->
             </div>
 
             <div class="text-center leading-[1.35]">
@@ -613,7 +613,8 @@ const specsLoading = ref(true);
 
 const { loadEarlyBird, showSale, effectivePrice } = useEarlyBirdSpecial();
 const starburstSrc = "/Images/Holiday-Lighting-Package/starburst.png";
-const EarlyBirdSpecialRibbonSrc = "/Images/Artboard-1ribbon.svg";
+// const EarlyBirdSpecialRibbonSrc = "/Images/Artboard-1ribbon.svg";
+const EarlyBirdSpecialRibbonSrc = "/Images/earlybird2.png";
 
 const settings = ref<{ hero_subtitle?: string } | null>(null);
 const subtitleParts = computed(() => {

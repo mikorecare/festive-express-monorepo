@@ -66,12 +66,12 @@
                 <img
                   :src="EarlyBirdSpecialRibbonSrc"
                   alt="Early Bird Special"
-                  class="relative z-[2] h-16 md:h-20 lg:h-24 w-auto object-contain -my-3 md:-my-4 scale-[1.35] origin-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
+                  class="relative z-0 h-8 md:h-9 w-auto origin-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
                 />
                 <img
                   :src="starburstSrc"
                   alt=""
-                  class="absolute z-[1] -top-[54%] right-[-24px] md:right-[-29px] lg:right-[-34px] h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 object-contain pointer-events-none"
+                  class="absolute z-[1] top-[-52%] right-[-19px] md:top-[-44%] md:right-[-23px] lg:top-[-58%] lg:right-[-28px] h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 object-contain pointer-events-none"
                 />
               </div>
 
@@ -370,7 +370,8 @@ const getPackageButtonName = (pkg: { name: string }) => {
 const { loadEarlyBird, showSale, effectivePrice } = useEarlyBirdSpecial();
 
 const starburstSrc = "/Images/Holiday-Lighting-Package/starburst.png";
-const EarlyBirdSpecialRibbonSrc = "/Images/Artboard-1ribbon.svg";
+// const EarlyBirdSpecialRibbonSrc = "/Images/Artboard-1ribbon.svg";
+const EarlyBirdSpecialRibbonSrc = "/Images/earlybird.png";
 
 onMounted(async () => {
   await Promise.all([fetchPackages(), loadEarlyBird()]);
