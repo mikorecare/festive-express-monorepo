@@ -73,18 +73,20 @@
         >
           <span
             v-if="isEarlyBirdActive(earlyBirdEnabled, earlyBirdExpiresAt)"
-            class="pointer-events-none absolute left-1/2 z-20 -translate-x-1/2 -top-2 -translate-y-[45%] lg:top-[-4.25rem] lg:translate-y-0"
+            class="pointer-events-none absolute left-1/2 top-0 z-20 -translate-x-1/2 -translate-y-1/2"
           >
-            <img
-              src="/Images/Artboard-2ribbon.svg"
-              alt="Early Bird Special"
-              class="relative z-10 w-auto h-[10rem] lg:h-[8rem]"
-            />
-            <!-- <img
-              src="/Images/starburst-small.png"
-              alt=""
-              class="absolute left-0 top-1/2 z-20 h-8 w-8 -translate-x-[70%] -translate-y-1/2 max-lg:h-6 max-lg:w-6"
-            /> -->
+            <span class="relative block">
+              <img
+                src="/Images/earlybird2.png"
+                alt="Early Bird Special"
+                class="relative z-10 h-14 w-auto object-contain drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)] md:h-16 lg:h-[4.5rem]"
+              />
+              <!-- <img
+                src="/Images/starburst-small.png"
+                alt=""
+                class="absolute z-20 h-7 w-7 object-contain -top-3 -right-3 md:h-8 md:w-8 md:-top-3.5 md:-right-3.5 lg:h-9 lg:w-9"
+              /> -->
+            </span>
           </span>
 
           Explore the Packages

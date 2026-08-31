@@ -57,14 +57,16 @@
         >
           <!-- Card Top -->
           <div class="relative p-3 pb-0">
+            <!-- One title; only left offset changes -->
+            <img
+              class="absolute z-[2] pointer-events-none w-auto drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)] -bottom-[28px] h-[60px] md:-bottom-[34px] md:h-[68px] lg:-bottom-[38px] lg:h-[72px] left-6 md:left-[58px] lg:left-[20px]"
+              :src="getPackageTitleImage(pkg)"
+              :alt="pkg.name"
+            />
+
             <div
               class="rounded-[22px] border-4 border-brand-orange overflow-hidden relative leading-none"
             >
-              <img
-                class="absolute pointer-events-none object-contain z-[1] w-14 h-14 top-[157px] left-0 md:w-20 md:h-20 md:top-[142px] md:left-0 lg:w-[100px] lg:h-[100px] lg:top-[130px] lg:-left-3"
-                :src="starburstSrc"
-                alt=""
-              />
               <img
                 :ref="(el) => setImageRef(el, pkg.id)"
                 :src="getImageUrl(pkg.image_url)"
@@ -78,44 +80,22 @@
 
             <!-- Icon always left when on sale; right when not -->
             <div
-              class="absolute z-[1] rounded-full bg-brand-orange flex items-center justify-center shadow-[0_6px_16px_rgba(244,147,33,0.45)]"
-              :class="
-                showSale(pkg.sale_price)
-                  ? 'left-3 -bottom-[18px] w-[42px] h-[42px] md:left-4 md:-bottom-[20px] md:w-[49px] md:h-[49px] lg:left-[18px] lg:-bottom-[20px]'
-                  : 'right-[16px] max-sm:right-3 -bottom-[30px] max-sm:-bottom-[24px] w-[76px] h-[76px] max-sm:w-[64px] max-sm:h-[64px]'
-              "
+              class="absolute z-[1] rounded-full bg-brand-orange flex items-center justify-center shadow-[0_6px_16px_rgba(244,147,33,0.45)] right-[30px] max-sm:right-3 -bottom-[30px] max-sm:-bottom-[24px] w-[64px] h-[64px] max-sm:w-[64px] max-sm:h-[64px]"
               aria-hidden="true"
             >
               <img
-                class="object-contain"
-                :class="
-                  showSale(pkg.sale_price)
-                    ? 'w-[42px] h-[42px] md:w-[49px] md:h-[49px]'
-                    : 'w-[76px] h-[76px] max-sm:w-[64px] max-sm:h-[64px]'
-                "
+                class="object-contain w-[64px] h-[64px] max-sm:w-[64px] max-sm:h-[64px]"
                 :src="getPackageIcon(pkg)"
                 alt=""
               />
             </div>
 
-            <!-- One title; only left offset changes -->
-            <img
-              class="absolute z-[2] pointer-events-none w-auto drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)] -bottom-[28px] h-[60px] md:-bottom-[34px] md:h-[68px] lg:-bottom-[38px] lg:h-[72px]"
-              :class="
-                showSale(pkg.sale_price)
-                  ? 'left-16 md:left-[58px] lg:left-[70px]'
-                  : 'left-8 md:left-[30px] lg:left-[28px]'
-              "
-              :src="getPackageTitleImage(pkg)"
-              :alt="pkg.name"
-            />
-
-            <img
+            <!-- <img
               v-if="showSale(pkg.sale_price)"
               :src="EarlyBirdSpecialRibbonSrc"
               alt="Early Bird Special"
               class="absolute z-[3] pointer-events-none w-auto drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)] right-2 -bottom-[55px] h-[120px] md:right-2 md:-bottom-[55px] md:h-[120px] lg:right-[18px] lg:-bottom-[75px] lg:h-[120px]"
-            />
+            /> -->
           </div>
 
           <!-- Card Panel -->
@@ -166,6 +146,22 @@
             </div>
 
             <div class="flex flex-col items-end gap-2">
+              <div
+                v-if="showSale(pkg.sale_price)"
+                class="relative flex justify-end"
+              >
+                <img
+                  class="absolute pointer-events-none object-contain z-[1] w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 -top-4 -right-[19px] md:-top-5 md:-right-[22px] lg:-top-6 lg:-right-[25px]"
+                  :src="starburstSrc"
+                  alt=""
+                />
+                <img
+                  :src="EarlyBirdSpecialRibbonSrc"
+                  alt="Early Bird Special"
+                  class="relative z-0 h-8 md:h-9 w-auto drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)]"
+                />
+              </div>
+
               <template v-if="showSale(pkg.sale_price)">
                 <div class="text-center leading-tight text-white">
                   <span
@@ -201,7 +197,6 @@
                 <div
                   class="text-[1rem] max-sm:text-[1rem] font-extrabold text-white"
                 >
-                  <!-- ${{ Math.round(Number(pkg.price) || 0) }}/season -->
                   <span
                     class="text-brand-orange text-[1.3rem] max-sm:text-[1.3rem]"
                   >
@@ -317,7 +312,8 @@ const festivoConfig = computed<FestivoConfig>(() => {
 
 const BASE = "/Images/Holiday-Lighting-Package";
 const starburstSrc = "/Images/Holiday-Lighting-Package/starburst.png";
-const EarlyBirdSpecialRibbonSrc = "/Images/Artboard-1ribbon.svg";
+// const EarlyBirdSpecialRibbonSrc = "/Images/Artboard-1ribbon.svg";
+const EarlyBirdSpecialRibbonSrc = "/Images/earlybird.png";
 
 interface InclusionItem {
   id?: number;
