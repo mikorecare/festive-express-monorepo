@@ -86,15 +86,19 @@
 
             <!-- Items -->
             <div v-else class="space-y-5">
-              <div v-for="item in cartItems" :key="item.id" class="flex gap-3">
+              <div
+                v-for="item in cartItems"
+                :key="item.id"
+                class="flex flex-col gap-2"
+              >
                 <img
                   :src="getImageUrl(item.product?.image_url)"
                   :alt="item.product?.name || ''"
-                  class="h-16 w-16 shrink-0 rounded-md object-cover bg-slate-100"
+                  class="w-full h-48 rounded-md object-cover bg-slate-100"
                   @error="onImgError"
                 />
-                <div class="min-w-0 flex-1 flex flex-col">
-                  <div class="flex items-start justify-between gap-3">
+                <div class="flex flex-col gap-1">
+                  <div class="flex items-start justify-between">
                     <h3 class="text-xl font-bold uppercase text-[#f59e0b]">
                       {{ item.product?.name || "—" }}
                     </h3>
@@ -102,9 +106,7 @@
                       USD {{ lineTotal(item) }}
                     </p>
                   </div>
-                  <div
-                    class="mt-auto flex items-center justify-between gap-3 pt-1"
-                  >
+                  <div class="flex items-center justify-between">
                     <p class="text-xs text-navy-500">
                       Quantity: {{ item.quantity }}
                     </p>
