@@ -1,26 +1,32 @@
 <template>
   <div class="flex items-center justify-center min-h-screen bg-gray-50">
     <div class="bg-white rounded-2xl p-6 shadow-md max-w-4xl w-full mx-4 my-8">
-      <h3 class="text-lg font-bold text-navy mb-4 flex items-center">
-        <i class="fas fa-magic mr-2"></i> See Your Home Lit Up
-      </h3>
-      <p class="text-sm text-gray-600 mb-4">
-        Upload a photo, pick your colors, and watch it light up. Instant design
-        + estimate.
-      </p>
+      <!-- Hide everything when rendering -->
+      <template v-if="!rendering">
+        <h3 class="text-lg font-bold text-navy mb-4 flex items-center">
+          <i class="fas fa-magic mr-2"></i> See Your Home Lit Up
+        </h3>
+        <p class="text-sm text-gray-600 mb-4">
+          Upload a photo, pick your colors, and watch it light up. Instant
+          design + estimate.
+        </p>
 
-      <!-- Form -->
-      <PreviewYourHomeForm v-if="!result && !renderError && !rendering" />
+        <!-- Form - Hidden when result or error shows -->
+        <PreviewYourHomeForm v-if="!result && !renderError" />
 
-      <!-- Result State -->
-      <ResultState v-if="result && !rendering" />
+        <!-- Result State -->
+        <ResultState v-if="result && !rendering" />
 
-      <!-- Error State -->
-      <ErrorState v-if="renderError && !rendering" />
+        <!-- Error State -->
+        <ErrorState v-if="renderError && !rendering" />
+      </template>
+
+      <!-- Show nothing when rendering - just empty card -->
+      <div v-else class="min-h-[200px]"></div>
     </div>
   </div>
 
-  <!-- RenderState MUST be OUTSIDE the card div for fixed positioning to work properly -->
+  <!-- RenderState - Outside the card for full overlay -->
   <RenderState />
 </template>
 

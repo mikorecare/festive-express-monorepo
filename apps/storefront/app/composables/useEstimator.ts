@@ -1,6 +1,5 @@
-
 import { ref, computed, onUnmounted, onMounted } from "vue";
-import type { ColorOption, Suggestion, MultiColor, RenderResult, ApiResponse } from "~/components/PreviewYourHome/types";
+import type { ColorOption, Suggestion, MultiColor, RenderResult, ApiResponse, PackageOption } from "~/components/PreviewYourHome/types";
 
 const fileInput = ref<HTMLInputElement | null>(null);
 const imagePreview = ref<string>("");
@@ -11,6 +10,7 @@ const suggestions = ref<Suggestion[]>([]);
 const suggestionsOpen = ref<boolean>(false);
 const pricePerFoot = ref<number>(10);
 const selectedScheme = ref<string>("warm-white");
+const selectedPackage = ref<PackageOption>("joy");
 const multiColors = ref<MultiColor[]>([
     { hex: "#e21d1d", name: "Color 1" },
     { hex: "#1ea832", name: "Color 2" },
@@ -24,7 +24,7 @@ const phone = ref<string>("");
 const error = ref<string>("");
 const errors = ref<{ name?: string; email?: string }>({});
 const isLoading = ref<boolean>(false);
-const rendering = ref<boolean>(false);  // <-- THIS IS THE IMPORTANT ONE
+const rendering = ref<boolean>(false);
 const result = ref<RenderResult | null>(null);
 const renderError = ref<string>("");
 const booking = ref<boolean>(false);
@@ -36,6 +36,12 @@ const colorOptions: ColorOption[] = [
     { scheme: "champagne", label: "Champagne", sw: "#e6c9a0" },
     { scheme: "candy-cane", label: "Candy Cane" },
     { scheme: "multicolor", label: "Multicolor" },
+];
+
+const packageOptions = [
+    { id: "joy" as const, name: "Joy", price: 999, includedFt: 125 },
+    { id: "jolly" as const, name: "Jolly", price: 1999, includedFt: 175 },
+    { id: "merry" as const, name: "Merry", price: 2999, includedFt: 175 },
 ];
 
 const facts: readonly string[] = [
@@ -267,7 +273,6 @@ async function submitRender(previewOnly: boolean): Promise<void> {
         }
     }
 
-    // THIS SETS rendering TO true
     rendering.value = true;
     result.value = null;
     renderError.value = "";
@@ -285,7 +290,8 @@ async function submitRender(previewOnly: boolean): Promise<void> {
             customColors: selectedScheme.value === "multicolor" ? multiColors.value : [],
             landscape: true,
             decor: "none",
-            serviceType: "permanent" as const,
+            serviceType: "christmas" as const,
+            package: selectedPackage.value,
         };
 
         const response = await $fetch<RenderResult>(`/api/render`, {
@@ -393,7 +399,6 @@ onUnmounted((): void => {
     document.removeEventListener("click", handleClickOutside);
 });
 
-// Return ALL state and methods
 export function useEstimator() {
     return {
         // State
@@ -406,6 +411,8 @@ export function useEstimator() {
         suggestionsOpen,
         pricePerFoot,
         selectedScheme,
+        selectedPackage,
+        packageOptions,
         multiColors,
         name,
         email,

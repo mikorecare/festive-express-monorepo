@@ -11,13 +11,14 @@
       : "";
 
   var FACTS = [
-    "Permanent lighting works every night of the year — not just December.",
-    "One app changes your whole roofline: warm white, team colors, or full holiday.",
-    "The lights tuck into a discreet track, so they disappear in daylight.",
-    "Homeowners who see a render book 3× more design consultations.",
-    "Finding your roofline…",
-    "Placing the lights along every eave and peak…",
-    "Balancing the evening glow…",
+   'Festive Express installs your lights — you relax and enjoy the season.',
+    'Professional C-9 roofline lighting, installed and removed for you.',
+    'One simple rental package — no ladders, no tangled cords, no storage.',
+    'We handle install, maintenance, and takedown when the season ends.',
+    'Licensed & insured technicians — your home is fully protected.',
+    'Finding your roofline…',
+    'Placing C-9 lights along every eave and peak…',
+    'Adding the festive evening glow…',
   ];
 
   var COLOR_CHIPS = [
@@ -519,7 +520,7 @@
         body.scheme = state.scheme;
         body.landscape = state.landscape;
         body.decor = "none";
-        body.serviceType = "permanent";
+        body.serviceType = "christmas";
         if (state.scheme === "multicolor")
           body.customColors = state.multiColors;
       }

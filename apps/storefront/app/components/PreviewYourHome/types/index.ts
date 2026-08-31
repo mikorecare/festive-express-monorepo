@@ -1,3 +1,6 @@
+
+export type PackageOption = 'joy' | 'jolly' | 'merry';
+
 export interface Suggestion {
     placeId: string;
     full: string;
@@ -27,6 +30,15 @@ export interface RenderStats {
     wholePrice?: number | null;
     withinPackage?: boolean | null;
     pricePerFoot?: number | null;
+    estimatedTotal?: number | null;
+    package?: string | null;
+    packageName?: string | null;
+    groundFeet?: number | null;
+    packageIncludedFt?: number | null;
+    buildingSqft?: number | null;
+    roofSqft?: number | null;
+    sqftSource?: string | null;
+    perimeterFt?: number | null;
 }
 
 export interface RenderResult {
@@ -35,6 +47,7 @@ export interface RenderResult {
     stats?: RenderStats | null;
     address?: string | null;
     preview?: boolean | null;
+    quoteId?: string | null;
     streetView?: {
         verifiedAddress?: string | null;
     } | null;
