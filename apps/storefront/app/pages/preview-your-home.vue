@@ -1,18 +1,24 @@
 <template>
   <div>
-    <section class="hero-section">
-      <div class="hero-container">
-        <img
-          src="/Images/Preview-Your-Home/hero.png"
-          alt="Preview your home"
-          class="hero-image"
-        />
-        <!-- Navy Blue Overlay -->
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-          <h1 v-fade>PREVIEW YOUR HOME</h1>
-          <p v-fade class="subtitle">See your home gift-wrapped in Lights.</p>
-          <p v-fade class="breadcrumb"></p>
+    <section
+      class="page-hero-preview snow-bg relative bg-slate-900 py-16 text-white overflow-hidden"
+    >
+      <div class="hero-overlay absolute inset-0 bg-black/40 z-10 min-h-[200px]">
+        <div
+          class="container mx-auto px-4 h-full flex items-center justify-center min-h-[200px]"
+        >
+          <div class="hero-content text-center max-w-2xl mx-auto">
+            <h1
+              v-fade
+              class="text-3xl md:text-5xl tracking-tight text-white mb-4"
+            >
+              <span class="text-brand-orange">PREVIEW</span> YOUR HOME
+            </h1>
+
+            <p v-fade class="text-base md:text-lg text-slate-200">
+              See your home gift-wrapped in Lights.
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -30,95 +36,14 @@ useHead({
 </script>
 
 <style scoped>
-.hero-section {
-  background: #1c2f5b;
-  width: 100%;
+.page-hero-preview {
   position: relative;
-}
-
-.hero-container {
-  max-width: 100%;
-  margin: 0 auto;
-  position: relative;
-}
-
-.hero-image {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* Navy Blue Overlay */
-.hero-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(28, 47, 91, 0.6);
-  z-index: 1;
-}
-
-.hero-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
+  height: 420px;
+  background-image: url("/Images/Preview-Your-Home/hero.png");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
   color: white;
-  z-index: 2;
-  width: 100%;
-  padding: 0 20px;
-}
-
-.hero-content h1 {
-  color: white;
-  font-size: 72px;
-  font-family: Poppins;
-  font-weight: 400;
-  line-height: 157.44px;
-  word-wrap: break-word;
-  text-shadow: 0px 10px 4px rgba(0, 0, 0, 0.98);
-  margin: 0;
-  letter-spacing: 0.15em;
-}
-
-.hero-content .subtitle {
-  color: #f7931e;
-  font-size: 24px;
-  font-family: Poppins;
-  font-weight: 400;
-  margin-top: -30px;
-  letter-spacing: 0.05em;
-  text-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
-}
-
-.hero-content .breadcrumb {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1rem;
-}
-
-@media (max-width: 768px) {
-  .hero-content h1 {
-    font-size: 48px;
-    line-height: 1.2;
-    letter-spacing: 0.1em;
-  }
-  .hero-content .subtitle {
-    font-size: 18px;
-    margin-top: -10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .hero-content h1 {
-    font-size: 32px;
-    line-height: 1.2;
-    letter-spacing: 0.08em;
-  }
-  .hero-content .subtitle {
-    font-size: 48px;
-    margin-top: -5px;
-  }
 }
 </style>

@@ -3,7 +3,7 @@ name: Deploy Monorepo to AWS EC2
 on:
   push:
     branches:
-      - master
+      - production
 
 jobs:
   deploy:
@@ -24,11 +24,11 @@ jobs:
             # 1. Navigate to monorepo root
             cd /var/www/festive-express/festive-express-monorepo
 
-            # 2. FORCE PULL the latest code (THIS IS THE FIX)
-            echo "Pulling latest code..."
-            git fetch origin master
-            git reset --hard origin/master
-            # This ensures the server EXACTLY matches the remote master
+            # 2. FORCE PULL the latest code from production branch
+            echo "Pulling latest code from production branch..."
+            git fetch origin production
+            git reset --hard origin/production
+            # This ensures the server EXACTLY matches the remote production branch
 
             # 3. Load Node/NVM environment rules
             export NVM_DIR="$HOME/.nvm"
