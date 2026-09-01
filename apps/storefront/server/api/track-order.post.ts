@@ -10,7 +10,10 @@ interface TrackOrderRow {
   total: number | null;
   billing_email: string | null;
   preferred_install_dates: string[] | null;
+  confirmed_install_date: string | null;
   items: unknown;
+  customer_confirmed: boolean | null;
+  confirmed_at: string | null;
 }
 
 export default defineEventHandler(async (event) => {
@@ -93,7 +96,7 @@ export default defineEventHandler(async (event) => {
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
   const selectCols =
-    "id, order_number, status, payment_status, install_status, created_at, total, billing_email, preferred_install_dates, items";
+    "id, order_number, status, payment_status, install_status, created_at, total, billing_email, preferred_install_dates, confirmed_install_date, items, customer_confirmed, confirmed_at";
 
   const base = supabase
     .from("orders")
@@ -133,6 +136,37 @@ export default defineEventHandler(async (event) => {
     .eq("order_id", order.id)
     .order("created_at", { ascending: true });
 
+  const rawItems = Array.isArray(order.items) ? (order.items as any[]) : [];
+
+  const productIds = [
+    ...new Set(
+      rawItems.map((item) => item.product_id || item.id).filter(Boolean),
+    ),
+  ];
+
+  let imageById: Record<string, string> = {};
+
+  if (productIds.length) {
+    const { data: products } = await supabase
+      .from("products")
+      .select("id, image_url")
+      .in("id", productIds);
+
+    imageById = Object.fromEntries(
+      (products || []).map((p: any) => [String(p.id), p.image_url]),
+    );
+  }
+
+  const itemsWithImages = rawItems.map((item) => ({
+    ...item,
+    image_url:
+      item.image_url ||
+      item.image ||
+      item.options?.image_url ||
+      imageById[String(item.product_id || item.id)] ||
+      null,
+  }));
+
   return {
     success: true,
     order: {
@@ -145,9 +179,13 @@ export default defineEventHandler(async (event) => {
       total: order.total,
       preferred_install_dates: order.preferred_install_dates || [],
       preferred_install_date: preferredInstallDate,
-      confirmed_install_date: null,
-      items: order.items || [],
+      confirmed_install_date: order.confirmed_install_date || null,
+      items: itemsWithImages,
       timeline: timeline || [],
+      customer_confirmed: Boolean(
+        order.customer_confirmed || order.confirmed_at,
+      ),
+      confirmed_at: order.confirmed_at || null,
     },
   };
 });

@@ -271,6 +271,7 @@ const loadOrders = async () => {
           discount_value
         )
       `,
+        { count: "exact" },
       )
       .order("created_at", { ascending: false });
 
@@ -303,7 +304,7 @@ const loadOrders = async () => {
     if (error) throw error;
 
     orders.value = data || [];
-    totalItems.value = count || 0;
+    totalItems.value = count ?? 0;
   } catch (error) {
     console.error("Failed to load orders:", error);
     orders.value = [];
@@ -352,6 +353,7 @@ const formatInstallDates = (dates: string[]) => {
   return dates
     .map((d) =>
       new Date(d).toLocaleDateString("en-US", {
+        year: "numeric",
         month: "short",
         day: "numeric",
       }),

@@ -224,6 +224,19 @@
           </div>
 
           <div class="mt-4">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">
+              Confirmed Installation Date
+            </label>
+            <span
+              v-if="order.confirmed_install_date"
+              class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-sm font-medium"
+            >
+              {{ formatShortDate(order.confirmed_install_date) }}
+            </span>
+            <span v-else class="text-sm text-gray-400">Not confirmed yet</span>
+          </div>
+
+          <div class="mt-4">
             <label class="block text-sm font-semibold text-gray-700 mb-2"
               >Removal Dates</label
             >

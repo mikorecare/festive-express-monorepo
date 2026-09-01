@@ -84,8 +84,18 @@
             </div>
             <div>
               <small class="block text-xs text-slate-500">Total</small>
-              <strong class="text-navy"
+              <!-- <strong class="text-navy"
                 >${{ Number(order.total).toFixed(2) }}</strong
+              > -->
+              <span class="text-navy"
+                ><strong
+                  >${{
+                    Number(order.total || 0).toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })
+                  }}</strong
+                ></span
               >
             </div>
             <div>
@@ -100,14 +110,42 @@
               <small class="block text-xs text-slate-500"
                 >Confirmed install</small
               >
-              <strong class="text-navy">{{
-                formatDate(order.confirmed_install_date) || "Not scheduled"
-              }}</strong>
+              <strong class="text-navy">
+                {{
+                  order.customer_confirmed || order.confirmed_at
+                    ? formatDate(order.confirmed_install_date) ||
+                      "Not scheduled"
+                    : "Not scheduled"
+                }}
+              </strong>
             </div>
           </div>
 
+          <button
+            v-if="showConfirmButton"
+            type="button"
+            class="mt-4 w-full rounded-[10px] px-6 py-3.5 font-bold text-white transition disabled:cursor-not-allowed disabled:opacity-60"
+            :class="
+              confirmEnabled ? 'bg-navy hover:bg-navy/90' : 'bg-slate-400'
+            "
+            :disabled="!confirmEnabled"
+            @click="confirmOrder"
+          >
+            {{
+              confirmedStillActive
+                ? "Confirmed"
+                : confirming
+                  ? "Confirming..."
+                  : confirmWindowOpen
+                    ? "Confirm Date"
+                    : confirmOpensAt
+                      ? `Opens ${confirmOpensAt}`
+                      : "Confirm Date"
+            }}
+          </button>
+
           <div
-            class="mb-7 rounded-xl border border-slate-100 bg-slate-50/80 p-6"
+            class="mb-7 mt-7 rounded-xl border border-slate-100 bg-slate-50/80 p-6"
           >
             <h3 class="mb-4 text-lg font-bold text-navy">Order Timeline</h3>
 
@@ -143,20 +181,37 @@
 
           <div v-if="items.length">
             <h3 class="mb-3 font-bold text-navy">Items</h3>
-            <div
-              v-for="(item, i) in items"
-              :key="i"
-              class="flex justify-between border-b border-slate-100 py-2.5 text-sm"
-            >
-              <span
-                >{{ item.product_name || item.name }} ×
-                {{ item.quantity }}</span
+            <div class="space-y-5">
+              <div
+                v-for="(item, i) in items"
+                :key="i"
+                class="border-b border-slate-100 pb-5 last:border-0 last:pb-0"
               >
-              <strong
-                >${{
-                  Number(item.total ?? item.price * item.quantity).toFixed(2)
-                }}</strong
-              >
+                <img
+                  :src="itemImage(item)"
+                  :alt="item.product_name || item.name || 'Item'"
+                  class="mb-3 w-full rounded-xl object-cover bg-slate-100 aspect-[16/10]"
+                  @error="onImgError"
+                />
+                <div class="flex items-start justify-between gap-3">
+                  <div class="min-w-0">
+                    <div class="font-medium text-navy">
+                      {{ item.product_name || item.name }}
+                    </div>
+                    <div class="text-xs text-slate-500">
+                      Qty {{ item.quantity }}
+                      <span v-if="item.is_package"> · Package</span>
+                    </div>
+                  </div>
+                  <strong class="flex-shrink-0 text-navy">
+                    ${{
+                      Number(item.total ?? item.price * item.quantity).toFixed(
+                        2,
+                      )
+                    }}
+                  </strong>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -389,6 +444,8 @@ const trackOrder = async () => {
     };
     timeline.value = found.timeline || [];
     items.value = found.items || [];
+
+    console.log(items.value);
   } catch (e: any) {
     error.value =
       e?.data?.message ||
@@ -399,5 +456,203 @@ const trackOrder = async () => {
     loading.value = false;
     resetTurnstile();
   }
+};
+
+const FALLBACK_IMG = "/Images/placeholder.png";
+const itemImage = (item: any) => {
+  const raw = item?.image_url || item?.image || item?.options?.image_url;
+  return raw ? getImageUrl(raw) : FALLBACK_IMG;
+};
+
+const getImageUrl = (url: string | null | undefined) => {
+  if (!url) return "/Images/placeholder.png";
+  if (url.startsWith("http")) return url;
+
+  const path = url
+    .replace(/^\//, "")
+    .replace(/^products\//i, "")
+    .replace(/^Products\//i, "");
+
+  const supabaseUrl =
+    (config.public.supabaseUrl as string) ||
+    (config.public.supabase as any)?.url ||
+    "";
+
+  const bucket = (config.public.storageBucket as string) || "Products";
+  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
+};
+
+const onImgError = (e: Event) => {
+  const el = e.target as HTMLImageElement;
+  if (el.src.endsWith(FALLBACK_IMG)) return;
+  el.src = FALLBACK_IMG;
+};
+
+const confirming = ref(false);
+
+// const alreadyConfirmed = computed(() =>
+//   Boolean(order.value?.customer_confirmed || order.value?.confirmed_at),
+// );
+
+const isCompleted = computed(() => {
+  const status = String(order.value?.status || "").toLowerCase();
+  const install = String(order.value?.install_status || "").toLowerCase();
+  return (
+    status === "completed" || install === "completed" || install === "installed"
+  );
+});
+
+const MS_48H = 48 * 60 * 60 * 1000;
+
+const startOfDay = (value: Date) => {
+  const d = new Date(value);
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+
+const toYmd = (d: Date) => {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
+
+const preferredDates = computed(() => {
+  const list = order.value?.preferred_install_dates;
+  return (Array.isArray(list) ? list : [])
+    .map((d: string) => startOfDay(new Date(d)))
+    .filter((d: Date) => !Number.isNaN(d.getTime()))
+    .sort((a: Date, b: Date) => a.getTime() - b.getTime());
+});
+
+const confirmedDate = computed(() => {
+  const raw = order.value?.confirmed_install_date;
+  if (!raw) return null;
+  const d = startOfDay(new Date(raw));
+  return Number.isNaN(d.getTime()) ? null : d;
+});
+
+const confirmedStillActive = computed(() => {
+  if (!confirmedDate.value) return false;
+  return confirmedDate.value.getTime() >= startOfDay(new Date()).getTime();
+});
+
+const nextPreferredDate = computed(() => {
+  const today = startOfDay(new Date()).getTime();
+  const after = confirmedDate.value ? confirmedDate.value.getTime() : today - 1;
+  return (
+    preferredDates.value.find(
+      (d: Date) => d.getTime() > after && d.getTime() >= today,
+    ) || null
+  );
+});
+
+const confirmWindowOpen = computed(() => {
+  if (!nextPreferredDate.value) return false;
+  if (!confirmedDate.value) return true;
+
+  const start = nextPreferredDate.value.getTime() - MS_48H;
+  const end = nextPreferredDate.value.getTime() + 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  return now >= start && now < end;
+});
+
+const alreadyConfirmed = computed(() => confirmedStillActive.value);
+
+const showConfirmButton = computed(() => {
+  if (!order.value || isCompleted.value) return false;
+  if (confirmedStillActive.value) return true;
+  return Boolean(nextPreferredDate.value);
+});
+
+const confirmEnabled = computed(
+  () =>
+    !confirmedStillActive.value &&
+    confirmWindowOpen.value &&
+    !confirming.value &&
+    !!turnstileToken.value,
+);
+
+const confirmOpensAt = computed(() => {
+  if (!nextPreferredDate.value || confirmWindowOpen.value) return "";
+  return new Date(nextPreferredDate.value.getTime() - MS_48H).toLocaleString();
+});
+
+const confirmOrder = async () => {
+  if (!order.value || alreadyConfirmed.value) return;
+
+  if (!turnstileToken.value) {
+    error.value = "Complete the security check again to confirm.";
+    return;
+  }
+
+  confirming.value = true;
+  error.value = "";
+
+  try {
+    const data = (await $fetch("/api/track-order/confirm", {
+      method: "POST",
+      body: {
+        order_number: form.value.order_number.trim(),
+        email: form.value.email.trim().toLowerCase(),
+        turnstile_token: turnstileToken.value,
+      },
+    })) as {
+      success: boolean;
+      already_confirmed?: boolean;
+      error?: string;
+      order?: any;
+    };
+
+    if (data.success || data.already_confirmed) {
+      order.value = {
+        ...order.value,
+        ...data.order,
+        customer_confirmed: true,
+        confirmed_at: data.order?.confirmed_at || new Date().toISOString(),
+        status: data.order?.status || "confirmed",
+        preferred_install_dates:
+          data.order?.preferred_install_dates ||
+          order.value.preferred_install_dates,
+        confirmed_install_date: data.order?.confirmed_install_date || null,
+      };
+      timeline.value = [
+        ...timeline.value,
+        {
+          status: "confirmed",
+          notes: `Customer confirmed install date ${
+            data.order?.confirmed_install_date || ""
+          }`.trim(),
+          created_at: order.value.confirmed_at,
+        },
+      ];
+    } else {
+      error.value = data.error || "Could not confirm order.";
+    }
+  } catch (e: any) {
+    error.value = e?.data?.message || e?.message || "Could not confirm order.";
+  } finally {
+    confirming.value = false;
+    resetTurnstile();
+  }
+};
+
+const nextInstallDate = (dates?: string[] | string | null): string | null => {
+  const list = Array.isArray(dates) ? dates : dates ? [dates] : [];
+  const valid = list
+    .map((d) => {
+      const dt = new Date(d);
+      return Number.isNaN(dt.getTime()) ? null : dt;
+    })
+    .filter((d): d is Date => d !== null)
+    .sort((a, b) => a.getTime() - b.getTime());
+
+  if (!valid.length) return null;
+
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  const upcoming = valid.find((d) => d.getTime() >= startOfToday.getTime());
+  return upcoming ? upcoming.toISOString() : null;
 };
 </script>

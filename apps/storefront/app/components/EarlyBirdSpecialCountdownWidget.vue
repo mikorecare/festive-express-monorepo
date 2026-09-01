@@ -13,7 +13,7 @@
       <div
         v-for="unit in units"
         :key="unit.label"
-        class="flex min-w-[40px] items-baseline justify-center gap-0.5 rounded-md border border-[#F49321]/60 bg-[#0c1a35] px-1.5 py-1 max-lg:min-w-[28px] max-lg:rounded px-1 py-0.5"
+        class="flex min-w-[40px] items-baseline justify-center gap-0.5 rounded-md border border-[#F49321]/60 bg-[#0c1a35] px-1.5 py-1 max-lg:min-w-[28px] max-lg:rounded max-lg:px-1 max-lg:py-0.5"
       >
         <span
           class="text-base font-black leading-none text-white max-lg:text-[0.8rem]"
@@ -29,6 +29,7 @@
     </div>
 
     <p
+      v-if="endsLabel"
       class="m-0 text-[0.7rem] font-medium leading-snug text-slate-200 max-lg:text-[0.65rem]"
     >
       Ends {{ endsLabel }}
@@ -46,15 +47,26 @@ let timer: ReturnType<typeof setInterval> | null = null;
 
 const formatNumber = (n: number) => String(Math.max(0, n)).padStart(2, "0");
 
+const expiryMs = computed(() => {
+  const raw = earlyBirdExpiresAt.value;
+  if (!raw) return null;
+  const ms = new Date(raw).getTime();
+  return Number.isNaN(ms) ? null : ms;
+});
+
 const endsLabel = computed(() => {
   const raw = earlyBirdExpiresAt.value;
-  if (!raw) return "October 31, 2026";
-  const d = new Date(raw);
-  if (Number.isNaN(d.getTime())) return "October 31, 2026";
+  if (!raw) return "";
+
+  const day = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!day) return "";
+
+  const d = new Date(`${day[1]}-${day[2]}-${day[3]}T00:00:00Z`);
   return d.toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
+    timeZone: "UTC",
   });
 });
 
@@ -66,10 +78,12 @@ const units = computed(() => [
 ]);
 
 function tick() {
-  const end = earlyBirdExpiresAt.value
-    ? new Date(earlyBirdExpiresAt.value).getTime()
-    : new Date("2026-10-31T23:59:59").getTime();
-  const diff = Math.max(0, end - Date.now());
+  if (!expiryMs.value) {
+    timeLeft.value = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    return;
+  }
+
+  const diff = Math.max(0, expiryMs.value - Date.now());
   timeLeft.value = {
     days: Math.floor(diff / 86400000),
     hours: Math.floor((diff % 86400000) / 3600000),
@@ -80,14 +94,15 @@ function tick() {
 
 function updateVisibility() {
   const enabled = Boolean(earlyBirdEnabled.value);
-  const exp = earlyBirdExpiresAt.value;
-  const notExpired = !exp || new Date(exp).getTime() > Date.now();
-  showWidget.value = enabled && notExpired;
-  console.log("showWidget", showWidget.value, { enabled, exp });
+  const end = expiryMs.value;
+  showWidget.value = enabled && !!end && end > Date.now();
 }
 
 onMounted(async () => {
   await loadEarlyBird();
+
+  console.log("EB enabled", earlyBirdEnabled.value);
+  console.log("EB expiresAt raw", earlyBirdExpiresAt.value);
   updateVisibility();
   tick();
   timer = setInterval(() => {

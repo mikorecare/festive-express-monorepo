@@ -44,13 +44,17 @@ const formatNumber = (n: number) => String(Math.max(0, n)).padStart(2, "0");
 
 const endsLabel = computed(() => {
   const raw = earlyBirdExpiresAt.value;
-  if (!raw) return "October 31, 2026";
-  const d = new Date(raw);
-  if (Number.isNaN(d.getTime())) return "October 31, 2026";
+  if (!raw) return "";
+
+  const day = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!day) return "";
+
+  const d = new Date(`${day[1]}-${day[2]}-${day[3]}T00:00:00Z`);
   return d.toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
+    timeZone: "UTC",
   });
 });
 
