@@ -1,2 +1,64 @@
-User-Agent: *
-Disallow:
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Block junk and duplicate paths
+Disallow: /_nuxt/
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /auth/
+Disallow: /checkout/
+Disallow: /account/
+
+# Block all backup/duplicate pages
+Disallow: /cart-back
+Disallow: /packages-back
+Disallow: /packages-back2NEW
+Disallow: /preview-your-home.back
+Disallow: /track-order-backup
+Disallow: /*back*
+Disallow: /reviews
+Disallow: /membership
+
+# Block query parameters (prevents duplicate content)
+Disallow: /?*
+Disallow: /*?
+
+# AI Crawlers - Explicitly allow them
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+# AI Crawlers - Block sensitive areas
+User-agent: GPTBot
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /checkout/
+Disallow: /cart/
+Disallow: /account/
+
+User-agent: ClaudeBot
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /checkout/
+Disallow: /cart/
+Disallow: /account/
+
+User-agent: ChatGPT-User
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /checkout/
+Disallow: /cart/
+Disallow: /account/
+
+# Point to your sitemap
+Sitemap: https://www.festive.express/sitemap.xml

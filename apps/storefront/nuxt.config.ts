@@ -5,11 +5,38 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: true,
 
+
   css: [
     "bootstrap/dist/css/bootstrap.min.css",
     "~/assets/css/main.css",
     "~/assets/css/pages.css",
   ],
+
+  site: {
+    url: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+  },
+
+  sitemap: {
+    exclude: [
+      // Admin and functional pages
+      '/admin/**',
+      '/dashboard/**',
+      '/api/**',
+      '/auth/**',
+      '/checkout/**',
+      '/account/**',
+
+      // Tracking pages (don't index these)
+      '/track-order',
+      '/track-order-backup',
+      '/**/*back*',
+      '/**/*BACK*',
+      '/**/*.back',
+      '/reviews',
+      '/membership',
+    ],
+    autoLastmod: true,
+  },
 
   app: {
     head: {
@@ -39,7 +66,7 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/supabase", "@nuxtjs/turnstile", "nuxt-security"],
+  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/supabase", "@nuxtjs/turnstile", "nuxt-security", '@nuxtjs/sitemap'],
 
   turnstile: {
     siteKey:
