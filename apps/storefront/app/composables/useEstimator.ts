@@ -1,5 +1,15 @@
-import { ref, computed, onUnmounted, onMounted } from "vue";
-import type { ColorOption, Suggestion, MultiColor, RenderResult, ApiResponse, PackageOption, IPackageRow, IPackageOption } from "~/components/PreviewYourHome/types";
+import { ref, computed, onUnmounted, onMounted, watch } from "vue";
+import type {
+    ColorOption,
+    Suggestion,
+    MultiColor,
+    RenderResult,
+    ApiResponse,
+    PackageOption,
+    IPackageRow,
+    IPackageOption,
+    RenderStats
+} from "~/components/PreviewYourHome/types";
 
 const fileInput = ref<HTMLInputElement | null>(null);
 const imagePreview = ref<string>("");
@@ -22,7 +32,7 @@ const name = ref<string>("");
 const email = ref<string>("");
 const phone = ref<string>("");
 const error = ref<string>("");
-const errors = ref<{ name?: string; email?: string }>({});
+const errors = ref<{ name?: string; email?: string; address?: string }>({});
 const isLoading = ref<boolean>(false);
 const rendering = ref<boolean>(false);
 const result = ref<RenderResult | null>(null);
@@ -64,8 +74,11 @@ const progressSteps: readonly string[] = [
 let factInterval: ReturnType<typeof setInterval> | null = null;
 const currentFact = ref<string>(facts[0] || "");
 const progressText = ref<string>(progressSteps[0] || "");
+const PACKAGE_TOTAL_FT = 175;
+const MAX_ROOFLINE_FT = 125;
+const MAX_GROUND_FT = 50;
+const OVERAGE_RATE = 10;
 
-// Computed
 const multiColorPreview = computed<string[]>((): string[] => {
     const preview: string[] = [];
     for (let cycle = 0; cycle < 2; cycle++) {
@@ -78,42 +91,114 @@ const multiColorPreview = computed<string[]>((): string[] => {
     return preview;
 });
 
+// Get selected package data
+const selectedPackageData = computed<IPackageOption | undefined>(() => {
+    return packageOptions.value.find(p => p.id === selectedPackage.value);
+});
+
+// Get total feet from stats (roofline + ground combined)
+const getTotalFeet = (stats: RenderStats | null | undefined): number => {
+    if (!stats) return 0;
+    const rooflineFt = stats.rooflineFeet || stats.frontFeet || 0;
+    const groundFt = stats.groundFeet || 0;
+    return rooflineFt + groundFt;
+};
+
+// Get roofline feet only
+const getRooflineFeet = (stats: RenderStats | null | undefined): number => {
+    if (!stats) return 0;
+    return stats.rooflineFeet || stats.frontFeet || 0;
+};
+
+// Get ground feet only
+const getGroundFeet = (stats: RenderStats | null | undefined): number => {
+    if (!stats) return 0;
+    return stats.groundFeet || 0;
+};
+
+// Calculate overage based on total feet (roofline + ground)
+const calculatedOverageFt = computed<number>(() => {
+    if (!result.value?.stats) return 0;
+    const totalFt = getTotalFeet(result.value.stats);
+    return totalFt > PACKAGE_TOTAL_FT ? Math.max(0, totalFt - PACKAGE_TOTAL_FT) : 0;
+});
+
+// Calculate overage price at $10/ft
+const calculatedOveragePrice = computed<number | null>(() => {
+    const overage = calculatedOverageFt.value;
+    if (overage <= 0) return null;
+    return Math.round((overage * OVERAGE_RATE) / 10) * 10;
+});
+
+// Calculate total estimate (package price + overage)
+const totalEstimate = computed<number | null>(() => {
+    if (!selectedPackageData.value) return null;
+    const basePrice = selectedPackageData.value.price;
+    const overagePrice = calculatedOveragePrice.value || 0;
+    return basePrice + overagePrice;
+});
+
+// Check if total is within package limits
+const isWithinPackage = computed<boolean>(() => {
+    if (!result.value?.stats) return true;
+    const totalFt = getTotalFeet(result.value.stats);
+    return totalFt <= PACKAGE_TOTAL_FT;
+});
+
 const statsCards = computed<{ label: string; value: string }[]>(() => {
     const s = result.value?.stats;
     if (!s) return [];
 
     const cards: { label: string; value: string }[] = [];
-    const frontFt = s.frontFeet ?? s.rooflineFeet ?? null;
-    const displayFt = s.packageTotalFeet ?? frontFt ?? null;
+    const rooflineFt = getRooflineFeet(s);
+    const groundFt = getGroundFeet(s);
+    const totalFt = getTotalFeet(s);
 
-    if (displayFt !== null) {
-        cards.push({ label: "Estimated footage", value: `${Math.round(displayFt)} ft` });
+    if (rooflineFt > 0) {
+        cards.push({ label: "Roofline footage", value: `${Math.round(rooflineFt)} ft` });
     }
-    if (s.frontPrice !== null && s.frontPrice !== undefined) {
-        cards.push({ label: "Estimate", value: formatMoney(s.frontPrice) });
+    if (groundFt > 0) {
+        cards.push({ label: "Ground lights", value: `${Math.round(groundFt)} ft` });
     }
-    if (s.wholeFeet !== null && s.wholeFeet !== undefined) {
-        cards.push({ label: "Whole-house footage", value: `${Math.round(s.wholeFeet)} ft` });
-    }
-    if (s.wholePrice !== null && s.wholePrice !== undefined) {
-        cards.push({ label: "Whole-house quote", value: formatMoney(s.wholePrice) });
+    if (totalFt > 0) {
+        cards.push({ label: "Total footage", value: `${Math.round(totalFt)} ft` });
     }
 
-    if (s.packageOverageFt !== null && s.packageOverageFt !== undefined && s.packageOverageFt > 0) {
-        cards.push({ label: "Extra footage", value: `+${Math.round(s.packageOverageFt)} ft` });
-        if (s.overagePrice !== null && s.overagePrice !== undefined) {
-            cards.push({ label: "Extra to add", value: formatMoney(s.overagePrice) });
+    // Get selected package
+    const pkg = selectedPackageData.value;
+    if (pkg) {
+        cards.push({
+            label: `${pkg.name} — Early Bird Special`,
+            value: formatMoney(pkg.price)
+        });
+    }
+
+    // Show package details
+    cards.push({
+        label: "Package includes",
+        value: `Up to ${PACKAGE_TOTAL_FT} ft total (${MAX_ROOFLINE_FT} ft roofline + ${MAX_GROUND_FT} ft ground)`
+    });
+
+    // Use calculated overage
+    const overageFt = calculatedOverageFt.value;
+    if (overageFt > 0) {
+        cards.push({ label: "Extra footage needed", value: `+${Math.round(overageFt)} ft` });
+        const overagePrice = calculatedOveragePrice.value;
+        if (overagePrice !== null) {
+            cards.push({ label: `Extra at $${OVERAGE_RATE}/ft`, value: formatMoney(overagePrice) });
         }
-    } else if (s.withinPackage) {
-        cards.push({ label: "175 ft package", value: "Covered" });
+        if (totalEstimate.value !== null) {
+            cards.push({ label: "Total estimate", value: formatMoney(totalEstimate.value) });
+        }
+    } else {
+        cards.push({ label: "Package coverage", value: "✓ Your home is covered" });
     }
 
     return cards;
 });
 
 const showOffer = computed<boolean>((): boolean => {
-    const overage = result.value?.stats?.packageOverageFt;
-    return overage !== null && overage !== undefined && overage > 0;
+    return calculatedOverageFt.value > 0;
 });
 
 // Methods
@@ -196,6 +281,7 @@ function selectAddress(suggestion: Suggestion): void {
     address.value = suggestion.full;
     suggestions.value = [];
     suggestionsOpen.value = false;
+    errors.value.address = undefined;
 }
 
 function updateMultiColor(index: number, event: Event): void {
@@ -206,6 +292,10 @@ function updateMultiColor(index: number, event: Event): void {
 function validateForm(previewOnly: boolean): boolean {
     errors.value = {};
 
+    if (!address.value.trim()) {
+        errors.value.address = "Address is required";
+    }
+
     if (!previewOnly) {
         if (!name.value.trim()) {
             errors.value.name = "Name is required";
@@ -213,11 +303,6 @@ function validateForm(previewOnly: boolean): boolean {
         if (!email.value || !email.value.includes("@")) {
             errors.value.email = "Valid email is required";
         }
-    }
-
-    if (!imageBase64.value && !address.value) {
-        error.value = "Upload a photo of your home or enter your address.";
-        return false;
     }
 
     return Object.keys(errors.value).length === 0;
@@ -289,7 +374,7 @@ const fetchPackages = async () => {
                 name: pkg.name,
                 previousPrice: Math.round(Number(pkg.price) || 0),
                 price: Math.round(Number(pkg.sale_price) || 0),
-                includedFt: pkg.max_roofline_ft || 175,
+                includedFt: PACKAGE_TOTAL_FT, // Always 175 total
                 title: imageUrl,
             };
         });
@@ -304,6 +389,22 @@ const fetchPackages = async () => {
         loadingPackages.value = false;
     }
 };
+
+function updateResultStats(): void {
+    if (!result.value?.stats) return;
+
+    const overageFt = calculatedOverageFt.value;
+    const overagePrice = calculatedOveragePrice.value;
+
+    result.value.stats.packageOverageFt = overageFt;
+    result.value.stats.overagePrice = overagePrice;
+    result.value.stats.estimatedTotal = totalEstimate.value;
+    result.value.stats.package = selectedPackage.value;
+    result.value.stats.packageName = selectedPackageData.value?.name;
+    result.value.stats.packageIncludedFt = PACKAGE_TOTAL_FT;
+    result.value.stats.pricePerFoot = OVERAGE_RATE;
+    result.value.stats.withinPackage = isWithinPackage.value;
+}
 
 async function submitRender(previewOnly: boolean): Promise<void> {
     error.value = "";
@@ -341,7 +442,7 @@ async function submitRender(previewOnly: boolean): Promise<void> {
             placeId: placeId.value || undefined,
             imageBase64: imageBase64.value || undefined,
             email: email.value || undefined,
-            pricePerFoot: pricePerFoot.value,
+            pricePerFoot: OVERAGE_RATE,
             scheme: selectedScheme.value,
             customColors: selectedScheme.value === "multicolor" ? multiColors.value : [],
             landscape: true,
@@ -377,6 +478,9 @@ async function submitRender(previewOnly: boolean): Promise<void> {
 
         result.value = response;
 
+        // Update stats with calculated values
+        updateResultStats();
+
         if (previewOnly) {
             const verifiedAddress = response.streetView?.verifiedAddress || "";
             const addressPart = verifiedAddress
@@ -386,9 +490,23 @@ async function submitRender(previewOnly: boolean): Promise<void> {
                 ? `Street View for ${response.address}${addressPart}. Footage estimated from the building footprint — same method as a design quote. No lighting on this preview.`
                 : "Footage estimated from the building footprint. No lighting on this preview.";
         } else {
-            resultNote.value = response.address
-                ? `Estimate for ${response.address}. Final pricing confirmed at your free on-site measurement.`
-                : "Estimate only. Final pricing confirmed at your free on-site measurement.";
+            // Show package details in the result note
+            const pkg = selectedPackageData.value;
+            const totalFt = result.value?.stats ? getTotalFeet(result.value.stats) : 0;
+            const overageFt = calculatedOverageFt.value;
+
+            let note = `Estimate for ${response.address || 'your home'}. `;
+            note += `Package: ${pkg?.name || 'Selected'} (up to ${PACKAGE_TOTAL_FT} ft total). `;
+
+            if (overageFt > 0) {
+                note += `Your home needs ${Math.round(totalFt)} ft total, which is ${Math.round(overageFt)} ft over the package. `;
+                note += `Add ${Math.round(overageFt)} ft at $${OVERAGE_RATE}/ft = ${formatMoney(calculatedOveragePrice.value || 0)}. `;
+            } else {
+                note += `Your home's ${Math.round(totalFt)} ft is covered by the package. `;
+            }
+            note += `Final pricing confirmed at your free on-site measurement.`;
+
+            resultNote.value = note;
         }
     } catch (err) {
         stopFacts();
@@ -423,6 +541,12 @@ async function bookConsultation(): Promise<void> {
                 address: address.value,
                 imageUrl: result.value?.imageUrl || "",
                 estimate: result.value?.stats || null,
+                package: selectedPackage.value,
+                totalEstimate: totalEstimate.value,
+                packageName: selectedPackageData.value?.name,
+                overageFt: calculatedOverageFt.value,
+                overagePrice: calculatedOveragePrice.value,
+                totalFt: result.value?.stats ? getTotalFeet(result.value.stats) : 0,
             },
         });
 
@@ -444,6 +568,16 @@ function handleClickOutside(event: MouseEvent): void {
         suggestionsOpen.value = false;
     }
 }
+
+// Watch for package selection changes to recalculate pricing
+watch(selectedPackage, () => {
+    updateResultStats();
+});
+
+// Watch for price per foot changes (though it's now constant at $10)
+watch(pricePerFoot, () => {
+    updateResultStats();
+});
 
 // Lifecycle
 onMounted((): void => {
@@ -491,6 +625,16 @@ export function useEstimator() {
         multiColorPreview,
         statsCards,
         showOffer,
+        selectedPackageData,
+        calculatedOverageFt,
+        calculatedOveragePrice,
+        totalEstimate,
+        isWithinPackage,
+        // Constants
+        PACKAGE_TOTAL_FT,
+        MAX_ROOFLINE_FT,
+        MAX_GROUND_FT,
+        OVERAGE_RATE,
         // Methods
         formatMoney,
         handleFileUpload,
@@ -501,5 +645,8 @@ export function useEstimator() {
         reset,
         bookConsultation,
         fetchPackages,
+        getTotalFeet,
+        getRooflineFeet,
+        getGroundFeet,
     };
 }
