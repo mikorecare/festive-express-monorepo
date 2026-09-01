@@ -9,7 +9,6 @@ export default defineNuxtConfig({
     "bootstrap/dist/css/bootstrap.min.css",
     "~/assets/css/main.css",
     "~/assets/css/pages.css",
-    "~/assets/css/chat.css",
   ],
 
   app: {
