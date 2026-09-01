@@ -18,22 +18,24 @@ export default defineNuxtConfig({
 
   sitemap: {
     exclude: [
-      // Admin and functional pages
+      // Admin and functional
       '/admin/**',
       '/dashboard/**',
       '/api/**',
       '/auth/**',
       '/checkout/**',
       '/account/**',
-
-      // Tracking pages (don't index these)
-      '/track-order',
-      '/track-order-backup',
+      '/cart-back',
+      '/packages-back',
+      '/packages-back2NEW',
+      '/preview-your-home.back',
       '/**/*back*',
       '/**/*BACK*',
       '/**/*.back',
       '/reviews',
       '/membership',
+      '/track-order',
+      '/track-order-backup',
     ],
     autoLastmod: true,
   },
