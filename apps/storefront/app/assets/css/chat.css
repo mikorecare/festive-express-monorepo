@@ -1,0 +1,32 @@
+:root {
+    --primary-color: #1c2d5b !important;
+    --primary-color-dark: #1c2d5b !important;
+    --ctm-chat-bubble-background: #1c2d5b !important;
+}
+
+.bubble {
+    background: #1c2d5b !important;
+    background-image: none !important;
+    background-color: #1c2d5b !important;
+}
+
+.bubble:hover {
+    background: #1c2d5b !important;
+    background-image: none !important;
+}
+
+.bubble::before,
+.bubble::after {
+    display: none !important;
+}
+
+/* Target any bubble-like element */
+[class*="bubble"] {
+    background: #1c2d5b !important;
+    background-image: none !important;
+}
+
+/* Target the chat widget directly */
+ctm-chat {
+    --ctm-chat-bubble-background: #1c2d5b !important;
+}
