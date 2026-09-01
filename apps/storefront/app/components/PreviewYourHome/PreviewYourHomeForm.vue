@@ -128,52 +128,87 @@
 
     <!-- Package Options -->
     <div>
-      <label class="block !text-md font-semibold text-gray-700 mb-2 form-label">
-        Select Package
+      <label class="block !text-md font-semibold text-gray-700 mb-4 form-label">
+        Select your package
       </label>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+
+      <!-- Loading State -->
+      <div v-if="loadingPackages" class="text-center py-4 text-gray-500">
+        Loading packages...
+      </div>
+
+      <!-- Package Options -->
+      <div v-else class="grid grid-cols-1 sm:grid-cols-3 gap-2">
         <button
           v-for="pkg in packageOptions"
           :key="pkg.id"
           type="button"
-          class="px-3 pt-6 pb-10 border-2 rounded-[16px] min-h-[148px] !text-md transition-all flex flex-col items-center relative"
+          class="px-3 pt-0 border-2 pb-2 rounded-[16px] min-h-[167px] !text-md transition-all flex flex-col items-center relative bg-[#1C2F5B] overflow-visible"
           :class="
             selectedPackage === pkg.id
-              ? 'bg-orange-50 !border-[#F7931E]'
-              : 'border-gray-300 hover:border-gray-400'
+              ? '!border-[#F7931E] border-4'
+              : 'border-gray-600 hover:border-gray-400'
           "
           @click="selectedPackage = pkg.id"
         >
-          <span
-            class="font-semibold text-[30px] font-poppins leading-none"
-            :class="
-              selectedPackage === pkg.id ? 'text-[#F7931E]' : 'text-gray-700'
+          <!-- Package Title Image - overlapping the top border -->
+          <img
+            v-if="pkg.title"
+            :src="pkg.title"
+            :alt="pkg.name"
+            class="h-auto max-h-[80px] w-auto object-contain -mt-3"
+            @error="
+              (e) => {
+                const img = e.target as HTMLImageElement;
+                if (img) img.style.display = 'none';
+              }
             "
+          />
+          <span
+            v-else
+            class="font-bold text-[40px] font-poppins leading-none text-white -mt-2"
           >
             {{ pkg.name }}
           </span>
-          <span class="text-[20px] font-poppins mt-4">
-            <span class="text-[#F7931E] font-bold"
-              >${{ pkg.price.toLocaleString() }}</span
+
+          <span
+            v-if="pkg.previousPrice && pkg.previousPrice !== pkg.price"
+            class="text-[14px] font-poppins font-semibold text-white mt-3"
+          >
+            was
+            <span class="line-through decoration-[#F39124]"
+              >${{ pkg.previousPrice.toLocaleString() }}</span
             >
-            <span class="text-[#1C2F5B] font-normal">/ season</span>
           </span>
 
-          <!-- Ribbon - Desktop: bottom center, Mobile: top right -->
+          <!-- Current Price with "now" aligned to top of price -->
+          <div class="flex items-end mt-0.5 gap-1 font-semibold">
+            <!-- "now" - aligned to top of price -->
+            <span
+              v-if="pkg.previousPrice && pkg.previousPrice !== pkg.price"
+              class="text-[14px] font-poppins text-white self-start"
+            >
+              now
+            </span>
+            <!-- Price -->
+            <span class="text-[#F7931E] font-bold text-[32px] leading-none">
+              ${{ pkg.price.toLocaleString() }}
+            </span>
+            <!-- "/ season" - aligned to baseline of price -->
+            <span class="text-white font-normal text-[12px] self-end">
+              /season
+            </span>
+          </div>
+
+          <!-- Early Bird Ribbon - inside the card, below price -->
           <img
-            src="/Images/Preview-Your-Home/ribbon.png"
-            alt="Selected"
-            class="absolute h-auto max-w-[138px] left-1/2 -translate-x-1/2 -bottom-16 hidden sm:block"
-          />
-          <img
-            src="/Images/Preview-Your-Home/ribbon.png"
-            alt="Selected"
-            class="absolute h-auto max-w-[100px] -top-4 -right-4 block sm:hidden"
+            src="/Images/earlybird2.png"
+            alt="Early Bird Special"
+            class="h-[28px] w-auto mt-2"
           />
         </button>
       </div>
     </div>
-
     <!-- Color Options -->
     <div class="pt-4">
       <label class="block !text-md font-semibold text-gray-700 mb-2 form-label">
@@ -328,7 +363,13 @@ const {
   selectAddress,
   updateMultiColor,
   submitRender,
+  fetchPackages,
+  loadingPackages,
 } = useEstimator();
+
+onMounted(() => {
+  fetchPackages();
+});
 </script>
 
 <style scoped>
@@ -343,7 +384,7 @@ const {
 
 .form-input {
   border-radius: 16px;
-  border: 2px solid #1c2f5b !important;
+  border: 2px solid gray !important;
   height: 56px;
   background-color: #f8f9fa;
 }

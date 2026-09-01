@@ -5,12 +5,12 @@
       v-if="!rendering"
       class="bg-white rounded-2xl p-6 shadow-md max-w-4xl w-full mx-4 my-8"
     >
-      <h3 class="text-lg font-bold text-navy mb-4 flex items-center">
-        <i class="fas fa-magic mr-2"></i> See Your Home Lit Up
-      </h3>
-      <p class="text-sm text-gray-600 mb-4">
-        Upload a photo, pick your colors, and watch it light up. Instant design
-        + estimate.
+      <p class="text-[48px] text-[#f7931e] font-bold flex items-center">
+        See Your Home Lit Up
+      </p>
+      <p class="text-xl text-black-200 mb-4">
+        Enter your address, pick a package and a color, click on “Light Up My
+        Home.” 
       </p>
 
       <PreviewYourHomeForm v-if="!result && !renderError" />

@@ -1,5 +1,5 @@
 import { ref, computed, onUnmounted, onMounted } from "vue";
-import type { ColorOption, Suggestion, MultiColor, RenderResult, ApiResponse, PackageOption } from "~/components/PreviewYourHome/types";
+import type { ColorOption, Suggestion, MultiColor, RenderResult, ApiResponse, PackageOption, IPackageRow, IPackageOption } from "~/components/PreviewYourHome/types";
 
 const fileInput = ref<HTMLInputElement | null>(null);
 const imagePreview = ref<string>("");
@@ -29,6 +29,9 @@ const result = ref<RenderResult | null>(null);
 const renderError = ref<string>("");
 const booking = ref<boolean>(false);
 const resultNote = ref<string>("");
+const packages = ref<IPackageRow[]>([]);
+const loadingPackages = ref<boolean>(false);
+const packageError = ref<string | null>(null);
 
 const colorOptions: ColorOption[] = [
     { scheme: "warm-white", label: "Warm White", sw: "#fff3d6" },
@@ -38,11 +41,7 @@ const colorOptions: ColorOption[] = [
     { scheme: "multicolor", label: "Multicolor" },
 ];
 
-const packageOptions = [
-    { id: "joy" as const, name: "Joy", price: 999, includedFt: 125 },
-    { id: "jolly" as const, name: "Jolly", price: 1999, includedFt: 175 },
-    { id: "merry" as const, name: "Merry", price: 2999, includedFt: 175 },
-];
+const packageOptions = ref<IPackageOption[]>([]);
 
 const facts: readonly string[] = [
     "Permanent lighting works every night of the year — not just December.",
@@ -249,6 +248,63 @@ function stopFacts(): void {
     }
 }
 
+const fetchPackages = async () => {
+    loadingPackages.value = true;
+    packageError.value = null;
+    try {
+        const supabase = useSupabaseClient();
+        const config = useRuntimeConfig();
+        const { data, error: sbError } = await (supabase.from("packages") as any)
+            .select(
+                `
+        *,
+        package_inclusions (
+          id,
+          is_included,
+          inclusion_items (
+            id,
+            name,
+            image_url
+          )
+        )
+      `,
+            )
+            .order("sort_order", { ascending: true })
+            .order("id", { ascending: true });
+
+        if (sbError) throw sbError;
+        packages.value = (data as IPackageRow[]) || [];
+        packageOptions.value = packages.value.map((pkg) => {
+            let imageUrl = pkg.title_image_url || '';
+
+            if (imageUrl && !imageUrl.startsWith('http')) {
+                const supabaseUrl = config.public.supabaseUrl || '';
+                const bucket = config.public.storageBucket || 'Products';
+                const path = imageUrl.replace(/^\/+/, '').replace(/^products\//i, '');
+                imageUrl = `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
+            }
+
+            return {
+                id: pkg.slug as PackageOption,
+                name: pkg.name,
+                previousPrice: Math.round(Number(pkg.price) || 0),
+                price: Math.round(Number(pkg.sale_price) || 0),
+                includedFt: pkg.max_roofline_ft || 175,
+                title: imageUrl,
+            };
+        });
+
+        if (packageOptions.value.length > 0) {
+            selectedPackage.value = packageOptions.value[0]!.id;
+        }
+    } catch (err: any) {
+        console.error(err);
+        packageError.value = err.message || "Failed to load packages.";
+    } finally {
+        loadingPackages.value = false;
+    }
+};
+
 async function submitRender(previewOnly: boolean): Promise<void> {
     error.value = "";
 
@@ -428,6 +484,9 @@ export function useEstimator() {
         currentFact,
         progressText,
         colorOptions,
+        packages,
+        loadingPackages,
+        packageError,
         // Computed
         multiColorPreview,
         statsCards,
@@ -441,5 +500,6 @@ export function useEstimator() {
         submitRender,
         reset,
         bookConsultation,
+        fetchPackages,
     };
 }

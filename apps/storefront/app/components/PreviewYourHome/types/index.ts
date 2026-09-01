@@ -1,5 +1,32 @@
 
+export interface IPackageRow {
+    id: number;
+    name: string;
+    slug: PackageOption;
+    price: number | string;
+    sale_price: number | string;
+    description?: string | null;
+    max_roofline_ft?: number | null;
+    features?: string[] | null;
+    is_popular?: boolean;
+    color?: string | null;
+    image_url?: string | null;
+    title_image_url?: string | null;
+    icon_url?: string | null;
+    sort_order?: number | null;
+    created_at?: string;
+}
+
 export type PackageOption = 'joy' | 'jolly' | 'merry';
+
+export interface IPackageOption {
+    id: PackageOption;
+    name: string;
+    previousPrice: number,
+    price: number;
+    includedFt: number;
+    title?: string;
+}
 
 export interface Suggestion {
     placeId: string;

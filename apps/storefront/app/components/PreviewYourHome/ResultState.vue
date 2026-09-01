@@ -142,9 +142,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useEstimator } from "~/composables/useEstimator";
+import type { IPackageOption } from "~/components/PreviewYourHome/types";
 
 const router = useRouter();
 
@@ -166,7 +167,9 @@ let redirectTimer: NodeJS.Timeout | null = null;
 
 const getPackagePrice = (packageId?: string | null) => {
   if (!packageId) return formatMoney(0);
-  const pkg = packageOptions.find((p) => p.id === packageId);
+  const pkg = packageOptions.value.find(
+    (p: IPackageOption) => p.id === packageId,
+  );
   return pkg ? formatMoney(pkg.price) : formatMoney(0);
 };
 
@@ -188,7 +191,6 @@ const bookConsultation = async () => {
   }
 };
 
-import { onUnmounted } from "vue";
 onUnmounted(() => {
   if (redirectTimer) {
     clearTimeout(redirectTimer);

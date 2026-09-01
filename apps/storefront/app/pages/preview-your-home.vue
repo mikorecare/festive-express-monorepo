@@ -7,8 +7,11 @@
           alt="Preview your home"
           class="hero-image"
         />
+        <!-- Navy Blue Overlay -->
+        <div class="hero-overlay"></div>
         <div class="hero-content">
           <h1 v-fade>PREVIEW YOUR HOME</h1>
+          <p v-fade class="subtitle">See your home gift-wrapped in Lights.</p>
           <p v-fade class="breadcrumb"></p>
         </div>
       </div>
@@ -45,6 +48,17 @@ useHead({
   display: block;
 }
 
+/* Navy Blue Overlay */
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(28, 47, 91, 0.6);
+  z-index: 1;
+}
+
 .hero-content {
   position: absolute;
   top: 50%;
@@ -61,11 +75,22 @@ useHead({
   color: white;
   font-size: 72px;
   font-family: Poppins;
-  font-weight: 800;
+  font-weight: 400;
   line-height: 157.44px;
   word-wrap: break-word;
   text-shadow: 0px 10px 4px rgba(0, 0, 0, 0.98);
   margin: 0;
+  letter-spacing: 0.15em;
+}
+
+.hero-content .subtitle {
+  color: #f7931e;
+  font-size: 24px;
+  font-family: Poppins;
+  font-weight: 400;
+  margin-top: -30px;
+  letter-spacing: 0.05em;
+  text-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 .hero-content .breadcrumb {
@@ -77,6 +102,11 @@ useHead({
   .hero-content h1 {
     font-size: 48px;
     line-height: 1.2;
+    letter-spacing: 0.1em;
+  }
+  .hero-content .subtitle {
+    font-size: 18px;
+    margin-top: -10px;
   }
 }
 
@@ -84,6 +114,11 @@ useHead({
   .hero-content h1 {
     font-size: 32px;
     line-height: 1.2;
+    letter-spacing: 0.08em;
+  }
+  .hero-content .subtitle {
+    font-size: 48px;
+    margin-top: -5px;
   }
 }
 </style>
