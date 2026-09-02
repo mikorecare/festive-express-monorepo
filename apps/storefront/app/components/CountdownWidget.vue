@@ -249,11 +249,13 @@ defineProps({
 
 @media (max-width: 768px) {
   .hero-countdown-widget {
+    position: absolute;
     top: 16px;
-    right: 16px;
     max-width: 200px;
     padding: 0.65rem 0.85rem;
     border-radius: 12px;
+    z-index: 10;
+    left: 12px;
   }
 
   .mini-timer-item {

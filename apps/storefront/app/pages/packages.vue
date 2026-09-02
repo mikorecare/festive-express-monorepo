@@ -13,7 +13,7 @@
               v-fade
               class="text-3xl md:text-5xl tracking-tight text-white mb-4"
             >
-              <span class="text-brand-orange">Holiday Lighting</span> Package
+              <span class="text-brand-orange">Holiday Lighting</span> Packages
             </h1>
 
             <p v-fade class="text-base md:text-lg text-slate-200">
@@ -92,7 +92,7 @@
           >
             <div class="relative mb-1">
               <img
-                :src="EarlyBirdSpecialRibbonSrc"
+                :src="earlyBirdIconSecondaryUrl"
                 alt="Early Bird Special"
                 class="relative z-[2] mb-2 h-8 md:h-10 lg:h-11 w-auto object-contain scale-100 origin-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
               />
@@ -611,10 +611,9 @@ const observerMap = new WeakMap<HTMLElement, IntersectionObserver>();
 const inclusionItems = ref<any[]>([]);
 const specsLoading = ref(true);
 
-const { loadEarlyBird, showSale, effectivePrice } = useEarlyBirdSpecial();
+const { loadEarlyBird, showSale, effectivePrice, earlyBirdIconSecondaryUrl } =
+  useEarlyBirdSpecial();
 const starburstSrc = "/Images/Holiday-Lighting-Package/starburst.png";
-// const EarlyBirdSpecialRibbonSrc = "/Images/Artboard-1ribbon.svg";
-const EarlyBirdSpecialRibbonSrc = "/Images/earlybird2.png";
 
 const settings = ref<{ hero_subtitle?: string } | null>(null);
 const subtitleParts = computed(() => {

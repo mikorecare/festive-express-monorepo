@@ -156,7 +156,7 @@
                   alt=""
                 />
                 <img
-                  :src="EarlyBirdSpecialRibbonSrc"
+                  :src="earlyBirdIconUrl"
                   alt="Early Bird Special"
                   class="relative z-0 h-8 md:h-9 w-auto drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)]"
                 />
@@ -312,8 +312,6 @@ const festivoConfig = computed<FestivoConfig>(() => {
 
 const BASE = "/Images/Holiday-Lighting-Package";
 const starburstSrc = "/Images/Holiday-Lighting-Package/starburst.png";
-// const EarlyBirdSpecialRibbonSrc = "/Images/Artboard-1ribbon.svg";
-const EarlyBirdSpecialRibbonSrc = "/Images/earlybird.png";
 
 interface InclusionItem {
   id?: number;
@@ -415,7 +413,8 @@ const setImageRef = (
   }
 };
 
-const { loadEarlyBird, showSale, effectivePrice } = useEarlyBirdSpecial();
+const { loadEarlyBird, showSale, effectivePrice, earlyBirdIconUrl } =
+  useEarlyBirdSpecial();
 
 onMounted(async () => {
   await Promise.all([fetchPackages(), loadEarlyBird()]);

@@ -236,6 +236,66 @@
               placeholder="Short description for the storefront banner"
             />
           </div>
+
+          <div class="form-section">
+            <label class="block text-sm font-semibold text-gray-700 mb-1">
+              Early Bird Icon (PNG)
+            </label>
+            <input
+              type="file"
+              accept="image/png"
+              class="w-full text-sm"
+              @change="onEarlyBirdIconChange"
+            />
+            <p v-if="iconUploading" class="mt-1 text-xs text-slate-500">
+              Uploading…
+            </p>
+            <p v-if="iconUploadError" class="mt-1 text-xs text-red-600">
+              {{ iconUploadError }}
+            </p>
+            <img
+              v-if="form.early_bird_icon_url"
+              :src="form.early_bird_icon_url"
+              alt="Early Bird icon"
+              class="mt-2 h-16 w-auto object-contain"
+            />
+            <p
+              v-if="form.early_bird_icon_url"
+              class="mt-1 text-xs text-slate-400 break-all"
+            >
+              {{ form.early_bird_icon_url }}
+            </p>
+          </div>
+
+          <div class="form-section">
+            <label class="block text-sm font-semibold text-gray-700 mb-1">
+              Early Bird Icon (PNG) - Secondary
+            </label>
+            <input
+              type="file"
+              accept="image/png"
+              class="w-full text-sm"
+              @change="onEarlyBirdIconSecondaryChange"
+            />
+            <p v-if="iconUploading" class="mt-1 text-xs text-slate-500">
+              Uploading…
+            </p>
+            <p v-if="iconUploadError" class="mt-1 text-xs text-red-600">
+              {{ iconUploadError }}
+            </p>
+            <img
+              v-if="form.early_bird_icon_secondary_url"
+              :src="form.early_bird_icon_secondary_url"
+              alt="Early Bird icon"
+              class="mt-2 h-16 w-auto object-contain"
+            />
+            <p
+              v-if="form.early_bird_icon_secondary_url"
+              class="mt-1 text-xs text-slate-400 break-all"
+            >
+              {{ form.early_bird_icon_secondary_url }}
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -243,10 +303,6 @@
 </template>
 
 <script setup lang="ts">
-// definePageMeta({
-//   middleware: 'auth',
-// })
-
 type SettingsForm = {
   contact_email: string;
   contact_phone: string;
@@ -256,9 +312,11 @@ type SettingsForm = {
   copyright_text: string;
   fl_tax_rate: string;
   early_bird_expires_at: string;
-  early_bird_enabled: string; // "true" | "false"
+  early_bird_enabled: string;
   early_bird_title: string;
   early_bird_description: string;
+  early_bird_icon_url: string;
+  early_bird_icon_secondary_url: string;
 
   social_facebook: string;
   social_instagram: string;
@@ -294,13 +352,18 @@ const SETTING_KEYS: (keyof SettingsForm)[] = [
   "early_bird_expires_at",
   "early_bird_title",
   "early_bird_description",
-
+  "early_bird_icon_url",
+  "early_bird_icon_secondary_url",
   "social_facebook",
   "social_instagram",
   "social_x",
   "social_youtube",
   "social_pinterest",
 ];
+
+const ICON_BUCKET = "email-assets"; // public bucket
+const ICON_PATH = "early-bird-icon.png";
+const ICON_PATH_SECONDARY = "early-bird-icon-secondary.png";
 
 const supabase = useSupabaseClient();
 const db = supabase as any;
@@ -310,8 +373,10 @@ const { showToast } = useToast();
 const loading = ref(true);
 const saving = ref(false);
 const initialized = ref(false);
+const iconUploading = ref(false);
+const iconUploadError = ref("");
 
-const form = ref<SettingsForm>({
+const emptyForm = (): SettingsForm => ({
   contact_email: "",
   contact_phone: "",
   contact_phone_display: "",
@@ -319,17 +384,20 @@ const form = ref<SettingsForm>({
   opening_hours: "",
   copyright_text: "",
   fl_tax_rate: "",
+  early_bird_enabled: "false",
   early_bird_expires_at: "",
-  early_bird_enabled: "",
   early_bird_title: "",
   early_bird_description: "",
-
+  early_bird_icon_url: "",
+  early_bird_icon_secondary_url: "",
   social_facebook: "",
   social_instagram: "",
   social_x: "",
   social_youtube: "",
   social_pinterest: "",
 });
+
+const form = ref<SettingsForm>(emptyForm());
 
 const socialFields: { key: SocialKey; label: string; placeholder: string }[] = [
   {
@@ -355,32 +423,85 @@ const socialFields: { key: SocialKey; label: string; placeholder: string }[] = [
   },
 ];
 
-const emptyForm = (): SettingsForm => ({
-  contact_email: "",
-  contact_phone: "",
-  contact_phone_display: "",
-  contact_address: "",
-  opening_hours: "",
-  copyright_text: "",
-  fl_tax_rate: "",
-  early_bird_enabled: "false",
-  early_bird_expires_at: "",
-  early_bird_title: "",
-  early_bird_description: "",
+const unwrapSettingValue = (value: unknown) => {
+  if (value == null) return "";
+  if (typeof value === "string") return value.replace(/^"|"$/g, "");
+  return String(value);
+};
 
-  social_facebook: "",
-  social_instagram: "",
-  social_x: "",
-  social_youtube: "",
-  social_pinterest: "",
-});
+const onEarlyBirdIconChange = async (e: Event) => {
+  const input = e.target as HTMLInputElement;
+  const file = input.files?.[0];
+  iconUploadError.value = "";
+  if (!file) return;
 
-const earlyBirdEnabled = ref(false);
-const earlyBirdExpiresAt = ref(""); // datetime-local string
-const earlyBirdTitle = ref("");
-const earlyBirdDescription = ref("");
+  if (file.type !== "image/png") {
+    iconUploadError.value = "PNG only";
+    input.value = "";
+    return;
+  }
 
-/** Load all key/value rows → form */
+  iconUploading.value = true;
+  try {
+    const { error: uploadError } = await db.storage
+      .from(ICON_BUCKET)
+      .upload(ICON_PATH, file, {
+        upsert: true,
+        contentType: "image/png",
+        cacheControl: "3600",
+      });
+
+    if (uploadError) throw uploadError;
+
+    const { data } = db.storage.from(ICON_BUCKET).getPublicUrl(ICON_PATH);
+    const publicUrl = `${data.publicUrl}?t=${Date.now()}`;
+    form.value.early_bird_icon_url = publicUrl;
+  } catch (err: any) {
+    console.error("icon upload", err);
+    iconUploadError.value = err?.message || "Upload failed";
+  } finally {
+    iconUploading.value = false;
+    input.value = "";
+  }
+};
+
+const onEarlyBirdIconSecondaryChange = async (e: Event) => {
+  const input = e.target as HTMLInputElement;
+  const file = input.files?.[0];
+  iconUploadError.value = "";
+  if (!file) return;
+
+  if (file.type !== "image/png") {
+    iconUploadError.value = "PNG only";
+    input.value = "";
+    return;
+  }
+
+  iconUploading.value = true;
+  try {
+    const { error: uploadError } = await db.storage
+      .from(ICON_BUCKET)
+      .upload(ICON_PATH_SECONDARY, file, {
+        upsert: true,
+        contentType: "image/png",
+        cacheControl: "3600",
+      });
+
+    if (uploadError) throw uploadError;
+
+    const { data } = db.storage
+      .from(ICON_BUCKET)
+      .getPublicUrl(ICON_PATH_SECONDARY);
+    form.value.early_bird_icon_secondary_url = `${data.publicUrl}?t=${Date.now()}`;
+  } catch (err: any) {
+    console.error("icon upload secondary", err);
+    iconUploadError.value = err?.message || "Upload failed";
+  } finally {
+    iconUploading.value = false;
+    input.value = "";
+  }
+};
+
 const loadSettings = async () => {
   loading.value = true;
   try {
@@ -392,12 +513,10 @@ const loadSettings = async () => {
 
     for (const row of rows) {
       const k = row.key as keyof SettingsForm;
-      if (SETTING_KEYS.includes(k as any)) {
-        next[k] = row.value ?? "";
-      }
+      if (!SETTING_KEYS.includes(k)) continue;
+      next[k] = unwrapSettingValue(row.value);
     }
 
-    // Tax: 0.07 → 7
     if (next.fl_tax_rate) {
       const n = Number(next.fl_tax_rate);
       if (!Number.isNaN(n) && n > 0 && n <= 1) {
@@ -405,12 +524,10 @@ const loadSettings = async () => {
       }
     }
 
-    // datetime-local needs "YYYY-MM-DDTHH:mm"
     if (next.early_bird_expires_at) {
       next.early_bird_expires_at = next.early_bird_expires_at.slice(0, 16);
     }
 
-    // normalize enable flag
     next.early_bird_enabled =
       next.early_bird_enabled === "true" ||
       next.early_bird_enabled === "1" ||
@@ -427,7 +544,6 @@ const loadSettings = async () => {
   }
 };
 
-/** Upsert each key */
 const saveSettings = async () => {
   if (!user.value) {
     showToast("Please log in.", "error");
@@ -449,8 +565,15 @@ const saveSettings = async () => {
       }
 
       if (key === "early_bird_expires_at" && value) {
-        // datetime-local → ISO for storefront compare
         value = new Date(value).toISOString();
+      }
+
+      if (key === "early_bird_icon_url") {
+        value = String(value).trim();
+      }
+
+      if (key === "early_bird_icon_secondary_url") {
+        value = String(value).trim();
       }
 
       return {
@@ -474,7 +597,6 @@ const saveSettings = async () => {
   }
 };
 
-// Wait for auth, then load
 watch(
   user,
   async (u) => {

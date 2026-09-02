@@ -109,7 +109,7 @@
           </NuxtLink>
 
           <!-- Desktop nav -->
-          <nav class="hidden md:block flex-1">
+          <!-- <nav class="hidden md:block flex-1">
             <ul class="flex justify-center gap-4 lg:gap-8 list-none p-0 m-0">
               <li>
                 <NuxtLink
@@ -127,6 +127,13 @@
               </li>
               <li>
                 <NuxtLink
+                  to="/preview-your-home"
+                  class="text-[#1a2b4a] no-underline px-2.5 lg:px-4 py-2 font-medium transition-colors hover:text-[#ff7a00]"
+                  >Preview Your Home</NuxtLink
+                >
+              </li>
+              <li>
+                <NuxtLink
                   to="/how-it-works"
                   class="text-[#1a2b4a] no-underline px-2.5 lg:px-4 py-2 font-medium transition-colors hover:text-[#ff7a00]"
                   >How It Works</NuxtLink
@@ -138,6 +145,57 @@
                   class="text-[#1a2b4a] no-underline px-2.5 lg:px-4 py-2 font-medium transition-colors hover:text-[#ff7a00]"
                   >Contact Us</NuxtLink
                 >
+              </li>
+            </ul>
+          </nav> -->
+          <nav class="hidden lg:block flex-1 min-w-0">
+            <ul
+              class="flex justify-center items-center gap-1 xl:gap-6 list-none p-0 m-0"
+            >
+              <li>
+                <NuxtLink
+                  to="/"
+                  class="block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
+                  active-class="text-[#ff7a00]"
+                >
+                  Home
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/packages"
+                  class="block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
+                  active-class="text-[#ff7a00]"
+                >
+                  Packages
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/preview-your-home"
+                  class="block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
+                  active-class="text-[#ff7a00]"
+                >
+                  Preview Your Home
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/how-it-works"
+                  class="block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
+                  active-class="text-[#ff7a00]"
+                >
+                  How It Works
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/contact"
+                  class="block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
+                  active-class="text-[#ff7a00]"
+                >
+                  Contact Us
+                </NuxtLink>
               </li>
             </ul>
           </nav>
@@ -180,7 +238,7 @@
             <!-- Hamburger -->
             <button
               type="button"
-              class="md:hidden flex flex-col justify-center gap-1.5 w-[42px] h-[42px] p-2 border border-[#1C2D5B] rounded-lg bg-white cursor-pointer"
+              class="lg:hidden flex flex-col justify-center gap-1.5 w-[42px] h-[42px] p-2 border border-[#1C2D5B] rounded-lg bg-white cursor-pointer"
               :aria-expanded="mobileOpen"
               aria-label="Toggle menu"
               @click="mobileOpen = !mobileOpen"
@@ -194,7 +252,7 @@
 
         <!-- Mobile nav -->
         <nav
-          class="md:hidden overflow-hidden transition-[max-height] duration-300 ease-in-out"
+          class="lg:hidden overflow-hidden transition-[max-height] duration-300 ease-in-out"
           :class="mobileOpen ? 'max-h-[420px]' : 'max-h-0'"
         >
           <ul class="list-none m-0 pt-3 pb-2 px-0">
@@ -212,6 +270,14 @@
                 class="block py-3 px-1 text-navy no-underline font-semibold border-b border-gray-200 hover:text-[#F49321]"
                 @click="mobileOpen = false"
                 >Packages</NuxtLink
+              >
+            </li>
+            <li>
+              <NuxtLink
+                to="/preview-your-home"
+                class="block py-3 px-1 text-navy no-underline font-semibold border-b border-gray-200 hover:text-[#F49321]"
+                @click="mobileOpen = false"
+                >Preview Your Home</NuxtLink
               >
             </li>
             <li>

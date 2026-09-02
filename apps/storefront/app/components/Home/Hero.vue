@@ -26,7 +26,13 @@
       :format-number="formatNumber"
     />
 
-    <EarlyBirdSpecialCountdownWidget class="desktop-widget max-lg:hidden" />
+    <CountdownWidget
+      class="mobile-widget lg:hidden"
+      :time-left="timeLeft"
+      :format-number="formatNumber"
+    />
+
+    <!-- <EarlyBirdSpecialCountdownWidget class="desktop-widget max-lg:hidden" /> -->
 
     <div
       class="hero-content-container relative z-[3] w-full max-w-[1200px] mx-auto px-6 flex justify-between items-center gap-5 max-lg:flex-col max-lg:items-start max-lg:gap-24 max-lg:px-[5%]"
@@ -67,9 +73,9 @@
           </p>
         </NuxtLink> -->
 
-        <NuxtLink
+        <!-- <NuxtLink
           to="/packages"
-          class="relative inline-flex items-center justify-center bg-[#F49321] text-white font-extrabold text-lg rounded-2xl border-[3px] border-[#1C2D5B] shadow-[0_0_0_4px_#F49321] px-12 pt-7 pb-3.5 hover:bg-[#e0850a] transition-colors max-lg:text-[0.82rem] max-lg:px-3 max-lg:pt-6 max-lg:pb-2 max-lg:rounded-lg max-lg:border-2 max-lg:shadow-[0_0_0_3px_#F49321] max-lg:float-left max-lg:clear-both max-lg:!ml-1 max-lg:!mr-auto max-lg:mb-3 max-lg:overflow-visible"
+          class="relative inline-flex items-center justify-center bg-[#F49321] text-white font-extrabold text-lg rounded-2xl border-[3px] border-[#1C2D5B] shadow-[0_0_0_4px_#F49321] px-12 pt-7 pb-3.5 hover:bg-[#e0850a] transition-colors max-lg:text-[0.82rem] max-lg:px-3 max-lg:pt-4 max-lg:pb-2 max-lg:rounded-lg max-lg:border-2 max-lg:shadow-[0_0_0_3px_#F49321] max-lg:float-left max-lg:clear-both max-lg:!ml-1 max-lg:!mr-auto max-lg:mb-3 max-lg:overflow-visible max-lg:mt-4 md:max-lg:mt-6"
         >
           <span
             v-if="isEarlyBirdActive(earlyBirdEnabled, earlyBirdExpiresAt)"
@@ -77,33 +83,60 @@
           >
             <span class="relative block">
               <img
-                src="/Images/earlybird2.png"
+                :src="earlyBirdIconSecondaryUrl"
                 alt="Early Bird Special"
-                class="relative z-10 h-14 w-auto object-contain drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)] md:h-16 lg:h-[4.5rem]"
-              />
-              <!-- <img
+                class="relative z-10 h-8 w-auto object-contain drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)] md:h-12 lg:h-16"
+              /> -->
+        <!-- <img
                 src="/Images/starburst-small.png"
                 alt=""
                 class="absolute z-20 h-7 w-7 object-contain -top-3 -right-3 md:h-8 md:w-8 md:-top-3.5 md:-right-3.5 lg:h-9 lg:w-9"
               /> -->
-            </span>
+        <!-- </span>
           </span>
 
           Explore the Packages
-        </NuxtLink>
+        </NuxtLink> -->
+
+        <div
+          class="flex flex-col items-center overflow-visible max-lg:mt-6 max-lg:items-start max-lg:mb-8 md:max-lg:mt-8 max-md:ml-[5px] md:max-lg:ml-[5px]"
+        >
+          <NuxtLink
+            to="/packages"
+            class="relative inline-flex flex-col items-center overflow-visible bg-[#F49321] text-white font-extrabold text-lg rounded-2xl border-[3px] border-[#1C2D5B] shadow-[0_0_0_4px_#F49321] px-12 hover:bg-[#e0850a] transition-colors max-lg:text-[0.82rem] max-lg:px-5 max-lg:rounded-lg max-lg:border-2 max-lg:shadow-[0_0_0_3px_#F49321]"
+            :class="
+              isEarlyBirdActive(earlyBirdEnabled, earlyBirdExpiresAt)
+                ? 'pt-2 pb-10 max-lg:pt-1.5 max-lg:pb-7'
+                : 'py-3 max-lg:py-2.5'
+            "
+          >
+            <span>Explore the Packages</span>
+
+            <span
+              v-if="isEarlyBirdActive(earlyBirdEnabled, earlyBirdExpiresAt)"
+              class="absolute bottom-0 left-1/2 z-20 flex flex-col items-center overflow-visible -translate-x-1/2 translate-y-1/2"
+            >
+              <img
+                :src="earlyBirdIconSecondaryUrl"
+                alt="Early Bird Special"
+                class="relative z-10 h-8 w-auto object-contain drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)] max-lg:h-6"
+              />
+              <span
+                v-if="formatEndsLabel"
+                class="relative z-20 mt-1 whitespace-nowrap text-[0.65rem] font-semibold text-white lg:text-xs"
+              >
+                Ends {{ formatEndsLabel }}
+              </span>
+            </span>
+          </NuxtLink>
+        </div>
       </div>
 
-      <CountdownWidget
+      <!-- <EarlyBirdSpecialCountdownWidget
         class="mobile-widget max-lg:block hidden"
         :time-left="timeLeft"
         :format-number="formatNumber"
-      />
-
-      <EarlyBirdSpecialCountdownWidget
-        class="mobile-widget max-lg:block hidden"
-        :time-left="timeLeft"
-        :format-number="formatNumber"
-      />
+      /> -->
     </div>
   </div>
 </template>
@@ -197,6 +230,8 @@ const {
   loadEarlyBird,
   earlyBirdEnabled,
   earlyBirdExpiresAt,
+  earlyBirdIconSecondaryUrl,
+  formatEndsLabel,
 } = useEarlyBirdSpecial();
 
 onMounted(() => {
