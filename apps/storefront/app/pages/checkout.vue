@@ -603,10 +603,32 @@ const loadCheckoutScript = (): Promise<void> => {
   });
 };
 
+const getFreshToken = (): string => {
+  let token = "";
+
+  if (turnstileRef.value) {
+    try {
+      const result = turnstileRef.value.getResponse();
+      if (result && typeof result === "string" && result.length > 0) {
+        token = result;
+        console.log("Got fresh token, length:", token.length);
+      } else {
+        console.warn("getFreshToken - no valid token from widget");
+      }
+    } catch (e) {
+      console.error("Error getting token from widget:", e);
+    }
+  } else {
+    console.warn("getFreshToken - turnstileRef is null");
+  }
+
+  return token;
+};
+
 const payWithConverge = async () => {
   if (!validateCheckout()) return;
 
-  let freshToken: string = "";
+  let freshToken = getFreshToken();
   if (turnstileRef.value) {
     const token = turnstileRef.value.getResponse();
     if (token) {
@@ -785,7 +807,7 @@ const payWithConverge = async () => {
         }
 
         try {
-          let orderToken: string = "";
+          let orderToken = getFreshToken();
           if (turnstileRef.value) {
             const token = turnstileRef.value.getResponse();
             if (token) {
@@ -794,7 +816,13 @@ const payWithConverge = async () => {
           }
 
           if (!orderToken) {
-            orderToken = turnstileToken.value || "";
+            showToast(
+              "Security verification expired. Please try again.",
+              "error",
+            );
+            resetTurnstile();
+            isPaying.value = false;
+            return;
           }
 
           if (!orderToken) {
