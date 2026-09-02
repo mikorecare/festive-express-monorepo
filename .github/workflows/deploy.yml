@@ -21,6 +21,10 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
+            echo "========================================="
+            echo "Deployment started at: $(date)"
+            echo "========================================="
+
             # 1. Navigate to monorepo root
             cd /var/www/festive-express/festive-express-monorepo
 
@@ -28,38 +32,60 @@ jobs:
             echo "Pulling latest code from production branch..."
             git fetch origin production
             git reset --hard origin/production
-            # This ensures the server EXACTLY matches the remote production branch
 
-            # 3. Load Node/NVM environment rules
+            # 3. Load Node/NVM environment
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-            # 4. Verify the files exist after pull
+            # 4. Verify files exist
             echo "Checking elavon API files..."
             ls -la apps/storefront/server/api/elavon/ || echo "Elavon directory not found!"
 
-            # 5. BUILD & DEPLOY APP 1: Storefront
-            echo "Building Storefront..."
-            cd /var/www/festive-express/festive-express-monorepo/apps/storefront
-            npm install
-            rm -rf .output .nuxt node_modules/.cache
-            npm run build
+            # 5. BUILD BOTH APPS IN PARALLEL
+            echo "Building both apps in parallel..."
+            
+            # Build storefront in background
+            (cd apps/storefront && npm install && rm -rf .output .nuxt node_modules/.cache && npm run build) &
+            
+            # Build admin in background
+            (cd apps/admin && npm install && rm -rf .output .nuxt node_modules/.cache && npm run build) &
+            
+            # Wait for both to complete
+            wait
+            echo "Both apps built successfully!"
 
-            # 6. BUILD & DEPLOY APP 2: Admin
-            echo "Building Admin..."
-            cd /var/www/festive-express/festive-express-monorepo/apps/admin
-            npm install
-            rm -rf .output .nuxt node_modules/.cache
-            npm run build
-
-            # 7. RESTART VIA PM2
-            echo "Restarting applications with PM2..."
+            # 6. RELOAD VIA PM2 (zero downtime)
+            echo "Reloading applications with PM2..."
             cd /var/www/festive-express/festive-express-monorepo
-            pm2 restart ecosystem.config.js --update-env
+            pm2 reload ecosystem.config.js --update-env
             pm2 save
 
+            # 7. Health check
+            echo "Waiting for apps to be ready..."
+            sleep 5
+
+            echo "Checking Storefront health..."
+            if curl -f http://localhost:3000/health; then
+              echo "Storefront is healthy"
+            else
+              echo "Storefront health check failed"
+            fi
+
+            echo "Checking Admin health..."
+            if curl -f http://localhost:3001/health; then
+              echo "Admin is healthy"
+            else
+              echo "Admin health check failed"
+            fi
+
             # 8. Check status
+            echo "PM2 Status:"
             pm2 list
-            
-            # 9. Show recent logs
-            pm2 logs --lines 20 --nostream
+
+            # 9. Show recent errors
+            echo "Recent errors (if any):"
+            pm2 logs --lines 10 --err --nostream
+
+            echo "========================================="
+            echo "Deployment completed at: $(date)"
+            echo "========================================="

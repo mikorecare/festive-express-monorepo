@@ -12,11 +12,11 @@
               v-fade
               class="text-3xl md:text-5xl tracking-tight text-white mb-4"
             >
-              <span class="text-brand-orange">PREVIEW</span> YOUR HOME
+              <span class="text-brand-orange">Preview</span> Your Home
             </h1>
 
             <p v-fade class="text-base md:text-lg text-slate-200">
-              See your home gift-wrapped in Lights.
+              See your home gift-wrapped in lights.
             </p>
           </div>
         </div>

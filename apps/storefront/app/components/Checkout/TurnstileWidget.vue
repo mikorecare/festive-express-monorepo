@@ -31,15 +31,12 @@ const renderTurnstile = () => {
     setTimeout(renderTurnstile, 500);
     return;
   }
-
   if (!props.siteKey) {
     console.error("Turnstile siteKey is missing");
     return;
   }
-
   container.innerHTML = "";
-
-  // @ts-ignore // ✅ Skip TypeScript check
+  // @ts-ignore
   widgetId = window.turnstile.render(container, {
     sitekey: props.siteKey,
     callback: (token: string) => {
@@ -68,8 +65,24 @@ const resetTurnstile = () => {
   }
 };
 
+// ✅ Add getResponse method with proper return type
+const getResponse = (): string | null => {
+  if (window.turnstile && widgetId) {
+    try {
+      const token = window.turnstile.getResponse(widgetId);
+      return token || null;
+    } catch (e) {
+      console.error("Error getting Turnstile response:", e);
+      return null;
+    }
+  }
+  return null;
+};
+
+// ✅ Define what's exposed to parent components
 defineExpose({
   reset: resetTurnstile,
+  getResponse: getResponse,
 });
 
 onMounted(() => {

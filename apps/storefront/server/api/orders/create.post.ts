@@ -4,6 +4,8 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     const config = useRuntimeConfig();
 
+    console.log('Received Turnstile token:', body.turnstile_token?.substring(0, 50) + '...');
+
     if (!body.turnstile_token) {
         console.warn('Missing Turnstile token');
         return {
@@ -13,6 +15,16 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
+        const secretKey = config.turnstile?.secretKey || process.env.NUXT_TURNSTILE_SECRET_KEY || "";
+
+        if (!secretKey) {
+            console.error('Turnstile secret key is missing!');
+            return {
+                success: false,
+                error: 'Server configuration error'
+            };
+        }
+
         const turnstileResponse = await fetch(
             'https://challenges.cloudflare.com/turnstile/v0/siteverify',
             {
@@ -21,7 +33,7 @@ export default defineEventHandler(async (event) => {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 body: new URLSearchParams({
-                    secret: config.turnstile?.secretKey || process.env.NUXT_TURNSTILE_SECRET_KEY || "",
+                    secret: secretKey,
                     response: body.turnstile_token,
                     remoteip: event.node.req.socket.remoteAddress || '',
                 }),
@@ -29,12 +41,14 @@ export default defineEventHandler(async (event) => {
         );
 
         const turnstileResult = await turnstileResponse.json();
+        console.log('Turnstile verification result:', turnstileResult);
 
         if (!turnstileResult.success) {
             console.warn('Turnstile verification failed:', turnstileResult);
             return {
                 success: false,
-                error: 'Security verification failed'
+                error: 'Security verification failed',
+                details: turnstileResult['error-codes'] || []
             };
         }
     } catch (error) {
@@ -65,6 +79,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
     const { data: existingOrder } = await supabase
         .from('orders')
         .select('id, order_number')
