@@ -65,7 +65,6 @@ const resetTurnstile = () => {
   }
 };
 
-// ✅ Add getResponse method with proper return type
 const getResponse = (): string | null => {
   if (window.turnstile && widgetId) {
     try {
@@ -79,7 +78,6 @@ const getResponse = (): string | null => {
   return null;
 };
 
-// ✅ Define what's exposed to parent components
 defineExpose({
   reset: resetTurnstile,
   getResponse: getResponse,
