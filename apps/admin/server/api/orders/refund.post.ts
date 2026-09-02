@@ -154,14 +154,20 @@ async function processElavonRefund(params: {
         };
     }
 
-    // Converge expects form parameters when using normal key-value pairs
-    const requestData = new URLSearchParams();
-    requestData.append('ssl_merchant_id', merchantId);
-    requestData.append('ssl_user_id', userId);
-    requestData.append('ssl_pin', pin);
-    requestData.append('ssl_transaction_type', 'linkedrefund');
-    requestData.append('ssl_txn_id', transactionId);
-    requestData.append('ssl_amount', amount.toFixed(2));
+    // Build raw XML
+    const xmlPayload = `<?xml version="1.0" encoding="utf-8"?>
+<txn>
+    <ssl_merchant_id>${merchantId}</ssl_merchant_id>
+    <ssl_user_id>${userId}</ssl_user_id>
+    <ssl_pin>${pin}</ssl_pin>
+    <ssl_transaction_type>linkedrefund</ssl_transaction_type>
+    <ssl_txn_id>${transactionId}</ssl_txn_id>
+    <ssl_amount>${amount.toFixed(2)}</ssl_amount>
+</txn>`;
+
+    // URL encode the XML
+    const encodedXml = encodeURIComponent(xmlPayload);
+    const requestData = `xmldata=${encodedXml}`;
 
     const baseUrl = demo
         ? 'https://api.demo.convergepay.com'
@@ -172,6 +178,7 @@ async function processElavonRefund(params: {
         : `${baseUrl}/VirtualMerchant/processxml.do`;
 
     console.log(`Processing refund using ${demo ? 'DEMO' : 'PRODUCTION'} environment: ${endpoint}`);
+    console.log('XML Payload:', xmlPayload);
 
     try {
         const response = await fetch(endpoint, {
@@ -179,7 +186,7 @@ async function processElavonRefund(params: {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: requestData.toString(),
+            body: requestData,
         });
 
         const responseText = await response.text();
@@ -194,6 +201,14 @@ async function processElavonRefund(params: {
         }
 
         const result = parseConvergeResponse(responseText);
+
+        // Check for error response
+        if (result.errorCode) {
+            return {
+                success: false,
+                error: `${result.errorName || 'Error'}: ${result.errorMessage || result.errorCode}`,
+            };
+        }
 
         if (result.ssl_result === '0') {
             return {
