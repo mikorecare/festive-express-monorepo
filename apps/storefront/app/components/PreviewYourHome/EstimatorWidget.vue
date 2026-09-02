@@ -5,7 +5,7 @@
       v-if="!rendering"
       class="bg-white rounded-2xl p-6 shadow-md max-w-4xl w-full mx-4 my-8"
     >
-      <p class="text-[48px] text-[#f7931e] font-bold flex items-center">
+      <p class="text-[32px] text-[#f7931e] font-bold flex items-center">
         See Your Home Lit Up
       </p>
       <p class="text-xl text-black-200 mb-4">

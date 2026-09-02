@@ -1,6 +1,6 @@
 <template>
   <div v-if="result" class="mt-6 border-t border-gray-200 pt-6">
-    <p class="text-xs text-gray-400 mb-4">
+    <p class="text-sm text-gray-700 mb-4">
       <i class="fas fa-info-circle mr-1"></i>
       This is a computer-generated preview at how your home could glow with our
       Christmas lights. It's meant to give you a good sense of the overall
@@ -9,7 +9,6 @@
 
     <!-- Desktop: Image left 4/5, Info right 1/5 -->
     <div class="flex flex-col md:flex-row gap-6 mb-4">
-      <!-- Image - 4/5 on desktop -->
       <div class="md:w-4/5">
         <img
           class="w-full rounded-lg"
@@ -18,9 +17,7 @@
         />
       </div>
 
-      <!-- Info - 1/5 on desktop -->
       <div class="md:w-1/5 space-y-1">
-        <!-- Estimated Footage -->
         <div class="bg-gray-50 rounded-lg p-3">
           <p class="text-xs text-gray-500">Estimated footage</p>
           <p class="text-xl font-bold text-navy">
@@ -28,17 +25,13 @@
           </p>
         </div>
 
-        <!-- Package Price -->
         <div class="bg-gray-50 rounded-lg p-3">
           <p class="text-xs text-gray-500">
             {{ getPackageName() || "Package" }}
           </p>
-          <p class="text-xl font-bold text-navy">
-            {{ getPackagePrice() }}
-          </p>
+          <p class="text-xl font-bold text-navy">{{ getPackagePrice() }}</p>
         </div>
 
-        <!-- Extra footage - ONLY if over 175 ft -->
         <div v-if="calculatedOverageFt > 0" class="bg-gray-50 rounded-lg p-3">
           <p class="text-xs text-gray-500">Extra footage</p>
           <p class="text-xl font-bold text-navy text-orange-600">
@@ -46,7 +39,6 @@
           </p>
         </div>
 
-        <!-- Extra to add - ONLY if over 175 ft -->
         <div v-if="calculatedOveragePrice" class="bg-gray-50 rounded-lg p-3">
           <p class="text-xs text-gray-500">Extra to add</p>
           <p class="text-xl font-bold text-navy text-orange-600">
@@ -56,19 +48,17 @@
       </div>
     </div>
 
-    <!-- Price per linear foot - ONLY if over 175 ft -->
     <div v-if="calculatedOverageFt > 0" class="bg-gray-50 rounded-lg p-4 mb-4">
       <div class="flex items-center justify-between">
-        <span class="text-sm text-gray-600">Price per linear foot</span>
+        <span class="text-sm text-gray-700">Price per linear foot</span>
         <span class="text-lg font-bold text-navy">${{ OVERAGE_RATE }}</span>
       </div>
-      <p class="text-xs text-gray-400 mt-1">
+      <p class="text-xs text-gray-500 mt-1">
         Your home is over {{ PACKAGE_TOTAL_FT }} ft — extra footage is priced
         per linear foot.
       </p>
     </div>
 
-    <!-- Offer Section - ONLY if over 175 ft -->
     <div
       v-if="showOffer"
       class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4"
@@ -84,7 +74,6 @@
       </p>
     </div>
 
-    <!-- Within Package Message - ONLY if within 175 ft -->
     <div
       v-else-if="isWithinPackage && result.stats"
       class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4"
@@ -98,29 +87,43 @@
       </p>
     </div>
 
-    <div class="space-y-3">
-      <button
-        class="w-full bg-brand-orange hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        @click="handleBookConsultation"
-        :disabled="booking || isBooked"
-      >
-        <i v-if="booking" class="fas fa-spinner fa-spin mr-2"></i>
-        {{
-          isBooked
-            ? "✓ Request sent"
-            : booking
-              ? "Sending..."
-              : "Order your early bird package →"
-        }}
-      </button>
-      <button
-        class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors"
-        @click="reset"
-      >
-        <i class="fas fa-arrow-left mr-2"></i>
-        Try another look
-      </button>
-    </div>
+    <template v-if="!isPreview">
+      <div class="space-y-3">
+        <button
+          class="w-full bg-brand-orange hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          @click="handleBookConsultation"
+          :disabled="booking || isBooked"
+        >
+          <i v-if="booking" class="fas fa-spinner fa-spin mr-2"></i>
+          {{
+            isBooked
+              ? "✓ Request sent"
+              : booking
+                ? "Sending..."
+                : "Order your early bird package →"
+          }}
+        </button>
+        <button
+          class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors"
+          @click="reset"
+        >
+          <i class="fas fa-arrow-left mr-2"></i>
+          Try another look
+        </button>
+      </div>
+    </template>
+
+    <template v-else>
+      <div class="space-y-3">
+        <button
+          class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors"
+          @click="reset"
+        >
+          <i class="fas fa-arrow-left mr-2"></i>
+          Try another look
+        </button>
+      </div>
+    </template>
 
     <p class="text-xs text-gray-400 text-center mt-3">
       Estimate for {{ result.address || "your home" }}.
@@ -163,6 +166,7 @@ import type { IPackageOption } from "~/components/PreviewYourHome/types";
 const router = useRouter();
 
 const {
+  isPreview,
   result,
   showOffer,
   booking,

@@ -104,10 +104,10 @@
         class="w-max mx-auto rounded-[16px] mt-3 max-h-64 object-contain"
         style="border: 1px solid #b2b2b2"
       />
-      <p class="text-xs text-gray-400 mt-3">
+      <p class="text-sm text-gray-600 mt-3">
         <i class="fas fa-info-circle mr-1"></i>
         Front-of-house daytime photo works best. Straight-on, whole roofline
-        visible. <span class="text-gray-500">(Optional)</span>
+        visible. <span class="text-gray-800">(Optional)</span>
       </p>
     </div>
 
@@ -153,7 +153,7 @@
           class="px-3 pt-0 border-2 pb-2 rounded-[16px] min-h-[167px] !text-md transition-all flex flex-col items-center relative bg-[#1C2F5B] overflow-visible"
           :class="
             selectedPackage === pkg.id
-              ? '!border-[#F7931E] border-4'
+              ? '!border-[#F7931E] !border-4'
               : 'border-gray-600 hover:border-gray-400'
           "
           @click="selectedPackage = pkg.id"
@@ -230,7 +230,7 @@
           class="px-3 py-4 border rounded-[16px] !text-md transition-all flex flex-col items-center gap-2"
           :class="
             selectedScheme === color.scheme
-              ? '!border-[#F7931E] bg-orange-50 text-brand-orange'
+              ? '!border-[#F7931E] border-4 bg-orange-50 text-brand-orange'
               : 'border-gray-300 hover:border-gray-400 text-gray-700'
           "
           @click="selectedScheme = color.scheme"
@@ -320,7 +320,7 @@
     <!-- Submit Buttons -->
     <div class="space-y-3">
       <button
-        class="w-full bg-brand-orange hover:bg-orange-600 text-white font-semibold py-4 px-4 rounded-[16px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        class="w-full bg-brand-orange text-xl tracking-wide hover:bg-orange-600 text-white font-semibold py-4 px-4 rounded-[16px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         @click="submitRender(false)"
         :disabled="isLoading"
       >
@@ -328,7 +328,7 @@
         {{ isLoading ? "Lighting up..." : "Light up my home →" }}
       </button>
       <button
-        class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-4 px-4 rounded-[16px] transition-colors"
+        class="w-full border border-gray-300 hover:bg-gray-50 text-xl text-gray-700 font-semibold py-4 px-4 rounded-[16px] transition-colors"
         @click="submitRender(true)"
         :disabled="isLoading"
       >
@@ -428,23 +428,26 @@ input[type="number"] {
 }
 
 .color-dot.candy-dot {
-  background: repeating-linear-gradient(
-    -45deg,
-    #e21d1d 0 5px,
-    #ffffff 5px 10px
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgb(255, 255, 255) 0px,
+    rgb(255, 255, 255) 4px,
+    rgb(225, 29, 72) 4px,
+    rgb(225, 29, 72) 8px
   );
 }
 
 .color-dot.multi-dot {
   border-color: transparent;
-  background: conic-gradient(
-    #e21d1d,
-    #f2c14e 18%,
-    #1ea832 36%,
-    #1d6fe2 58%,
-    #9b4dca 80%,
-    #e21d1d
+  background-image: conic-gradient(
+    rgb(239, 68, 68),
+    rgb(234, 179, 8),
+    rgb(34, 197, 94),
+    rgb(59, 130, 246),
+    rgb(168, 85, 247),
+    rgb(239, 68, 68)
   );
+
   border-radius: 50% !important;
   overflow: hidden;
 }
