@@ -61,4 +61,4 @@ Disallow: /cart/
 Disallow: /account/
 
 # Point to your sitemap
-Sitemap: https://www.festive.express/sitemap.xml
+Sitemap: https://festive.express/sitemap.xml
