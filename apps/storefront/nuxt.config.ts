@@ -5,11 +5,40 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: true,
 
+
   css: [
     "bootstrap/dist/css/bootstrap.min.css",
     "~/assets/css/main.css",
     "~/assets/css/pages.css",
   ],
+
+  site: {
+    url: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+  },
+
+  sitemap: {
+    exclude: [
+      // Admin and functional
+      '/admin/**',
+      '/dashboard/**',
+      '/api/**',
+      '/auth/**',
+      '/checkout/**',
+      '/account/**',
+      '/cart-back',
+      '/packages-back',
+      '/packages-back2NEW',
+      '/preview-your-home.back',
+      '/**/*back*',
+      '/**/*BACK*',
+      '/**/*.back',
+      '/reviews',
+      '/membership',
+      '/track-order',
+      '/track-order-backup',
+    ],
+    autoLastmod: true,
+  },
 
   app: {
     head: {
@@ -39,7 +68,7 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/supabase", "@nuxtjs/turnstile", "nuxt-security"],
+  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/supabase", "@nuxtjs/turnstile", "nuxt-security", '@nuxtjs/sitemap'],
 
   turnstile: {
     siteKey:
@@ -71,7 +100,7 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    // PRIVATE
+    // PRIVATE - Server only
     convergeMerchantId: process.env.CONVERGE_MERCHANT_ID || "",
     convergeUserId: process.env.CONVERGE_USER_ID || "",
     convergePin: process.env.CONVERGE_PIN || "",
@@ -90,19 +119,15 @@ export default defineNuxtConfig({
     supabaseServiceKey: process.env.NUXT_SUPABASE_SECRET_KEY || "",
 
     elavonAccountId: process.env.ELAVON_ACCOUNT_ID || "",
-
     elavonUserId: process.env.ELAVON_USER_ID || "",
-
     elavonPin: process.env.ELAVON_PIN || "",
-
     elavonDemo: process.env.NUXT_ELAVON_DEMO !== "false",
     elavonVendorId: process.env.ELAVON_VENDOR_ID || "",
     elavonPartnerAppId: process.env.ELAVON_PARTNER_APP_ID || "",
+
     public: {
       supabaseUrl: process.env.SUPABASE_URL || "",
-
       supabaseKey: process.env.SUPABASE_KEY || "",
-
       apiBase: process.env.NUXT_PUBLIC_API_BASE || "http://localhost:3000/api",
     },
   },
@@ -120,10 +145,8 @@ export default defineNuxtConfig({
           "'self'",
           "'unsafe-inline'",
           "'unsafe-eval'",
-          "https://embeddable-widgets.pages.dev",
           "https://cdnjs.cloudflare.com",
           "https://cdn.jsdelivr.net",
-          "https://embeddable-widgets.pages.dev",
           "https://us-assets.i.posthog.com",
           "https://*.posthog.com",
           "https://challenges.cloudflare.com",
@@ -131,8 +154,7 @@ export default defineNuxtConfig({
           "https://api.convergepay.com",
           "https://checkout.demo.convergepay.com",
           "https://checkout.convergepay.com",
-          "http://52.204.215.130",
-          "https://52.204.215.130",
+          "https://chat.actm.xyz",
         ],
 
         'style-src': [
@@ -141,14 +163,12 @@ export default defineNuxtConfig({
           "https://fonts.googleapis.com",
           "https://fonts.gstatic.com",
           "https://cdnjs.cloudflare.com",
-          "https://embeddable-widgets.pages.dev",
           "https://challenges.cloudflare.com",
           "https://api.demo.convergepay.com",
           "https://api.convergepay.com",
           "https://checkout.demo.convergepay.com",
           "https://checkout.convergepay.com",
-          "http://52.204.215.130",
-          "https://52.204.215.130",
+          "https://chat.actm.xyz",
         ],
 
         'img-src': [
@@ -165,8 +185,7 @@ export default defineNuxtConfig({
           "https://api.convergepay.com",
           "https://checkout.demo.convergepay.com",
           "https://checkout.convergepay.com",
-          "http://52.204.215.130",
-          "https://52.204.215.130",
+          "https://chat.actm.xyz",
         ],
 
         'font-src': [
@@ -174,8 +193,6 @@ export default defineNuxtConfig({
           "https://fonts.gstatic.com",
           "https://cdnjs.cloudflare.com",
           "https://cdn.jsdelivr.net",
-          "http://52.204.215.130",
-          "https://52.204.215.130",
         ],
 
         'connect-src': [
@@ -183,7 +200,6 @@ export default defineNuxtConfig({
           "https:",
           "wss:",
           "https://*.supabase.co",
-          "https://embeddable-widgets.pages.dev",
           "https://*.posthog.com",
           "https://us-assets.i.posthog.com",
           "https://challenges.cloudflare.com",
@@ -193,21 +209,19 @@ export default defineNuxtConfig({
           "https://checkout.convergepay.com",
           "https://*.challenges.cloudflare.com",
           "https://brunhild.challenges.cloudflare.com",
-          "http://52.204.215.130",
-          "https://52.204.215.130",
+          "https://chat.actm.xyz",
+          "wss://chat.actm.xyz",
         ],
 
         'frame-src': [
           "'self'",
           "https://*.google.com",
-          "https://embeddable-widgets.pages.dev",
           "https://challenges.cloudflare.com",
           "https://api.demo.convergepay.com",
           "https://api.convergepay.com",
           "https://checkout.demo.convergepay.com",
           "https://checkout.convergepay.com",
-          "http://52.204.215.130",
-          "https://52.204.215.130",
+          "https://chat.actm.xyz",
         ],
 
         'frame-ancestors': ["'self'"],

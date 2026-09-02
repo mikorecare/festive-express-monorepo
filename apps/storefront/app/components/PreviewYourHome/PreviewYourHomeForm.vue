@@ -1,11 +1,10 @@
 <!-- components/EstimatorForm.vue -->
 <template>
   <div class="space-y-8">
-    <!-- Address -->
+    <!-- Address - Now Required -->
     <div>
       <label class="block !text-md font-semibold text-gray-700 mb-2 form-label">
-        Property address
-        <span class="text-xs font-normal text-gray-400">(optional)</span>
+        Property address *
       </label>
       <div class="relative">
         <input
@@ -13,6 +12,7 @@
           autocomplete="off"
           placeholder="Start typing your street address"
           class="w-full px-4 py-4 border border-gray-300 rounded-[16px] focus:ring-2 focus:ring-orange-500 focus:border-transparent !text-md form-input"
+          :class="{ 'border-red-500': errors.address }"
           @input="debouncedSearch"
           @focus="suggestionsOpen = true"
         />
@@ -32,12 +32,17 @@
             <div class="text-xs text-gray-500">{{ s.secondary }}</div>
           </div>
         </div>
+        <p v-if="errors.address" class="text-red-500 text-xs mt-1">
+          {{ errors.address }}
+        </p>
       </div>
     </div>
-    <!-- Photo Upload -->
+
+    <!-- Photo Upload - Now Optional -->
     <div>
       <label class="block !text-md font-semibold text-gray-700 mb-2 form-label">
-        Photo of your home *
+        Photo of your home
+        <span class="text-xs font-normal text-gray-400">(optional)</span>
       </label>
       <input
         type="file"
@@ -52,7 +57,9 @@
         @click="fileInput?.click()"
       >
         <span>{{
-          imagePreview ? "Change photo" : "Upload a photo of your home"
+          imagePreview
+            ? "Change photo"
+            : "Upload a photo of your home (optional)"
         }}</span>
 
         <!-- SVG Icon on the right -->
@@ -100,12 +107,12 @@
       <p class="text-xs text-gray-400 mt-3">
         <i class="fas fa-info-circle mr-1"></i>
         Front-of-house daytime photo works best. Straight-on, whole roofline
-        visible.
+        visible. <span class="text-gray-500">(Optional)</span>
       </p>
     </div>
 
-    <!-- Price per foot -->
-    <div>
+    <!-- Price per foot (commented out) -->
+    <!-- <div>
       <label class="block !text-md font-semibold text-gray-700 mb-2 form-label">
         Price per linear foot
       </label>
@@ -124,7 +131,7 @@
           class="w-full pl-8 pr-4 py-4 border border-gray-300 rounded-[16px] focus:ring-2 focus:ring-orange-500 focus:border-transparent !text-md form-input"
         />
       </div>
-    </div>
+    </div> -->
 
     <!-- Package Options -->
     <div>
@@ -151,7 +158,7 @@
           "
           @click="selectedPackage = pkg.id"
         >
-          <!-- Package Title Image - overlapping the top border -->
+          <!-- Package Title Image -->
           <img
             v-if="pkg.title"
             :src="pkg.title"
@@ -209,6 +216,7 @@
         </button>
       </div>
     </div>
+
     <!-- Color Options -->
     <div class="pt-4">
       <label class="block !text-md font-semibold text-gray-700 mb-2 form-label">

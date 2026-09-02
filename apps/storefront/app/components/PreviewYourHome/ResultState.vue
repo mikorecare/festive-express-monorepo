@@ -14,88 +14,94 @@
         <img
           class="w-full rounded-lg"
           :src="result.imageUrl"
-          alt="Your home with permanent lighting"
+          alt="Your home with holiday lighting"
         />
       </div>
 
       <!-- Info - 1/5 on desktop -->
       <div class="md:w-1/5 space-y-1">
+        <!-- Estimated Footage -->
         <div class="bg-gray-50 rounded-lg p-3">
           <p class="text-xs text-gray-500">Estimated footage</p>
           <p class="text-xl font-bold text-navy">
-            {{
-              result.stats?.packageTotalFeet || result.stats?.frontFeet || "—"
-            }}
-            ft
+            {{ Math.round(getTotalFeet(result.stats)) || "—" }} ft
           </p>
         </div>
+
+        <!-- Package Price -->
         <div class="bg-gray-50 rounded-lg p-3">
           <p class="text-xs text-gray-500">
-            {{ result.stats?.packageName || "Package" }}
+            {{ getPackageName() || "Package" }}
           </p>
           <p class="text-xl font-bold text-navy">
-            {{ getPackagePrice(result.stats?.package) }}
+            {{ getPackagePrice() }}
           </p>
         </div>
-        <div class="bg-gray-50 rounded-lg p-3">
+
+        <!-- Extra footage - ONLY if over 175 ft -->
+        <div v-if="calculatedOverageFt > 0" class="bg-gray-50 rounded-lg p-3">
           <p class="text-xs text-gray-500">Extra footage</p>
-          <p class="text-xl font-bold text-navy">
-            {{
-              result.stats?.packageOverageFt &&
-              result.stats.packageOverageFt > 0
-                ? "+" + Math.round(result.stats.packageOverageFt) + " ft"
-                : "0 ft"
-            }}
+          <p class="text-xl font-bold text-navy text-orange-600">
+            +{{ Math.round(calculatedOverageFt) }} ft
           </p>
         </div>
-        <div class="bg-gray-50 rounded-lg p-3">
+
+        <!-- Extra to add - ONLY if over 175 ft -->
+        <div v-if="calculatedOveragePrice" class="bg-gray-50 rounded-lg p-3">
           <p class="text-xs text-gray-500">Extra to add</p>
-          <p class="text-xl font-bold text-navy">
-            {{
-              result.stats?.overagePrice && result.stats.overagePrice > 0
-                ? formatMoney(result.stats.overagePrice)
-                : "$0"
-            }}
+          <p class="text-xl font-bold text-navy text-orange-600">
+            {{ formatMoney(calculatedOveragePrice) }}
           </p>
         </div>
       </div>
     </div>
 
-    <!-- Price per linear foot info -->
-    <div class="bg-gray-50 rounded-lg p-4 mb-4">
+    <!-- Price per linear foot - ONLY if over 175 ft -->
+    <div v-if="calculatedOverageFt > 0" class="bg-gray-50 rounded-lg p-4 mb-4">
       <div class="flex items-center justify-between">
         <span class="text-sm text-gray-600">Price per linear foot</span>
-        <span class="text-lg font-bold text-navy"
-          >${{ result.stats?.pricePerFoot || 10 }}</span
-        >
+        <span class="text-lg font-bold text-navy">${{ OVERAGE_RATE }}</span>
       </div>
       <p class="text-xs text-gray-400 mt-1">
-        Your home is over {{ result.stats?.packageIncludedFt || 175 }} ft —
-        extra footage is priced per linear foot.
+        Your home is over {{ PACKAGE_TOTAL_FT }} ft — extra footage is priced
+        per linear foot.
       </p>
     </div>
 
-    <!-- Offer Section -->
+    <!-- Offer Section - ONLY if over 175 ft -->
     <div
       v-if="showOffer"
       class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4"
     >
       <h4 class="text-sm font-semibold text-amber-800 mb-1">
-        Your home needs a bit more than
-        {{ result.stats?.packageIncludedFt || 175 }} ft
+        Your home needs a bit more than {{ PACKAGE_TOTAL_FT }} ft
       </h4>
       <p class="text-sm text-amber-700">
-        The {{ result.stats?.packageName || "Jolly" }} package covers up to 175
-        ft. Add {{ Math.round(result.stats?.packageOverageFt || 0) }} extra ft
-        at ${{ result.stats?.pricePerFoot || 10 }}/ft =
-        {{ formatMoney(result.stats?.overagePrice || 0) }}.
+        The {{ getPackageName() || "Jolly" }} package covers up to
+        {{ PACKAGE_TOTAL_FT }} ft. Add
+        {{ Math.round(calculatedOverageFt) }} extra ft at ${{ OVERAGE_RATE }}/ft
+        = {{ formatMoney(calculatedOveragePrice || 0) }}.
+      </p>
+    </div>
+
+    <!-- Within Package Message - ONLY if within 175 ft -->
+    <div
+      v-else-if="isWithinPackage && result.stats"
+      class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4"
+    >
+      <h4 class="text-sm font-semibold text-green-800 mb-1">
+        ✓ Your home is covered by the package
+      </h4>
+      <p class="text-sm text-green-700">
+        Your home needs {{ Math.round(getTotalFeet(result.stats)) }} ft total,
+        which is within the {{ PACKAGE_TOTAL_FT }} ft package limit.
       </p>
     </div>
 
     <div class="space-y-3">
       <button
         class="w-full bg-brand-orange hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        @click="bookConsultation"
+        @click="handleBookConsultation"
         :disabled="booking || isBooked"
       >
         <i v-if="booking" class="fas fa-spinner fa-spin mr-2"></i>
@@ -124,6 +130,7 @@
     <div
       v-if="showSuccessModal"
       class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      @click.self="closeModal"
     >
       <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 text-center">
         <div
@@ -131,11 +138,17 @@
         >
           <i class="fas fa-check text-green-500 text-2xl"></i>
         </div>
-        <h3 class="text-2xl font-bold text-navy mb-2">Email Sent</h3>
+        <h3 class="text-2xl font-bold text-navy mb-2">Email Sent!</h3>
         <p class="text-sm text-gray-600">
           We sent your preview and estimate to your inbox. Taking you to your
           package next…
         </p>
+        <button
+          class="mt-4 bg-brand-orange hover:bg-orange-600 text-white font-semibold py-2 px-6 rounded-lg transition-colors"
+          @click="goToPackage"
+        >
+          Continue to package →
+        </button>
       </div>
     </div>
   </div>
@@ -159,21 +172,38 @@ const {
   reset,
   packageOptions,
   selectedPackage,
+  calculatedOverageFt,
+  calculatedOveragePrice,
+  totalEstimate,
+  isWithinPackage,
+  getTotalFeet,
+  getRooflineFeet,
+  getGroundFeet,
+  PACKAGE_TOTAL_FT,
+  MAX_ROOFLINE_FT,
+  MAX_GROUND_FT,
+  OVERAGE_RATE,
 } = useEstimator();
 
 const isBooked = ref(false);
 const showSuccessModal = ref(false);
 let redirectTimer: NodeJS.Timeout | null = null;
 
-const getPackagePrice = (packageId?: string | null) => {
-  if (!packageId) return formatMoney(0);
+const getPackageName = () => {
   const pkg = packageOptions.value.find(
-    (p: IPackageOption) => p.id === packageId,
+    (p: IPackageOption) => p.id === selectedPackage.value,
   );
-  return pkg ? formatMoney(pkg.price) : formatMoney(0);
+  return pkg?.name || "Jolly";
 };
 
-const bookConsultation = async () => {
+const getPackagePrice = () => {
+  const pkg = packageOptions.value.find(
+    (p: IPackageOption) => p.id === selectedPackage.value,
+  );
+  return pkg ? formatMoney(pkg.price) : formatMoney(1999);
+};
+
+const handleBookConsultation = async () => {
   if (isBooked.value) return;
   await originalBookConsultation();
   if (
@@ -184,10 +214,21 @@ const bookConsultation = async () => {
     showSuccessModal.value = true;
 
     redirectTimer = setTimeout(() => {
-      const packageId =
-        result.value?.stats?.package || selectedPackage.value || "joy";
-      router.push(`/packages?package=${packageId}`);
+      goToPackage();
     }, 3000);
+  }
+};
+
+const goToPackage = () => {
+  const packageId = selectedPackage.value || "joy";
+  router.push(`/packages?package=${packageId}`);
+};
+
+const closeModal = () => {
+  showSuccessModal.value = false;
+  if (redirectTimer) {
+    clearTimeout(redirectTimer);
+    redirectTimer = null;
   }
 };
 

@@ -25,7 +25,7 @@ export interface FestivoConfig {
 
 const DEFAULT_STATE_CONFIGS: Record<FestivoState, StateConfig> = {
   run: { totalFrames: 7, speed: 200 },
-  talk: { totalFrames: 4, speed: 200, maxLoops: 1 },
+  talk: { totalFrames: 1, speed: 200, maxLoops: 1 },
   jump: { totalFrames: 5, speed: 200 },
   joy: { totalFrames: 8, speed: 100, maxLoops: 0 },
   jolly: { totalFrames: 6, speed: 100, maxLoops: 0 },
