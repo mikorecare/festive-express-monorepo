@@ -18,6 +18,7 @@
 
     <div class="container mx-auto px-4 py-8">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Left Column -->
         <div class="lg:col-span-2 space-y-6">
           <CheckoutServiceInformation
             v-model="form"
@@ -41,6 +42,7 @@
           />
         </div>
 
+        <!-- Right Column -->
         <div class="lg:col-span-1">
           <CheckoutOrderSummary
             :cart-items="cartItems"
@@ -111,6 +113,7 @@ const { settings, loadSettings, telHref } = useSettings();
 const FL_TAX_RATE = computed(() => {
   const raw =
     settings.value?.fl_tax_rate ?? (settings.value as any)?.["fl_tax_rate"];
+
   const n = Number(raw);
   if (!Number.isNaN(n) && n >= 0) return n;
   return 0.07;
@@ -234,40 +237,46 @@ const onTurnstileExpired = () => {
   turnstileStatus.value = "Verification expired. Please refresh.";
   turnstileStatusType.value = "warning";
   validationErrors.value.turnstile = "Verification expired. Please try again.";
+
   if (turnstileRef.value) {
     turnstileRef.value.reset();
   }
 };
 
 const resetTurnstile = () => {
-  if (turnstileRef.value) {
-    turnstileRef.value.reset();
+  if (!isTurnstileVerified.value) {
+    if (turnstileRef.value) {
+      turnstileRef.value.reset();
+    }
   }
-  isTurnstileVerified.value = false;
-  turnstileToken.value = "";
   turnstileStatus.value = "";
   turnstileStatusType.value = "";
-  validationErrors.value.turnstile = "";
 };
 
 const validateLuhn = (cardNumber: string): boolean => {
   const digits = cardNumber.replace(/\D/g, "");
+
   if (!digits || digits.length < 13 || digits.length > 19) {
     return false;
   }
+
   let sum = 0;
   let isEven = false;
+
   for (let i = digits.length - 1; i >= 0; i--) {
     let digit = parseInt(digits.charAt(i));
+
     if (isEven) {
       digit *= 2;
       if (digit > 9) {
         digit -= 9;
       }
     }
+
     sum += digit;
     isEven = !isEven;
   }
+
   return sum % 10 === 0;
 };
 
@@ -364,6 +373,7 @@ const validateField = (field: string) => {
         errors.billing_first_name = "";
       }
       break;
+
     case "billing_last_name":
       if (!stringValue || stringValue.trim().length < 2) {
         errors.billing_last_name = "Please enter your last name";
@@ -371,6 +381,7 @@ const validateField = (field: string) => {
         errors.billing_last_name = "";
       }
       break;
+
     case "billing_email":
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!stringValue) {
@@ -381,6 +392,7 @@ const validateField = (field: string) => {
         errors.billing_email = "";
       }
       break;
+
     case "billing_phone":
       const phoneRegex = /^[\d\s\-\(\)\+]{10,15}$/;
       if (!stringValue) {
@@ -391,6 +403,7 @@ const validateField = (field: string) => {
         errors.billing_phone = "";
       }
       break;
+
     case "shipping_address_1":
       if (!stringValue || stringValue.trim().length < 5) {
         errors.shipping_address_1 = "Please enter your installation address";
@@ -398,6 +411,7 @@ const validateField = (field: string) => {
         errors.shipping_address_1 = "";
       }
       break;
+
     case "install_dates":
       const dates = form.value.install_dates.filter((d) => d);
       if (dates.length === 0) {
@@ -406,6 +420,7 @@ const validateField = (field: string) => {
         errors.install_dates = "";
       }
       break;
+
     case "card_name":
       if (!stringValue || stringValue.trim().length < 2) {
         errors.card_name = "Please enter the cardholder name";
@@ -431,12 +446,14 @@ const validateAllFields = () => {
     "card_cvv",
   ];
   fields.forEach((field) => validateField(field));
+
   if (!isTurnstileVerified.value) {
     validationErrors.value.turnstile =
       "Please complete the security verification";
   } else {
     validationErrors.value.turnstile = "";
   }
+
   return isFormValid.value;
 };
 
@@ -492,18 +509,59 @@ const minDate = computed(() => {
   return d.toISOString().split("T")[0] || "";
 });
 
+const buildOrderPayload = () => {
+  const installDates = form.value.install_dates.filter((d) => d);
+  const removalDates = form.value.removal_dates.filter((d) => d);
+
+  return {
+    billing_first_name: form.value.billing_first_name || "",
+    billing_last_name: form.value.billing_last_name || "",
+    billing_email: form.value.billing_email,
+    billing_phone: form.value.billing_phone,
+    billing_postcode: form.value.billing_postcode,
+    shipping_address_1: form.value.shipping_address_1,
+    shipping_postcode: form.value.billing_postcode,
+    preferred_install_dates: installDates,
+    removal_dates: removalDates,
+    status: "pending",
+    payment_method: "converge",
+    payment_status: "paid",
+    subtotal: cartTotal.value + alacarteCartTotal.value,
+    tax_total: estimatedTax.value,
+    total: grandTotal.value,
+    items: cartItems.value.map((item: any) => ({
+      product_id: item.product_id,
+      product_name: item.product?.name || item.name,
+      quantity: item.quantity,
+      price: item.price,
+      options: item.options || null,
+      is_package: item.is_package || false,
+    })),
+    customer_note: form.value.customer_note || null,
+    transaction_id: null,
+    approval_code: null,
+    payment_token: null,
+  };
+};
+
 const validateCheckout = () => {
   if (cartItems.value.length === 0) {
     toast.error("Your cart is empty");
     return false;
   }
+
   const isValid = validateAllFields();
   if (!isValid) {
     toast.error("Please fix all errors before proceeding");
     return false;
   }
+
   return true;
 };
+
+// ============================================
+// GET CITY FROM ZIP CODE
+// ============================================
 
 const getCityFromZip = (zip: string): string => {
   const sarasotaZips = [
@@ -540,6 +598,7 @@ const getCityFromZip = (zip: string): string => {
     "34290",
     "34295",
   ];
+
   const bradentonZips = [
     "34201",
     "34203",
@@ -568,26 +627,58 @@ const getCityFromZip = (zip: string): string => {
     "34281",
     "34282",
   ];
+
   const lakewoodRanchZips = ["34202", "34211", "34212", "34240"];
 
   if (sarasotaZips.includes(zip)) return "Sarasota";
   if (bradentonZips.includes(zip)) return "Bradenton";
   if (lakewoodRanchZips.includes(zip)) return "Lakewood Ranch";
-  return "Sarasota";
+
+  return "Sarasota"; // Default fallback
 };
 
+// ============================================
+// CHECKOUT.JS IMPLEMENTATION
+// ============================================
+
+/**
+ * Detect card type from card number
+ */
+const detectCardType = (cardNumber: string): string => {
+  const cleaned = cardNumber.replace(/\D/g, "");
+  if (!cleaned) return "Unknown";
+
+  const patterns: Record<string, RegExp> = {
+    "American Express": /^3[47]/,
+    Visa: /^4/,
+    Mastercard: /^5[1-5]/,
+    Discover: /^6(?:011|5)/,
+    "Diners Club": /^3(?:0[0-5]|[68])/,
+    JCB: /^(?:2131|1800|35)/,
+  };
+
+  for (const [type, pattern] of Object.entries(patterns)) {
+    if (pattern.test(cleaned)) {
+      return type;
+    }
+  }
+  return "Unknown";
+};
+
+/**
+ * Load Checkout.js script
+ */
 const loadCheckoutScript = (): Promise<void> => {
-  const config = useRuntimeConfig();
-  const isDemo = config.convergeDemo;
   return new Promise((resolve, reject) => {
     if ((window as any).ConvergeEmbeddedPayment) {
       resolve();
       return;
     }
-    const src = isDemo
-      ? "https://api.demo.convergepay.com/hosted-payments/Checkout.js"
-      : "https://api.convergepay.com/hosted-payments/Checkout.js";
+
+    const src = "https://api.demo.convergepay.com/hosted-payments/Checkout.js";
+
     console.log("Loading Checkout.js from:", src);
+
     const script = document.createElement("script");
     script.src = src;
     script.async = true;
@@ -603,48 +694,56 @@ const loadCheckoutScript = (): Promise<void> => {
   });
 };
 
-const getFreshToken = (): string => {
-  let token = "";
-
-  if (turnstileRef.value) {
-    try {
-      const result = turnstileRef.value.getResponse();
-      if (result && typeof result === "string" && result.length > 0) {
-        token = result;
-        console.log("Got fresh token, length:", token.length);
-      } else {
-        console.warn("getFreshToken - no valid token from widget");
-      }
-    } catch (e) {
-      console.error("Error getting token from widget:", e);
-    }
-  } else {
-    console.warn("getFreshToken - turnstileRef is null");
+/**
+ * Process payment using Checkout.js
+ * Card data goes directly to Converge.
+ */
+const processPaymentWithCheckout = async (
+  token: string,
+): Promise<ConvergePaymentResponse> => {
+  if (!(window as any).ConvergeCheckout) {
+    throw new Error("Checkout.js not loaded");
   }
 
-  return token;
+  const paymentData = {
+    ssl_txn_auth_token: token,
+    ssl_card_number: form.value.card_number.replace(/\s/g, ""),
+    ssl_exp_date: form.value.card_expiry.replace("/", ""),
+    ssl_cvv2cvc2: form.value.card_cvv,
+    ssl_first_name: form.value.billing_first_name,
+    ssl_last_name: form.value.billing_last_name,
+    ssl_avs_address: form.value.shipping_address_1,
+    ssl_avs_zip: form.value.billing_postcode,
+    ssl_email: form.value.billing_email,
+    ssl_phone: form.value.billing_phone,
+    ssl_city: getCityFromZip(form.value.billing_postcode),
+    ssl_state: "FL",
+    ssl_country: "USA",
+  };
+
+  console.log("Sending payment to Converge via Checkout.js...");
+
+  return new Promise((resolve, reject) => {
+    (window as any).ConvergeCheckout.processPayment(
+      paymentData,
+      (response: ConvergePaymentResponse) => {
+        console.log("Converge response:", response);
+        resolve(response);
+      },
+      (error: any) => {
+        console.error("Converge error:", error);
+        reject(error);
+      },
+    );
+  });
 };
 
+/**
+ * Main payment function using Checkout.js
+ */
 const payWithConverge = async () => {
   if (!validateCheckout()) return;
 
-  let freshToken = getFreshToken();
-  if (turnstileRef.value) {
-    const token = turnstileRef.value.getResponse();
-    if (token) {
-      freshToken = token;
-    }
-  }
-
-  if (!freshToken) {
-    showToast(
-      "Security verification required. Please complete the CAPTCHA.",
-      "error",
-    );
-    return;
-  }
-
-  turnstileToken.value = freshToken;
   isPaying.value = true;
 
   try {
@@ -652,6 +751,7 @@ const payWithConverge = async () => {
     const lastName = form.value.billing_last_name || "";
     const email = form.value.billing_email || "";
     const promoCodeId = appliedPromo.value?.id || null;
+
     const city = getCityFromZip(form.value.billing_postcode);
 
     const orderBody = {
@@ -790,15 +890,29 @@ const payWithConverge = async () => {
 
         const cvvResponse = response.ssl_cvv2_response;
 
-        if (cvvResponse === "N" || cvvResponse === "P" || cvvResponse === "U") {
-          const messages = {
-            N: "CVV verification failed. Please check your CVV and try again.",
-            P: "CVV could not be processed. Please try a different card.",
-            U: "CVV verification unavailable. Please try a different card.",
-          };
+        if (cvvResponse === "N") {
           showToast(
-            messages[cvvResponse as keyof typeof messages] ||
-              "CVV verification failed",
+            "CVV verification failed. Please check your CVV and try again.",
+            "error",
+          );
+          isPaying.value = false;
+          resetTurnstile();
+          return;
+        }
+
+        if (cvvResponse === "P") {
+          showToast(
+            "CVV could not be processed. Please try a different card.",
+            "error",
+          );
+          isPaying.value = false;
+          resetTurnstile();
+          return;
+        }
+
+        if (cvvResponse === "U") {
+          showToast(
+            "CVV verification unavailable. Please try a different card.",
             "error",
           );
           isPaying.value = false;
@@ -807,33 +921,7 @@ const payWithConverge = async () => {
         }
 
         try {
-          let orderToken = getFreshToken();
-          if (turnstileRef.value) {
-            const token = turnstileRef.value.getResponse();
-            if (token) {
-              orderToken = token;
-            }
-          }
-
-          if (!orderToken) {
-            showToast(
-              "Security verification expired. Please try again.",
-              "error",
-            );
-            resetTurnstile();
-            isPaying.value = false;
-            return;
-          }
-
-          if (!orderToken) {
-            showToast(
-              "Security verification expired. Please try again.",
-              "error",
-            );
-            resetTurnstile();
-            isPaying.value = false;
-            return;
-          }
+          // const customerId = await upsertCustomer();
 
           const orderRes = (await $fetch("/api/orders/create", {
             method: "POST",
@@ -843,39 +931,28 @@ const payWithConverge = async () => {
               approval_code: response.ssl_approval_code,
               payment_token: response.ssl_token || tokenRes.token,
               card_last4: form.value.card_number.replace(/\s/g, "").slice(-4),
-              turnstile_token: orderToken,
+              turnstile_token: turnstileToken.value,
               cvv_response: cvvResponse,
             },
           })) as any;
 
-          resetTurnstile();
-
           if (!orderRes || !orderRes.success) {
-            if (orderRes?.error === "Duplicate transaction") {
-              showToast(
-                orderRes.existing_order
-                  ? `Order #${orderRes.existing_order} has already been placed. Please check your email for confirmation.`
-                  : "This order has already been placed. Please check your email for confirmation.",
-                "error",
-              );
-              isPaying.value = false;
-              return;
-            }
             throw new Error(orderRes?.error || "Order creation failed");
           }
 
           await clearCart();
           showToast("Payment successful!", "success");
+
           navigateTo(
             `/thank-you?order=${orderRes.order.order_number}&email=${encodeURIComponent(email)}`,
           );
         } catch (orderError: any) {
-          resetTurnstile();
           showToast(
             "Payment successful but order creation failed. Please contact support.",
             "error",
           );
           isPaying.value = false;
+          resetTurnstile();
         } finally {
           isPaying.value = false;
         }
@@ -907,6 +984,7 @@ const upsertCustomer = async () => {
   const email = form.value.billing_email.trim().toLowerCase();
   const firstName = form.value.billing_first_name || "";
   const lastName = form.value.billing_last_name || "";
+
   const payload = {
     email,
     first_name: firstName,
@@ -920,21 +998,26 @@ const upsertCustomer = async () => {
     country: "US",
     role: "customer",
   };
+
   const db = supabase as any;
+
   const { data: existing } = await db
     .from("customers")
     .select("id")
     .eq("email", email)
     .maybeSingle();
+
   if (existing?.id) {
     await db.from("customers").update(payload).eq("id", existing.id);
     return existing.id;
   }
+
   const { data: created, error } = await db
     .from("customers")
     .insert(payload)
     .select("id")
     .single();
+
   if (error) throw error;
   return created.id;
 };
