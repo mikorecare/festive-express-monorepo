@@ -154,18 +154,8 @@ async function processElavonRefund(params: {
         };
     }
 
-    // Build raw XML
-    const xmlPayload = `<?xml version="1.0" encoding="utf-8"?>
-<txn>
-    <ssl_merchant_id>${merchantId}</ssl_merchant_id>
-    <ssl_user_id>${userId}</ssl_user_id>
-    <ssl_pin>${pin}</ssl_pin>
-    <ssl_transaction_type>linkedrefund</ssl_transaction_type>
-    <ssl_txn_id>${transactionId}</ssl_txn_id>
-    <ssl_amount>${amount.toFixed(2)}</ssl_amount>
-</txn>`;
+    const xmlPayload = `<?xml version="1.0" encoding="utf-8"?><txn><ssl_merchant_id>${merchantId}</ssl_merchant_id><ssl_user_id>${userId}</ssl_user_id><ssl_pin>${pin}</ssl_pin><ssl_transaction_type>linkedrefund</ssl_transaction_type><ssl_txn_id>${transactionId}</ssl_txn_id><ssl_amount>${amount.toFixed(2)}</ssl_amount></txn>`;
 
-    // URL encode the XML
     const encodedXml = encodeURIComponent(xmlPayload);
     const requestData = `xmldata=${encodedXml}`;
 
