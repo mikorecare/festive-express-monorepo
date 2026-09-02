@@ -34,6 +34,12 @@ export default defineNuxtConfig({
     azureRedirectUri: process.env.AZURE_REDIRECT_URI,
     supabaseServiceKey: process.env.NUXT_SUPABASE_SECRET_KEY,
     turnstileSecretKey: process.env.NUXT_TURNSTILE_SECRET_KEY,
+    elavonAccountId: process.env.ELAVON_ACCOUNT_ID || "",
+    elavonUserId: process.env.ELAVON_USER_ID || "",
+    elavonPin: process.env.ELAVON_PIN || "",
+    elavonDemo: process.env.NUXT_ELAVON_DEMO !== "false",
+    elavonVendorId: process.env.ELAVON_VENDOR_ID || "",
+    elavonPartnerAppId: process.env.ELAVON_PARTNER_APP_ID || "",
     public: {
       turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY,
       supabaseUrl: process.env.SUPABASE_URL,
