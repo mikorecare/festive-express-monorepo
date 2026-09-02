@@ -650,3 +650,40 @@ iframe#chat-widget-container,
   color: #334155;
 }
 
+html {
+  /* Note: Firefox does not support custom pixel widths for the global scrollbar, 
+     but "thin" keeps it minimal and elegant */
+  scrollbar-width:auto;
+  /* Default: Orange thumb (#f79221) on Dark Blue track (#1c2f5b) */
+  scrollbar-color: #f79221 #1c2f5b;
+}
+
+/* Firefox Hover state */
+html:hover {
+  /* Darker orange thumb on hover */
+  scrollbar-color: #e8851a #1c2f5b;
+}
+
+/* ==========================================================================
+   2. WebKit Scrollbar (Chrome, Safari, Edge) - Applied globally
+   ========================================================================== */
+/* Main scrollbar track width */
+::-webkit-scrollbar {
+  width: 8px; /* Slightly wider than the sidebar (8px) for easier desktop clicking */
+}
+
+/* Background Track */
+::-webkit-scrollbar-track {
+  background: #1c2f5b;
+}
+
+/* Handle / Thumb (Default State) */
+::-webkit-scrollbar-thumb {
+  background: #f79221;
+  border-radius: 4px; /* Balanced rounding for an 8px track */
+}
+
+/* Handle / Thumb (Hover State) */
+::-webkit-scrollbar-thumb:hover {
+  background: #e8851a;
+}

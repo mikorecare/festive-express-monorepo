@@ -34,7 +34,6 @@ export default defineEventHandler(async (event) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     try {
-        // Get order details
         const { data: order, error: orderError } = await supabase
             .from('orders')
             .select('*')
@@ -48,7 +47,6 @@ export default defineEventHandler(async (event) => {
             });
         }
 
-        // Validate order is eligible for refund
         if (order.payment_status !== 'paid') {
             throw createError({
                 statusCode: 400,
@@ -70,8 +68,7 @@ export default defineEventHandler(async (event) => {
             });
         }
 
-        // Process refund with Elavon/Converge
-        const refundResponse = await processElavonRefund({
+        const refundResponse = await processConvergeRefund({
             transactionId: transactionId,
             amount: amount,
             merchantId: config.elavonAccountId,
@@ -87,12 +84,11 @@ export default defineEventHandler(async (event) => {
             });
         }
 
-        // Update order with refund details
         const { error: updateError } = await supabase
             .from('orders')
             .update({
                 payment_status: 'refunded',
-                status: 'refunded',
+                status: 'cancelled',
                 refund_amount: amount,
                 refund_transaction_id: refundResponse.refundTransactionId,
                 refund_reason: reason || null,
@@ -110,7 +106,6 @@ export default defineEventHandler(async (event) => {
             });
         }
 
-        // Add timeline entry
         await supabase
             .from('order_timeline')
             .insert({
@@ -137,7 +132,7 @@ export default defineEventHandler(async (event) => {
     }
 });
 
-async function processElavonRefund(params: {
+async function processConvergeRefund(params: {
     transactionId: string;
     amount: number;
     merchantId: string;
@@ -150,24 +145,26 @@ async function processElavonRefund(params: {
     if (!merchantId || !userId || !pin) {
         return {
             success: false,
-            error: 'Missing Elavon credentials',
+            error: 'Missing Converge credentials',
         };
     }
 
-    const xmlPayload = `<?xml version="1.0" encoding="utf-8"?><txn><ssl_merchant_id>${merchantId}</ssl_merchant_id><ssl_user_id>${userId}</ssl_user_id><ssl_pin>${pin}</ssl_pin><ssl_transaction_type>linkedrefund</ssl_transaction_type><ssl_txn_id>${transactionId}</ssl_txn_id><ssl_amount>${amount.toFixed(2)}</ssl_amount></txn>`;
-
-    const encodedXml = encodeURIComponent(xmlPayload);
-    const requestData = `xmldata=${encodedXml}`;
-
-    const baseUrl = demo
-        ? 'https://api.demo.convergepay.com'
-        : 'https://api.convergepay.com';
+    // REMOVED: <?xml version="1.0" encoding="utf-8"?>
+    // UPDATED: Changed <ssl_merchant_id> to <ssl_account_id>
+    const xmlPayload = `<txn>` +
+                       `<ssl_account_id><![CDATA[${merchantId}]]></ssl_account_id>` +
+                       `<ssl_user_id><![CDATA[${userId}]]></ssl_user_id>` +
+                       `<ssl_pin><![CDATA[${pin}]]></ssl_pin>` +
+                       `<ssl_transaction_type>ccreturn</ssl_transaction_type>` +
+                       `<ssl_txn_id><![CDATA[${transactionId}]]></ssl_txn_id>` +
+                       `<ssl_amount>${amount.toFixed(2)}</ssl_amount>` +
+                       `</txn>`;
 
     const endpoint = demo
-        ? `${baseUrl}/VirtualMerchantDemo/processxml.do`
-        : `${baseUrl}/VirtualMerchant/processxml.do`;
+        ? 'https://api.demo.convergepay.com/VirtualMerchantDemo/processxml.do'
+        : 'https://convergepay.com';
 
-    console.log(`Processing refund using ${demo ? 'DEMO' : 'PRODUCTION'} environment: ${endpoint}`);
+    console.log(`Processing refund using ${demo ? 'DEMO' : 'PRODUCTION'} environment`);
     console.log('XML Payload:', xmlPayload);
 
     try {
@@ -175,24 +172,24 @@ async function processElavonRefund(params: {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
+                'Accept': 'application/xml',
             },
-            body: requestData,
+            body: `xmldata=${encodeURIComponent(xmlPayload)}`,
         });
 
         const responseText = await response.text();
-        console.log('Elavon refund response:', responseText);
+        console.log('Converge refund response:', responseText);
 
         if (responseText.includes('<html') || responseText.includes('<!DOCTYPE')) {
-            console.error('Elavon returned HTML instead of XML:', responseText);
+            console.error('Converge returned HTML instead of XML');
             return {
                 success: false,
-                error: 'Payment gateway returned an unexpected server page. Please verify endpoints.',
+                error: 'Payment gateway returned an error. Please check your credentials and endpoint.',
             };
         }
 
         const result = parseConvergeResponse(responseText);
 
-        // Check for error response
         if (result.errorCode) {
             return {
                 success: false,
@@ -213,13 +210,14 @@ async function processElavonRefund(params: {
             };
         }
     } catch (error: any) {
-        console.error('Elavon refund error:', error);
+        console.error('Converge refund error:', error);
         return {
             success: false,
             error: error.message || 'Failed to connect to payment gateway',
         };
     }
 }
+
 
 function parseConvergeResponse(xml: string) {
     const result: Record<string, string> = {};

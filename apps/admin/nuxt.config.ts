@@ -40,6 +40,8 @@ export default defineNuxtConfig({
     elavonDemo: process.env.NUXT_ELAVON_DEMO !== "false",
     elavonVendorId: process.env.ELAVON_VENDOR_ID || "",
     elavonPartnerAppId: process.env.ELAVON_PARTNER_APP_ID || "",
+    elavonConsumerKey: process.env.ELAVON_CONSUMER_KEY || "",
+    elavonConsumerSecret: process.env.ELAVON_CONSUMER_SECRET || "",
     public: {
       turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY,
       supabaseUrl: process.env.SUPABASE_URL,
