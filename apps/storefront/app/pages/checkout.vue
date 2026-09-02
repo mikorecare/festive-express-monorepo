@@ -244,13 +244,15 @@ const onTurnstileExpired = () => {
 };
 
 const resetTurnstile = () => {
-  if (!isTurnstileVerified.value) {
-    if (turnstileRef.value) {
-      turnstileRef.value.reset();
-    }
+  if (turnstileRef.value) {
+    turnstileRef.value.reset();
   }
+
+  isTurnstileVerified.value = false;
+  turnstileToken.value = "";
   turnstileStatus.value = "";
   turnstileStatusType.value = "";
+  validationErrors.value.turnstile = "";
 };
 
 const validateLuhn = (cardNumber: string): boolean => {
@@ -669,13 +671,18 @@ const detectCardType = (cardNumber: string): string => {
  * Load Checkout.js script
  */
 const loadCheckoutScript = (): Promise<void> => {
+  const config = useRuntimeConfig();
+  const isDemo = config.convergeDemo;
+
   return new Promise((resolve, reject) => {
     if ((window as any).ConvergeEmbeddedPayment) {
       resolve();
       return;
     }
 
-    const src = "https://api.demo.convergepay.com/hosted-payments/Checkout.js";
+    const src = isDemo
+      ? "https://api.demo.convergepay.com/hosted-payments/Checkout.js"
+      : "https://api.convergepay.com/hosted-payments/Checkout.js";
 
     console.log("Loading Checkout.js from:", src);
 
@@ -921,8 +928,6 @@ const payWithConverge = async () => {
         }
 
         try {
-          // const customerId = await upsertCustomer();
-
           const orderRes = (await $fetch("/api/orders/create", {
             method: "POST",
             body: {
@@ -936,7 +941,19 @@ const payWithConverge = async () => {
             },
           })) as any;
 
+          resetTurnstile();
+
           if (!orderRes || !orderRes.success) {
+            if (orderRes?.error === "Duplicate transaction") {
+              showToast(
+                orderRes.existing_order
+                  ? `Order #${orderRes.existing_order} has already been placed. Please check your email for confirmation.`
+                  : "This order has already been placed. Please check your email for confirmation.",
+                "error",
+              );
+              isPaying.value = false;
+              return;
+            }
             throw new Error(orderRes?.error || "Order creation failed");
           }
 
@@ -947,12 +964,13 @@ const payWithConverge = async () => {
             `/thank-you?order=${orderRes.order.order_number}&email=${encodeURIComponent(email)}`,
           );
         } catch (orderError: any) {
+          resetTurnstile();
+
           showToast(
             "Payment successful but order creation failed. Please contact support.",
             "error",
           );
           isPaying.value = false;
-          resetTurnstile();
         } finally {
           isPaying.value = false;
         }
