@@ -155,6 +155,8 @@ export default defineNuxtConfig({
           "https://checkout.demo.convergepay.com",
           "https://checkout.convergepay.com",
           "https://chat.actm.xyz",
+          "https://challenges.cloudflare.com",
+          "https://*.cloudflare.com",
         ],
 
         'style-src': [
@@ -211,6 +213,8 @@ export default defineNuxtConfig({
           "https://brunhild.challenges.cloudflare.com",
           "https://chat.actm.xyz",
           "wss://chat.actm.xyz",
+          "https://brunhild.challenges.cloudflare.com",
+          "wss://*.challenges.cloudflare.com",
         ],
 
         'frame-src': [
@@ -222,6 +226,8 @@ export default defineNuxtConfig({
           "https://checkout.demo.convergepay.com",
           "https://checkout.convergepay.com",
           "https://chat.actm.xyz",
+          "https://challenges.cloudflare.com",
+          "https://*.challenges.cloudflare.com",
         ],
 
         'frame-ancestors': ["'self'"],

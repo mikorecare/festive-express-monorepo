@@ -39,7 +39,7 @@ const renderTurnstile = () => {
 
   container.innerHTML = "";
 
-  // @ts-ignore // ✅ Skip TypeScript check
+  // @ts-ignore
   widgetId = window.turnstile.render(container, {
     sitekey: props.siteKey,
     callback: (token: string) => {
