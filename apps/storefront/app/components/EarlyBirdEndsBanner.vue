@@ -33,30 +33,20 @@
 </template>
 
 <script setup lang="ts">
-const { loadEarlyBird, earlyBirdEnabled, earlyBirdExpiresAt } =
-  useEarlyBirdSpecial();
+const {
+  loadEarlyBird,
+  earlyBirdEnabled,
+  earlyBirdExpiresAt,
+  isEarlyBirdLive,
+  formatEndsLabel,
+} = useEarlyBirdSpecial();
 
 const showWidget = ref(false);
 const timeLeft = ref({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 let timer: ReturnType<typeof setInterval> | null = null;
 
 const formatNumber = (n: number) => String(Math.max(0, n)).padStart(2, "0");
-
-const endsLabel = computed(() => {
-  const raw = earlyBirdExpiresAt.value;
-  if (!raw) return "";
-
-  const day = raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (!day) return "";
-
-  const d = new Date(`${day[1]}-${day[2]}-${day[3]}T00:00:00Z`);
-  return d.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-});
+const endsLabel = computed(() => formatEndsLabel.value || "");
 
 const units = computed(() => [
   { label: "d", value: timeLeft.value.days },
@@ -68,7 +58,7 @@ const units = computed(() => [
 function tick() {
   const end = earlyBirdExpiresAt.value
     ? new Date(earlyBirdExpiresAt.value).getTime()
-    : new Date("2026-10-31T23:59:59").getTime();
+    : Date.now();
   const diff = Math.max(0, end - Date.now());
   timeLeft.value = {
     days: Math.floor(diff / 86400000),
@@ -79,10 +69,7 @@ function tick() {
 }
 
 function updateVisibility() {
-  const enabled = Boolean(earlyBirdEnabled.value);
-  const exp = earlyBirdExpiresAt.value;
-  const notExpired = !exp || new Date(exp).getTime() > Date.now();
-  showWidget.value = enabled && notExpired;
+  showWidget.value = Boolean(isEarlyBirdLive.value);
 }
 
 onMounted(async () => {
