@@ -87,12 +87,28 @@
       </p>
     </div>
 
+    <!-- Turnstile Widget for booking -->
+    <div v-if="!isPreview && !isBooked" class="mb-4">
+      <TurnstileWidget
+        ref="turnstileRef"
+        :site-key="siteKey"
+        :errors="turnstileErrors"
+        :status="turnstileStatus"
+        :status-type="turnstileStatusType"
+        :status-class="turnstileStatusClass"
+        :status-icon="turnstileStatusIcon"
+        @success="onTurnstileSuccess"
+        @error="onTurnstileError"
+        @expired="onTurnstileExpired"
+      />
+    </div>
+
     <template v-if="!isPreview">
       <div class="space-y-3">
         <button
           class="w-full bg-brand-orange hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           @click="handleBookConsultation"
-          :disabled="booking || isBooked"
+          :disabled="booking || isBooked || !turnstileVerified"
         >
           <i v-if="booking" class="fas fa-spinner fa-spin mr-2"></i>
           {{
@@ -158,9 +174,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onUnmounted } from "vue";
+import { ref, onUnmounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useEstimator } from "~/composables/useEstimator";
+import TurnstileWidget from "../Checkout/TurnstileWidget.vue";
 import type { IPackageOption } from "~/components/PreviewYourHome/types";
 
 const router = useRouter();
@@ -189,6 +206,74 @@ const {
   OVERAGE_RATE,
 } = useEstimator();
 
+// Turnstile ref and state
+const turnstileRef = ref<InstanceType<typeof TurnstileWidget> | null>(null);
+const turnstileToken = ref<string>("");
+const turnstileVerified = ref(false);
+const turnstileStatus = ref("");
+const turnstileStatusType = ref("");
+const turnstileErrors = ref({ turnstile: "" });
+
+// Get Turnstile site key from runtime config
+const config = useRuntimeConfig();
+const siteKey = config.public.turnstile.siteKey as string;
+
+// Turnstile status computed properties
+const turnstileStatusClass = computed(() => {
+  switch (turnstileStatusType.value) {
+    case "success":
+      return "text-green-600";
+    case "error":
+      return "text-red-600";
+    case "warning":
+      return "text-yellow-600";
+    default:
+      return "text-gray-500";
+  }
+});
+
+const turnstileStatusIcon = computed(() => {
+  switch (turnstileStatusType.value) {
+    case "success":
+      return "fas fa-check-circle";
+    case "error":
+      return "fas fa-exclamation-circle";
+    case "warning":
+      return "fas fa-exclamation-triangle";
+    default:
+      return "fas fa-info-circle";
+  }
+});
+
+// Turnstile event handlers
+const onTurnstileSuccess = (token: string) => {
+  turnstileToken.value = token;
+  turnstileVerified.value = true;
+  turnstileStatus.value = "Verification successful!";
+  turnstileStatusType.value = "success";
+  turnstileErrors.value.turnstile = "";
+};
+
+const onTurnstileError = () => {
+  turnstileVerified.value = false;
+  turnstileToken.value = "";
+  turnstileStatus.value = "Verification failed. Please try again.";
+  turnstileStatusType.value = "error";
+  turnstileErrors.value.turnstile = "Please complete the security verification";
+};
+
+const onTurnstileExpired = () => {
+  turnstileVerified.value = false;
+  turnstileToken.value = "";
+  turnstileStatus.value = "Verification expired. Please refresh.";
+  turnstileStatusType.value = "warning";
+  turnstileErrors.value.turnstile = "Verification expired. Please try again.";
+
+  if (turnstileRef.value) {
+    turnstileRef.value.reset();
+  }
+};
+
 const isBooked = ref(false);
 const showSuccessModal = ref(false);
 let redirectTimer: NodeJS.Timeout | null = null;
@@ -209,7 +294,16 @@ const getPackagePrice = () => {
 
 const handleBookConsultation = async () => {
   if (isBooked.value) return;
-  await originalBookConsultation();
+
+  // Check if Turnstile is verified
+  if (!turnstileVerified.value || !turnstileToken.value) {
+    // Show error or trigger Turnstile
+    return;
+  }
+
+  // Call the original bookConsultation with the Turnstile token
+  await originalBookConsultation(turnstileToken.value);
+
   if (
     resultNote.value ===
     "Thanks — we received your design and contact info. We'll be in touch."

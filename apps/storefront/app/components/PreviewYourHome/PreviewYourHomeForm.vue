@@ -111,28 +111,6 @@
       </p>
     </div>
 
-    <!-- Price per foot (commented out) -->
-    <!-- <div>
-      <label class="block !text-md font-semibold text-gray-700 mb-2 form-label">
-        Price per linear foot
-      </label>
-      <div class="relative">
-        <span
-          class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-semibold"
-          >$</span
-        >
-        <input
-          v-model.number="pricePerFoot"
-          type="number"
-          min="1"
-          step="1"
-          inputmode="decimal"
-          placeholder="10"
-          class="w-full pl-8 pr-4 py-4 border border-gray-300 rounded-[16px] focus:ring-2 focus:ring-orange-500 focus:border-transparent !text-md form-input"
-        />
-      </div>
-    </div> -->
-
     <!-- Package Options -->
     <div>
       <label class="block !text-md font-semibold text-gray-700 mb-4 form-label">
@@ -308,6 +286,20 @@
       />
     </div>
 
+    <!-- Turnstile Widget - Matching Checkout -->
+    <TurnstileWidget
+      ref="turnstileRef"
+      :site-key="siteKey"
+      :errors="turnstileErrors"
+      :status="turnstileStatus"
+      :status-type="turnstileStatusType"
+      :status-class="turnstileStatusClass"
+      :status-icon="turnstileStatusIcon"
+      @success="onTurnstileSuccess"
+      @error="onTurnstileError"
+      @expired="onTurnstileExpired"
+    />
+
     <!-- Error -->
     <div
       v-if="error"
@@ -322,7 +314,7 @@
       <button
         class="w-full bg-brand-orange text-xl tracking-wide hover:bg-orange-600 text-white font-semibold py-4 px-4 rounded-[16px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         @click="submitRender(false)"
-        :disabled="isLoading"
+        :disabled="isLoading || !turnstileVerified"
       >
         <i v-if="isLoading" class="fas fa-spinner fa-spin mr-2"></i>
         {{ isLoading ? "Lighting up..." : "Light up my home →" }}
@@ -330,7 +322,7 @@
       <button
         class="w-full border border-gray-300 hover:bg-gray-50 text-xl text-gray-700 font-semibold py-4 px-4 rounded-[16px] transition-colors"
         @click="submitRender(true)"
-        :disabled="isLoading"
+        :disabled="isLoading || !turnstileVerified"
       >
         <i class="fas fa-search mr-2"></i>
         Check address only (no lights)
@@ -346,6 +338,7 @@
 
 <script setup lang="ts">
 import { useEstimator } from "~/composables/useEstimator";
+import TurnstileWidget from "../Checkout/TurnstileWidget.vue";
 
 const {
   fileInput,
@@ -370,10 +363,106 @@ const {
   debouncedSearch,
   selectAddress,
   updateMultiColor,
-  submitRender,
+  submitRender: originalSubmitRender,
   fetchPackages,
   loadingPackages,
 } = useEstimator();
+
+// Turnstile ref and state - matching checkout pattern
+const turnstileRef = ref<InstanceType<typeof TurnstileWidget> | null>(null);
+const turnstileToken = ref<string>("");
+const turnstileVerified = ref(false);
+const turnstileStatus = ref("");
+const turnstileStatusType = ref("");
+const turnstileErrors = ref({ turnstile: "" });
+
+// Get Turnstile site key from runtime config - matching checkout
+const config = useRuntimeConfig();
+const siteKey = config.public.turnstile.siteKey as string;
+
+// Turnstile status computed properties - matching checkout
+const turnstileStatusClass = computed(() => {
+  switch (turnstileStatusType.value) {
+    case "success":
+      return "text-green-600";
+    case "error":
+      return "text-red-600";
+    case "warning":
+      return "text-yellow-600";
+    default:
+      return "text-gray-500";
+  }
+});
+
+const turnstileStatusIcon = computed(() => {
+  switch (turnstileStatusType.value) {
+    case "success":
+      return "fas fa-check-circle";
+    case "error":
+      return "fas fa-exclamation-circle";
+    case "warning":
+      return "fas fa-exclamation-triangle";
+    default:
+      return "fas fa-info-circle";
+  }
+});
+
+// Turnstile event handlers - matching checkout
+const onTurnstileSuccess = (token: string) => {
+  turnstileToken.value = token;
+  turnstileVerified.value = true;
+  turnstileStatus.value = "Verification successful!";
+  turnstileStatusType.value = "success";
+  turnstileErrors.value.turnstile = "";
+  error.value = "";
+};
+
+const onTurnstileError = () => {
+  turnstileVerified.value = false;
+  turnstileToken.value = "";
+  turnstileStatus.value = "Verification failed. Please try again.";
+  turnstileStatusType.value = "error";
+  turnstileErrors.value.turnstile = "Please complete the security verification";
+  error.value = "Security verification failed. Please try again.";
+};
+
+const onTurnstileExpired = () => {
+  turnstileVerified.value = false;
+  turnstileToken.value = "";
+  turnstileStatus.value = "Verification expired. Please refresh.";
+  turnstileStatusType.value = "warning";
+  turnstileErrors.value.turnstile = "Verification expired. Please try again.";
+  error.value = "Security verification expired. Please try again.";
+
+  if (turnstileRef.value) {
+    turnstileRef.value.reset();
+  }
+};
+
+// Reset Turnstile - matching checkout
+const resetTurnstile = () => {
+  if (!turnstileVerified.value) {
+    if (turnstileRef.value) {
+      turnstileRef.value.reset();
+    }
+  }
+  turnstileStatus.value = "";
+  turnstileStatusType.value = "";
+  turnstileErrors.value.turnstile = "";
+};
+
+const submitRender = async (previewOnly: boolean) => {
+  if (!turnstileVerified.value || !turnstileToken.value) {
+    error.value = "Please complete the security verification first.";
+    return;
+  }
+
+  await originalSubmitRender(previewOnly, turnstileToken.value);
+};
+
+defineExpose({
+  resetTurnstile,
+});
 
 onMounted(() => {
   fetchPackages();

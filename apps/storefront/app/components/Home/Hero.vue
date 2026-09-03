@@ -34,78 +34,44 @@
       :format-number="formatNumber"
     />
 
-    <!-- <EarlyBirdSpecialCountdownWidget class="desktop-widget max-lg:hidden" /> -->
-
     <div
       class="hero-content-container relative z-[3] w-full max-w-[1200px] mx-auto px-6 flex justify-between items-center gap-5 max-lg:flex-col max-lg:items-start max-lg:gap-24 max-lg:px-[5%]"
     >
       <div
-        class="hero-card relative w-full max-w-[460px] bg-[#161c30]/50 backdrop-blur-md rounded-2xl p-11 px-8 shadow-[0_10px_30px_rgba(0,0,0,0.4)] text-white text-center border border-white/12 overflow-hidden before:content-[''] before:absolute before:-top-1/2 before:-left-[150%] before:w-[200%] before:h-[200%] before:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] before:rotate-[25deg] before:pointer-events-none before:animate-[glossyShineContinuous_3s_linear_infinite] max-lg:order-1 max-lg:max-w-[90%] max-lg:p-0 max-lg:text-left max-lg:!bg-transparent max-lg:!backdrop-blur-none max-lg:!border-none max-lg:!shadow-none max-lg:!rounded-none max-lg:before:!hidden max-lg:after:!hidden"
+        class="hero-card relative w-full max-w-[460px] bg-[#161c30]/50 backdrop-blur-md rounded-2xl p-11 px-8 shadow-[0_10px_30px_rgba(0,0,0,0.4)] text-white text-center border border-white/12 overflow-hidden before:content-[''] before:absolute before:-top-1/2 before:-left-[150%] before:w-[200%] before:h-[200%] before:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] before:rotate-[25deg] before:pointer-events-none before:animate-[glossyShineContinuous_3s_linear_infinite] max-lg:order-1 max-lg:max-w-[90%] max-lg:p-0 max-lg:pt-20 max-lg:text-left max-lg:!bg-transparent max-lg:!backdrop-blur-none max-lg:!border-none max-lg:!shadow-none max-lg:!rounded-none max-lg:before:!hidden max-lg:after:!hidden max-lg:flex max-lg:flex-col max-lg:justify-between"
         :class="{ 'hero-card-focused': isHeroVisible }"
       >
-        <h1
-          class="text-4xl font-extrabold leading-[1.15] mb-4 tracking-wide text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] max-lg:text-[1.35rem] max-lg:mb-1 max-lg:text-left max-lg:drop-shadow-[0_4px_14px_rgba(0,0,0,0.9)] max-lg:[text-shadow:0_2px_6px_rgba(0,0,0,0.95),0_4px_16px_rgba(0,0,0,0.75)]"
-        >
-          {{ heroH1White }}<br />
-          <span class="highlight text-[#F49321]">{{ heroH1Orange }}</span>
-        </h1>
-
-        <p
-          class="tagline text-[1.1rem] font-semibold leading-[1.35] mb-7 text-slate-200 max-lg:text-[0.82rem] max-lg:mb-3.5 max-lg:leading-[1.25] max-lg:text-left max-lg:[text-shadow:0_2px_4px_rgba(0,0,0,0.7)]"
-        >
-          Giftwrapped in<br class="mobile-only" />
-          One Simple Package.<br />
-          <span
-            class="subtext block text-[0.88rem] font-normal mt-1.5 opacity-90 max-lg:text-[0.68rem] max-lg:mt-0.5"
-            >(No ladders. No tangled cords.<br class="mobile-only" />
-            No storage. No stress.)</span
-          >
-        </p>
-
-        <!-- <NuxtLink
-          to="/packages"
-          class="btn-primary-card bg-[#F49321] text-white font-bold py-3 px-6 rounded-xl inline-block hover:bg-[#e0850a] transition-colors shadow-lg hover:shadow-xl max-lg:text-[0.82rem] max-lg:py-2 max-lg:px-3 max-lg:rounded-lg max-lg:float-left max-lg:clear-both max-lg:!ml-1 max-lg:!mr-auto max-lg:relative max-lg:overflow-hidden max-lg:after:content-[''] max-lg:after:absolute max-lg:after:-top-1/2 max-lg:after:-left-[150%] max-lg:after:w-[200%] max-lg:after:h-[200%] max-lg:after:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] max-lg:after:rotate-[25deg] max-lg:after:pointer-events-none max-lg:after:animate-[glossyShineContinuous_3s_linear_infinite]"
-        >
-          Explore the Packages
-          <p
-            v-if="isEarlyBirdActive(earlyBirdEnabled, earlyBirdExpiresAt)"
-            class="mb-0 text-sm italic text-white max-lg:text-[0.75rem]"
-          >
-            Early Bird Special
-          </p>
-        </NuxtLink> -->
-
-        <!-- <NuxtLink
-          to="/packages"
-          class="relative inline-flex items-center justify-center bg-[#F49321] text-white font-extrabold text-lg rounded-2xl border-[3px] border-[#1C2D5B] shadow-[0_0_0_4px_#F49321] px-12 pt-7 pb-3.5 hover:bg-[#e0850a] transition-colors max-lg:text-[0.82rem] max-lg:px-3 max-lg:pt-4 max-lg:pb-2 max-lg:rounded-lg max-lg:border-2 max-lg:shadow-[0_0_0_3px_#F49321] max-lg:float-left max-lg:clear-both max-lg:!ml-1 max-lg:!mr-auto max-lg:mb-3 max-lg:overflow-visible max-lg:mt-4 md:max-lg:mt-6"
-        >
-          <span
-            v-if="isEarlyBirdActive(earlyBirdEnabled, earlyBirdExpiresAt)"
-            class="pointer-events-none absolute left-1/2 top-0 z-20 -translate-x-1/2 -translate-y-1/2"
-          >
-            <span class="relative block">
-              <img
-                :src="earlyBirdIconSecondaryUrl"
-                alt="Early Bird Special"
-                class="relative z-10 h-8 w-auto object-contain drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)] md:h-12 lg:h-16"
-              /> -->
-        <!-- <img
-                src="/Images/starburst-small.png"
-                alt=""
-                class="absolute z-20 h-7 w-7 object-contain -top-3 -right-3 md:h-8 md:w-8 md:-top-3.5 md:-right-3.5 lg:h-9 lg:w-9"
-              /> -->
-        <!-- </span>
-          </span>
-
-          Explore the Packages
-        </NuxtLink> -->
-
+        <!-- Top Section: Title and Tagline -->
         <div
-          class="flex flex-col items-center overflow-visible max-lg:mt-6 max-lg:items-start max-lg:mb-8 md:max-lg:mt-8 max-md:ml-[5px] md:max-lg:ml-[5px]"
+          class="max-lg:flex-1 max-lg:flex max-lg:flex-col max-lg:justify-center"
+        >
+          <h1
+            class="text-4xl font-extrabold leading-[1.15] mb-4 tracking-wide text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] max-lg:text-[1.35rem] max-lg:mb-1 max-lg:text-left max-lg:drop-shadow-[0_4px_14px_rgba(0,0,0,0.9)] max-lg:[text-shadow:0_2px_6px_rgba(0,0,0,0.95),0_4px_16px_rgba(0,0,0,0.75)]"
+          >
+            RENT THE MAGIC<br />
+            <span class="highlight text-[#F49321]">ENJOY THE SEASON</span>
+          </h1>
+
+          <p
+            class="tagline text-[1.1rem] font-semibold leading-[1.35] mb-7 text-slate-200 max-lg:text-[0.82rem] max-lg:mb-3.5 max-lg:leading-[1.25] max-lg:text-left max-lg:[text-shadow:0_2px_4px_rgba(0,0,0,0.7)]"
+          >
+            Giftwrapped in<br class="mobile-only" />
+            One Simple Package.<br />
+            <span
+              class="subtext block text-[0.88rem] font-normal mt-1.5 opacity-90 max-lg:text-[0.68rem] max-lg:mt-0.5"
+              >(No ladders. No tangled cords.<br class="mobile-only" />
+              No storage. No stress.)</span
+            >
+          </p>
+        </div>
+
+        <!-- Bottom Section: Button -->
+        <div
+          class="flex flex-col items-center overflow-visible max-lg:items-start max-lg:w-full max-lg:mb-8 max-lg:ml-1"
         >
           <NuxtLink
             to="/packages"
-            class="relative inline-flex flex-col items-center overflow-visible bg-[#F49321] text-white font-extrabold text-lg rounded-2xl border-[3px] border-[#1C2D5B] shadow-[0_0_0_4px_#F49321] px-12 hover:bg-[#e0850a] transition-colors max-lg:text-[0.82rem] max-lg:px-5 max-lg:rounded-lg max-lg:border-2 max-lg:shadow-[0_0_0_3px_#F49321]"
+            class="relative inline-flex flex-col items-center overflow-visible bg-[#F49321] text-white font-extrabold text-lg rounded-2xl border-[3px] border-[#1C2D5B] shadow-[0_0_0_4px_#F49321] px-12 hover:bg-[#e0850a] transition-colors max-lg:text-[0.82rem] max-lg:px-5 max-lg:rounded-lg max-lg:border-2 max-lg:shadow-[0_0_0_3px_#F49321] max-lg:mt-12"
             :class="
               isEarlyBirdActive(earlyBirdEnabled, earlyBirdExpiresAt)
                 ? 'pt-2 pb-10 max-lg:pt-1.5 max-lg:pb-7'
@@ -133,12 +99,6 @@
           </NuxtLink>
         </div>
       </div>
-
-      <!-- <EarlyBirdSpecialCountdownWidget
-        class="mobile-widget max-lg:block hidden"
-        :time-left="timeLeft"
-        :format-number="formatNumber"
-      /> -->
     </div>
   </div>
 </template>

@@ -69,7 +69,7 @@
             placeholder="(941) 222-1012"
           />
           <p class="mt-1 text-xs text-slate-500">
-            Shown on “Call Us Now” button
+            Shown on "Call Us Now" button
           </p>
         </div>
 
@@ -92,7 +92,7 @@
           <textarea
             v-model="form.opening_hours"
             rows="3"
-            class="field"
+            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
             placeholder="Mon - Sat: 7:00 am - 8:00 pm&#10;Sunday: 8:00 am - 6:00 pm"
           />
           <p class="text-xs text-slate-400 mt-1">Shown on contact / footer</p>
@@ -105,7 +105,7 @@
           <textarea
             v-model="form.copyright_text"
             rows="3"
-            class="field"
+            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
             placeholder="Add Copyright text here.."
           />
           <p class="text-xs text-slate-400 mt-1">
@@ -187,6 +187,86 @@
                 form.early_bird_enabled =
                   form.early_bird_enabled === 'true' ? 'false' : 'true'
               "
+            />
+          </div>
+        </div>
+
+        <div v-show="form.early_bird_enabled === 'true'" class="space-y-4">
+          <div class="form-section">
+            <label class="form-label">
+              Early Bird Expires On
+              <span class="text-slate-400 text-xs font-normal"
+                >(Eastern Time)</span
+              >
+            </label>
+            <input
+              v-model="form.early_bird_expires_at_local"
+              type="date"
+              class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
+            />
+
+            <!-- Show the actual expiration date and time in Florida -->
+            <div
+              v-if="form.early_bird_expires_at"
+              class="mt-2 p-2 bg-slate-50 rounded border border-slate-200"
+            >
+              <p class="text-xs text-slate-600">
+                <span class="font-semibold">Expires at:</span>
+                {{ formatExpirationDateTime(form.early_bird_expires_at) }}
+              </p>
+            </div>
+
+            <small class="text-slate-500 block mt-1">
+              Select the date you want the offer to expire. It will end at
+              <strong>11:59 PM Eastern Time</strong> on the selected date.
+            </small>
+          </div>
+
+          <div class="form-section">
+            <label class="form-label">Early Bird Title</label>
+            <input
+              v-model="form.early_bird_title"
+              type="text"
+              placeholder="Early Bird Special Pricing"
+              class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
+            />
+          </div>
+
+          <div class="form-section">
+            <label class="form-label">Early Bird Description</label>
+            <textarea
+              v-model="form.early_bird_description"
+              rows="3"
+              placeholder="Short description for the storefront banner"
+              class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
+            />
+          </div>
+
+          <div class="form-section">
+            <label class="block text-sm font-semibold text-gray-700 mb-1">
+              Early Bird Icon (PNG)
+            </label>
+            <input
+              type="file"
+              accept="image/png"
+              class="w-full text-sm"
+              @change="onEarlyBirdIconChange"
+            />
+            <p v-if="iconUploading" class="mt-1 text-xs text-slate-500">
+              Uploading…
+            </p>
+            <p v-if="iconUploadError" class="mt-1 text-xs text-red-600">
+              {{ iconUploadError }}
+            </p>
+            <img
+              v-if="form.early_bird_icon_url"
+              :src="form.early_bird_icon_url"
+              alt="Early Bird icon"
+              class="mt-2 h-16 w-auto object-contain"
+            />
+            <p
+              v-if="form.early_bird_icon_url"
+              class="mt-1 text-xs text-slate-400 break-all"
             >
               <span
                 class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[0.7rem] font-extrabold tracking-wide text-white transition-opacity duration-200"
@@ -216,7 +296,7 @@
                     : 'translate-x-0'
                 "
               />
-            </button>
+            </p>
           </div>
 
           <div
@@ -330,6 +410,7 @@ type SettingsForm = {
   copyright_text: string;
   fl_tax_rate: string;
   early_bird_expires_at: string;
+  early_bird_expires_at_local: string;
   early_bird_enabled: string;
   early_bird_title: string;
   early_bird_description: string;
@@ -379,7 +460,7 @@ const SETTING_KEYS: (keyof SettingsForm)[] = [
   "social_pinterest",
 ];
 
-const ICON_BUCKET = "email-assets"; // public bucket
+const ICON_BUCKET = "email-assets";
 const ICON_PATH = "early-bird-icon.png";
 const ICON_PATH_SECONDARY = "early-bird-icon-secondary.png";
 
@@ -404,6 +485,7 @@ const emptyForm = (): SettingsForm => ({
   fl_tax_rate: "",
   early_bird_enabled: "false",
   early_bird_expires_at: "",
+  early_bird_expires_at_local: "",
   early_bird_title: "",
   early_bird_description: "",
   early_bird_icon_url: "",
@@ -440,6 +522,55 @@ const socialFields: { key: SocialKey; label: string; placeholder: string }[] = [
     placeholder: "https://pinterest.com/...",
   },
 ];
+
+// Format the expiration date and time in Eastern Time
+const formatExpirationDateTime = (utcDateStr: string) => {
+  if (!utcDateStr) return "";
+
+  try {
+    const date = new Date(utcDateStr);
+
+    return date.toLocaleString("en-US", {
+      timeZone: "America/New_York",
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    });
+  } catch {
+    return utcDateStr;
+  }
+};
+
+watch(
+  () => form.value.early_bird_expires_at,
+  (newVal) => {
+    if (!newVal) {
+      form.value.early_bird_expires_at_local = "";
+      return;
+    }
+
+    // Just extract the date part for the input
+    form.value.early_bird_expires_at_local = newVal.split("T")[0] || "";
+  },
+  { immediate: true },
+);
+
+watch(
+  () => form.value.early_bird_expires_at_local,
+  (newVal) => {
+    if (!newVal) {
+      form.value.early_bird_expires_at = "";
+      return;
+    }
+
+    // Store as 11:59 PM ET on that date (3:59 AM UTC the next day)
+    const utcDate = new Date(`${newVal}T03:59:00.000Z`);
+    form.value.early_bird_expires_at = utcDate.toISOString();
+  },
+);
 
 const unwrapSettingValue = (value: unknown) => {
   if (value == null) return "";
@@ -542,10 +673,6 @@ const loadSettings = async () => {
       }
     }
 
-    if (next.early_bird_expires_at) {
-      next.early_bird_expires_at = next.early_bird_expires_at.slice(0, 16);
-    }
-
     next.early_bird_enabled =
       next.early_bird_enabled === "true" ||
       next.early_bird_enabled === "1" ||
@@ -580,10 +707,6 @@ const saveSettings = async () => {
 
       if (key === "early_bird_enabled") {
         value = value === "true" || value === "1" ? "true" : "false";
-      }
-
-      if (key === "early_bird_expires_at" && value) {
-        value = new Date(value).toISOString();
       }
 
       if (key === "early_bird_icon_url") {
