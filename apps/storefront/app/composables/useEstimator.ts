@@ -408,28 +408,11 @@ function updateResultStats(): void {
     result.value.stats.withinPackage = isWithinPackage.value;
 }
 
-async function submitRender(previewOnly: boolean): Promise<void> {
+async function submitRender(previewOnly: boolean, turnstileToken?: string): Promise<void> {
     error.value = "";
     isPreview.value = previewOnly;
     if (!validateForm(previewOnly)) {
         return;
-    }
-
-    if (!previewOnly) {
-        try {
-            await $fetch(`/api/lead`, {
-                method: "POST",
-                body: {
-                    name: name.value,
-                    email: email.value,
-                    phone: phone.value,
-                    address: address.value,
-                    source: "render_widget",
-                },
-            });
-        } catch (err) {
-            // Ignore lead submission errors
-        }
     }
 
     rendering.value = true;
@@ -439,16 +422,21 @@ async function submitRender(previewOnly: boolean): Promise<void> {
 
     try {
         const body = {
+            action: 'render',
             previewOnly,
             address: address.value,
             placeId: placeId.value || undefined,
             email: email.value || undefined,
+            name: name.value,
+            phone: phone.value,
             scheme: selectedScheme.value,
             serviceType: "christmas" as const,
             package: selectedPackage.value,
+            turnstileToken: turnstileToken,
         };
 
-        const response = await $fetch<RenderResult>(`/api/render`, {
+        // Single API call to /api/estimate
+        const response = await $fetch<RenderResult>(`/api/estimate`, {
             method: "POST",
             body,
         });
@@ -512,15 +500,7 @@ async function submitRender(previewOnly: boolean): Promise<void> {
     }
 }
 
-function reset(): void {
-    result.value = null;
-    renderError.value = "";
-    rendering.value = false;
-    error.value = "";
-    stopFacts();
-}
-
-async function bookConsultation(): Promise<void> {
+async function bookConsultation(turnstileToken?: string): Promise<void> {
     if (!email.value || !email.value.includes("@")) {
         resultNote.value = "Enter a valid email on the form so we can book your consultation.";
         return;
@@ -529,22 +509,29 @@ async function bookConsultation(): Promise<void> {
     booking.value = true;
 
     try {
-        const response = await $fetch<{ ok: boolean }>(`/api/book`, {
+        const body = {
+            action: 'book',
+            previewOnly: false,
+            address: address.value,
+            placeId: placeId.value || undefined,
+            email: email.value,
+            name: name.value,
+            phone: phone.value,
+            scheme: selectedScheme.value,
+            serviceType: "christmas" as const,
+            package: selectedPackage.value,
+            totalEstimate: totalEstimate.value,
+            packageName: selectedPackageData.value?.name,
+            overageFt: calculatedOverageFt.value,
+            overagePrice: calculatedOveragePrice.value,
+            totalFt: result.value?.stats ? getTotalFeet(result.value.stats) : 0,
+            imageUrl: result.value?.imageUrl || "",
+            turnstileToken: turnstileToken,
+        };
+
+        const response = await $fetch<RenderResult>(`/api/estimate`, {
             method: "POST",
-            body: {
-                name: name.value,
-                email: email.value,
-                phone: phone.value,
-                address: address.value,
-                imageUrl: result.value?.imageUrl || "",
-                estimate: result.value?.stats || null,
-                package: selectedPackage.value,
-                totalEstimate: totalEstimate.value,
-                packageName: selectedPackageData.value?.name,
-                overageFt: calculatedOverageFt.value,
-                overagePrice: calculatedOveragePrice.value,
-                totalFt: result.value?.stats ? getTotalFeet(result.value.stats) : 0,
-            },
+            body,
         });
 
         if (!response.ok) {
@@ -557,6 +544,14 @@ async function bookConsultation(): Promise<void> {
     } finally {
         booking.value = false;
     }
+}
+
+function reset(): void {
+    result.value = null;
+    renderError.value = "";
+    rendering.value = false;
+    error.value = "";
+    stopFacts();
 }
 
 function handleClickOutside(event: MouseEvent): void {

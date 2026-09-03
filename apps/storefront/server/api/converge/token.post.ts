@@ -31,7 +31,6 @@ export default defineEventHandler(async (event) => {
 
   const text = await res.text()
 
-  // Token may be plain text or inside XML/HTML
   let token = text.trim()
   const xmlMatch = text.match(/<ssl_txn_auth_token>(.*?)<\/ssl_txn_auth_token>/i)
   if (xmlMatch?.[1]) token = xmlMatch[1].trim()
