@@ -187,86 +187,6 @@
                 form.early_bird_enabled =
                   form.early_bird_enabled === 'true' ? 'false' : 'true'
               "
-            />
-          </div>
-        </div>
-
-        <div v-show="form.early_bird_enabled === 'true'" class="space-y-4">
-          <div class="form-section">
-            <label class="form-label">
-              Early Bird Expires On
-              <span class="text-slate-400 text-xs font-normal"
-                >(Eastern Time)</span
-              >
-            </label>
-            <input
-              v-model="form.early_bird_expires_at_local"
-              type="date"
-              class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
-            />
-
-            <!-- Show the actual expiration date and time in Florida -->
-            <div
-              v-if="form.early_bird_expires_at"
-              class="mt-2 p-2 bg-slate-50 rounded border border-slate-200"
-            >
-              <p class="text-xs text-slate-600">
-                <span class="font-semibold">Expires at:</span>
-                {{ formatExpirationDateTime(form.early_bird_expires_at) }}
-              </p>
-            </div>
-
-            <small class="text-slate-500 block mt-1">
-              Select the date you want the offer to expire. It will end at
-              <strong>11:59 PM Eastern Time</strong> on the selected date.
-            </small>
-          </div>
-
-          <div class="form-section">
-            <label class="form-label">Early Bird Title</label>
-            <input
-              v-model="form.early_bird_title"
-              type="text"
-              placeholder="Early Bird Special Pricing"
-              class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
-            />
-          </div>
-
-          <div class="form-section">
-            <label class="form-label">Early Bird Description</label>
-            <textarea
-              v-model="form.early_bird_description"
-              rows="3"
-              placeholder="Short description for the storefront banner"
-              class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
-            />
-          </div>
-
-          <div class="form-section">
-            <label class="block text-sm font-semibold text-gray-700 mb-1">
-              Early Bird Icon (PNG)
-            </label>
-            <input
-              type="file"
-              accept="image/png"
-              class="w-full text-sm"
-              @change="onEarlyBirdIconChange"
-            />
-            <p v-if="iconUploading" class="mt-1 text-xs text-slate-500">
-              Uploading…
-            </p>
-            <p v-if="iconUploadError" class="mt-1 text-xs text-red-600">
-              {{ iconUploadError }}
-            </p>
-            <img
-              v-if="form.early_bird_icon_url"
-              :src="form.early_bird_icon_url"
-              alt="Early Bird icon"
-              class="mt-2 h-16 w-auto object-contain"
-            />
-            <p
-              v-if="form.early_bird_icon_url"
-              class="mt-1 text-xs text-slate-400 break-all"
             >
               <span
                 class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[0.7rem] font-extrabold tracking-wide text-white transition-opacity duration-200"
@@ -296,102 +216,120 @@
                     : 'translate-x-0'
                 "
               />
-            </p>
-          </div>
+            </button>
 
-          <div
-            v-show="form.early_bird_enabled === 'true'"
-            class="space-y-4 mt-4"
-          >
-            <div class="form-section">
-              <label class="form-label">Early Bird Expires At</label>
-              <input
-                v-model="form.early_bird_expires_at"
-                type="datetime-local"
-                class="form-date"
-              />
-              <small class="text-slate-500">
-                After this date, sale/early bird prices are hidden and base
-                price is used.
-              </small>
-            </div>
+            <div
+              v-show="form.early_bird_enabled === 'true'"
+              class="space-y-4 mt-4"
+            >
+              <div class="form-section">
+                <label class="form-label">
+                  Early Bird Expires On
+                  <span class="text-slate-400 text-xs font-normal"
+                    >(Eastern Time)</span
+                  >
+                </label>
+                <input
+                  v-model="form.early_bird_expires_at_local"
+                  type="date"
+                  class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
+                />
 
-            <div class="form-section">
-              <label class="form-label">Early Bird Title</label>
-              <input
-                v-model="form.early_bird_title"
-                type="text"
-                placeholder="Early Bird Special Pricing"
-              />
-            </div>
+                <div
+                  v-if="form.early_bird_expires_at"
+                  class="mt-2 p-2 bg-slate-50 rounded border border-slate-200"
+                >
+                  <p class="text-xs text-slate-600">
+                    <span class="font-semibold">Expires at:</span>
+                    {{ formatExpirationDateTime(form.early_bird_expires_at) }}
+                  </p>
+                </div>
 
-            <div class="form-section">
-              <label class="form-label">Early Bird Description</label>
-              <textarea
-                v-model="form.early_bird_description"
-                rows="3"
-                placeholder="Short description for the storefront banner"
-              />
-            </div>
+                <small class="text-slate-500 block mt-1">
+                  Select the date you want the offer to expire. It will end at
+                  <strong>11:59 PM Eastern Time</strong> on the selected date.
+                </small>
+              </div>
 
-            <div class="form-section">
-              <label class="block text-sm font-semibold text-gray-700 mb-1">
-                Early Bird Icon (PNG)
-              </label>
-              <input
-                type="file"
-                accept="image/png"
-                class="w-full text-sm"
-                @change="onEarlyBirdIconChange"
-              />
-              <p v-if="iconUploading" class="mt-1 text-xs text-slate-500">
-                Uploading…
-              </p>
-              <p v-if="iconUploadError" class="mt-1 text-xs text-red-600">
-                {{ iconUploadError }}
-              </p>
-              <img
-                v-if="form.early_bird_icon_url"
-                :src="form.early_bird_icon_url"
-                alt="Early Bird icon"
-                class="mt-2 h-16 w-auto object-contain"
-              />
-              <p
-                v-if="form.early_bird_icon_url"
-                class="mt-1 text-xs text-slate-400 break-all"
-              >
-                {{ form.early_bird_icon_url }}
-              </p>
-            </div>
+              <div class="form-section">
+                <label class="form-label">Early Bird Title</label>
+                <input
+                  v-model="form.early_bird_title"
+                  type="text"
+                  placeholder="Early Bird Special Pricing"
+                  class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
+                />
+              </div>
 
-            <div class="form-section">
-              <label class="block text-sm font-semibold text-gray-700 mb-1">
-                Early Bird Icon (PNG) — Secondary
-              </label>
-              <input
-                type="file"
-                accept="image/png"
-                class="w-full text-sm"
-                @change="onEarlyBirdIconSecondaryChange"
-              />
-              <p v-if="iconUploading" class="mt-1 text-xs text-slate-500">
-                Uploading…
-              </p>
-              <p v-if="iconUploadError" class="mt-1 text-xs text-red-600">
-                {{ iconUploadError }}
-              </p>
-              <img
-                v-if="form.early_bird_icon_secondary_url"
-                :src="form.early_bird_icon_secondary_url"
-                alt="Early Bird icon"
-                class="mt-2 h-16 w-auto object-contain"
-              />
-              <p
-                v-if="form.early_bird_icon_secondary_url"
-                class="mt-1 text-xs text-slate-400 break-all"
-              >
-                {{ form.early_bird_icon_secondary_url }}
-              </p>
+              <div class="form-section">
+                <label class="form-label">Early Bird Description</label>
+                <textarea
+                  v-model="form.early_bird_description"
+                  rows="3"
+                  placeholder="Short description for the storefront banner"
+                  class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
+                />
+              </div>
+
+              <div class="form-section">
+                <label class="block text-sm font-semibold text-gray-700 mb-1">
+                  Early Bird Icon (PNG)
+                </label>
+                <input
+                  type="file"
+                  accept="image/png"
+                  class="w-full text-sm"
+                  @change="onEarlyBirdIconChange"
+                />
+                <p v-if="iconUploading" class="mt-1 text-xs text-slate-500">
+                  Uploading…
+                </p>
+                <p v-if="iconUploadError" class="mt-1 text-xs text-red-600">
+                  {{ iconUploadError }}
+                </p>
+                <img
+                  v-if="form.early_bird_icon_url"
+                  :src="form.early_bird_icon_url"
+                  alt="Early Bird icon"
+                  class="mt-2 h-16 w-auto object-contain"
+                />
+                <p
+                  v-if="form.early_bird_icon_url"
+                  class="mt-1 text-xs text-slate-400 break-all"
+                >
+                  {{ form.early_bird_icon_url }}
+                </p>
+              </div>
+
+              <div class="form-section">
+                <label class="block text-sm font-semibold text-gray-700 mb-1">
+                  Early Bird Icon (PNG) — Secondary
+                </label>
+                <input
+                  type="file"
+                  accept="image/png"
+                  class="w-full text-sm"
+                  @change="onEarlyBirdIconSecondaryChange"
+                />
+                <p v-if="iconUploading" class="mt-1 text-xs text-slate-500">
+                  Uploading…
+                </p>
+                <p v-if="iconUploadError" class="mt-1 text-xs text-red-600">
+                  {{ iconUploadError }}
+                </p>
+                <img
+                  v-if="form.early_bird_icon_secondary_url"
+                  :src="form.early_bird_icon_secondary_url"
+                  alt="Early Bird icon"
+                  class="mt-2 h-16 w-auto object-contain"
+                />
+                <p
+                  v-if="form.early_bird_icon_secondary_url"
+                  class="mt-1 text-xs text-slate-400 break-all"
+                >
+                  {{ form.early_bird_icon_secondary_url }}
+                </p>
+              </div>
             </div>
           </div>
         </div>

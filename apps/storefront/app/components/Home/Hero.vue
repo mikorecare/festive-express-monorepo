@@ -48,20 +48,33 @@
           <h1
             class="text-4xl font-extrabold leading-[1.15] mb-4 tracking-wide text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] max-lg:text-[1.35rem] max-lg:mb-1 max-lg:text-left max-lg:drop-shadow-[0_4px_14px_rgba(0,0,0,0.9)] max-lg:[text-shadow:0_2px_6px_rgba(0,0,0,0.95),0_4px_16px_rgba(0,0,0,0.75)]"
           >
-            RENT THE MAGIC<br />
-            <span class="highlight text-[#F49321]">ENJOY THE SEASON</span>
+            {{ heroH1White }}<br />
+            <span class="highlight text-[#F49321]">{{ heroH1Orange }}</span>
           </h1>
 
           <p
             class="tagline text-[1.1rem] font-semibold leading-[1.35] mb-7 text-slate-200 max-lg:text-[0.82rem] max-lg:mb-3.5 max-lg:leading-[1.25] max-lg:text-left max-lg:[text-shadow:0_2px_4px_rgba(0,0,0,0.7)]"
           >
-            Giftwrapped in<br class="mobile-only" />
-            One Simple Package.<br />
+            <!-- Giftwrapped in<br class="mobile-only" />
+            One Simple Package. -->
+            <template v-for="(part, i) in heroDescription1.split('|')" :key="i">
+              <br v-if="i > 0" class="mobile-only" />
+              {{ part }} </template
+            ><br />
+
             <span
               class="subtext block text-[0.88rem] font-normal mt-1.5 opacity-90 max-lg:text-[0.68rem] max-lg:mt-0.5"
-              >(No ladders. No tangled cords.<br class="mobile-only" />
-              No storage. No stress.)</span
             >
+              <!-- (No ladders. No tangled cords.<br class="mobile-only" />
+              No storage. No stress.) -->
+              <template
+                v-for="(part2, i) in heroDescription2.split('|')"
+                :key="i"
+              >
+                <br v-if="i > 0" class="mobile-only" />
+                {{ part2 }}
+              </template>
+            </span>
           </p>
         </div>
 
@@ -115,19 +128,89 @@ const bgOffset = ref(0);
 const familyOffset = ref(0);
 const isMobile = ref(false);
 
+// PH
+// const calculateTimeLeft = () => {
+//   const now = new Date();
+//   let christmas = new Date(now.getFullYear(), 11, 25, 0, 0, 0);
+//   if (now.getTime() > christmas.getTime()) {
+//     christmas = new Date(now.getFullYear() + 1, 11, 25, 0, 0, 0);
+//   }
+//   const diff = christmas.getTime() - now.getTime();
+//   if (diff <= 0) return;
+
+//   timeLeft.value = {
+//     days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+//     hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+//     minutes: Math.floor((diff / 1000 / 60) % 60),
+//     seconds: Math.floor((diff / 1000) % 60),
+//   };
+// };
+
+// UTC
+const FL_TZ = "America/New_York";
+
+const flParts = (date: Date) => {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: FL_TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(date);
+
+  const get = (type: Intl.DateTimeFormatPartTypes) =>
+    Number(parts.find((p) => p.type === type)?.value || 0);
+
+  return {
+    year: get("year"),
+    month: get("month"),
+    day: get("day"),
+    hour: get("hour"),
+    minute: get("minute"),
+    second: get("second"),
+  };
+};
+
+const floridaWallTimeToUtc = (
+  year: number,
+  month: number,
+  day: number,
+  hour = 0,
+  minute = 0,
+  second = 0,
+) => {
+  const utcGuess = Date.UTC(year, month - 1, day, hour, minute, second);
+  const shown = flParts(new Date(utcGuess));
+  const asUtc = Date.UTC(
+    shown.year,
+    shown.month - 1,
+    shown.day,
+    shown.hour,
+    shown.minute,
+    shown.second,
+  );
+  return utcGuess - (asUtc - utcGuess);
+};
+
 const calculateTimeLeft = () => {
-  const now = new Date();
-  let christmas = new Date(now.getFullYear(), 11, 25, 0, 0, 0);
-  if (now.getTime() > christmas.getTime()) {
-    christmas = new Date(now.getFullYear() + 1, 11, 25, 0, 0, 0);
+  const now = Date.now();
+  const year = flParts(new Date()).year;
+
+  let christmas = floridaWallTimeToUtc(year, 12, 25, 0, 0, 0);
+  if (now >= christmas) {
+    christmas = floridaWallTimeToUtc(year + 1, 12, 25, 0, 0, 0);
   }
-  const diff = christmas.getTime() - now.getTime();
+
+  const diff = christmas - now;
   if (diff <= 0) return;
 
   timeLeft.value = {
-    days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-    hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
-    minutes: Math.floor((diff / 1000 / 60) % 60),
+    days: Math.floor(diff / 86_400_000),
+    hours: Math.floor((diff / 3_600_000) % 24),
+    minutes: Math.floor((diff / 60_000) % 60),
     seconds: Math.floor((diff / 1000) % 60),
   };
 };
