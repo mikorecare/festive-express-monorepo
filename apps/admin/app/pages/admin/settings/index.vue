@@ -27,7 +27,9 @@
     <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       <!-- Contact -->
       <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-        <h2 class="text-lg font-semibold text-[#1C2D5B] mb-5">Contact Us</h2>
+        <h2 class="text-lg font-semibold text-[#1C2D5B] mb-5">
+          Contact Settings
+        </h2>
 
         <div class="mb-4">
           <label class="block text-sm font-semibold text-gray-700 mb-1.5"
@@ -136,165 +138,181 @@
       </div>
 
       <!-- Checkout / Tax -->
-      <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-        <h2 class="text-lg font-semibold text-[#1C2D5B] mb-5">Checkout</h2>
+      <div class="space-y-6">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+          <h2 class="text-lg font-semibold text-[#1C2D5B] mb-5">Checkout</h2>
 
-        <div class="mb-3">
-          <label class="block text-sm font-semibold text-gray-700 mb-1.5">
-            Florida tax rate (%)
-          </label>
-          <input
-            v-model="form.fl_tax_rate"
-            type="number"
-            step="0.01"
-            min="0"
-            max="100"
-            class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
-            placeholder="7"
-          />
-          <p class="mt-1 text-xs text-slate-500">
-            Enter percent (e.g. <strong>7</strong> for 7%). Storefront converts
-            to decimal (0.07).
-          </p>
+          <div class="mb-1">
+            <label class="block text-sm font-semibold text-gray-700 mb-1.5">
+              Florida tax rate (%)
+            </label>
+            <input
+              v-model="form.fl_tax_rate"
+              type="number"
+              step="0.01"
+              min="0"
+              max="100"
+              class="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]/30 focus:border-[#F49321]"
+              placeholder="7"
+            />
+            <p class="mt-1 text-xs text-slate-500">
+              Enter percent (e.g. <strong>7</strong> for 7%). Storefront
+              converts to decimal (0.07).
+            </p>
+          </div>
         </div>
 
-        <div class="form-section mt-5">
-          <label class="form-label mb-2 block"
-            >Early Bird Special / Sale Price</label
-          >
+        <!-- Early Bird -->
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+          <h2 class="text-lg font-semibold text-[#1C2D5B] mb-5">
+            Early Bird Settings
+          </h2>
 
-          <button
-            type="button"
-            role="switch"
-            :aria-checked="form.early_bird_enabled === 'true'"
-            class="relative h-10 w-[88px] shrink-0 rounded-full border-0 p-0 shadow-inner transition-colors duration-250 cursor-pointer"
-            :class="
-              form.early_bird_enabled === 'true'
-                ? 'bg-green-500'
-                : 'bg-slate-200'
-            "
-            @click="
-              form.early_bird_enabled =
-                form.early_bird_enabled === 'true' ? 'false' : 'true'
-            "
-          >
-            <span
-              class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[0.7rem] font-extrabold tracking-wide text-white transition-opacity duration-200"
-              :class="
-                form.early_bird_enabled === 'true' ? 'opacity-100' : 'opacity-0'
-              "
+          <div class="form-section">
+            <label class="form-label mb-2 block"
+              >Early Bird Special / Sale Price</label
             >
-              ON
-            </span>
-            <span
-              class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[0.7rem] font-extrabold tracking-wide text-slate-400 transition-opacity duration-200"
-              :class="
-                form.early_bird_enabled === 'true' ? 'opacity-0' : 'opacity-100'
-              "
-            >
-              OFF
-            </span>
-            <span
-              class="absolute top-1 left-1 h-8 w-8 rounded-full bg-white shadow-md transition-transform duration-250"
+
+            <button
+              type="button"
+              role="switch"
+              :aria-checked="form.early_bird_enabled === 'true'"
+              class="relative h-10 w-[88px] shrink-0 rounded-full border-0 p-0 shadow-inner transition-colors duration-250 cursor-pointer"
               :class="
                 form.early_bird_enabled === 'true'
-                  ? 'translate-x-12'
-                  : 'translate-x-0'
+                  ? 'bg-green-500'
+                  : 'bg-slate-200'
               "
-            />
-          </button>
-        </div>
-
-        <div v-show="form.early_bird_enabled === 'true'" class="space-y-4">
-          <div class="form-section">
-            <label class="form-label">Early Bird Expires At</label>
-            <input
-              v-model="form.early_bird_expires_at"
-              type="datetime-local"
-              class="form-date"
-            />
-            <small class="text-slate-500">
-              After this date, sale/early bird prices are hidden and base price
-              is used.
-            </small>
-          </div>
-
-          <div class="form-section">
-            <label class="form-label">Early Bird Title</label>
-            <input
-              v-model="form.early_bird_title"
-              type="text"
-              placeholder="Early Bird Special Pricing"
-            />
-          </div>
-
-          <div class="form-section">
-            <label class="form-label">Early Bird Description</label>
-            <textarea
-              v-model="form.early_bird_description"
-              rows="3"
-              placeholder="Short description for the storefront banner"
-            />
-          </div>
-
-          <div class="form-section">
-            <label class="block text-sm font-semibold text-gray-700 mb-1">
-              Early Bird Icon (PNG)
-            </label>
-            <input
-              type="file"
-              accept="image/png"
-              class="w-full text-sm"
-              @change="onEarlyBirdIconChange"
-            />
-            <p v-if="iconUploading" class="mt-1 text-xs text-slate-500">
-              Uploading…
-            </p>
-            <p v-if="iconUploadError" class="mt-1 text-xs text-red-600">
-              {{ iconUploadError }}
-            </p>
-            <img
-              v-if="form.early_bird_icon_url"
-              :src="form.early_bird_icon_url"
-              alt="Early Bird icon"
-              class="mt-2 h-16 w-auto object-contain"
-            />
-            <p
-              v-if="form.early_bird_icon_url"
-              class="mt-1 text-xs text-slate-400 break-all"
+              @click="
+                form.early_bird_enabled =
+                  form.early_bird_enabled === 'true' ? 'false' : 'true'
+              "
             >
-              {{ form.early_bird_icon_url }}
-            </p>
+              <span
+                class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[0.7rem] font-extrabold tracking-wide text-white transition-opacity duration-200"
+                :class="
+                  form.early_bird_enabled === 'true'
+                    ? 'opacity-100'
+                    : 'opacity-0'
+                "
+              >
+                ON
+              </span>
+              <span
+                class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[0.7rem] font-extrabold tracking-wide text-slate-400 transition-opacity duration-200"
+                :class="
+                  form.early_bird_enabled === 'true'
+                    ? 'opacity-0'
+                    : 'opacity-100'
+                "
+              >
+                OFF
+              </span>
+              <span
+                class="absolute top-1 left-1 h-8 w-8 rounded-full bg-white shadow-md transition-transform duration-250"
+                :class="
+                  form.early_bird_enabled === 'true'
+                    ? 'translate-x-12'
+                    : 'translate-x-0'
+                "
+              />
+            </button>
           </div>
 
-          <div class="form-section">
-            <label class="block text-sm font-semibold text-gray-700 mb-1">
-              Early Bird Icon (PNG) - Secondary
-            </label>
-            <input
-              type="file"
-              accept="image/png"
-              class="w-full text-sm"
-              @change="onEarlyBirdIconSecondaryChange"
-            />
-            <p v-if="iconUploading" class="mt-1 text-xs text-slate-500">
-              Uploading…
-            </p>
-            <p v-if="iconUploadError" class="mt-1 text-xs text-red-600">
-              {{ iconUploadError }}
-            </p>
-            <img
-              v-if="form.early_bird_icon_secondary_url"
-              :src="form.early_bird_icon_secondary_url"
-              alt="Early Bird icon"
-              class="mt-2 h-16 w-auto object-contain"
-            />
-            <p
-              v-if="form.early_bird_icon_secondary_url"
-              class="mt-1 text-xs text-slate-400 break-all"
-            >
-              {{ form.early_bird_icon_secondary_url }}
-            </p>
+          <div
+            v-show="form.early_bird_enabled === 'true'"
+            class="space-y-4 mt-4"
+          >
+            <div class="form-section">
+              <label class="form-label">Early Bird Expires At</label>
+              <input
+                v-model="form.early_bird_expires_at"
+                type="datetime-local"
+                class="form-date"
+              />
+              <small class="text-slate-500">
+                After this date, sale/early bird prices are hidden and base
+                price is used.
+              </small>
+            </div>
+
+            <div class="form-section">
+              <label class="form-label">Early Bird Title</label>
+              <input
+                v-model="form.early_bird_title"
+                type="text"
+                placeholder="Early Bird Special Pricing"
+              />
+            </div>
+
+            <div class="form-section">
+              <label class="form-label">Early Bird Description</label>
+              <textarea
+                v-model="form.early_bird_description"
+                rows="3"
+                placeholder="Short description for the storefront banner"
+              />
+            </div>
+
+            <div class="form-section">
+              <label class="block text-sm font-semibold text-gray-700 mb-1">
+                Early Bird Icon (PNG)
+              </label>
+              <input
+                type="file"
+                accept="image/png"
+                class="w-full text-sm"
+                @change="onEarlyBirdIconChange"
+              />
+              <p v-if="iconUploading" class="mt-1 text-xs text-slate-500">
+                Uploading…
+              </p>
+              <p v-if="iconUploadError" class="mt-1 text-xs text-red-600">
+                {{ iconUploadError }}
+              </p>
+              <img
+                v-if="form.early_bird_icon_url"
+                :src="form.early_bird_icon_url"
+                alt="Early Bird icon"
+                class="mt-2 h-16 w-auto object-contain"
+              />
+              <p
+                v-if="form.early_bird_icon_url"
+                class="mt-1 text-xs text-slate-400 break-all"
+              >
+                {{ form.early_bird_icon_url }}
+              </p>
+            </div>
+
+            <div class="form-section">
+              <label class="block text-sm font-semibold text-gray-700 mb-1">
+                Early Bird Icon (PNG) — Secondary
+              </label>
+              <input
+                type="file"
+                accept="image/png"
+                class="w-full text-sm"
+                @change="onEarlyBirdIconSecondaryChange"
+              />
+              <p v-if="iconUploading" class="mt-1 text-xs text-slate-500">
+                Uploading…
+              </p>
+              <p v-if="iconUploadError" class="mt-1 text-xs text-red-600">
+                {{ iconUploadError }}
+              </p>
+              <img
+                v-if="form.early_bird_icon_secondary_url"
+                :src="form.early_bird_icon_secondary_url"
+                alt="Early Bird icon"
+                class="mt-2 h-16 w-auto object-contain"
+              />
+              <p
+                v-if="form.early_bird_icon_secondary_url"
+                class="mt-1 text-xs text-slate-400 break-all"
+              >
+                {{ form.early_bird_icon_secondary_url }}
+              </p>
+            </div>
           </div>
         </div>
       </div>

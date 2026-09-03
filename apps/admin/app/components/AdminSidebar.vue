@@ -230,6 +230,17 @@
           "
         >
           <NuxtLink
+            to="/admin/configuration/hero"
+            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path.startsWith('/admin/configuration/hero')
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
+          >
+            Hero Section
+          </NuxtLink>
+          <NuxtLink
             to="/admin/configuration/how-it-works"
             class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
             :class="

@@ -21,12 +21,14 @@
     <div class="overlay absolute inset-0 z-[2] max-lg:bg-black/25"></div>
 
     <CountdownWidget
+      v-if="heroCountdownEnabled"
       class="desktop-widget max-lg:hidden"
       :time-left="timeLeft"
       :format-number="formatNumber"
     />
 
     <CountdownWidget
+      v-if="heroCountdownEnabled"
       class="mobile-widget lg:hidden"
       :time-left="timeLeft"
       :format-number="formatNumber"
@@ -44,8 +46,8 @@
         <h1
           class="text-4xl font-extrabold leading-[1.15] mb-4 tracking-wide text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] max-lg:text-[1.35rem] max-lg:mb-1 max-lg:text-left max-lg:drop-shadow-[0_4px_14px_rgba(0,0,0,0.9)] max-lg:[text-shadow:0_2px_6px_rgba(0,0,0,0.95),0_4px_16px_rgba(0,0,0,0.75)]"
         >
-          RENT THE MAGIC<br />
-          <span class="highlight text-[#F49321]">ENJOY THE SEASON</span>
+          {{ heroH1White }}<br />
+          <span class="highlight text-[#F49321]">{{ heroH1Orange }}</span>
         </h1>
 
         <p
@@ -110,7 +112,7 @@
                 : 'py-3 max-lg:py-2.5'
             "
           >
-            <span>Explore the Packages</span>
+            <span>{{ heroButtonLabel }}</span>
 
             <span
               v-if="isEarlyBirdActive(earlyBirdEnabled, earlyBirdExpiresAt)"
@@ -234,8 +236,19 @@ const {
   formatEndsLabel,
 } = useEarlyBirdSpecial();
 
+const {
+  heroH1White,
+  heroH1Orange,
+  heroDescription1,
+  heroDescription2,
+  heroButtonLabel,
+  heroCountdownEnabled,
+  loadHeroSettings,
+} = useHeroSettings();
+
 onMounted(() => {
   loadEarlyBird();
+  loadHeroSettings();
   isMobile.value = window.innerWidth <= 992;
 
   calculateTimeLeft();
