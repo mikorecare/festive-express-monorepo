@@ -1,15 +1,8 @@
 <template>
   <ClientOnly>
     <div ref="chatContainer">
-      <button
-        v-if="widgetReady"
-        class="custom-chat-btn"
-        @click="toggleChat"
-      >
-        <img
-          src="/Images/chat.png"
-          alt="Chat"
-        />
+      <button v-if="widgetReady" class="custom-chat-btn" @click="toggleChat">
+        <img src="/Images/chat.png" alt="Chat" />
       </button>
     </div>
   </ClientOnly>
@@ -28,11 +21,7 @@ let widgetInstance: any = null;
 
 const loadScript = () => {
   return new Promise((resolve, reject) => {
-    if (
-      document.querySelector(
-        'script[src="https://chat.actm.xyz/chat.js"]'
-      )
-    ) {
+    if (document.querySelector('script[src="https://chat.actm.xyz/chat.js"]')) {
       resolve(true);
       return;
     }
@@ -64,32 +53,28 @@ const initWidget = async () => {
       chatContainer.value.appendChild(chatElement);
       widgetInstance = chatElement;
 
-      setTimeout(() => {
-        try {
-          const shadowRoot = chatElement.shadowRoot;
+      // Wait for render
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-          if (shadowRoot) {
-            const bubble = shadowRoot.querySelector(".bubble");
-
-            if (bubble) {
-              (bubble as HTMLElement).style.display = "none";
-            }
+      // Move the bubble off-screen but keep it functional
+      try {
+        const shadowRoot = widgetInstance.shadowRoot;
+        if (shadowRoot) {
+          const bubble = shadowRoot.querySelector(".bubble");
+          if (bubble) {
+            // Move it off-screen instead of hiding
+            (bubble as HTMLElement).style.position = "fixed";
+            (bubble as HTMLElement).style.bottom = "-9999px";
+            (bubble as HTMLElement).style.right = "-9999px";
+            (bubble as HTMLElement).style.opacity = "0";
+            (bubble as HTMLElement).style.pointerEvents = "none";
+            (bubble as HTMLElement).style.width = "1px";
+            (bubble as HTMLElement).style.height = "1px";
           }
-        } catch (e) {}
+        }
+      } catch (e) {}
 
-        widgetReady.value = true;
-      }, 500);
-    } else if (chatContainer.value) {
-      chatContainer.value.insertAdjacentHTML(
-        "beforeend",
-        `<ctm-chat token="${token}"></ctm-chat>`
-      );
-
-      widgetInstance = chatContainer.value.querySelector("ctm-chat");
-
-      setTimeout(() => {
-        widgetReady.value = true;
-      }, 500);
+      widgetReady.value = true;
     }
   } catch (error) {
     console.error("Failed to initialize chat widget:", error);
@@ -97,25 +82,58 @@ const initWidget = async () => {
 };
 
 const toggleChat = () => {
-  if (widgetInstance) {
-    try {
-      const shadowRoot = widgetInstance.shadowRoot;
+  if (!widgetInstance) return;
 
-      if (shadowRoot) {
-        const bubble = shadowRoot.querySelector(".bubble");
+  try {
+    // Try to find and click the bubble
+    const shadowRoot = widgetInstance.shadowRoot;
+    if (shadowRoot) {
+      const bubble = shadowRoot.querySelector(".bubble");
+      if (bubble) {
+        // Restore the bubble temporarily for click
+        const originalDisplay = (bubble as HTMLElement).style.display;
+        const originalPosition = (bubble as HTMLElement).style.position;
+        const originalBottom = (bubble as HTMLElement).style.bottom;
+        const originalRight = (bubble as HTMLElement).style.right;
+        const originalOpacity = (bubble as HTMLElement).style.opacity;
+        const originalPointerEvents = (bubble as HTMLElement).style
+          .pointerEvents;
 
-        if (bubble) {
-          (bubble as HTMLElement).click();
-          return;
-        }
+        // Make it clickable briefly
+        (bubble as HTMLElement).style.position = "fixed";
+        (bubble as HTMLElement).style.bottom = "20px";
+        (bubble as HTMLElement).style.right = "20px";
+        (bubble as HTMLElement).style.opacity = "0.01";
+        (bubble as HTMLElement).style.pointerEvents = "auto";
+        (bubble as HTMLElement).style.width = "auto";
+        (bubble as HTMLElement).style.height = "auto";
+
+        // Click it
+        (bubble as HTMLElement).click();
+
+        // Move it back off-screen
+        setTimeout(() => {
+          (bubble as HTMLElement).style.position = "fixed";
+          (bubble as HTMLElement).style.bottom = "-9999px";
+          (bubble as HTMLElement).style.right = "-9999px";
+          (bubble as HTMLElement).style.opacity = "0";
+          (bubble as HTMLElement).style.pointerEvents = "none";
+          (bubble as HTMLElement).style.width = "1px";
+          (bubble as HTMLElement).style.height = "1px";
+        }, 50);
+
+        return;
       }
-    } catch (e) {}
+    }
 
+    // Fallback: try widget methods
     if (typeof widgetInstance.toggle === "function") {
       widgetInstance.toggle();
     } else if (typeof widgetInstance.open === "function") {
       widgetInstance.open();
     }
+  } catch (e) {
+    console.error("Error toggling chat:", e);
   }
 };
 
@@ -155,5 +173,19 @@ onMounted(() => {
 
 .custom-chat-btn:hover img {
   filter: drop-shadow(0 6px 20px rgba(244, 147, 33, 0.3));
+}
+
+@media (max-width: 640px) {
+  .custom-chat-btn {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 400px) {
+  .custom-chat-btn {
+    width: 44px;
+    height: 44px;
+  }
 }
 </style>

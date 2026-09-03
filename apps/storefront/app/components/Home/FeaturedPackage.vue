@@ -298,15 +298,15 @@ const festivoConfig = computed<FestivoConfig>(() => {
   return {
     imagePath: (state: string, frame: number) =>
       `/Images/Festivo/${state}-3d-${frame}.png`,
-    moveOffsetX: isMobile ? -50 : -100,
-    moveOffsetY: 100,
-    joyOffsetX: 120,
-    joyOffsetY: 120,
-    jollyOffsetX: 120,
-    jollyOffsetY: 120,
-    merryOffsetX: 120,
-    merryOffsetY: 120,
-    jumpPeakHeight: 80,
+    moveOffsetX: isMobile ? -80 : -100,
+    moveOffsetY: isMobile ? 100 : 100,
+    joyOffsetX: isMobile ? -100 : 120,
+    joyOffsetY: isMobile ? -30 : 120,
+    jollyOffsetX: isMobile ? -85 : 120,
+    jollyOffsetY: isMobile ? -30 : 120,
+    merryOffsetX: isMobile ? -65 : 120,
+    merryOffsetY: isMobile ? -30 : 120,
+    jumpPeakHeight: isMobile ? 40 : 80,
   };
 });
 

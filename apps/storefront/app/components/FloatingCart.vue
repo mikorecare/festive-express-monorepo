@@ -3,18 +3,21 @@
     <!-- Floating trigger -->
     <button
       type="button"
-      class="fixed bottom-[100px] right-[20px] z-[999] flex items-center justify-center bg-[#172a50] border-[3px] border-[#F49321] rounded-full w-[60px] h-[60px] p-0 shadow-[0_8px_24px_rgba(0,0,0,0.35)] cursor-pointer max-sm:bottom-[90px]"
+      class="fixed bottom-[100px] right-[20px] z-[999] flex items-center justify-center bg-[#172a50] border-[3px] border-[#F49321] rounded-full w-[64px] h-[64px] p-0 shadow-[0_8px_24px_rgba(0,0,0,0.35)] cursor-pointer max-sm:bottom-[75px] max-sm:w-[45px] max-sm:h-[45px] max-sm:border-[2px]"
       :class="{ 'cart-shake': cartBump > 0 }"
       :key="cartBump"
       aria-label="Open cart"
       @click="open = true"
     >
       <div
-        class="relative flex items-center justify-center bg-[#F49321] text-white w-[54px] h-[54px] rounded-full"
+        class="relative flex items-center justify-center bg-[#F49321] text-white w-[58px] h-[58px] rounded-full max-sm:w-[44px] max-sm:h-[44px]"
       >
-        <ShoppingCartIcon class="w-7 h-7" aria-hidden="true" />
+        <ShoppingCartIcon
+          class="w-7 h-7 max-sm:w-5 max-sm:h-5"
+          aria-hidden="true"
+        />
         <span
-          class="absolute -top-1 -right-1 z-10 bg-white text-[#172a50] text-[0.8rem] font-extrabold w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 border-[#F49321]"
+          class="absolute -top-1 -right-1 z-10 bg-white text-[#172a50] text-[0.8rem] font-extrabold w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 border-[#F49321] max-sm:w-[18px] max-sm:h-[18px] max-sm:text-[0.6rem] max-sm:-top-0.5 max-sm:-right-0.5"
         >
           {{ displayCount }}
         </span>
@@ -196,7 +199,6 @@ const onImgError = (e: Event) => {
 
 const onEmptyImgError = (e: Event) => {
   const img = e.target as HTMLImageElement;
-  // fallback if Festivo empty asset missing
   if (img) img.src = "/Images/Festivo/cart-empty.png";
 };
 
@@ -237,5 +239,29 @@ onMounted(async () => {
 .slide-cart-enter-from,
 .slide-cart-leave-to {
   transform: translateX(100%);
+}
+
+/* Desktop sizes */
+.cart-shake {
+  animation: cart-shake 0.5s ease-in-out;
+}
+
+@keyframes cart-shake {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-15deg);
+  }
+  40% {
+    transform: rotate(15deg);
+  }
+  60% {
+    transform: rotate(-10deg);
+  }
+  80% {
+    transform: rotate(10deg);
+  }
 }
 </style>
