@@ -20,6 +20,7 @@
       <div class="how-layout">
         <!-- Steps -->
         <div class="timeline" v-if="steps.length">
+          <h2 class="sr-only">The Festive Express process</h2>
           <div
             v-for="(step, index) in steps"
             :key="index"

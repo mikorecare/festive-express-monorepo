@@ -298,7 +298,7 @@ const validateField = (field: string) => {
           errors.billing_postcode = "Please enter a valid 5-digit ZIP code";
         } else if (!isServiceZip(zip)) {
           errors.billing_postcode =
-            "Sorry, we only serve Sarasota / Bradenton / Lakewood Ranch area";
+            "We’re sorry — we currently only serve the Sarasota, Bradenton, and Lakewood Ranch area. For service outside this region, please contact Festive Lighting Pros at www.flppros.com. They cover a much wider geographic area.";
         } else {
           errors.billing_postcode = "";
           form.value.billing_postcode = zip;

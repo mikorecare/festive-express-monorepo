@@ -1,7 +1,7 @@
 <!-- components/CountdownWidget.vue -->
 <template>
   <div class="hero-countdown-widget">
-    <h3 class="hero-timer-title">Christmas Countdown</h3>
+    <p class="hero-timer-title">Christmas Countdown</p>
 
     <div class="timer-blocks">
       <div class="mini-timer-item">

@@ -49,7 +49,13 @@
             >
               <img
                 :src="item.image"
-                :alt="item.year || 'Gallery Image'"
+                :alt="
+                  item.description
+                    ? `${item.year || ''} ${item.description}`.trim()
+                    : item.year
+                      ? `Holiday lighting ${item.year}`
+                      : 'Festive Express holiday lighting'
+                "
                 draggable="false"
                 loading="lazy"
                 class="w-full h-[280px] max-w-[400px] max-md:h-[200px] max-md:max-w-[280px] max-sm:h-[160px] max-sm:max-w-[220px] object-cover pointer-events-none block"
@@ -133,7 +139,7 @@
             >
               <img
                 :src="activeImage"
-                alt="Enlarged view"
+                alt="Enlarged holiday lighting photo"
                 draggable="false"
                 class="max-w-[90vw] max-h-[85vh] object-contain rounded-lg select-none will-change-transform"
                 :style="imageStyle"
@@ -165,7 +171,7 @@
         <div v-if="item.dividerImage">
           <img
             :src="item.dividerImage"
-            alt="Timeline Divider"
+            alt=""
             draggable="false"
             loading="lazy"
             class="h-[320px] shrink-0 pointer-events-none"
@@ -196,7 +202,7 @@
       >
         <img
           :src="currentSpinnerImage"
-          alt="Timeline Ornament"
+          alt=""
           draggable="false"
           loading="lazy"
           class="w-full h-full object-contain pointer-events-none"

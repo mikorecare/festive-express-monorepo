@@ -56,6 +56,7 @@
                 :src="getPackageTitleImage(pkg.name)"
                 :alt="pkg.name"
               />
+              <h3 class="sr-only">{{ pkg.name }}</h3>
             </div>
 
             <div

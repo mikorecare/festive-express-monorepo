@@ -41,11 +41,11 @@
           </div>
 
           <div class="relative z-10">
-            <h4
+            <h2
               class="text-XL font-semibold text-navy uppercase tracking-wider mb-2 mt-2"
             >
               Get In Touch
-            </h4>
+            </h2>
             <div class="text-navy/70 text-sm leading-relaxed space-y-1">
               <p class="font-semibold text-brand-orange">
                 {{ settings.contact_phone_display || "(941) 239-4722" }}

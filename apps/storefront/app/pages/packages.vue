@@ -81,7 +81,13 @@
               :src="getImageUrl(pkg.title_image_url || pkg.icon_url)"
               :alt="pkg.name"
             />
-            <h2 v-else class="text-3xl font-bold text-[#1C2D5B]">
+            <!-- <h2 v-else class="text-3xl font-bold text-[#1C2D5B]">
+              {{ pkg.name }}
+            </h2> -->
+            <h2
+              class="text-3xl font-bold text-[#1C2D5B]"
+              :class="pkg.title_image_url || pkg.icon_url ? 'sr-only' : ''"
+            >
               {{ pkg.name }}
             </h2>
           </div>
@@ -253,9 +259,9 @@
                   />
                 </div>
                 <div class="p-2.5 text-center">
-                  <h4 class="text-xs font-bold text-white-900 leading-tight">
+                  <p class="text-xs font-bold text-white-900 leading-tight">
                     {{ getActiveSpot(pkg)?.label }}
-                  </h4>
+                  </p>
                 </div>
               </div>
             </div>
@@ -264,9 +270,9 @@
             <div
               class="color-overlay p-5 bg-white border-t border-slate-200 text-center"
             >
-              <h4 class="text-sm font-bold text-slate-900 mb-3">
+              <p class="text-sm font-bold text-slate-900 mb-3">
                 Select C-9 Light Color
-              </h4>
+              </p>
               <div class="flex justify-center flex-wrap gap-3">
                 <button
                   v-for="sku in skusFor(pkg.id)"
@@ -526,7 +532,7 @@
       </button>
       <img
         :src="activeLightboxImage"
-        alt="Preview Fullscreen"
+        alt="Package preview"
         class="lightbox-image max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl"
       />
     </div>
