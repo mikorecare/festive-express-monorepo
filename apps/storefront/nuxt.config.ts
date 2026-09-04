@@ -18,7 +18,6 @@ export default defineNuxtConfig({
 
   sitemap: {
     exclude: [
-      // Admin and functional
       '/admin/**',
       '/dashboard/**',
       '/api/**',
@@ -48,7 +47,18 @@ export default defineNuxtConfig({
       },
       link: [
         { rel: "icon", type: "image/x-icon", href: "Images/favicon.png" },
-        { rel: "canonical", href: process.env.NUXT_PUBLIC_SITE_URL || "https://festive.express" },
+        { rel: "canonical", href: "https://festive.express" },
+        { rel: "preconnect", href: "https://fonts.googleapis.com" },
+        { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" },
+        { rel: "preconnect", href: "https://cdnjs.cloudflare.com" },
+        { rel: "preconnect", href: "https://cdn.jsdelivr.net" },
+        {
+          rel: "preload",
+          href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&family=Raleway:wght@400;500;600;700;800;900&display=swap",
+          as: "style"
+        },
+
+        // Original stylesheets
         {
           rel: "stylesheet",
           href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&family=Raleway:wght@400;500;600;700;800;900&display=swap",
@@ -331,25 +341,11 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    '/api/estimator': {
-      security: {
-        headers: {
-          contentSecurityPolicy: false,
-          crossOriginEmbedderPolicy: 'unsafe-none',
-          xFrameOptions: false,
-        },
-      },
-    },
-    '/api/estimator/**': {
-      security: {
-        headers: {
-          contentSecurityPolicy: false,
-          crossOriginEmbedderPolicy: 'unsafe-none',
-          crossOriginResourcePolicy: 'cross-origin',
-          xFrameOptions: false,
-        },
-      },
-    },
+    '/**': {
+      headers: {
+        'alt-svc': 'h3=":443"; ma=86400',
+      }
+    }
   },
 
   nitro: {
@@ -359,6 +355,7 @@ export default defineNuxtConfig({
       '/**': {
         headers: {
           'X-Powered-By': 'Festive Express',
+          'Content-Encoding': 'br',
         }
       },
       '/api/**': {
@@ -367,6 +364,16 @@ export default defineNuxtConfig({
         }
       },
       '/_nuxt/**': {
+        headers: {
+          'Cache-Control': 'public, max-age=31536000, immutable',
+        }
+      },
+      '/Images/**': {
+        headers: {
+          'Cache-Control': 'public, max-age=31536000, immutable',
+        }
+      },
+      '/fonts/**': {
         headers: {
           'Cache-Control': 'public, max-age=31536000, immutable',
         }
