@@ -98,7 +98,7 @@
           >
             <img
               src="/Images/FE-Logo.png"
-              alt="FLP Express Logo"
+              alt="FLP Express"
               class="max-h-[42px] sm:max-h-[48px] lg:max-h-[70px]"
             />
             <p
@@ -156,7 +156,7 @@
                 <NuxtLink
                   to="/"
                   class="block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
-                  active-class="text-[#ff7a00]"
+                  exact-active-class="text-[#ff7a00]"
                 >
                   Home
                 </NuxtLink>

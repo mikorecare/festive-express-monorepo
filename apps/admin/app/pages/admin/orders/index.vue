@@ -10,6 +10,7 @@
       </div>
       <button
         class="px-4 py-2 bg-navy text-white rounded-lg hover:bg-navy/90 transition-colors text-sm font-medium shadow-sm flex items-center gap-2"
+        @click="exportOrders"
       >
         <ArrowDownTrayIcon class="h-4 w-4" />
         Export Orders
@@ -401,6 +402,107 @@ const executeDelete = async () => {
   } catch (error: any) {
     console.error(error);
     showToast(error?.data?.message || "Failed to delete order", "error");
+  }
+};
+
+const exportOrders = async () => {
+  try {
+    let query = supabase
+      .from("orders")
+      .select(
+        `
+        order_number,
+        status,
+        payment_status,
+        install_status,
+        billing_first_name,
+        billing_last_name,
+        billing_email,
+        billing_phone,
+        total,
+        created_at,
+        preferred_install_dates,
+        confirmed_install_date
+      `,
+      )
+      .order("created_at", { ascending: false });
+
+    if (statusFilter.value) {
+      query = query.eq("status", statusFilter.value);
+    }
+
+    if (paymentStatusFilter.value) {
+      query = query.eq("payment_status", paymentStatusFilter.value);
+    }
+
+    if (searchQuery.value) {
+      query = query.or(
+        `order_number.ilike.%${searchQuery.value}%,` +
+          `billing_first_name.ilike.%${searchQuery.value}%,` +
+          `billing_last_name.ilike.%${searchQuery.value}%,` +
+          `billing_email.ilike.%${searchQuery.value}%`,
+      );
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    const rows = data || [];
+    if (!rows.length) {
+      showToast("No orders match the current filters", "error");
+      return;
+    }
+
+    const headers = [
+      "created_at",
+      "order_number",
+      "billing_first_name",
+      "billing_last_name",
+      "billing_email",
+      "billing_phone",
+      "status",
+      "payment_status",
+      "install_status",
+      "total",
+      "preferred_install_dates",
+      "confirmed_install_date",
+    ];
+
+    const escape = (v: unknown) => {
+      const s = Array.isArray(v) ? v.join("; ") : v == null ? "" : String(v);
+      return `"${s.replaceAll('"', '""')}"`;
+    };
+
+    const csv = [
+      headers.join(","),
+      ...rows.map((o: any) => headers.map((h) => escape(o[h])).join(",")),
+    ].join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    const stamp = new Date()
+      .toLocaleString("en-US", {
+        timeZone: "America/New_York",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      })
+      .replaceAll("/", "-")
+      .replaceAll(", ", "_")
+      .replaceAll(":", "");
+
+    a.download = `Festive Express Orders ${stamp}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast(`Exported ${rows.length} orders`);
+  } catch (e: any) {
+    console.error(e);
+    showToast(e?.message || "Export failed", "error");
   }
 };
 

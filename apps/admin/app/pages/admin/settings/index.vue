@@ -12,7 +12,7 @@
       </div>
       <button
         type="button"
-        class="inline-flex items-center justify-center rounded-lg bg-[#F49321] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#1C2D5B] disabled:opacity-60 disabled:cursor-not-allowed"
+        class="inline-flex items-center justify-center rounded-lg bg-[#F49321] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1C2D5B] disabled:opacity-60 disabled:cursor-not-allowed"
         :disabled="saving || loading"
         @click="saveSettings"
       >

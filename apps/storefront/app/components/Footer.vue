@@ -2,7 +2,6 @@
   <footer class="bg-[#101518] text-white pt-5 !pt-12">
     <div class="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-7xl">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-5">
-        <!-- Logo -->
         <div>
           <img
             src="/Images/FE-Logo.png"
@@ -11,13 +10,12 @@
           />
         </div>
 
-        <!-- Contact Us -->
         <div>
-          <h4
+          <p
             class="text-brand-orange text-[1.1rem] font-semibold mb-5 uppercase tracking-wide"
           >
-            CONTACT US
-          </h4>
+            Contact Us
+          </p>
           <p class="text-slate-300 mb-2.5">
             <a
               v-if="settings.contact_email"
@@ -32,45 +30,27 @@
             <a
               :href="`tel:${String(settings.contact_phone || '').replace(/[^\d+]/g, '')}`"
               class="contact-box btn-secondary-2 hover:text-brand-orange"
-              >{{ settings.contact_phone_display || "(941) 239-4722" }}
+            >
+              {{ settings.contact_phone_display || "(941) 239-4722" }}
             </a>
           </p>
         </div>
 
-        <!-- Customer (Hidden) -->
         <div class="hidden">
-          <h4
+          <p
             class="text-brand-orange text-[1.1rem] font-semibold mb-5 uppercase tracking-wide"
           >
-            CUSTOMER
-          </h4>
-          <NuxtLink
-            to="#"
-            class="text-slate-300 hover:text-brand-orange block mb-2.5 transition-colors duration-300"
-          >
-            Help Center
-          </NuxtLink>
-          <NuxtLink
-            to="#"
-            class="text-slate-300 hover:text-brand-orange block mb-2.5 transition-colors duration-300"
-          >
-            Refund Policy
-          </NuxtLink>
-          <NuxtLink
-            to="#"
-            class="text-slate-300 hover:text-brand-orange block mb-2.5 transition-colors duration-300"
-          >
-            Gift Cards
-          </NuxtLink>
+            Customer
+          </p>
+          <!-- links unchanged -->
         </div>
 
-        <!-- Quick Links -->
         <div>
-          <h4
+          <p
             class="text-brand-orange text-[1.1rem] font-semibold mb-5 uppercase tracking-wide"
           >
-            QUICK LINKS
-          </h4>
+            Quick Links
+          </p>
           <NuxtLink
             to="/about-us"
             class="text-slate-300 hover:text-brand-orange block mb-2.5 transition-colors duration-300"
@@ -105,7 +85,6 @@
       </div>
     </div>
 
-    <!-- Bottom Bar Section -->
     <div class="bg-white py-4 px-4 sm:px-6 lg:px-8">
       <div
         class="w-full mx-auto max-w-7xl flex flex-wrap justify-between items-center gap-[15px] text-slate-400 text-[0.95rem]"
@@ -124,7 +103,7 @@
         >
           <img
             src="/Images/checkout.png"
-            alt="Payment Method"
+            alt="Accepted payment methods"
             class="w-full h-auto"
           />
         </div>

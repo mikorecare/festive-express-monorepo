@@ -22,6 +22,7 @@
       >
         <!-- Content Left -->
         <div class="flex-1">
+          <h2 class="sr-only">Who we are</h2>
           <div
             v-if="descriptionHtml"
             class="about-body"

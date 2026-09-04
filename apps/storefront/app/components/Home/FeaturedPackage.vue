@@ -58,6 +58,7 @@
           <!-- Card Top -->
           <div class="relative p-3 pb-0">
             <!-- One title; only left offset changes -->
+            <h3 class="sr-only">{{ pkg.name }}</h3>
             <img
               class="absolute z-[2] pointer-events-none w-auto drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)] -bottom-[28px] h-[60px] md:-bottom-[34px] md:h-[68px] lg:-bottom-[38px] lg:h-[72px] left-6 md:left-[58px] lg:left-[20px]"
               :src="getPackageTitleImage(pkg)"
@@ -227,13 +228,13 @@
 
       <!-- Footer Note -->
       <div class="text-center mt-6 mb-4">
-        <h4
+        <p
           class="text-navy font-medium leading-[1.3] max-w-[80%] mx-auto mb-5 text-sm sm:text-base md:text-lg text-center"
         >
           Every package is professionally installed, maintained through the
           season, and taken down when you’re ready.<br />You simply enjoy the
           holidays.
-        </h4>
+        </p>
 
         <div
           class="relative isolate my-8 max-lg:my-6 flex flex-col items-center justify-center gap-2 text-center"
