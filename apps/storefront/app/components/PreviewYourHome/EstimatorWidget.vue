@@ -6,7 +6,7 @@
       class="bg-white rounded-2xl p-6 shadow-md max-w-4xl w-full mx-4 my-8"
     >
       <p class="text-[32px] text-[#f7931e] font-bold flex items-center">
-        See Your Home Lit Up
+        See Your Home All Glowed Up
       </p>
       <p class="text-xl text-black-200 mb-4">
         Enter your address, pick a package and a color, click on “Light Up My

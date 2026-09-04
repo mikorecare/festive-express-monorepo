@@ -231,48 +231,73 @@ const searchQuery = ref("");
 
 const statusFilter = ref("");
 
+// const loadProducts = async () => {
+//   isLoading.value = true;
+//   try {
+//     let query = supabase
+//       .from("products")
+//       .select("*, categories(id, name)", { count: "exact" })
+//       .order("created_at", { ascending: false })
+//       .range(
+//         (currentPage.value - 1) * itemsPerPage.value,
+//         currentPage.value * itemsPerPage.value - 1,
+//       );
+
+//     if (categoryFilter.value) {
+//       query = query.eq("category_id", categoryFilter.value);
+//     }
+//     if (stockFilter.value === "instock") {
+//       query = query.gt("stock", 0);
+//     } else if (stockFilter.value === "outofstock") {
+//       query = query.lte("stock", 0);
+//     } else if (stockFilter.value === "lowstock") {
+//       query = query.gt("stock", 0).lte("stock", 10);
+//     }
+
+//     if (statusFilter.value) {
+//       query = query.eq("status", statusFilter.value);
+//     }
+
+//     if (searchQuery.value) {
+//       query = query.or(
+//         `name.ilike.%${searchQuery.value}%,sku.ilike.%${searchQuery.value}%`,
+//       );
+//     }
+
+//     const from = (currentPage.value - 1) * itemsPerPage.value;
+//     const to = from + itemsPerPage.value - 1;
+//     query = query.range(from, to);
+
+//     const { data, error, count } = await query;
+//     if (error) throw error;
+
+//     products.value = data || [];
+//     totalItems.value = count || 0;
+//   } catch (err) {
+//     console.error(err);
+//     products.value = [];
+//     totalItems.value = 0;
+//   } finally {
+//     isLoading.value = false;
+//   }
+// };
+
 const loadProducts = async () => {
   isLoading.value = true;
   try {
-    let query = supabase
-      .from("products")
-      .select("*, categories(id, name)", { count: "exact" })
-      .order("created_at", { ascending: false })
-      .range(
-        (currentPage.value - 1) * itemsPerPage.value,
-        currentPage.value * itemsPerPage.value - 1,
-      );
+    const res = await $fetch("/api/admin/products", {
+      query: {
+        page: currentPage.value,
+        limit: itemsPerPage.value,
+        category_id: categoryFilter.value || "",
+        stock: stockFilter.value || "",
+        status: statusFilter.value || "",
+        search: searchQuery.value || "",
+      },
+    });
 
-    if (categoryFilter.value) {
-      query = query.eq("category_id", categoryFilter.value);
-    }
-    if (stockFilter.value === "instock") {
-      query = query.gt("stock", 0);
-    } else if (stockFilter.value === "outofstock") {
-      query = query.lte("stock", 0);
-    } else if (stockFilter.value === "lowstock") {
-      query = query.gt("stock", 0).lte("stock", 10);
-    }
-
-    if (statusFilter.value) {
-      query = query.eq("status", statusFilter.value);
-    }
-
-    if (searchQuery.value) {
-      query = query.or(
-        `name.ilike.%${searchQuery.value}%,sku.ilike.%${searchQuery.value}%`,
-      );
-    }
-
-    const from = (currentPage.value - 1) * itemsPerPage.value;
-    const to = from + itemsPerPage.value - 1;
-    query = query.range(from, to);
-
-    const { data, error, count } = await query;
-    if (error) throw error;
-
-    products.value = data || [];
-    totalItems.value = count || 0;
+    products.value = res.products || [];
+    totalItems.value = res.total || 0;
   } catch (err) {
     console.error(err);
     products.value = [];
@@ -298,12 +323,22 @@ const formatMoney = (value: unknown) => {
   })}`;
 };
 
+// const loadCategories = async () => {
+//   const { data } = await supabase
+//     .from("categories")
+//     .select("id, name")
+//     .order("name");
+//   categories.value = data || [];
+// };
+
 const loadCategories = async () => {
-  const { data } = await supabase
-    .from("categories")
-    .select("id, name")
-    .order("name");
-  categories.value = data || [];
+  try {
+    const res = await $fetch("/api/admin/categories");
+    categories.value = res.categories || [];
+  } catch (err) {
+    console.error(err);
+    categories.value = [];
+  }
 };
 
 const applyFilters = () => {
