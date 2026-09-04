@@ -9,11 +9,28 @@
 
     <!-- Desktop: Image left 4/5, Info right 1/5 -->
     <div class="flex flex-col md:flex-row gap-6 mb-4">
-      <div class="md:w-4/5">
+      <div
+        class="relative md:w-4/5 rounded-xl border !border-brand-orange border-4 overflow-hidden max-h-max"
+      >
+        <div class="w-full" style="padding-bottom: 96.5%">
+          <img
+            class="absolute top-0 left-0 w-full h-full rounded-lg object-cover object-top"
+            :src="result.imageUrl"
+            alt="Your home with holiday lighting"
+          />
+        </div>
+
+        <!-- Small image overlay at bottom left - responsive sizing -->
         <img
-          class="w-full rounded-lg"
-          :src="result.imageUrl"
-          alt="Your home with holiday lighting"
+          :src="getPackageTitle()"
+          class="absolute bottom-2 left-2 max-h-[45px] md:max-h-[85px] w-auto object-contain"
+        />
+
+        <!-- Early Bird image - responsive sizing -->
+        <img
+          src="/Images/earlybird2.png"
+          alt="Early Bird Special"
+          class="h-[18px] md:h-[28px] w-auto absolute bottom-4 right-2"
         />
       </div>
 
@@ -26,10 +43,10 @@
         </div>
 
         <div class="bg-gray-50 rounded-lg p-3">
-          <p class="text-xs text-gray-500">
-            {{ getPackageName() || "Package" }}
+          <p class="text-xs text-gray-500">Package Price</p>
+          <p class="text-xl font-bold text-brand-orange">
+            {{ getPackagePrice() }}
           </p>
-          <p class="text-xl font-bold text-navy">{{ getPackagePrice() }}</p>
         </div>
 
         <div v-if="calculatedOverageFt > 0" class="bg-gray-50 rounded-lg p-3">
@@ -290,6 +307,13 @@ const getPackagePrice = () => {
     (p: IPackageOption) => p.id === selectedPackage.value,
   );
   return pkg ? formatMoney(pkg.price) : formatMoney(1999);
+};
+
+const getPackageTitle = () => {
+  const pkg = packageOptions.value.find(
+    (p: IPackageOption) => p.id === selectedPackage.value,
+  );
+  return pkg?.title || "Jolly";
 };
 
 const handleBookConsultation = async () => {

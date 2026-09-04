@@ -3,7 +3,7 @@
   <div class="space-y-8">
     <!-- Address - Now Required -->
     <div>
-      <label class="block !text-md font-semibold text-gray-700 mb-2 form-label">
+      <label class="block !text-[16px] font-semibold text-gray-700 mb-2 form-label">
         Property address *
       </label>
       <div class="relative">
@@ -11,7 +11,7 @@
           v-model="address"
           autocomplete="off"
           placeholder="Start typing your street address"
-          class="w-full px-4 py-4 border border-gray-300 rounded-[16px] focus:ring-2 focus:ring-orange-500 focus:border-transparent !text-md form-input"
+          class="w-full px-4 py-4 border border-gray-300 rounded-[16px] focus:ring-2 focus:ring-orange-500 focus:border-transparent !text-[16px] form-input"
           :class="{ 'border-red-500': errors.address }"
           @input="debouncedSearch"
           @focus="suggestionsOpen = true"
@@ -26,7 +26,7 @@
             class="px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0"
             @click="selectAddress(s)"
           >
-            <div class="!text-md font-medium text-gray-800">
+            <div class="!text-[16px] font-medium text-gray-800">
               {{ s.main }}
             </div>
             <div class="text-xs text-gray-500">{{ s.secondary }}</div>
@@ -40,7 +40,7 @@
 
     <!-- Photo Upload - Now Optional -->
     <div>
-      <label class="block !text-md font-semibold text-gray-700 mb-2 form-label">
+      <label class="block !text-[16px] font-semibold text-gray-700 mb-2 form-label">
         Photo of your home
         <span class="text-xs font-normal text-gray-400">(optional)</span>
       </label>
@@ -53,7 +53,7 @@
       />
       <button
         type="button"
-        class="w-full px-4 py-4 border-2 border-dashed border-gray-300 rounded-[16px] hover:border-brand-orange hover:bg-orange-50 transition-colors !text-md text-gray-600 flex items-center justify-between"
+        class="w-full px-4 py-4 border-2 border-dashed border-gray-300 rounded-[16px] hover:border-brand-orange hover:bg-orange-50 transition-colors !text-[16px] text-gray-600 flex items-center justify-between"
         @click="fileInput?.click()"
       >
         <span>{{
@@ -113,7 +113,7 @@
 
     <!-- Package Options -->
     <div>
-      <label class="block !text-md font-semibold text-gray-700 mb-4 form-label">
+      <label class="block !text-[16px] font-semibold text-gray-700 mb-4 form-label">
         Select your package
       </label>
 
@@ -128,7 +128,7 @@
           v-for="pkg in packageOptions"
           :key="pkg.id"
           type="button"
-          class="px-3 pt-0 border-2 pb-2 rounded-[16px] min-h-[167px] !text-md transition-all flex flex-col items-center relative bg-[#1C2F5B] overflow-visible"
+          class="px-3 pt-0 border-2 pb-2 rounded-[16px] min-h-[167px] !text-[16px] transition-all flex flex-col items-center relative bg-[#1C2F5B] overflow-visible"
           :class="
             selectedPackage === pkg.id
               ? '!border-[#F7931E] !border-4'
@@ -197,7 +197,7 @@
 
     <!-- Color Options -->
     <div class="pt-4">
-      <label class="block !text-md font-semibold text-gray-700 mb-2 form-label">
+      <label class="block !text-[16px] font-semibold text-gray-700 mb-2 form-label">
         Select C-9 Light Color
       </label>
       <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
@@ -205,7 +205,7 @@
           v-for="color in colorOptions"
           :key="color.scheme"
           type="button"
-          class="px-3 py-4 border rounded-[16px] !text-md transition-all flex flex-col items-center gap-2"
+          class="px-3 py-4 border rounded-[16px] !text-[16px] transition-all flex flex-col items-center gap-2"
           :class="
             selectedScheme === color.scheme
               ? '!border-[#F7931E] border-4 bg-orange-50 text-brand-orange'
@@ -224,7 +224,7 @@
             :style="color.sw ? `background:${color.sw}` : ''"
           ></span>
           <span
-            class="!text-md text-[#1C2F5B]"
+            class="!text-[14px] text-[#1C2F5B]"
             :class="selectedScheme === color.scheme ? 'font-semibold' : ''"
             >{{ color.label }}</span
           >
@@ -236,14 +236,14 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div>
         <label
-          class="block !text-md font-semibold !text-[#1C2F5B] mb-2 form-label"
+          class="block !text-[16px] font-semibold !text-[#1C2F5B] mb-2 form-label"
         >
           Your name *
         </label>
         <input
           v-model="name"
           autocomplete="name"
-          class="w-full px-4 py-4 border border-gray-300 rounded-[16px] focus:ring-2 focus:ring-orange-500 focus:border-transparent !text-md form-input"
+          class="w-full px-4 py-4 border border-gray-300 rounded-[16px] focus:ring-2 focus:ring-orange-500 focus:border-transparent !text-[16px] form-input"
           :class="{ 'border-red-500': errors.name }"
         />
         <p v-if="errors.name" class="text-red-500 text-xs mt-1">
@@ -252,7 +252,7 @@
       </div>
       <div>
         <label
-          class="block !text-md font-semibold !text-[#1C2F5B] mb-2 form-label"
+          class="block !text-[16px] font-semibold !text-[#1C2F5B] mb-2 form-label"
         >
           Email *
         </label>
@@ -261,7 +261,7 @@
           type="email"
           inputmode="email"
           autocomplete="email"
-          class="w-full px-4 py-4 border border-gray-300 rounded-[16px] focus:ring-2 focus:ring-orange-500 focus:border-transparent !text-md form-input"
+          class="w-full px-4 py-4 border border-gray-300 rounded-[16px] focus:ring-2 focus:ring-orange-500 focus:border-transparent !text-[16px] form-input"
           :class="{ 'border-red-500': errors.email }"
         />
         <p v-if="errors.email" class="text-red-500 text-xs mt-1">
@@ -272,7 +272,7 @@
 
     <div>
       <label
-        class="block !text-md font-semibold !text-[#1C2F5B] mb-2 form-label"
+        class="block !text-[16px] font-semibold !text-[#1C2F5B] mb-2 form-label"
       >
         Mobile
         <span class="text-xs font-normal text-gray-400">(optional)</span>
@@ -282,7 +282,7 @@
         type="tel"
         inputmode="tel"
         autocomplete="tel"
-        class="w-full px-4 py-4 border border-gray-300 rounded-[16px] focus:ring-2 focus:ring-orange-500 focus:border-transparent !text-md form-input"
+        class="w-full px-4 py-4 border border-gray-300 rounded-[16px] focus:ring-2 focus:ring-orange-500 focus:border-transparent !text-[16px] form-input"
       />
     </div>
 
@@ -303,7 +303,7 @@
     <!-- Error -->
     <div
       v-if="error"
-      class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-[16px] !text-md"
+      class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-[16px] !text-[16px]"
     >
       <i class="fas fa-exclamation-circle mr-2"></i>
       {{ error }}
