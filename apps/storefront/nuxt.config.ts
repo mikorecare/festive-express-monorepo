@@ -350,14 +350,8 @@ export default defineNuxtConfig({
 
   nitro: {
     minify: true,
-    compressPublicAssets: true,
+    compressPublicAssets: true, // This enables Brotli/gzip automatically
     routeRules: {
-      '/**': {
-        headers: {
-          'X-Powered-By': 'Festive Express',
-          'Content-Encoding': 'br',
-        }
-      },
       '/api/**': {
         headers: {
           'Cache-Control': 'no-store, must-revalidate',
@@ -379,5 +373,5 @@ export default defineNuxtConfig({
         }
       }
     }
-  },
+  }
 });
