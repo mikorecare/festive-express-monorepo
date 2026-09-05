@@ -1,41 +1,40 @@
 export const useEarlyBirdSpecial = () => {
-  const supabase = useSupabaseClient();
-
   const earlyBirdExpiresAt = useState<string | null>(
     "earlyBirdExpiresAt",
     () => null,
-  );
-  const earlyBirdEnabled = useState<boolean>("earlyBirdEnabled", () => false);
+  )
+  const earlyBirdEnabled = useState<boolean>("earlyBirdEnabled", () => false)
   const earlyBirdTitle = useState<string>(
     "earlyBirdTitle",
     () => "Early Bird Special Pricing",
-  );
+  )
   const earlyBirdDescription = useState<string>(
     "earlyBirdDescription",
     () => "See packages for details.",
-  );
-  const earlyBirdIconUrl = useState<string>("earlyBirdIconUrl", () => "");
+  )
+  const earlyBirdIconUrl = useState<string>("earlyBirdIconUrl", () => "")
   const earlyBirdIconSecondaryUrl = useState<string>(
     "earlyBirdIconSecondaryUrl",
     () => "",
-  );
+  )
+  const isLoading = useState<boolean>("earlyBirdLoading", () => false)
 
   const isEarlyBirdActive = (enabled?: boolean, expiresAt?: string | null) => {
-    if (!enabled) return false;
-    if (!expiresAt) return true;
-    return new Date(expiresAt).getTime() > Date.now();
-  };
+    if (!enabled) return false
+    if (!expiresAt) return true
+    return new Date(expiresAt).getTime() > Date.now()
+  }
 
   const isEarlyBirdLive = computed(() =>
     isEarlyBirdActive(earlyBirdEnabled.value, earlyBirdExpiresAt.value),
-  );
+  )
 
   const effectivePrice = (
     price: number | string | null | undefined,
     salePrice: number | string | null | undefined,
   ) => {
-    const sale = Number(salePrice);
-    const base = Number(price ?? 0);
+    const sale = Number(salePrice)
+    const base = Number(price ?? 0)
     if (
       isEarlyBirdLive.value &&
       salePrice != null &&
@@ -43,81 +42,69 @@ export const useEarlyBirdSpecial = () => {
       !Number.isNaN(sale) &&
       sale > 0
     ) {
-      return sale;
+      return sale
     }
-    return base;
-  };
+    return base
+  }
 
   const showSale = (salePrice: number | string | null | undefined) =>
     isEarlyBirdLive.value &&
     salePrice != null &&
     salePrice !== "" &&
-    Number(salePrice) > 0;
+    Number(salePrice) > 0
 
   const formatEndsLabel = computed(() => {
-    if (!earlyBirdExpiresAt.value) return null;
+    if (!earlyBirdExpiresAt.value) return null
 
-    const date = new Date(earlyBirdExpiresAt.value);
+    const date = new Date(earlyBirdExpiresAt.value)
     return date.toLocaleDateString("en-US", {
       month: "long",
       day: "numeric",
       year: "numeric",
       timeZone: "America/New_York"
-    });
-  });
+    })
+  })
 
   const loadEarlyBird = async () => {
-    if (!import.meta.client) return;
+    if (!import.meta.client) return
+
+    isLoading.value = true
+
     try {
-      const { data, error } = await supabase
-        .from("settings")
-        .select("key, value")
-        .in("key", [
-          "early_bird_enabled",
-          "early_bird_expires_at",
-          "early_bird_title",
-          "early_bird_description",
-          "early_bird_icon_url",
-          "early_bird_icon_secondary_url",
-        ]);
+      const response = await $fetch<{ success: boolean; data: any }>('/api/early-bird')
 
-      if (error) throw error;
+      if (response.success && response.data) {
+        const data = response.data
 
-      const rows = (data || []) as { key: string; value: string | null }[];
-      for (const row of rows) {
-        const value =
-          typeof row.value === "string"
-            ? row.value.replace(/^"|"$/g, "")
-            : row.value;
-
-        if (row.key === "early_bird_expires_at") {
-          earlyBirdExpiresAt.value = value;
+        if (data.early_bird_expires_at !== undefined) {
+          earlyBirdExpiresAt.value = data.early_bird_expires_at
         }
-        if (row.key === "early_bird_enabled") {
-          earlyBirdEnabled.value =
-            value === "true" || value === "1" || value === "yes";
+        if (data.early_bird_enabled !== undefined) {
+          earlyBirdEnabled.value = data.early_bird_enabled
         }
-        if (row.key === "early_bird_title" && value) {
-          earlyBirdTitle.value = value;
+        if (data.early_bird_title) {
+          earlyBirdTitle.value = data.early_bird_title
         }
-        if (row.key === "early_bird_description" && value) {
-          earlyBirdDescription.value = value;
+        if (data.early_bird_description) {
+          earlyBirdDescription.value = data.early_bird_description
         }
-        if (row.key === "early_bird_icon_url") {
-          earlyBirdIconUrl.value = value || "";
+        if (data.early_bird_icon_url !== undefined) {
+          earlyBirdIconUrl.value = data.early_bird_icon_url || ""
         }
-        if (row.key === "early_bird_icon_secondary_url") {
-          earlyBirdIconSecondaryUrl.value = value || "";
+        if (data.early_bird_icon_secondary_url !== undefined) {
+          earlyBirdIconSecondaryUrl.value = data.early_bird_icon_secondary_url || ""
         }
       }
     } catch (e) {
-      console.error("loadEarlyBird", e);
-      earlyBirdEnabled.value = false;
-      earlyBirdExpiresAt.value = null;
-      earlyBirdIconUrl.value = "";
-      earlyBirdIconSecondaryUrl.value = "";
+      console.error("loadEarlyBird", e)
+      earlyBirdEnabled.value = false
+      earlyBirdExpiresAt.value = null
+      earlyBirdIconUrl.value = ""
+      earlyBirdIconSecondaryUrl.value = ""
+    } finally {
+      isLoading.value = false
     }
-  };
+  }
 
   return {
     earlyBirdExpiresAt,
@@ -132,5 +119,6 @@ export const useEarlyBirdSpecial = () => {
     showSale,
     formatEndsLabel,
     loadEarlyBird,
-  };
-};
+    isLoading,
+  }
+}

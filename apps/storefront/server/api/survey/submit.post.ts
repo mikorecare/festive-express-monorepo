@@ -1,8 +1,31 @@
-import { createClient } from '@supabase/supabase-js';
+import { serverSupabaseClient } from '#supabase/server'
+
+type Review = {
+    id: string
+    status: 'pending' | 'completed' | 'expired'
+    token_expires_at: string
+    order_id: string
+}
+
+type ReviewUpdate = {
+    rating_overall: number
+    rating_installation: number | null
+    rating_technicians: number | null
+    comments_installation: string | null
+    comments_technicians: string | null
+    comments_additional: string | null
+    would_recommend: boolean | null
+    status: 'completed'
+    completed_at: string
+}
+
+type SurveyResponse = {
+    success: boolean
+    message: string
+}
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
-    const config = useRuntimeConfig();
 
     const {
         token,
@@ -29,24 +52,14 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    const supabaseUrl = config.public.supabaseUrl;
-    const supabaseServiceKey = config.supabaseServiceKey;
-
-    if (!supabaseServiceKey) {
-        throw createError({
-            statusCode: 500,
-            message: 'Server configuration error',
-        });
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const supabase = await serverSupabaseClient<any>(event);
 
     try {
         const { data: review, error: reviewError } = await supabase
             .from('reviews')
             .select('id, status, token_expires_at, order_id')
             .eq('survey_token', token)
-            .single();
+            .single<Review>();
 
         if (reviewError || !review) {
             throw createError({
@@ -75,19 +88,21 @@ export default defineEventHandler(async (event) => {
             });
         }
 
+        const updateData: ReviewUpdate = {
+            rating_overall: rating_overall,
+            rating_installation: rating_installation || null,
+            rating_technicians: rating_technicians || null,
+            comments_installation: comments_installation || null,
+            comments_technicians: comments_technicians || null,
+            comments_additional: comments_additional || null,
+            would_recommend: would_recommend || null,
+            status: 'completed',
+            completed_at: new Date().toISOString(),
+        };
+
         const { error: updateError } = await supabase
             .from('reviews')
-            .update({
-                rating_overall: rating_overall,
-                rating_installation: rating_installation || null,
-                rating_technicians: rating_technicians || null,
-                comments_installation: comments_installation || null,
-                comments_technicians: comments_technicians || null,
-                comments_additional: comments_additional || null,
-                would_recommend: would_recommend || null,
-                status: 'completed',
-                completed_at: new Date().toISOString(),
-            })
+            .update(updateData)
             .eq('id', review.id);
 
         if (updateError) {
@@ -102,10 +117,12 @@ export default defineEventHandler(async (event) => {
                 notes: `Survey completed with rating ${rating_overall}/5`,
             });
 
-        return {
+        const response: SurveyResponse = {
             success: true,
             message: 'Thank you for your valuable feedback! 🎄',
         };
+
+        return response;
 
     } catch (error: any) {
         console.error('Survey submission error:', error);

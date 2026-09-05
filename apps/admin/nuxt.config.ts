@@ -14,12 +14,10 @@ export default defineNuxtConfig({
   modules: ['@vueuse/nuxt', '@nuxtjs/tailwindcss', '@nuxtjs/supabase', '@nuxtjs/turnstile', 'nuxt-security'],
 
   supabase: {
+    url: process.env.SUPABASE_URL,
+    key: process.env.SUPABASE_KEY,
+    serviceKey: process.env.SUPABASE_SERVICE_KEY,
     redirect: false,
-    redirectOptions: {
-      login: "/login",
-      callback: "/confirm",
-      exclude: ["/login"],
-    },
     cookieOptions: {
       maxAge: 60 * 60 * 8,
       sameSite: "lax",
@@ -44,10 +42,7 @@ export default defineNuxtConfig({
     elavonConsumerSecret: process.env.ELAVON_CONSUMER_SECRET || "",
     public: {
       turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY,
-      supabaseUrl: process.env.SUPABASE_URL,
-      supabaseKey: process.env.SUPABASE_KEY,
       apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api',
-      storageBucket: process.env.NUXT_PUBLIC_STORAGE_BUCKET || 'Products',
       azureClientId: process.env.AZURE_CLIENT_ID,
     },
   },

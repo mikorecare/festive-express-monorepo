@@ -339,45 +339,27 @@ const fetchPackages = async () => {
     loadingPackages.value = true;
     packageError.value = null;
     try {
-        const supabase = useSupabaseClient();
-        const config = useRuntimeConfig();
-        const { data, error: sbError } = await (supabase.from("packages") as any)
-            .select(
-                `
-        *,
-        package_inclusions (
-          id,
-          is_included,
-          inclusion_items (
-            id,
-            name,
-            image_url
-          )
-        )
-      `,
-            )
-            .order("sort_order", { ascending: true })
-            .order("id", { ascending: true });
+        const response = await $fetch<{ packages: any[] }>('/api/packages');
 
-        if (sbError) throw sbError;
-        packages.value = (data as IPackageRow[]) || [];
-        packageOptions.value = packages.value.map((pkg) => {
-            let imageUrl = pkg.title_image_url || '';
+        const data = response.packages || [];
+        packages.value = data;
 
-            if (imageUrl && !imageUrl.startsWith('http')) {
-                const supabaseUrl = config.public.supabaseUrl || '';
-                const bucket = config.public.storageBucket || 'Products';
-                const path = imageUrl.replace(/^\/+/, '').replace(/^products\//i, '');
-                imageUrl = `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
-            }
+        packageOptions.value = data.map((pkg) => {
+            // Use the already transformed URL from the API
+            const imageUrl = pkg.title_image_url || pkg.image_url || '';
 
             return {
                 id: pkg.slug as PackageOption,
                 name: pkg.name,
                 previousPrice: Math.round(Number(pkg.price) || 0),
                 price: Math.round(Number(pkg.sale_price) || 0),
-                includedFt: PACKAGE_TOTAL_FT, // Always 175 total
+                includedFt: PACKAGE_TOTAL_FT,
                 title: imageUrl,
+                isPopular: pkg.is_popular || false,
+                color: pkg.color || null,
+                icon: pkg.icon_url || null,
+                description: pkg.description || null,
+                features: pkg.features || null,
             };
         });
 

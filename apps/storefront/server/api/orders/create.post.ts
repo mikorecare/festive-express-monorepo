@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { serverSupabaseClient } from '#supabase/server'
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
@@ -53,18 +53,8 @@ export default defineEventHandler(async (event) => {
         };
     }
 
-    const supabaseUrl = config.public.supabaseUrl;
-    const supabaseServiceKey = config.supabaseServiceKey;
+    const supabase = await serverSupabaseClient<any>(event);
 
-    if (!supabaseServiceKey) {
-        console.error('Missing NUXT_SUPABASE_SECRET_KEY environment variable');
-        throw createError({
-            statusCode: 500,
-            message: 'Server configuration error',
-        });
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const { data: existingOrder } = await supabase
         .from('orders')
         .select('id, order_number')
@@ -103,7 +93,7 @@ export default defineEventHandler(async (event) => {
         promo_code_id
     } = body;
 
-    const { data: order, error: orderError } = await supabase
+    const result = await supabase
         .from('orders')
         .insert({
             billing_first_name: first_name,
@@ -134,13 +124,15 @@ export default defineEventHandler(async (event) => {
         .select()
         .single();
 
-    if (orderError) {
-        console.error('Order creation error:', orderError);
+    if (result.error) {
+        console.error('Order creation error:', result.error);
         throw createError({
             statusCode: 500,
             message: 'Failed to create order',
         });
     }
+
+    const order = result.data as any;
 
     await supabase
         .from('order_timeline')

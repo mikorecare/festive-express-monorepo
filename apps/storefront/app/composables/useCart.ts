@@ -1,250 +1,180 @@
 export interface Product {
-  id: string;
-  name: string;
-  price: number | string;
-  image_url?: string;
-  sku?: string | null;
+  id: string
+  name: string
+  price: number | string
+  image_url?: string
+  sku?: string | null
 }
 
 export interface CartItem {
-  id: number | string;
-  cart_id?: string | number;
-  product_id: string | number;
-  quantity: number;
-  is_package?: boolean;
-  options?: Record<string, any> | null;
-  price?: number | string;
-  product?: Product;
+  id: number | string
+  cart_id?: string | number
+  product_id: string | number
+  quantity: number
+  is_package?: boolean
+  options?: Record<string, any> | null
+  price?: number | string
+  product?: Product
 }
 
 export const useCart = () => {
-  const supabase = useSupabaseClient();
-  const cartItems = useState<CartItem[]>("cartItems", () => []);
-  const cartCount = useState<number>("cartCount", () => 0);
+  const cartItems = useState<CartItem[]>("cartItems", () => [])
+  const cartCount = useState<number>("cartCount", () => 0)
+  const cartId = useState<string | null>("cartId", () => null)
 
-  /** Always derived from cartItems — floating cart stays in sync */
   const cartTotal = computed(() =>
     cartItems.value.reduce((sum, item) => {
-      const unit = Number(item.price) || Number(item.product?.price) || 0;
-      const qty = Number(item.quantity) || 1;
-      return sum + unit * qty;
+      const unit = Number(item.price) || Number(item.product?.price) || 0
+      const qty = Number(item.quantity) || 1
+      return sum + unit * qty
     }, 0),
-  );
+  )
 
   const ensureCart = async (): Promise<string> => {
     if (!import.meta.client) {
-      throw new Error("Cart is only available in the browser");
+      throw new Error("Cart is only available in the browser")
     }
 
-    let guestId = localStorage.getItem("cart_guest_id");
+    if (cartId.value) {
+      return cartId.value
+    }
+
+    let guestId = localStorage.getItem("cart_guest_id")
     if (!guestId) {
-      guestId = crypto.randomUUID();
-      localStorage.setItem("cart_guest_id", guestId);
+      guestId = crypto.randomUUID()
+      localStorage.setItem("cart_guest_id", guestId)
     }
 
-    // limit(1) avoids maybeSingle error when duplicate carts exist
-    const { data, error } = await supabase
-      .from("carts")
-      .select("id")
-      .eq("guest_id", guestId)
-      .order("id", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (error) console.error("ensureCart select", error);
-
-    const existing = data as { id: string | number } | null;
-    if (existing?.id != null) return String(existing.id);
-
-    const { data: created, error: insertError } = await supabase
-      .from("carts")
-      .insert({ guest_id: guestId, total: 0 } as never)
-      .select("id")
-      .single();
-
-    if (insertError) throw insertError;
-
-    return String((created as { id: string | number }).id);
-  };
-
-  const loadCart = async () => {
-    if (!import.meta.client) return;
-
     try {
-      const cartId = await ensureCart();
+      const response = await $fetch<{ success: boolean; cartId: string }>('/api/cart/ensure', {
+        method: 'POST',
+        body: { guestId }
+      })
 
-      const { data, error } = await supabase
-        .from("cart_items")
-        .select(
-          `
-          id,
-          cart_id,
-          product_id,
-          quantity,
-          price,
-          product:products (
-            id,
-            name,
-            price,
-            image_url,
-            sku
-          )
-        `,
-        )
-        .eq("cart_id", cartId);
-
-      if (error) throw error;
-
-      const items = (data as unknown as CartItem[]) || [];
-      cartItems.value = items;
-      cartCount.value = items.reduce(
-        (sum, item) => sum + (Number(item.quantity) || 1),
-        0,
-      );
-    } catch (error) {
-      console.error("Failed to load cart:", error);
-      cartItems.value = [];
-      cartCount.value = 0;
-    }
-  };
-
-  const { isEarlyBirdActive } = useEarlyBirdSpecial();
-
-  const addToCart = async (productId: string | number, quantity = 1) => {
-    if (!import.meta.client) return false;
-
-    try {
-      const cartId = await ensureCart();
-      const pid = String(productId);
-
-      const [{ data: productData, error: productError }, { data: settings }] =
-        await Promise.all([
-          supabase
-            .from("products")
-            .select("id, price, sale_price")
-            .eq("id", pid)
-            .maybeSingle(),
-          supabase
-            .from("settings")
-            .select("value")
-            .eq("key", "early_bird_expires_at")
-            .maybeSingle(),
-        ]);
-
-      if (productError) throw productError;
-
-      const product = productData as {
-        id: string | number;
-        price: number | string | null;
-        sale_price: number | string | null;
-      } | null;
-
-      const expiresAt =
-        (settings as { value?: string | null } | null)?.value ?? null;
-
-      // const sale = Number(product?.sale_price);
-      // const base = Number(product?.price ?? 0);
-      const unitPrice =
-        isEarlyBirdActive(expiresAt) &&
-        product?.sale_price != null &&
-        Number(product.sale_price) > 0
-          ? Number(product.sale_price)
-          : Number(product?.price ?? 0);
-
-      type CartItemRow = { id: string | number; quantity: number };
-
-      const { data } = await supabase
-        .from("cart_items")
-        .select("id, quantity")
-        .eq("cart_id", cartId)
-        .eq("product_id", pid)
-        .maybeSingle();
-
-      const row = data as CartItemRow | null;
-
-      if (row?.id) {
-        const { error } = await supabase
-          .from("cart_items")
-          .update({
-            quantity: (row.quantity || 0) + quantity,
-            price: unitPrice,
-          } as never)
-          .eq("id", row.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from("cart_items").insert({
-          cart_id: cartId,
-          product_id: pid,
-          quantity,
-          price: unitPrice,
-        } as never);
-        if (error) throw error;
+      if (response.success) {
+        cartId.value = response.cartId
+        return response.cartId
       }
 
-      await loadCart();
-      return true;
-    } catch (e) {
-      console.error("addToCart failed:", e);
-      return false;
+      throw new Error('Failed to ensure cart')
+    } catch (error) {
+      console.error('Ensure cart error:', error)
+      throw error
     }
-  };
+  }
 
-  const removeFromCart = async (itemId: string | number) => {
-    if (!import.meta.client) return;
+  const loadCart = async () => {
+    if (!import.meta.client) return
 
     try {
-      const { error } = await supabase
-        .from("cart_items")
-        .delete()
-        .eq("id", itemId);
+      const id = await ensureCart()
 
-      if (error) throw error;
-      await loadCart();
+      const response = await $fetch<{ success: boolean; items: CartItem[]; count: number }>(`/api/cart/${id}`)
+
+      if (response.success) {
+        cartItems.value = response.items || []
+        cartCount.value = response.count || 0
+      }
     } catch (error) {
-      console.error("Remove from cart failed:", error);
+      console.error("Failed to load cart:", error)
+      cartItems.value = []
+      cartCount.value = 0
     }
-  };
+  }
+
+  const { isEarlyBirdActive } = useEarlyBirdSpecial()
+
+  const addToCart = async (productId: string | number, quantity = 1) => {
+    if (!import.meta.client) return false
+
+    try {
+      const id = await ensureCart()
+
+      const response = await $fetch<{ success: boolean; error?: string }>('/api/cart/add', {
+        method: 'POST',
+        body: {
+          cartId: id,
+          productId: String(productId),
+          quantity
+        }
+      })
+
+      if (!response.success) {
+        console.error('Add to cart failed:', response.error)
+        return false
+      }
+
+      await loadCart()
+      return true
+    } catch (e) {
+      console.error("addToCart failed:", e)
+      return false
+    }
+  }
+
+  const removeFromCart = async (itemId: string | number) => {
+    if (!import.meta.client) return
+
+    try {
+      const id = await ensureCart()
+
+      await $fetch(`/api/cart/remove`, {
+        method: 'DELETE',
+        body: {
+          cartId: id,
+          itemId: String(itemId)
+        }
+      })
+
+      await loadCart()
+    } catch (error) {
+      console.error("Remove from cart failed:", error)
+    }
+  }
 
   const updateCartItemQty = async (id: string | number, quantity: number) => {
-    if (!import.meta.client) return;
+    if (!import.meta.client) return
 
     try {
       if (quantity < 1) {
-        await removeFromCart(id);
-        return;
+        await removeFromCart(id)
+        return
       }
 
-      const { error } = await supabase
-        .from("cart_items")
-        .update({ quantity } as never)
-        .eq("id", id);
+      const cartIdValue = await ensureCart()
 
-      if (error) throw error;
-      await loadCart();
+      await $fetch('/api/cart/update', {
+        method: 'PUT',
+        body: {
+          cartId: cartIdValue,
+          itemId: String(id),
+          quantity
+        }
+      })
+
+      await loadCart()
     } catch (error) {
-      console.error("Update cart quantity failed:", error);
+      console.error("Update cart quantity failed:", error)
     }
-  };
+  }
 
   const clearCart = async () => {
-    if (!import.meta.client) return;
+    if (!import.meta.client) return
 
     try {
-      const cartId = await ensureCart();
+      const id = await ensureCart()
 
-      const { error } = await supabase
-        .from("cart_items")
-        .delete()
-        .eq("cart_id", cartId);
-
-      if (error) throw error;
+      await $fetch(`/api/cart/clear`, {
+        method: 'DELETE',
+        body: { cartId: id }
+      })
     } catch (e) {
-      console.error("Clear cart failed:", e);
+      console.error("Clear cart failed:", e)
     }
 
-    cartItems.value = [];
-    cartCount.value = 0;
-  };
+    cartItems.value = []
+    cartCount.value = 0
+  }
 
   return {
     cartItems,
@@ -255,5 +185,5 @@ export const useCart = () => {
     removeFromCart,
     clearCart,
     updateCartItemQty,
-  };
-};
+  }
+}

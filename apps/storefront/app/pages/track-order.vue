@@ -84,19 +84,16 @@
             </div>
             <div>
               <small class="block text-xs text-slate-500">Total</small>
-              <!-- <strong class="text-navy"
-                >${{ Number(order.total).toFixed(2) }}</strong
-              > -->
-              <span class="text-navy"
-                ><strong
-                  >${{
+              <span class="text-navy">
+                <strong>
+                  ${{
                     Number(order.total || 0).toLocaleString("en-US", {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })
-                  }}</strong
-                ></span
-              >
+                  }}
+                </strong>
+              </span>
             </div>
             <div>
               <small class="block text-xs text-slate-500"
@@ -188,11 +185,17 @@
                 class="border-b border-slate-100 pb-5 last:border-0 last:pb-0"
               >
                 <img
-                  :src="itemImage(item)"
+                  v-if="item.image_url"
+                  :src="item.image_url"
                   :alt="item.product_name || item.name || 'Item'"
                   class="mb-3 w-full rounded-xl object-cover bg-slate-100 aspect-[16/10]"
-                  @error="onImgError"
                 />
+                <div
+                  v-else
+                  class="mb-3 w-full rounded-xl bg-slate-100 aspect-[16/10] flex items-center justify-center"
+                >
+                  <span class="text-slate-400 text-sm">No image</span>
+                </div>
                 <div class="flex items-start justify-between gap-3">
                   <div class="min-w-0">
                     <div class="font-medium text-navy">
@@ -421,7 +424,7 @@ const trackOrder = async () => {
   const capturedToken = turnstileToken.value;
 
   try {
-    const data = (await $fetch("/api/track-order", {
+    const data = (await $fetch("/api/track-order/confirm", {
       method: "POST",
       body: {
         order_number: form.value.order_number.trim(),
@@ -444,8 +447,6 @@ const trackOrder = async () => {
     };
     timeline.value = found.timeline || [];
     items.value = found.items || [];
-
-    console.log(items.value);
   } catch (e: any) {
     error.value =
       e?.data?.message ||
@@ -458,41 +459,7 @@ const trackOrder = async () => {
   }
 };
 
-const FALLBACK_IMG = "/Images/placeholder.png";
-const itemImage = (item: any) => {
-  const raw = item?.image_url || item?.image || item?.options?.image_url;
-  return raw ? getImageUrl(raw) : FALLBACK_IMG;
-};
-
-const getImageUrl = (url: string | null | undefined) => {
-  if (!url) return "/Images/placeholder.png";
-  if (url.startsWith("http")) return url;
-
-  const path = url
-    .replace(/^\//, "")
-    .replace(/^products\//i, "")
-    .replace(/^Products\//i, "");
-
-  const supabaseUrl =
-    (config.public.supabaseUrl as string) ||
-    (config.public.supabase as any)?.url ||
-    "";
-
-  const bucket = (config.public.storageBucket as string) || "Products";
-  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
-};
-
-const onImgError = (e: Event) => {
-  const el = e.target as HTMLImageElement;
-  if (el.src.endsWith(FALLBACK_IMG)) return;
-  el.src = FALLBACK_IMG;
-};
-
 const confirming = ref(false);
-
-// const alreadyConfirmed = computed(() =>
-//   Boolean(order.value?.customer_confirmed || order.value?.confirmed_at),
-// );
 
 const isCompleted = computed(() => {
   const status = String(order.value?.status || "").toLowerCase();
@@ -590,7 +557,7 @@ const confirmOrder = async () => {
   error.value = "";
 
   try {
-    const data = (await $fetch("/api/track-order/confirm", {
+    const data = (await $fetch("/api/orders/confirm", {
       method: "POST",
       body: {
         order_number: form.value.order_number.trim(),

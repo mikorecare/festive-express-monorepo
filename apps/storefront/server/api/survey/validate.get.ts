@@ -1,4 +1,25 @@
-import { createClient } from '@supabase/supabase-js';
+
+import { serverSupabaseClient } from '#supabase/server'
+
+type ReviewValidation = {
+    id: string
+    order_number: string
+    customer_name: string
+    customer_email: string
+    status: 'pending' | 'completed' | 'expired'
+    token_expires_at: string
+}
+
+type ValidationResponse = {
+    success: boolean
+    review: {
+        id: string
+        order_number: string
+        customer_name: string
+        email: string
+    }
+    expires_at: string
+}
 
 export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
@@ -12,20 +33,9 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    const supabaseUrl = config.public.supabaseUrl;
-    const supabaseServiceKey = config.supabaseServiceKey;
-
-    if (!supabaseServiceKey) {
-        throw createError({
-            statusCode: 500,
-            message: 'Server configuration error',
-        });
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const supabase = await serverSupabaseClient<any>(event);
 
     try {
-        // Find review with this token
         const { data: review, error } = await supabase
             .from('reviews')
             .select(`
@@ -37,7 +47,7 @@ export default defineEventHandler(async (event) => {
                 token_expires_at
             `)
             .eq('survey_token', token)
-            .single();
+            .single<ReviewValidation>();
 
         if (error || !review) {
             throw createError({
@@ -79,7 +89,7 @@ export default defineEventHandler(async (event) => {
             });
         }
 
-        return {
+        const response: ValidationResponse = {
             success: true,
             review: {
                 id: review.id,
@@ -89,6 +99,8 @@ export default defineEventHandler(async (event) => {
             },
             expires_at: review.token_expires_at,
         };
+
+        return response;
 
     } catch (error: any) {
         console.error('Survey validation error:', error);

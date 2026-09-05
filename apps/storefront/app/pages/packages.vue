@@ -78,7 +78,7 @@
             <img
               v-if="pkg.title_image_url || pkg.icon_url"
               class="pkg-title-img h-16 md:h-24 w-auto object-contain drop-shadow-md"
-              :src="getImageUrl(pkg.title_image_url || pkg.icon_url)"
+              :src="pkg.title_image_url || pkg.icon_url || undefined"
               :alt="pkg.name"
             />
             <!-- <h2 v-else class="text-3xl font-bold text-[#1C2D5B]">
@@ -168,7 +168,11 @@
             >
               <img
                 :ref="(el) => setImageRef(el, pkg.id)"
-                :src="selectedImage(pkg)"
+                :src="
+                  selectedSku(pkg)?.image_url ||
+                  pkg.title_image_url ||
+                  undefined
+                "
                 :alt="pkg.name"
                 class="main-image w-full h-[320px] sm:h-[420px] object-cover block border-4 border-[#f59e0b] rounded-2xl"
                 @error="onImgError"
@@ -182,7 +186,7 @@
                 <img
                   v-if="pkg.icon_url"
                   class="lights-icon-img w-100 h-100 object-contain"
-                  :src="getImageUrl(pkg.icon_url)"
+                  :src="pkg.icon_url"
                   alt=""
                 />
                 <span v-else class="text-white text-xs font-bold">{{
@@ -331,7 +335,7 @@
                 >
                   <img
                     v-if="row.inclusion_items?.image_url"
-                    :src="getImageUrl(row.inclusion_items.image_url)"
+                    :src="row.inclusion_items.image_url"
                     class="w-8 h-8 object-contain flex-shrink-0"
                     alt=""
                   />
@@ -593,9 +597,19 @@ type Hotspot = {
   thumb?: string;
 };
 
+type InclusionSpec = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  color_options: string[] | any;
+  features: string[] | any;
+  specifications: Record<string, string> | any;
+  sort_order: number;
+};
+
 const config = useRuntimeConfig();
 const supabase = useSupabaseClient();
-const db = supabase as any;
 
 const cart = useCart();
 
@@ -614,7 +628,7 @@ const imageRefs = ref<Map<string | number, HTMLImageElement>>(new Map());
 const isAnimating = ref(false);
 const observerMap = new WeakMap<HTMLElement, IntersectionObserver>();
 
-const inclusionItems = ref<any[]>([]);
+const inclusionItems = ref<InclusionSpec[]>([]);
 const specsLoading = ref(true);
 
 const { loadEarlyBird, showSale, effectivePrice, earlyBirdIconSecondaryUrl } =
@@ -633,35 +647,6 @@ const subtitleParts = computed(() => {
 });
 
 const cartBump = useState("cart-bump", () => 0);
-
-const vIntersect = {
-  mounted(el: HTMLElement, binding: any) {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            // Call immediately
-            binding.value(entry);
-          }
-        });
-      },
-      {
-        threshold: 0.3,
-        rootMargin: "0px 0px -100px 0px",
-      },
-    );
-    observer.observe(el);
-    observerMap.set(el, observer);
-  },
-  unmounted(el: HTMLElement) {
-    const observer = observerMap.get(el);
-    if (observer) {
-      observer.disconnect();
-      observerMap.delete(el);
-    }
-  },
-};
-
 const festivoConfig = computed<FestivoConfig>(() => {
   const isMobile =
     typeof window !== "undefined" ? window.innerWidth < 768 : false;
@@ -699,15 +684,6 @@ const HOTSPOT_LAYOUT: Record<
   ],
 };
 
-const getImageUrl = (url?: string | null) => {
-  if (!url) return "/Images/placeholder-package.jpg";
-  if (url.startsWith("http") || url.startsWith("/") || url.startsWith("blob:"))
-    return url;
-  const path = url.replace(/^\//, "").replace(/^Products\//i, "");
-  const bucket = (config.public.storageBucket as string) || "Products";
-  return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
-};
-
 const selectedSku = (pkg: PackageRow): SkuRow | null => {
   const id = selectedSkuId.value[String(pkg.id)];
   if (id == null) return null;
@@ -741,13 +717,6 @@ const selectedPrice = (pkg: PackageRow) => {
   return Number(pkg.price ?? 0);
 };
 
-const selectedImage = (pkg: PackageRow) => {
-  const sku = selectedSku(pkg);
-  if (sku?.image_url) return getImageUrl(sku.image_url);
-  if (pkg.title_image_url) return getImageUrl(pkg.title_image_url);
-  return getImageUrl(null);
-};
-
 const inclusionsFor = (pkg: PackageRow) =>
   [...(pkg.package_inclusions || [])].sort(
     (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0),
@@ -770,7 +739,7 @@ const getHotspots = (pkg: PackageRow): Hotspot[] => {
       left: pos.left,
       label: row?.label_override || row?.inclusion_items?.name || "Feature",
       thumb: row?.inclusion_items?.image_url
-        ? getImageUrl(row.inclusion_items.image_url)
+        ? row.inclusion_items.image_url
         : undefined,
     };
   });
@@ -891,35 +860,33 @@ const updateActivePackage = () => {
 const load = async () => {
   loading.value = true;
   try {
-    const [pkgRes, skuRes] = await Promise.all([
-      db
-        .from("packages")
-        .select(
-          `
-          id, name, slug, description, price, sale_price,
-          title_image_url, icon_url, is_popular, sort_order,
-          package_inclusions (
-            quantity, is_included, label_override, sort_order,
-            inclusion_items ( id, name, slug, image_url )
-          )
-        `,
-        )
-        .eq("is_active", true)
-        .order("sort_order", { ascending: true }),
-      db
-        .from("products")
-        .select(
-          "id, name, price, sale_price, stock, image_url, package_id, color_key, color_label",
-        )
-        .eq("is_package", true)
-        .eq("is_active", true),
-    ]);
+    const packagesResponse = await $fetch<{
+      success: boolean;
+      data: PackageRow[];
+    }>("/api/packages/main-list");
 
-    if (pkgRes.error) throw pkgRes.error;
-    if (skuRes.error) throw skuRes.error;
+    if (!packagesResponse.success) {
+      throw new Error("Failed to load packages");
+    }
 
-    packages.value = pkgRes.data || [];
-    skus.value = skuRes.data || [];
+    packages.value = packagesResponse.data || [];
+
+    const skusResponse = await $fetch<{ success: boolean; data: SkuRow[] }>(
+      "/api/packages/skus",
+    );
+
+    if (skusResponse.success) {
+      skus.value = skusResponse.data || [];
+    }
+
+    const settingsResponse = await $fetch<{
+      success: boolean;
+      data: { hero_subtitle?: string };
+    }>("/api/settings/hero");
+
+    if (settingsResponse.success && settingsResponse.data) {
+      settings.value = settingsResponse.data;
+    }
 
     const map: Record<string, string | number> = {};
     for (const pkg of packages.value) {
@@ -977,49 +944,6 @@ const openCartModal = (
 };
 
 /** Add selected package color/SKU to cart — no redirect */
-// const addPackageSku = async (pkg: PackageRow) => {
-//   const sku = selectedSku(pkg);
-//   if (!sku?.id) {
-//     openCartModal(
-//       "error",
-//       "Select an option",
-//       "Please choose a color before adding to cart.",
-//     );
-//     return;
-//   }
-
-//   addingId.value = sku.id;
-//   try {
-//     // Match your useCart signature — usually (productId, qty) only
-//     const ok = await cart.addToCart(sku.id, 1);
-
-//     if (ok !== false) {
-//       if (typeof cart.loadCart === "function") {
-//         await cart.loadCart();
-//       }
-//       openCartModal(
-//         "success",
-//         "Added to cart",
-//         `${pkg.name || "Package"} was added to your cart.`,
-//       );
-//     } else {
-//       openCartModal(
-//         "error",
-//         "Could not add",
-//         "Something went wrong. Please try again.",
-//       );
-//     }
-//   } catch (e: any) {
-//     console.error("addPackageSku", e);
-//     openCartModal(
-//       "error",
-//       "Could not add",
-//       e?.message || "Something went wrong.",
-//     );
-//   } finally {
-//     addingId.value = null;
-//   }
-// };
 const addPackageSku = async (pkg: PackageRow) => {
   const sku = selectedSku(pkg);
   if (!sku?.id) {
@@ -1031,19 +955,9 @@ const addPackageSku = async (pkg: PackageRow) => {
     return;
   }
 
-  // Prefer sale_price when present and > 0
-  const unitPrice =
-    sku.sale_price != null && Number(sku.sale_price) > 0
-      ? Number(sku.sale_price)
-      : Number(sku.price ?? pkg.price ?? 0);
-
   addingId.value = sku.id;
   try {
-    // If your useCart is (id, qty, isPackage?, options?)
     const ok = await cart.addToCart(sku.id, 1);
-
-    // If signature is only (id, qty):
-    // const ok = await cart.addToCart(sku.id, 1)
 
     if (ok !== false) {
       if (typeof cart.loadCart === "function") await cart.loadCart();
@@ -1093,7 +1007,8 @@ const skusFor = (packageId: string | number) => {
 const activeLightboxImage = ref<string | null>(null);
 
 const openLightbox = (pkg: PackageRow) => {
-  activeLightboxImage.value = selectedImage(pkg);
+  activeLightboxImage.value =
+    selectedSku(pkg)?.image_url || pkg.title_image_url || null;
   if (import.meta.client) document.body.style.overflow = "hidden";
 };
 
@@ -1167,15 +1082,13 @@ const specMap = (item: any) => asObject(item.specifications);
 const loadInclusionSpecs = async () => {
   specsLoading.value = true;
   try {
-    const { data, error } = await supabase
-      .from("inclusion_items")
-      .select(
-        "id, name, slug, description, color_options, features, specifications, sort_order",
-      )
-      .order("sort_order", { ascending: true });
+    const response = await $fetch<{ success: boolean; data: InclusionSpec[] }>(
+      "/api/inclusion-items",
+    );
 
-    if (error) throw error;
-    inclusionItems.value = data || [];
+    if (response.success) {
+      inclusionItems.value = response.data || [];
+    }
   } catch (e) {
     console.error(e);
     inclusionItems.value = [];

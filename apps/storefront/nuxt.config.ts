@@ -151,6 +151,9 @@ export default defineNuxtConfig({
   },
 
   supabase: {
+    url: process.env.SUPABASE_URL,
+    key: process.env.SUPABASE_KEY,
+    serviceKey: process.env.SUPABASE_SERVICE_KEY,
     redirect: false,
     cookieOptions: {
       maxAge: 60 * 60 * 8,
@@ -191,19 +194,16 @@ export default defineNuxtConfig({
       secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY || "",
     },
 
-    supabaseServiceKey: process.env.NUXT_SUPABASE_SECRET_KEY || "",
-
     elavonAccountId: process.env.ELAVON_ACCOUNT_ID || "",
     elavonUserId: process.env.ELAVON_USER_ID || "",
     elavonPin: process.env.ELAVON_PIN || "",
     elavonDemo: process.env.NUXT_ELAVON_DEMO !== "false",
     elavonVendorId: process.env.ELAVON_VENDOR_ID || "",
     elavonPartnerAppId: process.env.ELAVON_PARTNER_APP_ID || "",
-
+    internalApiToken: process.env.INTERNAL_API_TOKEN,
     public: {
-      supabaseUrl: process.env.SUPABASE_URL || "",
-      supabaseKey: process.env.SUPABASE_KEY || "",
       apiBase: process.env.NUXT_PUBLIC_API_BASE || "http://localhost:3000/api",
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
     },
   },
 

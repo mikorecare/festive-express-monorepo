@@ -75,7 +75,7 @@
 
       <template #cell-image_url="{ item }">
         <img
-          :src="getImageUrl(item.image_url)"
+          :src="item.image_url"
           :alt="item.name"
           class="w-12 h-12 object-cover rounded-lg border border-slate-200 bg-slate-100"
           @error="
@@ -200,8 +200,6 @@ import {
   ExclamationTriangleIcon,
 } from "@heroicons/vue/24/outline";
 
-const supabase = useSupabaseClient();
-
 const columns = [
   { key: "image_url", label: "Image" },
   { key: "name", label: "Product", sortable: true },
@@ -285,7 +283,7 @@ const statusFilter = ref("");
 const loadProducts = async () => {
   isLoading.value = true;
   try {
-    const res = await $fetch("/api/admin/products", {
+    const res = await $fetch("/api/products", {
       query: {
         page: currentPage.value,
         limit: itemsPerPage.value,
@@ -333,7 +331,7 @@ const formatMoney = (value: unknown) => {
 
 const loadCategories = async () => {
   try {
-    const res = await $fetch("/api/admin/categories");
+    const res = await $fetch("/api/categories");
     categories.value = res.categories || [];
   } catch (err) {
     console.error(err);
@@ -357,14 +355,6 @@ const onPageChange = (page: number) => {
   loadProducts();
 };
 
-const getImageUrl = (url: string | null | undefined) => {
-  if (!url || url.startsWith("http")) return url || "/Images/placeholder.png";
-  const { data } = supabase.storage
-    .from("Products")
-    .getPublicUrl(url.replace(/^products\//i, "").replace(/^Products\//i, ""));
-  return data.publicUrl;
-};
-
 const showDeleteConfirm = (product: any) => {
   productToDelete.value = product;
   deleteConfirmText.value = "";
@@ -378,8 +368,9 @@ const cancelDelete = () => {
 };
 
 const executeDelete = async () => {
-  if (!productToDelete.value || deleteConfirmText.value !== "DELETE") return;
-  await supabase.from("products").delete().eq("id", productToDelete.value.id);
+  // if (!productToDelete.value || deleteConfirmText.value !== "DELETE") return;
+  // await supabase.from("products").delete().eq("id", productToDelete.value.id);
+  console.log("TRANSFER THIS TO API --- products/index.delete.ts");
   showModal.value = false;
   await loadProducts();
 };

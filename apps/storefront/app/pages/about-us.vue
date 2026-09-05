@@ -67,8 +67,9 @@ type AboutUsContent = {
   description_image_url?: string | null;
 };
 
-const supabase = useSupabaseClient();
 const data = ref<AboutUsContent | null>(null);
+const loading = ref(false);
+const error = ref<string | null>(null);
 
 const descriptionHtml = computed(() => data.value?.description || "");
 const sideImage = computed(
@@ -77,27 +78,24 @@ const sideImage = computed(
     "/Images/Gallery/Festive-Images-14.webp",
 );
 
-// Optional: use CMS title for hero instead — comment above and use:
-// const heroParts = computed(() => {
-//   const t = (data.value?.title || 'About Festive Express').trim().split(/\s+/)
-//   if (t.length < 2) return { rest: '', last: t[0] || 'About' }
-//   return { rest: t.slice(0, -1).join(' '), last: t[t.length - 1] }
-// })
-
 const load = async () => {
-  try {
-    const { data: row, error } = await supabase
-      .from("about_us")
-      .select("*")
-      .eq("is_active", true)
-      .limit(1)
-      .maybeSingle();
+  loading.value = true;
+  error.value = null;
 
-    if (error) throw error;
-    data.value = (row ?? null) as AboutUsContent | null;
+  try {
+    const response = await $fetch("/api/about-us");
+
+    if (response.success) {
+      data.value = response.data;
+    } else {
+      throw new Error(response.error || "Failed to load content");
+    }
   } catch (e) {
     console.error(e);
+    error.value = e instanceof Error ? e.message : "An error occurred";
     data.value = null;
+  } finally {
+    loading.value = false;
   }
 };
 

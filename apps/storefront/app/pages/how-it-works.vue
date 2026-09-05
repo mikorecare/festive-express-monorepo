@@ -55,17 +55,24 @@ useHead({
   title: "How It Works - Festive Express",
 });
 
+type Step = {
+  title: string;
+  description: string;
+};
+
 type HowItWorksContent = {
   id?: string;
   banner_image_url?: string | null;
   title?: string | null;
   subtitle?: string | null;
-  steps?: { title: string; description: string }[] | null;
+  steps?: Step[] | null;
   footer_description?: string | null;
 };
 
-const supabase = useSupabaseClient();
 const data = ref<HowItWorksContent | null>(null);
+const loading = ref(false);
+const error = ref<string | null>(null);
+
 const steps = computed(() => data.value?.steps ?? []);
 const footerHtml = computed(() => data.value?.footer_description || "");
 
@@ -73,25 +80,32 @@ const visibleSteps = ref(new Set<number>());
 const activeStep = ref(0);
 
 const load = async () => {
-  try {
-    const { data: row, error } = await supabase
-      .from("how_it_works")
-      .select("*")
-      .eq("is_active", true)
-      .limit(1)
-      .maybeSingle();
+  loading.value = true;
+  error.value = null;
 
-    if (error) throw error;
-    data.value = (row ?? null) as HowItWorksContent | null;
+  try {
+    const response = await $fetch<{
+      success: boolean;
+      data: HowItWorksContent | null;
+    }>("/api/how-it-works");
+
+    if (response.success) {
+      data.value = response.data;
+    } else {
+      throw new Error("Failed to load how it works content");
+    }
   } catch (e) {
     console.error(e);
+    error.value = e instanceof Error ? e.message : "An error occurred";
     data.value = null;
+  } finally {
+    loading.value = false;
   }
 };
 
 onMounted(async () => {
   await load();
-  await nextTick(); // wait for timeline items to render
+  await nextTick();
 
   const items = Array.from(document.querySelectorAll(".timeline-item"));
   if (!items.length) return;
@@ -138,7 +152,8 @@ onMounted(async () => {
 }
 
 .how-festivo {
-  justify-self: end; /* right of steps on desktop */
+  justify-self: end;
+  /* right of steps on desktop */
   align-self: start;
 }
 
@@ -242,15 +257,18 @@ onMounted(async () => {
     width: 16px;
     height: 16px;
     border-width: 3px;
-    margin-top: 4px; /* align with title line */
+    margin-top: 4px;
+    /* align with title line */
   }
 
   .timeline-item.active .timeline-dot {
-    transform: scale(1.25); /* lighter than 1.4 on small screens */
+    transform: scale(1.25);
+    /* lighter than 1.4 on small screens */
   }
 
   .timeline-content {
-    min-width: 0; /* allow text to shrink / wrap */
+    min-width: 0;
+    /* allow text to shrink / wrap */
     flex: 1;
   }
 

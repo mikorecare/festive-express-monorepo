@@ -5,8 +5,9 @@
         <div class="container">
           <div class="hero-content">
             <h1><span class="text-brand-orange">Terms</span> and Conditions</h1>
+            <!-- Show placeholder if loading, otherwise show data -->
             <p class="breadcrumb">
-              {{ data?.subtitle || "" }}
+              {{ pending ? "Loading..." : data?.data?.subtitle || "" }}
             </p>
           </div>
         </div>
@@ -15,10 +16,16 @@
 
     <div class="container">
       <div class="max-w-[860px] mx-auto pt-10 pb-20 text-navy leading-relaxed">
+        <!-- Handle Error State -->
+        <div v-if="error" class="text-red-500">
+          Failed to load terms and conditions.
+        </div>
+
+        <!-- Handle Data State -->
         <div
-          v-if="data?.description"
+          v-else-if="data?.data?.description"
           class="prose max-w-none text-navy"
-          v-html="data.description"
+          v-html="data.data.description"
         />
       </div>
     </div>
@@ -27,42 +34,27 @@
 
 <script setup lang="ts">
 type TermsContent = {
+  id?: string;
   title?: string | null;
   subtitle?: string | null;
   description?: string | null;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
 };
 
-const supabase = useSupabaseClient();
-const data = ref<TermsContent | null>(null);
+type ApiResponse = {
+  success: boolean;
+  data: TermsContent | null;
+};
 
-const titleParts = computed(() => {
-  const t = (data.value?.title || "Terms of Use").trim().split(/\s+/);
-  if (t.length < 2) return { rest: "", last: t[0] || "Terms" };
-  return { rest: t.slice(0, -1).join(" "), last: t[t.length - 1] };
-});
-const titleRest = computed(() => titleParts.value.rest);
-const titleLast = computed(() => titleParts.value.last);
+const { data, pending, error } =
+  await useFetch<ApiResponse>("/api/terms-of-use");
 
 useHead({
   title: computed(() => {
-    const t = data.value?.title?.trim();
+    const t = data.value?.data?.title?.trim();
     return t ? `${t}` : "Terms and Conditions";
   }),
-});
-
-onMounted(async () => {
-  try {
-    const { data: row, error } = await supabase
-      .from("terms_of_use")
-      .select("*")
-      .eq("is_active", true)
-      .limit(1)
-      .maybeSingle();
-    if (error) throw error;
-    data.value = row as TermsContent | null;
-  } catch (e) {
-    console.error(e);
-    data.value = null;
-  }
 });
 </script>

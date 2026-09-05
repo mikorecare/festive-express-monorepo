@@ -29,28 +29,43 @@
 useHead({ title: "Privacy Policy" });
 
 type PrivacyContent = {
+  id?: string;
   banner_image_url?: string | null;
   title?: string | null;
   subtitle?: string | null;
   description?: string | null;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
 };
 
-const supabase = useSupabaseClient();
 const data = ref<PrivacyContent | null>(null);
+const loading = ref(false);
+const error = ref<string | null>(null);
 
-onMounted(async () => {
+const loadPrivacyPolicy = async () => {
+  loading.value = true;
+  error.value = null;
+
   try {
-    const { data: row, error } = await supabase
-      .from("privacy_policy")
-      .select("*")
-      .eq("is_active", true)
-      .limit(1)
-      .maybeSingle();
-    if (error) throw error;
-    data.value = row as PrivacyContent | null;
+    const response = await $fetch<{
+      success: boolean;
+      data: PrivacyContent | null;
+    }>("/api/privacy-policy");
+
+    if (response.success) {
+      data.value = response.data;
+    } else {
+      throw new Error("Failed to load privacy policy");
+    }
   } catch (e) {
-    console.error(e);
+    console.error("Failed to load privacy policy:", e);
+    error.value = e instanceof Error ? e.message : "An error occurred";
     data.value = null;
+  } finally {
+    loading.value = false;
   }
-});
+};
+
+onMounted(loadPrivacyPolicy);
 </script>

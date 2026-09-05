@@ -1,70 +1,58 @@
-export const useHeroSettings = () => {
-  const supabase = useSupabaseClient();
 
-  const heroH1White = useState("heroH1White", () => "RENT THE MAGIC");
-  const heroH1Orange = useState("heroH1Orange", () => "ENJOY THE SEASON");
+export const useHeroSettings = () => {
+  const heroH1White = useState("heroH1White", () => "RENT THE MAGIC")
+  const heroH1Orange = useState("heroH1Orange", () => "ENJOY THE SEASON")
   const heroDescription1 = useState(
     "heroDescription1",
     () => "Giftwrapped in One Simple Package.",
-  );
+  )
   const heroDescription2 = useState(
     "heroDescription2",
     () => "(No ladders. No tangled cords. No storage. No stress.)",
-  );
+  )
   const heroButtonLabel = useState(
     "heroButtonLabel",
     () => "Explore the Packages",
-  );
-  const heroCountdownEnabled = useState("heroCountdownEnabled", () => true);
-
-  const unwrap = (value: unknown) => {
-    if (value == null) return "";
-    if (typeof value === "string") return value.replace(/^"|"$/g, "");
-    return String(value);
-  };
+  )
+  const heroCountdownEnabled = useState("heroCountdownEnabled", () => true)
+  const isLoading = useState("heroLoading", () => false)
 
   const loadHeroSettings = async () => {
-    if (!import.meta.client) return;
+    if (!import.meta.client) return
+
+    isLoading.value = true
+
     try {
-      type SettingRow = {
-        key: string;
-        value: string | null;
-      };
-      const { data, error } = await supabase
-        .from("settings")
-        .select("key, value")
-        .in("key", [
-          "hero_h1_white",
-          "hero_h1_orange",
-          "hero_description_1",
-          "hero_description_2",
-          "hero_button_label",
-          "hero_countdown_enabled",
-        ]);
+      const response = await $fetch<{ success: boolean; data: any }>('/api/hero-settings')
 
-      if (error) throw error;
+      if (response.success && response.data) {
+        const data = response.data
 
-      const rows = (data || []) as SettingRow[];
-
-      for (const row of rows) {
-        const value = unwrap(row.value);
-        if (row.key === "hero_h1_white" && value) heroH1White.value = value;
-        if (row.key === "hero_h1_orange" && value) heroH1Orange.value = value;
-        if (row.key === "hero_description_1" && value)
-          heroDescription1.value = value;
-        if (row.key === "hero_description_2" && value)
-          heroDescription2.value = value;
-        if (row.key === "hero_button_label" && value)
-          heroButtonLabel.value = value;
-        if (row.key === "hero_countdown_enabled") {
-          heroCountdownEnabled.value =
-            value === "true" || value === "1" || value === "yes";
+        if (data.hero_h1_white) {
+          heroH1White.value = data.hero_h1_white
+        }
+        if (data.hero_h1_orange) {
+          heroH1Orange.value = data.hero_h1_orange
+        }
+        if (data.hero_description_1) {
+          heroDescription1.value = data.hero_description_1
+        }
+        if (data.hero_description_2) {
+          heroDescription2.value = data.hero_description_2
+        }
+        if (data.hero_button_label) {
+          heroButtonLabel.value = data.hero_button_label
+        }
+        if (data.hero_countdown_enabled !== undefined) {
+          heroCountdownEnabled.value = data.hero_countdown_enabled
         }
       }
     } catch (e) {
-      console.error("loadHeroSettings", e);
+      console.error("loadHeroSettings", e)
+    } finally {
+      isLoading.value = false
     }
-  };
+  }
 
   return {
     heroH1White,
@@ -74,5 +62,6 @@ export const useHeroSettings = () => {
     heroButtonLabel,
     heroCountdownEnabled,
     loadHeroSettings,
-  };
-};
+    isLoading,
+  }
+}

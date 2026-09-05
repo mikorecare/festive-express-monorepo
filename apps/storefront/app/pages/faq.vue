@@ -19,6 +19,10 @@
         Loading FAQs…
       </div>
 
+      <div v-else-if="error" class="text-center text-red-500 py-16">
+        {{ error }}
+      </div>
+
       <div v-else class="space-y-10">
         <section v-for="cat in categories" :key="cat.id">
           <h2
@@ -82,6 +86,7 @@ interface FaqItem {
   question: string;
   answer: string;
   sort_order: number;
+  is_active: boolean;
 }
 
 interface CategoryWithFaqs {
@@ -91,69 +96,52 @@ interface CategoryWithFaqs {
   faqs: FaqItem[];
 }
 
-const supabase = useSupabaseClient();
+interface Settings {
+  contact_phone_display: string;
+  contact_phone: string;
+  contact_email: string;
+}
+
 const categories = ref<CategoryWithFaqs[]>([]);
 const loading = ref(true);
+const error = ref<string | null>(null);
 const openId = ref<number | null>(null);
-
-const toggle = (id: number) => {
-  openId.value = openId.value === id ? null : id;
-};
 
 const supportPhone = ref("");
 const supportEmail = ref("");
 const phoneHref = ref("");
 
-const loadSettings = async () => {
-  const { data } = await supabase
-    .from("settings")
-    .select("key, value")
-    .in("key", ["contact_phone_display", "contact_phone", "contact_email"]);
+const toggle = (id: number) => {
+  openId.value = openId.value === id ? null : id;
+};
 
-  if (!data?.length) return;
+const loadFaqs = async () => {
+  loading.value = true;
+  error.value = null;
 
-  const map = Object.fromEntries(
-    data.map((r: { key: string; value: string }) => [r.key, r.value]),
-  );
+  try {
+    const response = await $fetch<{
+      success: boolean;
+      categories: CategoryWithFaqs[];
+      settings: Settings;
+    }>("/api/faqs");
 
-  if (map.contact_phone_display) {
-    supportPhone.value = map.contact_phone_display;
-  }
-  if (map.contact_phone) {
-    phoneHref.value = map.contact_phone;
-  }
-  if (map.contact_email) {
-    supportEmail.value = map.contact_email;
+    if (response.success) {
+      categories.value = response.categories || [];
+      supportPhone.value = response.settings.contact_phone_display || "";
+      phoneHref.value = response.settings.contact_phone || "";
+      supportEmail.value = response.settings.contact_email || "";
+    } else {
+      throw new Error("Failed to load FAQs");
+    }
+  } catch (e) {
+    console.error("Failed to load FAQs:", e);
+    error.value = e instanceof Error ? e.message : "An error occurred";
+    categories.value = [];
+  } finally {
+    loading.value = false;
   }
 };
 
-onMounted(async () => {
-  const { data, error } = await supabase
-    .from("faq_categories")
-    .select(
-      `
-      id, name, sort_order,
-      faqs ( id, question, answer, sort_order, is_active )
-    `,
-    )
-    .eq("is_active", true)
-    .order("sort_order");
-
-  if (error) {
-    console.error(error);
-    loading.value = false;
-    return;
-  }
-
-  categories.value = ((data as any[]) || []).map((cat) => ({
-    ...cat,
-    faqs: (cat.faqs || [])
-      .filter((f: any) => f.is_active)
-      .sort((a: any, b: any) => a.sort_order - b.sort_order),
-  }));
-
-  loading.value = false;
-
-  await Promise.all([, /* loadFaqs... */ loadSettings()]);
-});
+onMounted(loadFaqs);
 </script>

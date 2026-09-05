@@ -344,6 +344,7 @@ const { settings, loadSettings, telHref } = useSettings();
 
 const config = useRuntimeConfig();
 const supabase = useSupabaseClient();
+console.log(supabase)
 const FL_TAX_RATE = computed(() => {
   // Object / map shape: { fl_tax_rate: '0.07', contact_email: '...', ... }
   const raw =

@@ -1,4 +1,39 @@
-import { createClient } from "@supabase/supabase-js";
+// server/api/orders/confirm.post.ts
+import { serverSupabaseClient } from '#supabase/server'
+
+type ConfirmOrderBody = {
+  order_number: string
+  email: string
+  turnstile_token: string
+}
+
+type OrderData = {
+  id: string
+  order_number: string
+  status: string
+  billing_email: string
+  billing_first_name: string
+  billing_last_name: string
+  billing_phone: string
+  total: number
+  preferred_install_dates: string[]
+  confirmed_install_date: string | null
+  customer_confirmed: boolean
+  confirmed_at: string | null
+}
+
+type ConfirmResponse = {
+  success: boolean
+  error?: string
+  already_confirmed?: boolean
+  order?: {
+    customer_confirmed: boolean
+    confirmed_at: string | null
+    status: string
+    preferred_install_dates: string[]
+    confirmed_install_date: string | null
+  }
+}
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -46,16 +81,7 @@ export default defineEventHandler(async (event) => {
     return { success: false, error: "Order number and email are required" };
   }
 
-  const supabaseUrl = config.public.supabaseUrl as string;
-  const supabaseServiceKey = config.supabaseServiceKey as string | undefined;
-  if (!supabaseServiceKey) {
-    throw createError({
-      statusCode: 500,
-      message: "Server configuration error",
-    });
-  }
-
-  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+  const supabase = await serverSupabaseClient<any>(event);
 
   const { data, error } = await supabase
     .from("orders")
@@ -64,7 +90,7 @@ export default defineEventHandler(async (event) => {
     )
     .eq("order_number", orderNumber)
     .ilike("billing_email", email)
-    .maybeSingle();
+    .maybeSingle<OrderData>();
 
   if (error) {
     console.error("Confirm lookup error:", error);
@@ -153,7 +179,7 @@ export default defineEventHandler(async (event) => {
     .select(
       "id, status, customer_confirmed, confirmed_at, preferred_install_dates, confirmed_install_date",
     )
-    .maybeSingle();
+    .maybeSingle<OrderData>();
 
   if (updateError) {
     console.error("Confirm update error:", updateError);
@@ -176,7 +202,7 @@ export default defineEventHandler(async (event) => {
 
   // GHL is sent by trigger on_installation_date_confirmed — do not POST here.
 
-  return {
+  const response: ConfirmResponse = {
     success: true,
     order: {
       customer_confirmed: true,
@@ -186,4 +212,6 @@ export default defineEventHandler(async (event) => {
       confirmed_install_date: updated.confirmed_install_date || nextDate,
     },
   };
+
+  return response;
 });

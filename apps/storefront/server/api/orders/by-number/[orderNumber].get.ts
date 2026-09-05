@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { serverSupabaseClient } from '#supabase/server'
 
 export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
@@ -20,18 +20,7 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    const supabaseUrl = config.public.supabaseUrl;
-    const supabaseServiceKey = config.supabaseServiceKey;
-
-    if (!supabaseServiceKey) {
-        console.error('Missing NUXT_SUPABASE_SECRET_KEY environment variable');
-        throw createError({
-            statusCode: 500,
-            message: 'Server configuration error',
-        });
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const supabase = await serverSupabaseClient<any>(event);
 
     try {
         const { data: order, error: orderError } = await supabase

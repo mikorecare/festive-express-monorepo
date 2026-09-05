@@ -8,34 +8,35 @@ export type ProductColor = {
 }
 
 export const useProductColors = () => {
-  const supabase = useSupabaseClient()
-  const db = supabase as any
-
-  // Storefront-only state keys
   const colors = useState<ProductColor[]>('storefront-product-colors', () => [])
   const loaded = useState('storefront-product-colors-loaded', () => false)
+  const isLoading = useState('storefront-product-colors-loading', () => false)
 
   const loadColors = async (force = false) => {
     if (!force && loaded.value && colors.value.length) {
       return colors.value
     }
 
-    const { data, error } = await db
-      .from('product_colors')
-      .select('id, color_key, color_label, hex, swatch_css, sort_order')
-      .eq('is_active', true)
-      .order('sort_order', { ascending: true })
+    isLoading.value = true
 
-    if (error) {
+    try {
+      const response = await $fetch<{ success: boolean; data: ProductColor[] }>('/api/product-colors')
+
+      if (response.success) {
+        colors.value = response.data || []
+        loaded.value = true
+        return colors.value
+      } else {
+        throw new Error('Failed to load product colors')
+      }
+    } catch (error) {
       console.error('loadColors', error)
       colors.value = []
       loaded.value = false
       throw error
+    } finally {
+      isLoading.value = false
     }
-
-    colors.value = data || []
-    loaded.value = true
-    return colors.value
   }
 
   const byKey = (key?: string | null) => {
@@ -50,5 +51,12 @@ export const useProductColors = () => {
     return { backgroundColor: c.hex || '#e2e8f0' }
   }
 
-  return { colors, loadColors, byKey, swatchStyle }
+  return {
+    colors,
+    loadColors,
+    byKey,
+    swatchStyle,
+    isLoading,
+    loaded,
+  }
 }
