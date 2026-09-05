@@ -143,7 +143,7 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/supabase", "@nuxtjs/turnstile", "nuxt-security", '@nuxtjs/sitemap'],
+  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/turnstile", "nuxt-security", '@nuxtjs/sitemap'],
 
   turnstile: {
     siteKey:
