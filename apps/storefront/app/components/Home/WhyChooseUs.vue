@@ -37,9 +37,15 @@
             <div
               class="w-[68px] h-[68px] rounded-full flex items-center justify-center mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
             >
-              <img
+              <NuxtImg
                 src="/Images/Icons/trained.png"
                 alt="Full-Service Installation"
+                format="webp"
+                quality="85"
+                width="68"
+                height="68"
+                fit="contain"
+                loading="lazy"
                 class="w-full h-full object-contain"
               />
             </div>
@@ -64,9 +70,15 @@
             <div
               class="w-[68px] h-[68px] rounded-full flex items-center justify-center mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
             >
-              <img
+              <NuxtImg
                 src="/Images/Icons/secured.png"
                 alt="Licensed & Insured"
+                format="webp"
+                quality="85"
+                width="68"
+                height="68"
+                fit="contain"
+                loading="lazy"
                 class="w-full h-full object-contain"
               />
             </div>
@@ -90,9 +102,15 @@
             <div
               class="w-[68px] h-[68px] rounded-full flex items-center justify-center mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
             >
-              <img
+              <NuxtImg
                 src="/Images/Icons/service.png"
                 alt="Professional Grade Lighting"
+                format="webp"
+                quality="85"
+                width="68"
+                height="68"
+                fit="contain"
+                loading="lazy"
                 class="w-full h-full object-contain"
               />
             </div>
@@ -116,9 +134,15 @@
             <div
               class="w-[68px] h-[68px] rounded-full flex items-center justify-center mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
             >
-              <img
+              <NuxtImg
                 src="/Images/Icons/location.png"
                 alt="Ongoing Local Support"
+                format="webp"
+                quality="85"
+                width="68"
+                height="68"
+                fit="contain"
+                loading="lazy"
                 class="w-full h-full object-contain"
               />
             </div>
@@ -140,9 +164,15 @@
       <div
         class="block lg:hidden w-full h-[240px] overflow-hidden border-t-4 border-brand-orange"
       >
-        <img
+        <NuxtImg
           src="/Images/why-choose-us-bg-2.webp"
           alt="Festive Express Decorated Home"
+          format="webp"
+          quality="85"
+          width="800"
+          height="240"
+          fit="cover"
+          loading="lazy"
           class="w-full h-full object-cover"
         />
       </div>

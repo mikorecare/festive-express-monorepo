@@ -36,21 +36,9 @@
     </section>
 
     <section class="py-12 md:py-16 bg-white relative">
-      <ClientOnly>
-        <FestivoAnimation
-          ref="festivoRef"
-          :targetRect="activeCardRect"
-          :config="festivoConfig"
-          initialState="talk"
-          :useJump="true"
-          :forceScaleX="1"
-          :disableShrink="true"
-        />
-      </ClientOnly>
-
       <PreviewYourHomeButton />
 
-      <div v-if="loading" class="text-center py-20 text-slate-500">
+      <div v-if="pending" class="text-center py-20 text-slate-500">
         Loading packages...
       </div>
       <div
@@ -66,7 +54,6 @@
         :key="pkg.id"
         class="container mx-auto px-4 max-w-7xl mb-16 last:mb-0 scroll-mt-48 mt-5"
         :ref="(el) => setPackageRef(el, pkg.id)"
-        @mouseenter="handlePackageFocus(pkg.id)"
       >
         <!-- Header: title image + price (SKU) -->
         <div
@@ -75,15 +62,18 @@
           <div
             class="header-left relative flex items-center flex-1 min-w-0 gap-4"
           >
-            <img
+            <NuxtImg
               v-if="pkg.title_image_url || pkg.icon_url"
-              class="pkg-title-img h-16 md:h-24 w-auto object-contain drop-shadow-md"
               :src="pkg.title_image_url || pkg.icon_url || undefined"
               :alt="pkg.name"
+              format="webp"
+              quality="85"
+              width="100"
+              height="100"
+              fit="contain"
+              loading="lazy"
+              class="pkg-title-img h-16 md:h-24 w-auto object-contain drop-shadow-md"
             />
-            <!-- <h2 v-else class="text-3xl font-bold text-[#1C2D5B]">
-              {{ pkg.name }}
-            </h2> -->
             <h2
               class="text-3xl font-bold text-[#1C2D5B]"
               :class="pkg.title_image_url || pkg.icon_url ? 'sr-only' : ''"
@@ -97,16 +87,17 @@
             class="package-price flex flex-col items-center shrink-0"
           >
             <div class="relative mb-1">
-              <img
+              <NuxtImg
                 :src="earlyBirdIconSecondaryUrl"
                 alt="Early Bird Special"
+                format="webp"
+                quality="85"
+                width="44"
+                height="44"
+                fit="contain"
+                loading="lazy"
                 class="relative z-[2] mb-2 h-8 md:h-10 lg:h-11 w-auto object-contain scale-100 origin-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
               />
-              <!-- <img
-                :src="starburstSrc"
-                alt=""
-                class="absolute z-[1] -top-[54%] right-[-24px] md:right-[-29px] lg:right-[-34px] h-16 w-16 md:h-20 md:w-20 lg:h-24 lg:w-24 object-contain pointer-events-none"
-              /> -->
             </div>
 
             <div class="text-center leading-[1.35]">
@@ -166,7 +157,7 @@
               class="image-wrapper relative bg-slate-100 group"
               @click.stop="onPackageImageClick(pkg)"
             >
-              <img
+              <NuxtImg
                 :ref="(el) => setImageRef(el, pkg.id)"
                 :src="
                   selectedSku(pkg)?.image_url ||
@@ -174,6 +165,12 @@
                   undefined
                 "
                 :alt="pkg.name"
+                format="webp"
+                quality="85"
+                width="800"
+                height="420"
+                fit="cover"
+                loading="lazy"
                 class="main-image w-full h-[320px] sm:h-[420px] object-cover block border-4 border-[#f59e0b] rounded-2xl"
                 @error="onImgError"
               />
@@ -183,11 +180,17 @@
                 class="lights-badge absolute right-0 -bottom-[30px] z-[3] w-[76px] h-[76px] rounded-full flex items-center justify-center shadow-lg"
                 aria-hidden="true"
               >
-                <img
+                <NuxtImg
                   v-if="pkg.icon_url"
-                  class="lights-icon-img w-100 h-100 object-contain"
                   :src="pkg.icon_url"
                   alt=""
+                  format="webp"
+                  quality="85"
+                  width="76"
+                  height="76"
+                  fit="contain"
+                  loading="lazy"
+                  class="lights-icon-img w-100 h-100 object-contain"
                 />
                 <span v-else class="text-white text-xs font-bold">{{
                   pkg.name
@@ -256,9 +259,15 @@
                   v-if="getActiveSpot(pkg)?.thumb"
                   class="w-full h-24 p-2 flex items-center justify-center"
                 >
-                  <img
+                  <NuxtImg
                     :src="getActiveSpot(pkg)?.thumb"
                     :alt="getActiveSpot(pkg)?.label"
+                    format="webp"
+                    quality="85"
+                    width="100"
+                    height="100"
+                    fit="contain"
+                    loading="lazy"
                     class="max-w-full max-h-full object-contain"
                   />
                 </div>
@@ -333,18 +342,21 @@
                   class="flex items-center gap-2.5 p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-[#f59e0b] hover:bg-[#fff7ed] transition-colors"
                   @click="highlightInclusion(pkg, row)"
                 >
-                  <img
+                  <NuxtImg
                     v-if="row.inclusion_items?.image_url"
                     :src="row.inclusion_items.image_url"
-                    class="w-8 h-8 object-contain flex-shrink-0"
                     alt=""
+                    format="webp"
+                    quality="85"
+                    width="32"
+                    height="32"
+                    fit="contain"
+                    loading="lazy"
+                    class="w-8 h-8 object-contain flex-shrink-0"
                   />
                   <span v-else class="text-emerald-500 font-bold">✔</span>
                   <span class="text-xs font-semibold leading-snug text-navy">
                     {{ row.label_override || row.inclusion_items?.name }}
-                    <!-- <template v-if="row.quantity > 1">
-                      × {{ row.quantity }}</template
-                    > -->
                   </span>
                 </li>
               </ul>
@@ -459,12 +471,6 @@
               <h3 class="text-lg font-bold text-white m-0">
                 {{ item.name }}
               </h3>
-              <!-- <span
-                v-if="item.badge"
-                class="badge text-xs bg-slate-800 text-slate-200 font-semibold px-2.5 py-1 rounded-md shrink-0"
-              >
-                {{ item.badge }}
-              </span> -->
             </div>
 
             <div class="product-body p-6 flex flex-col flex-grow">
@@ -534,9 +540,12 @@
       >
         ×
       </button>
-      <img
+      <NuxtImg
         :src="activeLightboxImage"
         alt="Package preview"
+        format="webp"
+        quality="90"
+        fit="contain"
         class="lightbox-image max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl"
       />
     </div>
@@ -545,8 +554,6 @@
 
 <script setup lang="ts">
 useHead({ title: "Packages" });
-import FestivoAnimation from "../components/Home/FestivoAnimation.vue";
-import type { FestivoConfig } from "../components/Home/Festivo";
 
 type InclusionItem = {
   id: string;
@@ -608,32 +615,29 @@ type InclusionSpec = {
   sort_order: number;
 };
 
-const config = useRuntimeConfig();
-const supabase = useSupabaseClient();
+type ApiResponse<T> = {
+  success: boolean;
+  data: T;
+};
 
 const cart = useCart();
 
-const loading = ref(true);
 const packages = ref<PackageRow[]>([]);
 const skus = ref<SkuRow[]>([]);
 const selectedSkuId = ref<Record<string, string | number>>({});
 const activeHotspot = ref<Record<string, string | null>>({});
 const addingId = ref<string | number | null>(null);
+const loading = ref(true);
+const pending = computed(() => loading.value);
 
-const festivoRef = ref<InstanceType<typeof FestivoAnimation> | null>(null);
-const activeCardRect = ref<DOMRect | null>(null);
-const activePackageId = ref<string | number | null>(null);
 const packageRefs = ref<Map<string | number, HTMLElement>>(new Map());
 const imageRefs = ref<Map<string | number, HTMLImageElement>>(new Map());
-const isAnimating = ref(false);
-const observerMap = new WeakMap<HTMLElement, IntersectionObserver>();
 
 const inclusionItems = ref<InclusionSpec[]>([]);
 const specsLoading = ref(true);
 
 const { loadEarlyBird, showSale, effectivePrice, earlyBirdIconSecondaryUrl } =
   useEarlyBirdSpecial();
-const starburstSrc = "/Images/Holiday-Lighting-Package/starburst.png";
 
 const settings = ref<{ hero_subtitle?: string } | null>(null);
 const subtitleParts = computed(() => {
@@ -647,22 +651,25 @@ const subtitleParts = computed(() => {
 });
 
 const cartBump = useState("cart-bump", () => 0);
-const festivoConfig = computed<FestivoConfig>(() => {
-  const isMobile =
-    typeof window !== "undefined" ? window.innerWidth < 768 : false;
 
-  return {
-    imagePath: (state: string, frame: number) =>
-      `/Images/Festivo/${state}-3d-${frame}.png`,
-    moveOffsetX: isMobile ? -50 : -100,
-    moveOffsetY: 100,
-    jumpOffsetX: isMobile ? -200 : -350,
-    jumpOffsetY: isMobile ? -500 : -650,
-    jumpPeakHeight: isMobile ? 100 : 150,
-  };
-});
+const { colors, loadColors, swatchStyle, byKey } = useProductColors();
 
-/** Default hotspot positions per package slug — tweak to match your photos */
+// Define skusFor
+const skusFor = (packageId: string | number) => {
+  const list = skus.value.filter(
+    (s) => String(s.package_id) === String(packageId),
+  );
+
+  return list.sort((a, b) => {
+    const orderOf = (key?: string | null) => {
+      const i = colors.value.findIndex((c) => c.color_key === key);
+      return i === -1 ? 999 : i;
+    };
+    return orderOf(a.color_key) - orderOf(b.color_key);
+  });
+};
+
+/** Default hotspot positions per package slug */
 const HOTSPOT_LAYOUT: Record<
   string,
   { top: string; left: string; match?: string }[]
@@ -770,8 +777,15 @@ const selectSku = (packageId: string | number, skuId: string | number) => {
   selectedSkuId.value = { ...selectedSkuId.value, [String(packageId)]: skuId };
 };
 
-const onImgError = (e: Event) => {
-  (e.target as HTMLImageElement).src = "/Images/placeholder-package.png";
+const onImgError = (error: string | Event) => {
+  if (error instanceof Event) {
+    const img = error.target as HTMLImageElement;
+    if (img) {
+      img.src = "/Images/placeholder-package.png";
+    }
+  } else {
+    console.error("Image load error:", error);
+  }
 };
 
 const scrollToSpecs = () => {
@@ -802,120 +816,40 @@ const setImageRef = (
   }
 };
 
-const handlePackageFocus = async (packageId: string | number) => {
-  if (isAnimating.value || activePackageId.value === packageId) {
-    return;
-  }
-
-  const imageElement = imageRefs.value.get(packageId);
-  if (!imageElement) return;
-
-  if (festivoRef.value?.interrupt) {
-    festivoRef.value.interrupt();
-  }
-
-  const imageRect = imageElement.getBoundingClientRect();
-
-  const targetRect = new DOMRect(
-    imageRect.left + imageRect.width / 2 - 55,
-    imageRect.bottom - 110,
-    110,
-    110,
-  );
-
-  activePackageId.value = packageId;
-  activeCardRect.value = targetRect;
-  isAnimating.value = true;
-
-  await nextTick();
-
-  setTimeout(() => {
-    isAnimating.value = false;
-  }, 1000);
-};
-
-const updateActivePackage = () => {
-  if (isAnimating.value) return;
-
-  let found = false;
-
-  for (const [packageId, imageElement] of imageRefs.value) {
-    if (found) break;
-
-    if (!imageElement) continue;
-
-    const rect = imageElement.getBoundingClientRect();
-    const isInView =
-      rect.top < window.innerHeight / 2 &&
-      rect.bottom > window.innerHeight / 2 &&
-      rect.top > -100;
-
-    if (isInView && activePackageId.value !== packageId) {
-      handlePackageFocus(packageId);
-      found = true;
-    }
-  }
-};
-
-const load = async () => {
+// Load data
+const loadData = async () => {
   loading.value = true;
   try {
-    const packagesResponse = await $fetch<{
-      success: boolean;
-      data: PackageRow[];
-    }>("/api/packages/main-list");
-
-    if (!packagesResponse.success) {
-      throw new Error("Failed to load packages");
-    }
-
-    packages.value = packagesResponse.data || [];
-
-    const skusResponse = await $fetch<{ success: boolean; data: SkuRow[] }>(
-      "/api/packages/skus",
+    // Load packages
+    const packagesRes = await $fetch<ApiResponse<PackageRow[]>>(
+      "/api/packages/main-list",
     );
-
-    if (skusResponse.success) {
-      skus.value = skusResponse.data || [];
+    if (packagesRes.success) {
+      packages.value = packagesRes.data || [];
     }
 
-    const settingsResponse = await $fetch<{
-      success: boolean;
-      data: { hero_subtitle?: string };
-    }>("/api/settings/hero");
-
-    if (settingsResponse.success && settingsResponse.data) {
-      settings.value = settingsResponse.data;
+    // Load SKUs
+    const skusRes = await $fetch<ApiResponse<SkuRow[]>>("/api/packages/skus");
+    if (skusRes.success) {
+      skus.value = skusRes.data || [];
     }
 
+    // Load settings
+    const settingsRes =
+      await $fetch<ApiResponse<{ hero_subtitle?: string }>>(
+        "/api/settings/hero",
+      );
+    if (settingsRes.success && settingsRes.data) {
+      settings.value = settingsRes.data;
+    }
+
+    // Map SKUs to packages
     const map: Record<string, string | number> = {};
     for (const pkg of packages.value) {
       const first = skusFor(pkg.id)[0];
       if (first) map[String(pkg.id)] = first.id;
     }
     selectedSkuId.value = map;
-
-    if (packages.value.length > 0 && !activePackageId.value) {
-      const firstPkg = packages.value[0];
-      activePackageId.value = firstPkg!.id;
-
-      await nextTick();
-      const packageElement = packageRefs.value.get(firstPkg!.id);
-      if (packageElement) {
-        const imageElement = packageElement.querySelector(
-          ".main-image",
-        ) as HTMLImageElement;
-        if (imageElement) {
-          const imageRect = imageElement.getBoundingClientRect();
-          activeCardRect.value = new DOMRect(
-            imageRect.left + imageRect.width / 2 - 55,
-            imageRect.top + imageRect.height / 2 - 55,
-            110,
-            110,
-          );
-        }
-      }
-    }
   } catch (e) {
     console.error(e);
     packages.value = [];
@@ -924,6 +858,9 @@ const load = async () => {
     loading.value = false;
   }
 };
+
+// Call loadData
+await loadData();
 
 const cartModal = reactive({
   open: false,
@@ -988,22 +925,6 @@ const addPackageSku = async (pkg: PackageRow) => {
   }
 };
 
-const { colors, loadColors, swatchStyle, byKey } = useProductColors();
-
-const skusFor = (packageId: string | number) => {
-  const list = skus.value.filter(
-    (s) => String(s.package_id) === String(packageId),
-  );
-
-  return list.sort((a, b) => {
-    const orderOf = (key?: string | null) => {
-      const i = colors.value.findIndex((c) => c.color_key === key);
-      return i === -1 ? 999 : i;
-    };
-    return orderOf(a.color_key) - orderOf(b.color_key);
-  });
-};
-
 const activeLightboxImage = ref<string | null>(null);
 
 const openLightbox = (pkg: PackageRow) => {
@@ -1034,7 +955,6 @@ const scrollToPackage = async () => {
   if (!slug || typeof slug !== "string") return;
 
   await nextTick();
-  // wait for list to render after fetch
   requestAnimationFrame(() => {
     const el = document.getElementById(`package-${slug}`);
     if (el) {
@@ -1099,7 +1019,6 @@ const loadInclusionSpecs = async () => {
 
 onMounted(async () => {
   await loadColors();
-  await load();
   await loadInclusionSpecs();
   await loadEarlyBird();
 

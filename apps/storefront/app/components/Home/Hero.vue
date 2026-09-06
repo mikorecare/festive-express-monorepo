@@ -57,8 +57,6 @@
           <p
             class="tagline text-[1.1rem] font-semibold leading-[1.35] mb-7 text-slate-200 max-lg:text-[0.82rem] max-lg:mb-3.5 max-lg:leading-[1.25] max-lg:text-left max-lg:[text-shadow:0_2px_4px_rgba(0,0,0,0.7)]"
           >
-            <!-- Giftwrapped in<br class="mobile-only" />
-            One Simple Package. -->
             <template v-for="(part, i) in heroDescription1.split('|')" :key="i">
               <br v-if="i > 0" class="mobile-only" />
               {{ part }} </template
@@ -67,8 +65,6 @@
             <span
               class="subtext block text-[0.88rem] font-normal mt-1.5 opacity-90 max-lg:text-[0.68rem] max-lg:mt-0.5"
             >
-              <!-- (No ladders. No tangled cords.<br class="mobile-only" />
-              No storage. No stress.) -->
               <template
                 v-for="(part2, i) in heroDescription2.split('|')"
                 :key="i"
@@ -99,9 +95,12 @@
               v-if="isEarlyBirdActive(earlyBirdEnabled, earlyBirdExpiresAt)"
               class="absolute bottom-0 left-1/2 z-20 flex flex-col items-center overflow-visible -translate-x-1/2 translate-y-1/2"
             >
-              <img
+              <NuxtImg
                 :src="earlyBirdIconSecondaryUrl"
                 alt="Early Bird Special"
+                width="32"
+                height="32"
+                fit="contain"
                 class="relative z-10 h-8 w-auto object-contain drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)] max-lg:h-6"
               />
               <span
@@ -129,26 +128,6 @@ const isHeroVisible = ref(false);
 const bgOffset = ref(0);
 const familyOffset = ref(0);
 const isMobile = ref(false);
-
-// PH
-// const calculateTimeLeft = () => {
-//   const now = new Date();
-//   let christmas = new Date(now.getFullYear(), 11, 25, 0, 0, 0);
-//   if (now.getTime() > christmas.getTime()) {
-//     christmas = new Date(now.getFullYear() + 1, 11, 25, 0, 0, 0);
-//   }
-//   const diff = christmas.getTime() - now.getTime();
-//   if (diff <= 0) return;
-
-//   timeLeft.value = {
-//     days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-//     hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
-//     minutes: Math.floor((diff / 1000 / 60) % 60),
-//     seconds: Math.floor((diff / 1000) % 60),
-//   };
-// };
-
-// UTC
 const FL_TZ = "America/New_York";
 
 const flParts = (date: Date) => {
@@ -246,7 +225,6 @@ const bgStyle = computed(() => {
       backgroundRepeat: "no-repeat",
     };
   }
-  // Desktop: house background with parallax
   return {
     backgroundImage: "url('/Images/Banner/house.webp')",
     backgroundPosition: `center ${28 + bgOffset.value}%`,
@@ -326,11 +304,9 @@ onMounted(() => {
       isMobile.value = window.innerWidth <= 992;
 
       if (isMobile.value) {
-        // Reset offsets when switching to mobile
         bgOffset.value = 0;
         familyOffset.value = 0;
       } else if (!isMobile.value && wasMobile) {
-        // Update parallax when switching to desktop
         updateParallax();
       } else if (!isMobile.value) {
         updateParallax();
@@ -339,7 +315,6 @@ onMounted(() => {
 
     updateParallax();
   } else {
-    // Mobile - ensure offsets are reset
     bgOffset.value = 0;
     familyOffset.value = 0;
   }
@@ -435,7 +410,6 @@ onUnmounted(() => {
     transform: none !important;
   }
 
-  /* Hide family layer on mobile */
   .hero-layer-family {
     display: none !important;
   }

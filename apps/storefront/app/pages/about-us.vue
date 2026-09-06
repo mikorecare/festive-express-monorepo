@@ -8,7 +8,7 @@
               About <span class="text-brand-orange">Festive Express</span>
             </h1>
             <p v-fade class="breadcrumb">
-              {{ data?.subtitle || "" }}
+              {{ pending ? "Loading..." : data?.data?.subtitle || "" }}
             </p>
           </div>
         </div>
@@ -23,23 +23,38 @@
         <!-- Content Left -->
         <div class="flex-1">
           <h2 class="sr-only">Who we are</h2>
+          <!-- Handle Error State -->
+          <div v-if="error" class="text-red-500">
+            Failed to load about us content.
+          </div>
+
+          <!-- Handle Data State -->
           <div
-            v-if="descriptionHtml"
+            v-else-if="data?.data?.description"
             class="about-body"
-            v-html="descriptionHtml"
+            v-html="data.data.description"
           />
         </div>
 
         <!-- Image Right -->
         <div class="flex-1 flex justify-center w-full">
           <div
-            v-if="sideImage"
+            v-if="data?.data?.description_image_url || sideImage"
             class="about-image relative w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] rounded-full -rotate-12 border-[10px] border-brand-orange shadow-[0_15px_25px_rgba(0,0,0,0.2),0_5px_10px_rgba(0,0,0,0.1)] overflow-hidden will-change-transform"
           >
-            <img
-              :src="sideImage"
+            <NuxtImg
+              :src="data?.data?.description_image_url || sideImage"
               alt="Festive Express Holiday Lighting"
+              format="webp"
+              quality="85"
+              width="400"
+              height="400"
+              fit="cover"
+              loading="lazy"
+              placeholder
+              placeholder-blur="10"
               class="w-full h-full object-cover rotate-12 scale-110 origin-center pointer-events-none"
+              @error="handleImageError"
             />
             <div
               class="absolute -top-[50%] -left-[150%] w-[200%] h-[200%] bg-gradient-to-r from-transparent via-white/30 to-transparent rotate-[25deg] pointer-events-none animate-shine"
@@ -54,10 +69,6 @@
 </template>
 
 <script setup lang="ts">
-useHead({
-  title: "About Festive Express",
-});
-
 type AboutUsContent = {
   id?: string;
   banner_image_url?: string | null;
@@ -67,39 +78,25 @@ type AboutUsContent = {
   description_image_url?: string | null;
 };
 
-const data = ref<AboutUsContent | null>(null);
-const loading = ref(false);
-const error = ref<string | null>(null);
-
-const descriptionHtml = computed(() => data.value?.description || "");
-const sideImage = computed(
-  () =>
-    data.value?.description_image_url ||
-    "/Images/Gallery/Festive-Images-14.webp",
-);
-
-const load = async () => {
-  loading.value = true;
-  error.value = null;
-
-  try {
-    const response = await $fetch("/api/about-us");
-
-    if (response.success) {
-      data.value = response.data;
-    } else {
-      throw new Error(response.error || "Failed to load content");
-    }
-  } catch (e) {
-    console.error(e);
-    error.value = e instanceof Error ? e.message : "An error occurred";
-    data.value = null;
-  } finally {
-    loading.value = false;
-  }
+type ApiResponse = {
+  success: boolean;
+  data: AboutUsContent | null;
 };
 
-onMounted(load);
+const { data, pending, error } = await useFetch<ApiResponse>("/api/about-us");
+
+useHead({
+  title: computed(() => {
+    const t = data.value?.data?.title?.trim();
+    return t ? `${t}` : "About Festive Express";
+  }),
+});
+
+const sideImage = "/Images/Gallery/Festive-Images-14.webp";
+
+const handleImageError = (error: string | Event) => {
+  console.error("About page image failed to load:", error);
+};
 </script>
 
 <style scoped>
@@ -127,76 +124,44 @@ onMounted(load);
   font-size: 1.05rem;
   line-height: 1.7;
 }
+
 .about-image {
   flex: 1;
   display: flex;
   justify-content: center;
-
   position: relative;
-
-  /* Set your desired size for the total circular container */
   width: 400px;
   height: 400px;
-
-  /* 1. Make it perfectly circular and angled (rotated) */
   border-radius: 50%;
-  transform: rotate(-15deg); /* Recreates the specific angle in the image */
-
-  /* 2. Apply the solid orange border */
-  border: 10px solid #ff7a00; /* Matching your primary orange */
-
-  /* 3. Recreates the double-shadow effect for depth */
+  transform: rotate(-15deg);
+  border: 10px solid #ff7a00;
   box-shadow:
     0 15px 25px rgba(0, 0, 0, 0.2),
-    /* Soft deep shadow */ 0 5px 10px rgba(0, 0, 0, 0.1); /* Sharper near shadow */
-
-  /* 4. Ensure everything inside (the image) stays within the circle */
+    0 5px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-
-  /* Required for smooth rendering during animations or scrolling */
   will-change: transform;
-
-  position: relative;
-  overflow: hidden;
 }
 
-.about-image img {
+.about-image img,
+.about-image :deep(img) {
   width: 100%;
-  /* max-width: 550px; */
-
   height: 100%;
-
-  /* Re-align the image, but un-rotate it slightly so the image content 
-     (the people) appears upright while the container circle is angled. 
-     Adjust the rotation and translate values slightly if needed. */
-  transform: rotate(15deg) scale(1.1); /* Un-rotates the content; slightly zooms to cover edges */
-
+  transform: rotate(15deg) scale(1.1);
   transform-origin: center center;
-  object-fit: cover; /* Ensures the image covers the entire circular area */
-  pointer-events: none; /* Recommended if you have complex interactions */
-}
-
-.about-image::after {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -150%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    60deg,
-    rgba(255, 255, 255, 0) 20%,
-    rgba(255, 255, 255, 0.08) 40%,
-    rgba(255, 255, 255, 0.35) 50%,
-    rgba(255, 255, 255, 0.08) 60%,
-    rgba(255, 255, 255, 0) 80%
-  );
-  transform: rotate(25deg);
+  object-fit: cover;
   pointer-events: none;
-  animation: glossyShineContinuous 3s linear infinite;
 }
 
 .animate-shine {
   animation: glossyShineContinuous 3s linear infinite;
+}
+
+@keyframes glossyShineContinuous {
+  0% {
+    transform: translateX(-100%) rotate(25deg);
+  }
+  100% {
+    transform: translateX(200%) rotate(25deg);
+  }
 }
 </style>

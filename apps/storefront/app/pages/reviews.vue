@@ -4,7 +4,7 @@
   >
     <div class="w-full mx-auto px-0.5 lg:px-[84px] max-w-[2048px]">
       <!-- Loading -->
-      <div v-if="isLoading" class="text-center py-20">
+      <div v-if="pending" class="text-center py-20">
         <div
           class="w-12 h-12 border-4 border-brand-orange border-t-transparent rounded-full animate-spin mx-auto mb-4"
         ></div>
@@ -65,9 +65,17 @@
 
           <!-- Right Content - Mascot Image -->
           <div class="flex-shrink-0 mx-auto md:mx-0">
-            <img
+            <NuxtImg
               src="/Images/reviews/review-mascot.png"
               alt="Review Mascot"
+              format="webp"
+              quality="85"
+              width="264"
+              height="264"
+              fit="contain"
+              loading="lazy"
+              placeholder
+              placeholder-blur="10"
               class="h-[150px] md:h-[264px] w-auto object-contain"
             />
           </div>
@@ -133,7 +141,7 @@
                           @mouseleave="hoverOverall = 0"
                           @click="form.rating_overall = star"
                         >
-                          <img
+                          <NuxtImg
                             :src="
                               getStarImage(
                                 star,
@@ -142,6 +150,12 @@
                               )
                             "
                             :alt="`${star} star`"
+                            format="webp"
+                            quality="80"
+                            width="120"
+                            height="120"
+                            fit="contain"
+                            loading="lazy"
                             class="h-[36px] md:h-[120px] w-auto object-contain"
                           />
                         </button>
@@ -204,7 +218,7 @@
                           @mouseleave="hoverInstallation = 0"
                           @click="form.rating_installation = star"
                         >
-                          <img
+                          <NuxtImg
                             :src="
                               getStarImage(
                                 star,
@@ -213,6 +227,12 @@
                               )
                             "
                             :alt="`${star} star`"
+                            format="webp"
+                            quality="80"
+                            width="120"
+                            height="120"
+                            fit="contain"
+                            loading="lazy"
                             class="h-[36px] md:h-[120px] w-auto object-contain"
                           />
                         </button>
@@ -293,7 +313,7 @@
                           @mouseleave="hoverTechnicians = 0"
                           @click="form.rating_technicians = star"
                         >
-                          <img
+                          <NuxtImg
                             :src="
                               getStarImage(
                                 star,
@@ -302,6 +322,12 @@
                               )
                             "
                             :alt="`${star} star`"
+                            format="webp"
+                            quality="80"
+                            width="120"
+                            height="120"
+                            fit="contain"
+                            loading="lazy"
                             class="h-[36px] md:h-[120px] w-auto object-contain"
                           />
                         </button>
@@ -387,10 +413,16 @@
                         >✓</span
                       >
                     </button>
-                    <img
+                    <NuxtImg
                       v-if="form.would_recommend === true"
                       src="/Images/Holiday-Lighting-Package/starburst.png"
                       alt="Starburst"
+                      format="webp"
+                      quality="80"
+                      width="60"
+                      height="60"
+                      fit="contain"
+                      loading="lazy"
                       class="absolute -top-4 -right-5 w-12 h-12 md:w-15 md:h-15 object-cover"
                     />
                   </div>
@@ -442,16 +474,13 @@
 </template>
 
 <script setup lang="ts">
-import SurveyComplete from '~/components/Reviews/SurveyComplete.vue';
+import SurveyComplete from "~/components/Reviews/SurveyComplete.vue";
 
 const route = useRoute();
 const config = useRuntimeConfig();
 
 const token = ref((route.query.token as string) || "");
-const isLoading = ref(true);
 const isSubmitting = ref(false);
-const error = ref<{ title: string; message: string } | null>(null);
-const review = ref<any>(null);
 
 // Hover states for each rating
 const hoverOverall = ref(0);
@@ -467,6 +496,21 @@ const form = ref({
   comments_additional: "",
   would_recommend: null as boolean | null,
 });
+
+type ValidationResponse = {
+  success: boolean;
+  review: any;
+};
+
+const { data, pending, error } = await useFetch<ValidationResponse>(
+  `/survey/validate?token=${token.value}`,
+  {
+    baseURL: config.public.apiBase,
+    immediate: true,
+  },
+);
+
+const review = computed(() => data.value?.review || null);
 
 const getStarImage = (star: number, rating: number, hover: number) => {
   const active = rating >= star || hover >= star;
@@ -525,46 +569,6 @@ const submitSurvey = async () => {
     isSubmitting.value = false;
   }
 };
-
-onMounted(async () => {
-  if (!token.value) {
-    error.value = {
-      title: "Invalid Survey Link",
-      message: "No survey token provided.",
-    };
-    isLoading.value = false;
-    return;
-  }
-
-  try {
-    const res = (await $fetch(`/survey/validate?token=${token.value}`, {
-      baseURL: config.public.apiBase,
-    })) as any;
-
-    if (res.success) {
-      review.value = res.review;
-    }
-  } catch (err: any) {
-    if (err.statusCode === 410) {
-      error.value = {
-        title: "Survey Expired",
-        message: "This survey has expired. Links are valid for 72 hours.",
-      };
-    } else if (err.statusCode === 400) {
-      error.value = {
-        title: "Already Completed",
-        message: "You have already completed this survey. Thank you!",
-      };
-    } else {
-      error.value = {
-        title: "Invalid Link",
-        message: err.message || "Something went wrong. Please try again.",
-      };
-    }
-  } finally {
-    isLoading.value = false;
-  }
-});
 
 useHead({
   title: "Share Your Experience - Festive Express",

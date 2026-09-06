@@ -3,7 +3,7 @@
     <div class="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-7xl">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-5">
         <div>
-          <img
+          <NuxtImg
             src="/Images/FE-Logo.png"
             alt="Festive Express"
             class="h-auto w-3/4"
@@ -101,7 +101,7 @@
         <div
           class="payment-methods w-full sm:w-auto flex justify-center sm:justify-end max-w-[200px] sm:max-w-none mx-auto sm:mx-0"
         >
-          <img
+          <NuxtImg
             src="/Images/checkout.png"
             alt="Accepted payment methods"
             class="w-full h-auto"

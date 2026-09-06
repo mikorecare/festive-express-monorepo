@@ -21,7 +21,7 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="loading" class="text-center py-10 text-navy font-semibold">
+      <div v-if="pending" class="text-center py-10 text-navy font-semibold">
         Loading holiday packages...
       </div>
 
@@ -50,18 +50,17 @@
         </ClientOnly>
 
         <div
-          v-for="pkg in packageProducts"
+          v-for="(pkg, index) in packageProducts"
           :key="pkg.id"
           class="w-full max-w-[340px] rounded-[28px] overflow-visible shadow-[0_14px_36px_rgba(28,45,91,0.28)]"
           @mouseenter="handleCardHover"
         >
           <!-- Card Top -->
           <div class="relative p-3 pb-0">
-            <!-- One title; only left offset changes -->
             <h3 class="sr-only">{{ pkg.name }}</h3>
             <img
               class="absolute z-[2] pointer-events-none w-auto drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)] -bottom-[28px] h-[60px] md:-bottom-[34px] md:h-[68px] lg:-bottom-[38px] lg:h-[72px] left-6 md:left-[58px] lg:left-[20px]"
-              :src="getPackageTitleImage(pkg)"
+              :src="pkg.title_image_url || '/Images/placeholder.png'"
               :alt="pkg.name"
             />
 
@@ -69,8 +68,8 @@
               class="rounded-[22px] border-4 border-brand-orange overflow-hidden relative leading-none"
             >
               <img
-                :ref="(el) => setImageRef(el, pkg.id)"
-                :src="getImageUrl(pkg.image_url)"
+                :ref="(el) => setImageRef(el, index)"
+                :src="pkg.image_url || '/Images/placeholder.png'"
                 :alt="pkg.name"
                 class="w-full h-[200px] object-cover block"
               />
@@ -79,24 +78,16 @@
               />
             </div>
 
-            <!-- Icon always left when on sale; right when not -->
             <div
               class="absolute z-[1] rounded-full bg-brand-orange flex items-center justify-center shadow-[0_6px_16px_rgba(244,147,33,0.45)] right-[30px] max-sm:right-3 -bottom-[30px] max-sm:-bottom-[24px] w-[64px] h-[64px] max-sm:w-[64px] max-sm:h-[64px]"
               aria-hidden="true"
             >
               <img
                 class="object-contain w-[64px] h-[64px] max-sm:w-[64px] max-sm:h-[64px]"
-                :src="getPackageIcon(pkg)"
+                :src="pkg.icon_url || '/Images/placeholder.png'"
                 alt=""
               />
             </div>
-
-            <!-- <img
-              v-if="showSale(pkg.sale_price)"
-              :src="EarlyBirdSpecialRibbonSrc"
-              alt="Early Bird Special"
-              class="absolute z-[3] pointer-events-none w-auto drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)] right-2 -bottom-[55px] h-[120px] md:right-2 md:-bottom-[55px] md:h-[120px] lg:right-[18px] lg:-bottom-[75px] lg:h-[120px]"
-            /> -->
           </div>
 
           <!-- Card Panel -->
@@ -107,7 +98,7 @@
               <button
                 type="button"
                 class="btn-inclusions flex flex-col items-center justify-center gap-1.5 bg-transparent border-2 border-white/90 rounded-xl text-white text-[0.72rem] max-sm:text-[0.72rem] font-semibold leading-[1.25] text-center py-2.5 px-3 max-sm:py-2.5 max-sm:px-3 cursor-pointer transition-colors duration-200"
-                @click.stop="handleExploreClick(pkg.id, $event)"
+                @click.stop="handleExploreClick(index, $event)"
               >
                 <GiftIcon
                   class="w-6 h-6 text-brand-orange"
@@ -120,7 +111,7 @@
 
               <div
                 class="absolute top-full left-0 bg-white border border-gray-300 rounded-xl p-3.5 w-[280px] max-w-[90vw] shadow-[0_10px_25px_rgba(28,45,91,0.15)] opacity-0 invisible transition-all duration-250 z-30 mt-2 text-left text-navy"
-                :class="{ '!opacity-100 !visible': openTooltipId === pkg.id }"
+                :class="{ '!opacity-100 !visible': openTooltipId === index }"
                 @click.stop
               >
                 <template
@@ -135,7 +126,7 @@
                   >
                     <img
                       v-if="row.image_url"
-                      :src="getImageUrl(row.image_url)"
+                      :src="row.image_url"
                       class="w-8 h-8 object-contain flex-shrink-0"
                       alt=""
                     />
@@ -239,10 +230,8 @@
         <div
           class="relative isolate my-8 max-lg:my-6 flex flex-col items-center justify-center gap-2 text-center"
         >
-          <!-- Button 1 -->
           <PreviewYourHomeButton />
 
-          <!-- Button 2 -->
           <NuxtLink
             to="/packages"
             class="relative z-10 overflow-hidden inline-block font-semibold px-6 py-3 rounded-full bg-brand-orange text-white animate-[festive-express-animation-pulse-grow_1.4s_ease-in-out_infinite_alternate] after:content-[''] after:absolute after:-top-1/2 after:-left-[150%] after:w-[200%] after:h-[200%] after:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] after:rotate-[25deg] after:pointer-events-none"
@@ -258,35 +247,51 @@
 </template>
 
 <script setup lang="ts">
-const config = useRuntimeConfig();
-const supabase = useSupabaseClient();
 import { ref, onMounted, computed, nextTick } from "vue";
 import HomeFestivoAnimation from "./FestivoAnimation.vue";
-import type { FestivoConfig, FestivoState } from "./Festivo";
-
+import type { FestivoConfig } from "./Festivo";
 import { ShoppingCartIcon, GiftIcon } from "@heroicons/vue/24/outline";
 
 interface PackageRow {
-  id: number;
+  id: string | number;
   name: string;
   slug: string;
   price: number | string;
   sale_price: number | string;
-  description?: string | null;
-  max_roofline_ft?: number | null;
-  features?: string[] | null;
-  is_popular?: boolean;
-  color?: string | null;
   image_url?: string | null;
   title_image_url?: string | null;
   icon_url?: string | null;
-  sort_order?: number | null;
-  created_at?: string;
+  package_inclusions?: PackageInclusionRow[] | null;
 }
 
+interface InclusionItem {
+  id?: number | string;
+  name?: string;
+  image_url?: string | null;
+}
+
+interface PackageInclusionRow {
+  id?: number | string;
+  is_included?: boolean;
+  inclusion_items?: InclusionItem | InclusionItem[] | null;
+  inclusion_item?: InclusionItem | null;
+}
+
+type InclusionDisplay = {
+  name: string;
+  image_url: string | null;
+  is_included: boolean;
+};
+
+// Use useFetch for packages - URLs already mapped on server
+const { data, pending, error } = await useFetch("/api/packages");
+
 const packages = ref<PackageRow[]>([]);
-const loading = ref(true);
-const error = ref<string | null>(null);
+
+if (data.value?.packages) {
+  packages.value = data.value.packages as any;
+}
+
 const openTooltipId = ref<number | null>(null);
 const activeCardRect = ref<DOMRect | null>(null);
 const isAnimating = ref(false);
@@ -294,7 +299,8 @@ const cardImageRefs = ref<Map<number, HTMLImageElement>>(new Map());
 const festivoRef = ref<InstanceType<typeof HomeFestivoAnimation> | null>(null);
 
 const festivoConfig = computed<FestivoConfig>(() => {
-  const isMobile = window.innerWidth < 768;
+  const isMobile =
+    typeof window !== "undefined" ? window.innerWidth < 768 : false;
 
   return {
     imagePath: (state: string, frame: number) =>
@@ -311,79 +317,10 @@ const festivoConfig = computed<FestivoConfig>(() => {
   };
 });
 
-const BASE = "/Images/Holiday-Lighting-Package";
 const starburstSrc = "/Images/Holiday-Lighting-Package/starburst.png";
 
-interface InclusionItem {
-  id?: number;
-  name?: string;
-  image_url?: string | null;
-}
-
-interface PackageInclusionRow {
-  id?: number;
-  package_id?: number;
-  is_included?: boolean;
-  inclusion_item_id?: number;
-  inclusion_items?: InclusionItem | InclusionItem[] | null;
-  inclusion_item?: InclusionItem | null;
-}
-
-interface PackageRow {
-  id: number;
-  name: string;
-  slug: string;
-  price: number | string;
-  sale_price: number | string;
-  image_url?: string | null;
-  title_image_url?: string | null;
-  icon_url?: string | null;
-  features?: string[] | null;
-  package_inclusions?: PackageInclusionRow[] | null;
-  inclusions?: PackageInclusionRow[] | null;
-}
-
-const fetchPackages = async () => {
-  loading.value = true;
-  error.value = null;
-
-  try {
-    const { data, error: sbError } = await (supabase.from("packages") as any)
-      .select(
-        `
-        *,
-        package_inclusions (
-          id,
-          is_included,
-          inclusion_items (
-            id,
-            name,
-            image_url
-          )
-        )
-      `,
-      )
-      .order("sort_order", { ascending: true })
-      .order("id", { ascending: true });
-
-    if (sbError) throw sbError;
-    packages.value = (data as PackageRow[]) || [];
-  } catch (err: any) {
-    console.error(err);
-    error.value = err.message || "Failed to load packages.";
-  } finally {
-    loading.value = false;
-  }
-};
-
-type InclusionDisplay = {
-  name: string;
-  image_url: string | null;
-  is_included: boolean;
-};
-
 const inclusionsFor = (pkg: PackageRow): InclusionDisplay[] => {
-  const rows = pkg.package_inclusions || pkg.inclusions || [];
+  const rows = pkg.package_inclusions || [];
   const mapped: InclusionDisplay[] = [];
 
   for (const row of rows) {
@@ -405,12 +342,12 @@ const inclusionsFor = (pkg: PackageRow): InclusionDisplay[] => {
 
 const setImageRef = (
   el: Element | ComponentPublicInstance | null,
-  packageId: number,
+  index: number,
 ) => {
   if (el instanceof HTMLImageElement) {
-    cardImageRefs.value.set(packageId, el);
+    cardImageRefs.value.set(index, el);
   } else {
-    cardImageRefs.value.delete(packageId);
+    cardImageRefs.value.delete(index);
   }
 };
 
@@ -418,7 +355,7 @@ const { loadEarlyBird, showSale, effectivePrice, earlyBirdIconUrl } =
   useEarlyBirdSpecial();
 
 onMounted(async () => {
-  await Promise.all([fetchPackages(), loadEarlyBird()]);
+  await loadEarlyBird();
 
   if (import.meta.client) {
     window.addEventListener("click", () => {
@@ -436,16 +373,11 @@ const handleCardHover = (event: MouseEvent) => {
   }
 };
 
-const getStateByIndex = (index: number): FestivoState => {
-  const states: FestivoState[] = ["joy", "jolly", "merry"];
-  return states[index] || "joy";
-};
-
-const handleExploreClick = async (packageId: number, event: MouseEvent) => {
-  const isOpening = openTooltipId.value !== packageId;
+const handleExploreClick = async (index: number, event: MouseEvent) => {
+  const isOpening = openTooltipId.value !== index;
 
   if (isOpening) {
-    const imageElement = cardImageRefs.value.get(packageId);
+    const imageElement = cardImageRefs.value.get(index);
 
     if (imageElement) {
       const imageRect = imageElement.getBoundingClientRect();
@@ -461,22 +393,18 @@ const handleExploreClick = async (packageId: number, event: MouseEvent) => {
       await nextTick();
 
       if (festivoRef.value) {
-        const pkgIndex = packageProducts.value.findIndex(
-          (p) => p.id === packageId,
-        );
-
-        if (pkgIndex === 0) {
+        if (index === 0) {
           festivoRef.value.joyToPosition(targetRect);
-        } else if (pkgIndex === 1) {
+        } else if (index === 1) {
           festivoRef.value.jollyToPosition(targetRect);
-        } else if (pkgIndex === 2) {
+        } else if (index === 2) {
           festivoRef.value.merryToPosition(targetRect);
         } else {
-          festivoRef.value.joyToPosition(targetRect); // fallback
+          festivoRef.value.joyToPosition(targetRect);
         }
       }
 
-      openTooltipId.value = packageId;
+      openTooltipId.value = index;
 
       setTimeout(() => {
         isAnimating.value = false;
@@ -491,72 +419,6 @@ const packageProducts = computed(() => packages.value);
 
 const selectPackage = (pkg: PackageRow) => {
   navigateTo(`/packages?package=${pkg.slug}`);
-};
-
-const getImageUrl = (url: string | null | undefined) => {
-  if (url == null || String(url).trim() === "") {
-    return "/Images/placeholder.png";
-  }
-
-  const raw = String(url).trim();
-
-  if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
-  if (raw.startsWith("/Images/") || raw.startsWith("/images/")) return raw;
-
-  const path = raw.replace(/^\/+/, "").replace(/^products\//i, "");
-
-  const supabaseUrl =
-    (config.public as any).supabaseUrl ||
-    (config.public as any).supabase?.url ||
-    "";
-
-  const bucket = ((config.public as any).storageBucket as string) || "Products";
-
-  if (!supabaseUrl) return "/Images/placeholder.png";
-
-  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
-};
-
-const getPackageTitleImage = (pkg: PackageRow) => {
-  if (pkg.title_image_url) return getImageUrl(pkg.title_image_url);
-  const n = pkg.name.toLowerCase();
-  if (n.includes("jolly")) return `${BASE}/Jolly.png`;
-  if (n.includes("merry")) return `${BASE}/Merry.png`;
-  return `${BASE}/Joy.png`;
-};
-
-const getPackageIcon = (pkg: PackageRow) => {
-  if (pkg.icon_url) return getImageUrl(pkg.icon_url);
-  const n = pkg.name.toLowerCase();
-  if (n.includes("jolly")) return `${BASE}/Icon2.png`;
-  if (n.includes("merry")) return `${BASE}/Icon3.png`;
-  return `${BASE}/Icon1.png`;
-};
-
-type FeatureItem = { name: string; image_url?: string | null };
-
-const getFeatures = (pkg: PackageRow): FeatureItem[] => {
-  const f = pkg.features as unknown;
-  if (!f) return [];
-
-  let list: unknown = f;
-  if (typeof f === "string") {
-    try {
-      list = JSON.parse(f);
-    } catch {
-      return [];
-    }
-  }
-  if (!Array.isArray(list)) return [];
-
-  return list.map((item) => {
-    if (typeof item === "string") return { name: item, image_url: null };
-    if (item && typeof item === "object" && "name" in item) {
-      const o = item as FeatureItem;
-      return { name: String(o.name), image_url: o.image_url ?? null };
-    }
-    return { name: String(item), image_url: null };
-  });
 };
 </script>
 

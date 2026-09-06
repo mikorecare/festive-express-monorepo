@@ -47,7 +47,7 @@
               class="shrink-0 w-full relative overflow-hidden cursor-pointer aspect-[16/10] rounded-2xl bg-[#1C2D5B] outline outline-2 outline-[rgba(255,122,0,0.2)] -outline-offset-2 shadow-[0_8px_20px_rgba(0,0,0,0.15)] transition-all duration-300 hover:outline-brand-orange hover:outline-offset-4 hover:shadow-[0_12px_28px_rgba(0,0,0,0.25)] hover:scale-[1.02] hover:brightness-[1.05]"
               @click="openLightbox(item.image)"
             >
-              <img
+              <NuxtImg
                 :src="item.image"
                 :alt="
                   item.description
@@ -56,8 +56,13 @@
                       ? `Holiday lighting ${item.year}`
                       : 'Festive Express holiday lighting'
                 "
-                draggable="false"
+                format="webp"
+                quality="85"
+                width="400"
+                height="280"
+                fit="cover"
                 loading="lazy"
+                draggable="false"
                 class="w-full h-[280px] max-w-[400px] max-md:h-[200px] max-md:max-w-[280px] max-sm:h-[160px] max-sm:max-w-[220px] object-cover pointer-events-none block"
               />
             </div>
@@ -78,102 +83,39 @@
 
           <!-- Image Right Layout -->
           <template v-else>
-            <!-- <div v-if="item.year || item.description">
-              <span
-                v-if="item.year"
-                class="text-[3.5rem] font-extrabold text-[#d18d45] leading-none block mb-3"
-                >{{ item.year }}</span
-              >
-              <p
-                v-if="item.description"
-                class="text-[0.92rem] leading-relaxed text-[#cfd8e8]"
-              >
-                {{ item.description }}
-              </p>
-            </div> -->
             <div
               v-if="item.image"
               class="gallery-shine shrink-0 w-full relative overflow-hidden cursor-pointer aspect-[16/10] rounded-2xl bg-[#1C2D5B] outline outline-2 outline-[rgba(255,122,0,0.2)] -outline-offset-2 shadow-[0_8px_20px_rgba(0,0,0,0.15)] transition-all duration-300 hover:outline-brand-orange hover:outline-offset-4 hover:shadow-[0_12px_28px_rgba(0,0,0,0.25)] hover:scale-[1.02] hover:brightness-[1.05]"
               @click="openLightbox(item.image)"
             >
-              <img
+              <NuxtImg
                 :src="item.image"
                 :alt="item.year || 'Gallery Image'"
-                draggable="false"
+                format="webp"
+                quality="85"
+                width="400"
+                height="280"
+                fit="cover"
                 loading="lazy"
+                draggable="false"
                 class="w-full h-[280px] max-w-[400px] max-md:h-[200px] max-md:max-w-[280px] max-sm:h-[160px] max-sm:max-w-[220px] object-cover pointer-events-none block"
               />
             </div>
           </template>
         </div>
 
-        <!-- Lightbox Modal -->
-        <Transition name="fade">
-          <div
-            v-if="activeImage"
-            class="fixed inset-0 z-[9999] bg-black/90 touch-none"
-            @click.self="closeLightbox"
-          >
-            <button
-              type="button"
-              class="absolute top-4 right-4 z-[10001] text-white text-4xl leading-none p-2 hover:text-brand-orange"
-              aria-label="Close"
-              @click="closeLightbox"
-            >
-              &times;
-            </button>
-
-            <!-- Viewport: pinch + drag live here -->
-            <div
-              ref="lightboxViewport"
-              class="absolute inset-0 overflow-hidden flex items-center justify-center"
-              @wheel.prevent="onWheel"
-              @pointerdown="onPointerDown"
-              @pointermove="onPointerMove"
-              @pointerup="onPointerUp"
-              @pointercancel="onPointerUp"
-              @pointerleave="onPointerUp"
-              @touchstart.passive="onTouchStart"
-              @touchmove.prevent="onTouchMove"
-              @touchend="onTouchEnd"
-            >
-              <img
-                :src="activeImage"
-                alt="Enlarged holiday lighting photo"
-                draggable="false"
-                class="max-w-[90vw] max-h-[85vh] object-contain rounded-lg select-none will-change-transform"
-                :style="imageStyle"
-                @click.stop
-              />
-            </div>
-
-            <!-- Controls (optional on mobile; pinch is primary) -->
-            <div
-              class="absolute bottom-6 left-1/2 -translate-x-1/2 z-[10001] flex items-center gap-2 px-3 py-2 rounded-full bg-black/60 backdrop-blur-sm"
-            >
-              <button type="button" class="lb-btn" @click.stop="zoomOut">
-                −
-              </button>
-              <span class="text-white text-xs w-12 text-center tabular-nums">
-                {{ Math.round(zoom * 100) }}%
-              </span>
-              <button type="button" class="lb-btn" @click.stop="zoomIn">
-                +
-              </button>
-              <button type="button" class="lb-btn" @click.stop="resetZoom">
-                Reset
-              </button>
-            </div>
-          </div>
-        </Transition>
-
         <!-- Optional Centerpiece/Divider between cards -->
         <div v-if="item.dividerImage">
-          <img
+          <NuxtImg
             :src="item.dividerImage"
             alt=""
-            draggable="false"
+            format="webp"
+            quality="80"
+            width="100"
+            height="320"
+            fit="contain"
             loading="lazy"
+            draggable="false"
             class="h-[320px] shrink-0 pointer-events-none"
           />
         </div>
@@ -204,37 +146,11 @@
           :src="currentSpinnerImage"
           alt=""
           draggable="false"
-          loading="lazy"
           class="w-full h-full object-contain pointer-events-none"
           :class="{ '-scale-x-100': isFlipped }"
         />
       </div>
     </div>
-
-    <!-- Lightbox Modal -->
-    <!-- <Transition name="fade">
-      <div
-        v-if="activeImage"
-        class="fixed inset-0 w-screen h-screen bg-black/85 flex items-center justify-center z-[9999] p-5"
-        @click.self="closeLightbox"
-      >
-        <button
-          class="absolute top-5 right-[25px] bg-transparent border-none text-white text-[2.5rem] leading-none cursor-pointer z-[10000] transition-transform duration-200 hover:text-brand-orange hover:scale-[1.15]"
-          @click="closeLightbox"
-          aria-label="Close modal"
-        >
-          &times;
-        </button>
-        <div class="max-w-[90vw] max-h-[90vh] flex items-center justify-center">
-          <img
-            :src="activeImage"
-            alt="Enlarged view"
-            loading="lazy"
-            class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
-          />
-        </div>
-      </div>
-    </Transition> -->
   </section>
 </template>
 
@@ -260,11 +176,42 @@ let lastScrollLeft = 0;
 
 const isGesturing = ref(false);
 
-const config = useRuntimeConfig();
-const supabase = useSupabaseClient();
-
 const timelineItems = ref([]);
 const loadingGallery = ref(true);
+
+const { data, pending, error } = useFetch("/api/gallery");
+
+const processGalleryData = (items) => {
+  timelineItems.value = (items || []).map((row) => ({
+    id: row.id,
+    year: row.year || "",
+    description: row.description || "",
+    image: row.image_url,
+    imagePosition: row.image_position || "right",
+    dividerImage: row.divider_image_url || null,
+  }));
+};
+
+// Watch for data changes
+watch(
+  data,
+  (newData) => {
+    if (newData?.success && newData.data) {
+      processGalleryData(newData.data);
+    }
+    loadingGallery.value = false;
+  },
+  { immediate: true },
+);
+
+// If error
+watch(error, (err) => {
+  if (err) {
+    console.error("Failed to load gallery:", err);
+    loadingGallery.value = false;
+    timelineItems.value = [];
+  }
+});
 
 const preloadSpinnerImages = async () => {
   const imageUrls = [];
@@ -283,45 +230,6 @@ const preloadSpinnerImages = async () => {
       img.src = src;
     });
   }
-};
-
-const fetchGallery = async () => {
-  loadingGallery.value = true;
-  try {
-    const { data, error } = await supabase
-      .from("gallery_items")
-      .select("*")
-      .eq("is_active", true)
-      .order("sort_order", { ascending: true });
-
-    if (error) throw error;
-
-    timelineItems.value = (data || []).map((row) => ({
-      id: row.id,
-      year: row.year || "",
-      description: row.description || "",
-      image: getImageUrl(row.image_url),
-      imagePosition: row.image_position || "right",
-      dividerImage: row.divider_image_url
-        ? getImageUrl(row.divider_image_url)
-        : null,
-    }));
-  } catch (e) {
-    console.error(e);
-    timelineItems.value = [];
-  } finally {
-    loadingGallery.value = false;
-  }
-};
-
-const getImageUrl = (url) => {
-  if (!url) return "/Images/placeholder.png";
-  if (url.startsWith("http") || url.startsWith("/Images/")) return url;
-  const path = String(url).replace(/^\/+/, "");
-  const supabaseUrl =
-    config.public.supabaseUrl || config.public.supabase?.url || "";
-  const bucket = config.public.storageBucket || "Gallery";
-  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
 };
 
 const trackRef = ref(null);
@@ -417,7 +325,7 @@ const startDragAnimation = (direction) => {
       isFirstFrame.value = false;
       return;
     } else {
-      const frameNumber = dragAnimationFrame + 1; // 2-9
+      const frameNumber = dragAnimationFrame + 1;
       imagePath = `/Images/Festivo/timeline/${frameNumber}.png`;
       currentSpinnerImage.value = imagePath;
 
@@ -644,12 +552,6 @@ const lastY = ref(0);
 const pinchStartDist = ref(0);
 const pinchStartZoom = ref(1);
 
-// const imageStyle = computed(() => ({
-//   transform: `translate(${panX.value}px, ${panY.value}px) scale(${zoom.value})`,
-//   cursor: zoom.value > 1 ? (isPanning.value ? "grabbing" : "grab") : "default",
-//   transition: isPanning.value ? "none" : "transform 0.15s ease",
-// }));
-
 const imageStyle = computed(() => ({
   transform: `translate3d(${panX.value}px, ${panY.value}px, 0) scale(${zoom.value})`,
   transformOrigin: "center center",
@@ -660,14 +562,6 @@ const imageStyle = computed(() => ({
 let raf = 0;
 
 const clampZoom = (z) => Math.min(3.5, Math.max(1, Math.round(z * 100) / 100));
-
-const scheduleZoom = (nextZoom) => {
-  if (raf) cancelAnimationFrame(raf);
-  raf = requestAnimationFrame(() => {
-    zoom.value = clampZoom(nextZoom);
-    raf = 0;
-  });
-};
 
 const openLightbox = (src) => {
   activeImage.value = src;
@@ -697,15 +591,9 @@ const resetZoom = () => {
   panY.value = 0;
 };
 
-const toggleZoom = () => {
-  zoom.value = zoom.value > 1 ? 1 : 2;
-};
-
 const onWheel = (e) => {
-  const prev = zoom.value;
   if (e.deltaY < 0) zoomIn();
   else zoomOut();
-  // keep feel stable; pan unchanged on wheel
   if (zoom.value === 1) {
     panX.value = 0;
     panY.value = 0;
@@ -719,11 +607,6 @@ const getDistance = (t1, t2) => {
 };
 
 const onPointerDown = (e) => {
-  // two-finger pinch starts via touch list on touch devices
-  if (e.pointerType === "touch" && e.target) {
-    // handled in touch handlers below if you prefer; pointer works for 1 finger pan
-  }
-
   if (zoom.value <= 1) return;
 
   isPanning.value = true;
@@ -786,7 +669,6 @@ const onTouchMove = (e) => {
 
 const onTouchEnd = () => {
   if (!lightboxViewport.value) return;
-  // if fewer than 2 touches, end pinch
   pinchStartDist.value = 0;
   isPanning.value = false;
 };
@@ -805,7 +687,6 @@ watch(isSpinnerDragging, (newVal) => {
 
 onMounted(() => {
   preloadSpinnerImages();
-  fetchGallery();
 
   if (!import.meta.client) return;
   const onKey = (e) => {

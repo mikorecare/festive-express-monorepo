@@ -1,9 +1,16 @@
 <template>
   <div class="flex flex-col items-center justify-center text-center">
-    <img
+    <NuxtImg
       src="/Images/reviews/survey-done.png"
       alt="Survey Complete"
+      format="webp"
+      quality="85"
+      loading="lazy"
       class="mb-8 max-w-4xl w-full h-auto"
+      style="display: block !important; line-height: 0 !important"
+      :img-attrs="{
+        style: 'display: block; width: 100%; height: auto;',
+      }"
     />
 
     <NuxtLink

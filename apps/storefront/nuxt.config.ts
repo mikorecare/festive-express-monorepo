@@ -143,7 +143,29 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/supabase", "@nuxtjs/turnstile", "nuxt-security", '@nuxtjs/sitemap'],
+  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/supabase", "@nuxtjs/turnstile", "nuxt-security", '@nuxtjs/sitemap', '@nuxt/image'],
+
+  image: {
+    provider: 'ipx',
+    quality: 80,
+    format: ['webp', 'avif'],
+    domains: [
+      'localhost',
+      'festive.express',
+      process.env.NUXT_PUBLIC_SITE_URL?.replace('https://', '') || '',
+    ],
+    alias: {
+      'supabase': 'https://phwcfiukyiexdvtccopt.supabase.co/storage/v1/object/public',
+    },
+    screens: {
+      xs: 320,
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+      xxl: 1536,
+    },
+  },
 
   turnstile: {
     siteKey:
