@@ -360,11 +360,16 @@ export default defineNuxtConfig({
       crossOriginResourcePolicy: 'cross-origin',
       crossOriginEmbedderPolicy: 'credentialless',
       crossOriginOpenerPolicy: 'same-origin',
-      
+
     },
   },
 
   routeRules: {
+    '/_ipx/**': {
+      headers: {
+        'Cache-Control': 'public, max-age=31536000, immutable',
+      }
+    },
     '/**': {
       headers: {
         'alt-svc': 'h3=":443"; ma=86400',
