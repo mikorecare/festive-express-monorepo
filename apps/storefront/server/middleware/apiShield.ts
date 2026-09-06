@@ -5,8 +5,14 @@ export default defineEventHandler((event) => {
         return;
     }
 
-    const userAgent = getHeader(event, 'user-agent');
-    const isSSRFetch = !userAgent || userAgent.includes('ofetch');
+    const userAgent = getHeader(event, 'user-agent') || '';
+    const isSSRFetch =
+        !userAgent ||
+        userAgent.toLowerCase().includes('ofetch') ||
+        userAgent.toLowerCase().includes('node-fetch') ||
+        userAgent.toLowerCase().includes('undici') ||
+        (!getHeader(event, 'sec-ch-ua') && !getHeader(event, 'origin') && !getHeader(event, 'referer'));
+
     if (isSSRFetch) {
         return;
     }
@@ -20,7 +26,7 @@ export default defineEventHandler((event) => {
     const referer = getHeader(event, 'referer');
 
     let isSelfRequest = false;
-    
+
     if (origin) {
         try {
             const originUrl = new URL(origin);
@@ -29,7 +35,8 @@ export default defineEventHandler((event) => {
                 .replace(/^https?:\/\//, '')
                 .replace(/:\d+$/, '');
 
-            if (originUrl.host === siteDomain || originUrl.host === host) {
+            // Fallback to match production proxy configurations securely
+            if (originUrl.host === siteDomain || originUrl.host === host || host.includes(siteDomain)) {
                 isSelfRequest = true;
             }
         } catch (e) { }
@@ -44,7 +51,7 @@ export default defineEventHandler((event) => {
                 .replace(/^https?:\/\//, '')
                 .replace(/:\d+$/, '');
 
-            if (refererUrl.host === siteDomain || refererUrl.host === host) {
+            if (refererUrl.host === siteDomain || refererUrl.host === host || host.includes(siteDomain)) {
                 isSelfRequest = true;
             }
         } catch (e) { }
