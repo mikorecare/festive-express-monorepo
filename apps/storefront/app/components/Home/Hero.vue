@@ -1,23 +1,47 @@
 <template>
   <div
     ref="heroRef"
-    class="hero-banner snow-bgxx relative min-h-[70dvh] overflow-hidden flex items-center max-lg:min-h-auto max-lg:py-10"
+    class="hero-banner relative min-h-[70dvh] overflow-hidden flex items-center max-lg:min-h-auto max-lg:py-10"
   >
-    <!-- Single layer on mobile, separate layers on desktop -->
+    <!-- ========================================== -->
+    <!-- 📱 MOBILE ONLY HERO LAYER (High Performance) -->
+    <!-- ========================================== -->
+    <div class="lg:hidden absolute inset-0 z-0">
+      <NuxtImg
+        src="/Images/Hero-Mobile-Fallback.webp"
+        alt=""
+        role="none"
+        sizes="xs:100vw sm:100vw md:100vw"
+        format="webp"
+        quality="75"
+        loading="eager"
+        preload
+        class="w-full h-full object-cover"
+      />
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 💻 DESKTOP ONLY HERO LAYERS (Parallax Engine) -->
+    <!-- ========================================== -->
+    <!-- Single layer background tracker -->
     <div
+      v-if="!isMobile"
       ref="bgRef"
-      class="hero-layer hero-layer-background absolute inset-0 bg-cover bg-no-repeat z-0 will-change-transform"
+      class="hero-layer hero-layer-background absolute inset-0 bg-cover bg-no-repeat z-0 will-change-transform max-lg:hidden"
       :style="bgStyle"
     ></div>
 
-    <!-- Only visible on desktop -->
+    <!-- Family separation overlay layer -->
     <div
-      v-show="!isMobile"
+      v-if="!isMobile"
       ref="familyRef"
-      class="hero-layer hero-layer-family absolute inset-0 bg-cover bg-no-repeat z-[1] will-change-transform"
+      class="hero-layer hero-layer-family absolute inset-0 bg-cover bg-no-repeat z-[1] will-change-transform max-lg:hidden"
       :style="familyStyle"
     ></div>
 
+    <!-- ========================================== -->
+    <!-- 🛠️ COMMON OVERLAYS & STRUCTURAL CONTENT     -->
+    <!-- ========================================== -->
     <div class="overlay absolute inset-0 z-[2] max-lg:bg-black/25"></div>
 
     <CountdownWidget
@@ -59,8 +83,9 @@
           >
             <template v-for="(part, i) in heroDescription1.split('|')" :key="i">
               <br v-if="i > 0" class="mobile-only" />
-              {{ part }} </template
-            ><br />
+              {{ part }}
+            </template>
+            <br />
 
             <span
               class="subtext block text-[0.88rem] font-normal mt-1.5 opacity-90 max-lg:text-[0.68rem] max-lg:mt-0.5"

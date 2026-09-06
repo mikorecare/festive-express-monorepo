@@ -359,6 +359,7 @@ export default defineNuxtConfig({
       crossOriginResourcePolicy: 'cross-origin',
       crossOriginEmbedderPolicy: 'credentialless',
       crossOriginOpenerPolicy: 'same-origin',
+      
     },
   },
 
@@ -372,7 +373,7 @@ export default defineNuxtConfig({
 
   nitro: {
     minify: true,
-    compressPublicAssets: true, // This enables Brotli/gzip automatically
+    compressPublicAssets: true,
     routeRules: {
       '/api/**': {
         headers: {
