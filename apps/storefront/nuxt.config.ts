@@ -148,6 +148,7 @@ export default defineNuxtConfig({
   image: {
     provider: 'ipx',
     quality: 80,
+    dir: 'public',
     format: ['webp', 'avif'],
     domains: [
       'localhost',
