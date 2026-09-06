@@ -146,7 +146,7 @@ export default defineNuxtConfig({
   modules: ["@nuxtjs/tailwindcss", "@nuxtjs/supabase", "@nuxtjs/turnstile", "nuxt-security", '@nuxtjs/sitemap', '@nuxt/image'],
 
   image: {
-    provider: 'ipx',
+    provider: process.env.VERCEL ? 'vercel' : 'ipx',
     quality: 80,
     dir: 'public',
     format: ['webp', 'avif'],
@@ -157,7 +157,7 @@ export default defineNuxtConfig({
       'festive-express-monorepo-storefront.vercel.app',
     ],
     alias: {
-      'supabase': 'https://phwcfiukyiexdvtccopt.supabase.co/storage/v1/object/public',
+      'supabase': 'https://supabase.co',
     },
     screens: {
       xs: 320,
