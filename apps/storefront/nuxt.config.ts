@@ -153,6 +153,7 @@ export default defineNuxtConfig({
       'localhost',
       'festive.express',
       process.env.NUXT_PUBLIC_SITE_URL?.replace('https://', '') || '',
+      'festive-express-monorepo-storefront.vercel.app',
     ],
     alias: {
       'supabase': 'https://phwcfiukyiexdvtccopt.supabase.co/storage/v1/object/public',
