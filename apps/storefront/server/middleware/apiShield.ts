@@ -5,27 +5,23 @@ export default defineEventHandler((event) => {
         return;
     }
 
-    const userAgent = getHeader(event, 'user-agent') || '';
+    if (event.context.nitro) {
+        return;
+    }
+
+    const host = getHeader(event, 'host');
+    if (!host) {
+        // Drop network calls that don't pass an HTTP host identity
+        throw createError({
+            statusCode: 400,
+            statusMessage: 'Bad Request: Missing host execution wrapper.',
+        });
+    }
+
     const origin = getHeader(event, 'origin');
     const referer = getHeader(event, 'referer');
-    const host = getHeader(event, 'host') || '';
-    const isSSRFetch =
-        !userAgent ||
-        userAgent.toLowerCase().includes('ofetch') ||
-        userAgent.toLowerCase().includes('node-fetch') ||
-        userAgent.toLowerCase().includes('undici') ||
-        userAgent.toLowerCase().includes('nitro') ||
-        (!getHeader(event, 'sec-ch-ua') && !origin && !referer);
-
-    if (isSSRFetch) {
-        return;
-    }
-
-    if (!host) {
-        return;
-    }
-
     let isSelfRequest = false;
+
     const config = useRuntimeConfig();
     const siteDomain = (config.public?.siteUrl || 'http://localhost:3000')
         .replace(/^https?:\/\//, '')
@@ -40,6 +36,7 @@ export default defineEventHandler((event) => {
         } catch (e) { }
     }
 
+    // Validate Client Referer (Fallback)
     if (!isSelfRequest && referer) {
         try {
             const refererUrl = new URL(referer);
