@@ -1,7 +1,7 @@
 <template>
   <section
     ref="sectionRef"
-    class="w-full bg-navy text-white py-20 relative overflow-hidden bg-[url('/Images/LV.png')] bg-no-repeat bg-[position:50%] bg-cover"
+    class="w-full bg-navy text-white py-20 relative overflow-hidden bg-[url('/Images/LV.webp')] bg-no-repeat bg-[position:50%] bg-cover"
   >
     <!-- Timeline Header -->
     <div class="text-center px-5 sm:pb-5 relative z-[2] sm:mb-10">

@@ -124,7 +124,7 @@
             </div>
           </div>
           <div
-            class="bg-white rounded-b-[70px] pt-[24px] px-[20px] pb-[60px] flex-1 bg-[url('/Images/LV.png')] bg-no-repeat bg-[position:50%] bg-cover"
+            class="bg-white rounded-b-[70px] pt-[24px] px-[20px] pb-[60px] flex-1 bg-[url('/Images/LV.webp')] bg-no-repeat bg-[position:50%] bg-cover"
           >
             <div class="flex flex-col gap-[16px] w-full">
               <template v-if="includedRows(pkg).length">

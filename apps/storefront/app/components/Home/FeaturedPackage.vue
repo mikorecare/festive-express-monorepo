@@ -1,6 +1,6 @@
 <template>
   <section
-    class="py-[70px] bg-white scroll-mt-[110px] bg-[url('/Images/LV.png')] bg-no-repeat bg-[position:50%] bg-cover"
+    class="py-[70px] bg-white scroll-mt-[110px] bg-[url('/Images/LV.webp')] bg-no-repeat bg-[position:50%] bg-cover"
     id="packages"
   >
     <div class="container mx-auto px-4">

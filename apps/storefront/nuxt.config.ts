@@ -59,8 +59,12 @@ export default defineNuxtConfig({
         },
         {
           rel: "preload",
+          as: "style",
+          type: "text/css",
           href: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css",
-        },
+          crossorigin: "anonymous",
+        }
+
       ],
       script: [
         {
