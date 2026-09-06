@@ -5,7 +5,9 @@ export default defineEventHandler((event) => {
         return;
     }
 
-    if (process.env.NODE_ENV === 'development') {
+    const userAgent = getHeader(event, 'user-agent');
+    const isSSRFetch = !userAgent || userAgent.includes('ofetch');
+    if (isSSRFetch) {
         return;
     }
 
@@ -17,9 +19,8 @@ export default defineEventHandler((event) => {
     const origin = getHeader(event, 'origin');
     const referer = getHeader(event, 'referer');
 
-    // Check if request is from your own domain
     let isSelfRequest = false;
-
+    
     if (origin) {
         try {
             const originUrl = new URL(origin);
@@ -34,6 +35,7 @@ export default defineEventHandler((event) => {
         } catch (e) { }
     }
 
+    // 3. Validate Referer (Fallback)
     if (!isSelfRequest && referer) {
         try {
             const refererUrl = new URL(referer);
