@@ -58,21 +58,34 @@
           <!-- Card Top -->
           <div class="relative p-3 pb-0">
             <h3 class="sr-only">{{ pkg.name }}</h3>
-            <img
+            <NuxtImg
               class="absolute z-[2] pointer-events-none w-auto drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)] -bottom-[28px] h-[60px] md:-bottom-[34px] md:h-[68px] lg:-bottom-[38px] lg:h-[72px] left-6 md:left-[58px] lg:left-[20px]"
               :src="pkg.title_image_url || '/Images/placeholder.png'"
               :alt="pkg.name"
+              sizes="60px md:68px lg:72px"
+              loading="lazy"
             />
 
             <div
               class="rounded-[22px] border-4 border-brand-orange overflow-hidden relative leading-none"
             >
-              <img
-                :ref="(el) => setImageRef(el, index)"
+              <NuxtImg
                 :src="pkg.image_url || '/Images/placeholder.png'"
-                :alt="pkg.name"
-                class="w-full h-[200px] object-cover block"
-              />
+                sizes="sm:100vw md:50vw lg:400px"
+                height="200"
+                custom
+              >
+                <template #default="{ imgAttrs, src }">
+                  <img
+                    :ref="(el) => setImageRef(el, index)"
+                    v-bind="imgAttrs"
+                    :src="src"
+                    :alt="pkg.name"
+                    class="w-full h-[200px] object-cover block"
+                    loading="lazy"
+                  />
+                </template>
+              </NuxtImg>
               <div
                 class="absolute -top-1/2 -left-[150%] w-[200%] h-[200%] bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] rotate-[25deg] pointer-events-none animate-[glossyShineContinuous_3s_linear_infinite]"
               />
@@ -82,10 +95,13 @@
               class="absolute z-[1] rounded-full bg-brand-orange flex items-center justify-center shadow-[0_6px_16px_rgba(244,147,33,0.45)] right-[30px] max-sm:right-3 -bottom-[30px] max-sm:-bottom-[24px] w-[64px] h-[64px] max-sm:w-[64px] max-sm:h-[64px]"
               aria-hidden="true"
             >
-              <img
+              <NuxtImg
                 class="object-contain w-[64px] h-[64px] max-sm:w-[64px] max-sm:h-[64px]"
                 :src="pkg.icon_url || '/Images/placeholder.png'"
                 alt=""
+                loading="lazy"
+                width="64"
+                height="64"
               />
             </div>
           </div>
@@ -124,11 +140,19 @@
                     :key="i"
                     class="flex items-center gap-2.5 py-1.5 border-b border-gray-300 text-sm last:border-b-0"
                   >
-                    <img
+                    <NuxtImg
                       v-if="row.image_url"
                       :src="row.image_url"
                       class="w-8 h-8 object-contain flex-shrink-0"
                       alt=""
+                      width="32"
+                      height="32"
+                      fit="contain"
+                      loading="lazy"
+                      :img-attrs="{
+                        style:
+                          'display: block; width: 100%; height: 100%; object-fit: contain;',
+                      }"
                     />
                     <span>{{ row.name }}</span>
                   </div>
@@ -142,15 +166,20 @@
                 v-if="showSale(pkg.sale_price)"
                 class="relative flex justify-end"
               >
-                <img
+                <NuxtImg
                   class="absolute pointer-events-none object-contain z-[1] w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 -top-4 -right-[19px] md:-top-5 md:-right-[22px] lg:-top-6 lg:-right-[25px]"
                   :src="starburstSrc"
                   alt=""
+                  sizes="40px md:48px lg:56px"
+                  loading="lazy"
                 />
-                <img
+
+                <NuxtImg
                   :src="earlyBirdIconUrl"
                   alt="Early Bird Special"
                   class="relative z-0 h-8 md:h-9 w-auto drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)]"
+                  sizes="sm:120px md:150px"
+                  loading="lazy"
                 />
               </div>
 

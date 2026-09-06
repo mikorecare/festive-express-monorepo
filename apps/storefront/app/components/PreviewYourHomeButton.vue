@@ -5,10 +5,14 @@
     :class="{ 'mx-auto': true }"
   >
     <div class="relative w-[320px] max-lg:w-[180px]">
-      <img
+      <!-- Using NuxtPicture for modern format fallbacks (AVIF/WebP) -->
+      <NuxtPicture
         :src="frameSrc"
         alt="Preview Your Home"
         class="relative z-0 h-auto w-full object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.2)]"
+        sizes="max-lg:180px 320px"
+        width="320"
+        legacy
       />
     </div>
   </NuxtLink>
@@ -17,6 +21,13 @@
 <script setup>
 const FRAME_A = "/Images/Festivo/PreviewYourHomeButton.png";
 const FRAME_B = "/Images/Festivo/PreviewYourHomeButton2.png";
+
+// Optimization: Pre-request both images through the optimizer instantly on setup
+if (import.meta.client) {
+  const img = useImage();
+  img(FRAME_A, { width: 320 });
+  img(FRAME_B, { width: 320 });
+}
 
 const showB = ref(false);
 const frameSrc = computed(() => (showB.value ? FRAME_B : FRAME_A));
