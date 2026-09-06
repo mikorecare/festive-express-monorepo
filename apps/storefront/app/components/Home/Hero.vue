@@ -14,7 +14,10 @@
         sizes="xs:100vw sm:100vw md:100vw"
         format="webp"
         quality="75"
-        loading="eager"
+        :img-attrs="{
+          loading: 'eager',
+          fetchpriority: 'high',
+        }"
         preload
         class="w-full h-full object-cover"
       />

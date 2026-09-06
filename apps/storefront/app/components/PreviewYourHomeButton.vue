@@ -5,7 +5,7 @@
   >
     <div class="relative w-[320px] max-lg:w-[180px] h-[320px] max-lg:h-[180px]">
       <NuxtImg
-        src="/Images/Festivo/PreviewYourHomeButton.png"
+        src="/Images/Festivo/PreviewYourHomeButton.webp"
         alt="Preview Your Home"
         class="absolute inset-0 z-0 h-full w-full object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.2)]"
         :class="{ 'opacity-0': showB }"
@@ -14,7 +14,7 @@
         draggable="false"
       />
       <NuxtImg
-        src="/Images/Festivo/PreviewYourHomeButton2.png"
+        src="/Images/Festivo/PreviewYourHomeButton2.webp"
         alt="Preview Your Home"
         class="absolute inset-0 z-0 h-full w-full object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.2)]"
         :class="{ 'opacity-0': !showB }"
