@@ -8,7 +8,7 @@
     <!-- ========================================== -->
     <div class="lg:hidden absolute inset-0 z-0">
       <NuxtImg
-        src="/Images/Hero-Mobile-Fallback.webp"
+        src="/Images/Banner/hero-image-mobile-768.webp"
         alt=""
         role="none"
         sizes="xs:100vw sm:100vw md:100vw"

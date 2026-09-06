@@ -9,33 +9,33 @@
       <div
         class="w-full lg:w-[62%] p-6 sm:p-10 lg:py-10 lg:pr-8 lg:pl-[3.5rem]"
       >
-        <!-- Section Header with Standard Mobile Classes -->
+        <!-- Section Header -->
         <div class="text-left">
           <span
             v-fade
-            class="text-brand-orange font-extrabold tracking-[0.8px] block mb-1 uppercase text-2xl"
+            class="text-brand-orange font-extrabold tracking-[0.8px] block mb-1 uppercase text-base sm:text-2xl"
           >
             WHY CHOOSE US?
           </span>
           <h2
             v-fade
-            class="font-extrabold text-white text-uppercase text-2xl sm:text-3xl lg:text-4xl max-sm:text-[1.2rem] max-sm:leading-[1.3] mb-[1.5rem] lg:mb-[2rem] leading-[1.15]"
+            class="font-extrabold text-white text-uppercase text-xl sm:text-2xl lg:text-4xl max-sm:text-[1.2rem] max-sm:leading-[1.3] mb-[1.5rem] lg:mb-[2rem] leading-[1.15]"
           >
             Festive Express <span class="text-brand-orange">Difference</span>
           </h2>
         </div>
 
-        <!-- Benefits Row / Grid -->
+        <!-- Benefits Grid - Better mobile layout -->
         <div
-          class="grid grid-cols-2 sm:flex sm:justify-between gap-6 sm:gap-[1.25rem]"
+          class="grid grid-cols-2 gap-4 sm:flex sm:justify-between sm:gap-[1.25rem]"
         >
           <!-- Item 1: Full-Service Installation -->
           <div
             v-fade-left
-            class="group flex-1 text-center flex flex-col items-center cursor-pointer"
+            class="group text-center flex flex-col items-center cursor-pointer"
           >
             <div
-              class="w-[68px] h-[68px] rounded-full flex items-center justify-center mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
+              class="w-[56px] h-[56px] sm:w-[68px] sm:h-[68px] rounded-full flex items-center justify-center mb-2 sm:mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
             >
               <NuxtImg
                 src="/Images/Icons/trained.png"
@@ -50,12 +50,12 @@
               />
             </div>
             <h3
-              class="text-white text-[0.9rem] font-bold leading-[1.2] mb-[0.35rem]"
+              class="text-white text-[0.7rem] sm:text-[0.9rem] font-bold leading-[1.2] mb-0.5 sm:mb-[0.35rem]"
             >
               Full-Service<br class="hidden sm:inline" />Installation
             </h3>
             <p
-              class="text-[#F49321] text-[0.9rem] font-semibold leading-[1.25] m-0"
+              class="text-[#F49321] text-[0.65rem] sm:text-[0.9rem] font-semibold leading-[1.25] m-0"
             >
               Installed Safely by<br class="hidden sm:inline" />Trained
               Technicians
@@ -65,10 +65,10 @@
           <!-- Item 2: Licensed & Insured -->
           <div
             v-fade-left
-            class="group flex-1 text-center flex flex-col items-center cursor-pointer"
+            class="group text-center flex flex-col items-center cursor-pointer"
           >
             <div
-              class="w-[68px] h-[68px] rounded-full flex items-center justify-center mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
+              class="w-[56px] h-[56px] sm:w-[68px] sm:h-[68px] rounded-full flex items-center justify-center mb-2 sm:mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
             >
               <NuxtImg
                 src="/Images/Icons/secured.png"
@@ -83,12 +83,12 @@
               />
             </div>
             <h3
-              class="text-white text-[0.9rem] font-bold leading-[1.2] mb-[0.35rem]"
+              class="text-white text-[0.7rem] sm:text-[0.9rem] font-bold leading-[1.2] mb-0.5 sm:mb-[0.35rem]"
             >
               Licensed &amp;<br class="hidden sm:inline" />Insured
             </h3>
             <p
-              class="text-[#F49321] text-[0.9rem] font-semibold leading-[1.25] m-0"
+              class="text-[#F49321] text-[0.65rem] sm:text-[0.9rem] font-semibold leading-[1.25] m-0"
             >
               Your Home Is<br class="hidden sm:inline" />Fully Protected
             </p>
@@ -97,10 +97,10 @@
           <!-- Item 3: Professional Grade Lighting -->
           <div
             v-fade-left
-            class="group flex-1 text-center flex flex-col items-center cursor-pointer"
+            class="group text-center flex flex-col items-center cursor-pointer"
           >
             <div
-              class="w-[68px] h-[68px] rounded-full flex items-center justify-center mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
+              class="w-[56px] h-[56px] sm:w-[68px] sm:h-[68px] rounded-full flex items-center justify-center mb-2 sm:mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
             >
               <NuxtImg
                 src="/Images/Icons/service.png"
@@ -115,12 +115,12 @@
               />
             </div>
             <h3
-              class="text-white text-[0.9rem] font-bold leading-[1.2] mb-[0.35rem]"
+              class="text-white text-[0.7rem] sm:text-[0.9rem] font-bold leading-[1.2] mb-0.5 sm:mb-[0.35rem]"
             >
               Professional<br class="hidden sm:inline" />Grade Lighting
             </h3>
             <p
-              class="text-[#F49321] text-[0.9rem] font-semibold leading-[1.25] m-0"
+              class="text-[#F49321] text-[0.65rem] sm:text-[0.9rem] font-semibold leading-[1.25] m-0"
             >
               Built to Last Year<br class="hidden sm:inline" />After Year
             </p>
@@ -129,10 +129,10 @@
           <!-- Item 4: Ongoing Local Support -->
           <div
             v-fade-left
-            class="group flex-1 text-center flex flex-col items-center cursor-pointer"
+            class="group text-center flex flex-col items-center cursor-pointer"
           >
             <div
-              class="w-[68px] h-[68px] rounded-full flex items-center justify-center mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
+              class="w-[56px] h-[56px] sm:w-[68px] sm:h-[68px] rounded-full flex items-center justify-center mb-2 sm:mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
             >
               <NuxtImg
                 src="/Images/Icons/location.png"
@@ -147,12 +147,12 @@
               />
             </div>
             <h3
-              class="text-white text-[0.9rem] font-bold leading-[1.2] mb-[0.35rem]"
+              class="text-white text-[0.7rem] sm:text-[0.9rem] font-bold leading-[1.2] mb-0.5 sm:mb-[0.35rem]"
             >
               Ongoing Local<br class="hidden sm:inline" />Support
             </h3>
             <p
-              class="text-[#F49321] text-[0.9rem] font-semibold leading-[1.25] m-0"
+              class="text-[#F49321] text-[0.65rem] sm:text-[0.9rem] font-semibold leading-[1.25] m-0"
             >
               We're Here<br class="hidden sm:inline" />Long After Install
             </p>
@@ -160,9 +160,9 @@
         </div>
       </div>
 
-      <!-- Mobile Photo Frame (Visible on Mobile/Tablet Only) -->
+      <!-- Mobile Photo Frame -->
       <div
-        class="block lg:hidden w-full h-[240px] overflow-hidden border-t-4 border-brand-orange"
+        class="block lg:hidden w-full h-[200px] overflow-hidden border-t-4 border-brand-orange"
       >
         <NuxtImg
           src="/Images/why-choose-us-bg-2.webp"
@@ -170,7 +170,7 @@
           format="webp"
           quality="85"
           width="800"
-          height="240"
+          height="200"
           fit="cover"
           loading="lazy"
           class="w-full h-full object-cover"
