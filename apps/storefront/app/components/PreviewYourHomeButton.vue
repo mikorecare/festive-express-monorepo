@@ -7,7 +7,7 @@
       <NuxtImg
         src="/Images/Festivo/PreviewYourHomeButton.png"
         alt="Preview Your Home"
-        class="absolute inset-0 z-0 h-full w-full object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.2)] transition-opacity duration-300"
+        class="absolute inset-0 z-0 h-full w-full object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.2)]"
         :class="{ 'opacity-0': showB }"
         fit="contain"
         loading="eager"
@@ -16,7 +16,7 @@
       <NuxtImg
         src="/Images/Festivo/PreviewYourHomeButton2.png"
         alt="Preview Your Home"
-        class="absolute inset-0 z-0 h-full w-full object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.2)] transition-opacity duration-300"
+        class="absolute inset-0 z-0 h-full w-full object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.2)]"
         :class="{ 'opacity-0': !showB }"
         fit="contain"
         loading="eager"
