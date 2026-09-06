@@ -1,4 +1,4 @@
-import { serverSupabaseClient } from '#supabase/server'
+import { getSupabase } from '~~/server/utils/supabase'
 
 type Review = {
     id: string
@@ -52,7 +52,7 @@ export default defineEventHandler(async (event) => {
         });
     }
 
-    const supabase = await serverSupabaseClient<any>(event);
+    const supabase = getSupabase();
 
     try {
         const { data: review, error: reviewError } = await supabase

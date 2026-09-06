@@ -1,5 +1,5 @@
-// server/api/packages/index.get.ts
-import { serverSupabaseClient } from '#supabase/server'
+
+import { getSupabase } from '~~/server/utils/supabase'
 
 type InclusionItem = {
     id: string
@@ -41,7 +41,7 @@ type PackagesResponse = {
 const STORAGE_BUCKET = 'Products'
 
 export default defineEventHandler(async (event) => {
-    const supabase = await serverSupabaseClient<Package>(event);
+    const supabase = getSupabase()
 
     const { data, error } = await supabase
         .from("packages")

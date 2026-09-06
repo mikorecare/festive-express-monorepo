@@ -141,12 +141,13 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/supabase", "@nuxtjs/turnstile", "nuxt-security", '@nuxtjs/sitemap', '@nuxt/image'],
+  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/turnstile", "nuxt-security", '@nuxtjs/sitemap', '@nuxt/image'],
 
   image: {
     provider: process.env.VERCEL ? 'vercel' : 'ipx',
-    quality: 80,
     dir: 'public',
+    // dir: "/apps/storefront/public/",
+    quality: 80,
     format: ['webp', 'avif'],
     domains: [
       'localhost',
@@ -165,23 +166,15 @@ export default defineNuxtConfig({
       xl: 1280,
       xxl: 1536,
     },
+
+    ipx: {
+      maxAge: 31536000,
+    },
   },
 
   turnstile: {
     siteKey:
       process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || "1x00000000000000000000AA",
-  },
-
-  supabase: {
-    url: process.env.SUPABASE_URL,
-    key: process.env.SUPABASE_KEY,
-    serviceKey: process.env.SUPABASE_SERVICE_KEY,
-    redirect: false,
-    cookieOptions: {
-      maxAge: 60 * 60 * 8,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-    },
   },
 
   postcss: {
@@ -216,6 +209,11 @@ export default defineNuxtConfig({
       secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY || "",
     },
 
+    supabase: {
+      serviceKey: process.env.SUPABASE_SERVICE_KEY,
+      secretKey: process.env.SUPABASE_KEY,
+    },
+
     elavonAccountId: process.env.ELAVON_ACCOUNT_ID || "",
     elavonUserId: process.env.ELAVON_USER_ID || "",
     elavonPin: process.env.ELAVON_PIN || "",
@@ -226,6 +224,7 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || "http://localhost:3000/api",
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+      supabaseUrl: process.env.SUPABASE_URL
     },
   },
 
@@ -401,5 +400,5 @@ export default defineNuxtConfig({
         }
       }
     }
-  }
+  },
 });

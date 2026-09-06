@@ -1,4 +1,4 @@
-import { serverSupabaseClient } from '#supabase/server'
+import { getSupabase } from '~~/server/utils/supabase'
 
 interface EarlyBirdSettings {
     early_bird_enabled: boolean
@@ -10,7 +10,7 @@ interface EarlyBirdSettings {
 }
 
 export default defineEventHandler(async (event) => {
-    const supabase = await serverSupabaseClient(event)
+    const supabase = getSupabase()
 
     try {
         const { data, error } = await supabase

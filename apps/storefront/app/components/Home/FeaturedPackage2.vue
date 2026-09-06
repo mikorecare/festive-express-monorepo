@@ -47,7 +47,7 @@
               <!-- NuxtImg for normal flow -->
               <NuxtImg
                 class="block h-14 md:h-[72px] lg:h-[80px] w-max max-w-[140px] md:max-w-[200px] lg:max-w-[240px] object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.3)]"
-                :src="getPackageTitleImage(pkg.name)"
+                :src="pkg.title_image_url"
                 :alt="pkg.name"
                 height="80"
                 fit="contain"
@@ -192,7 +192,6 @@
 </template>
 
 <script setup lang="ts">
-const config = useRuntimeConfig();
 
 interface InclusionDisplay {
   name: string;

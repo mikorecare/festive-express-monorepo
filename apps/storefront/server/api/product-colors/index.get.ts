@@ -1,4 +1,4 @@
-import { serverSupabaseClient } from '#supabase/server'
+import { getSupabase } from '~~/server/utils/supabase'
 
 type ProductColor = {
     id: string
@@ -15,7 +15,7 @@ type ProductColorsResponse = {
 }
 
 export default defineEventHandler(async (event) => {
-    const supabase = await serverSupabaseClient(event)
+    const supabase = getSupabase()
 
     try {
         const { data, error } = await supabase

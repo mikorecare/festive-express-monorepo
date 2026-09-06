@@ -1,59 +1,71 @@
+// server/middleware/api-blocker.ts
+import { getHeader, createError, defineEventHandler, getRequestURL } from 'h3'
+
 export default defineEventHandler((event) => {
-    const path = event.path || getRequestURL(event).pathname;
+    const path = event.path || getRequestURL(event).pathname
 
     if (!path.startsWith('/api/')) {
-        return;
+        return
     }
 
     if (event.context.nitro) {
-        return;
+        return
     }
 
-    const host = getHeader(event, 'host');
+    const secFetchMode = getHeader(event, 'sec-fetch-mode')
+
+    // BLOCK any request with sec-fetch-mode: navigate
+    if (secFetchMode === 'navigate') {
+        throw createError({
+            statusCode: 404,
+            statusMessage: 'Not Found',
+        })
+    }
+
+    // Domain validation for API requests
+    const host = getHeader(event, 'host')
     if (!host) {
-        // Drop network calls that don't pass an HTTP host identity
         throw createError({
             statusCode: 400,
-            statusMessage: 'Bad Request: Missing host execution wrapper.',
-        });
+            statusMessage: 'Bad Request: Missing host.',
+        })
     }
 
-    const origin = getHeader(event, 'origin');
-    const referer = getHeader(event, 'referer');
-    let isSelfRequest = false;
-
-    const config = useRuntimeConfig();
+    const config = useRuntimeConfig()
     const siteDomain = (config.public?.siteUrl || 'http://localhost:3000')
         .replace(/^https?:\/\//, '')
-        .replace(/:\d+$/, '');
+        .replace(/:\d+$/, '')
+
+    const origin = getHeader(event, 'origin')
+    const referer = getHeader(event, 'referer')
+    let isSelfRequest = false
 
     if (origin) {
         try {
-            const originUrl = new URL(origin);
+            const originUrl = new URL(origin)
             if (originUrl.host === siteDomain || originUrl.host === host || host.includes(siteDomain)) {
-                isSelfRequest = true;
+                isSelfRequest = true
             }
         } catch (e) { }
     }
 
-    // Validate Client Referer (Fallback)
     if (!isSelfRequest && referer) {
         try {
-            const refererUrl = new URL(referer);
+            const refererUrl = new URL(referer)
             if (refererUrl.host === siteDomain || refererUrl.host === host || host.includes(siteDomain)) {
-                isSelfRequest = true;
+                isSelfRequest = true
             }
         } catch (e) { }
     }
 
     if (!isSelfRequest && host && (host === siteDomain || host.includes(siteDomain))) {
-        isSelfRequest = true;
+        isSelfRequest = true
     }
 
     if (!isSelfRequest) {
         throw createError({
-            statusCode: 403,
-            statusMessage: 'Forbidden: Direct API access is prohibited.',
-        });
+            statusCode: 404,
+            statusMessage: 'Not Found',
+        })
     }
-});
+})

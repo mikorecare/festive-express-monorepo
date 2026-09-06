@@ -1,4 +1,4 @@
-import { serverSupabaseClient } from '#supabase/server'
+import { getSupabase } from '~~/server/utils/supabase'
 
 type FaqItem = {
     id: number
@@ -27,7 +27,7 @@ type FaqsResponse = {
 }
 
 export default defineEventHandler(async (event) => {
-    const supabase = await serverSupabaseClient(event)
+    const supabase = getSupabase()
 
     try {
         // Fetch FAQ categories with their FAQs

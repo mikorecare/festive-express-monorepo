@@ -68,10 +68,14 @@
               v-if="!cartItems.length"
               class="flex flex-1 flex-col items-center justify-center px-4 text-center"
             >
-              <img
+              <NuxtImg
                 src="/Images/Festivo/cart-empty.png"
                 alt=""
                 class="mb-4 h-28 w-auto object-contain"
+                width="112"
+                height="112"
+                loading="lazy"
+                format="webp"
                 @error="onEmptyImgError"
               />
               <p class="text-base text-slate-600">
@@ -94,10 +98,16 @@
                 :key="item.id"
                 class="flex flex-col gap-2"
               >
-                <img
-                  :src="getImageUrl(item.product?.image_url)"
-                  :alt="item.product?.name || ''"
+                <NuxtImg
+                  :src="item.product?.image_url || '/Images/placeholder.png'"
+                  :alt="item.product?.name || 'Product image'"
                   class="w-full h-48 rounded-md object-cover bg-slate-100"
+                  width="400"
+                  height="300"
+                  loading="lazy"
+                  format="webp"
+                  fit="cover"
+                  placeholder
                   @error="onImgError"
                 />
                 <div class="flex flex-col gap-1">
@@ -159,9 +169,6 @@
 import { ShoppingCartIcon } from "@heroicons/vue/24/outline";
 
 const cart = useCart();
-const supabase = useSupabaseClient();
-const config = useRuntimeConfig();
-
 const open = ref(false);
 
 const cartItems = computed(() => cart.cartItems.value);
@@ -176,30 +183,28 @@ const displayCount = computed(() => Number(cart.cartCount?.value || 0));
 const lineTotal = (item: any) =>
   (Number(item.price || 0) * Number(item.quantity || 1)).toFixed(2);
 
-const getImageUrl = (url?: string | null) => {
-  if (!url) return "/Images/placeholder-package.jpg";
-  if (
-    url.startsWith("http://") ||
-    url.startsWith("https://") ||
-    url.startsWith("/") ||
-    url.startsWith("blob:")
-  ) {
-    return url;
+const onImgError = (payload: string | Event) => {
+  if (typeof payload === "string") {
+    console.error("Image load error:", payload);
+    return;
   }
-  const path = url.replace(/^\//, "").replace(/^Products\//i, "");
-  const bucket = (config.public.storageBucket as string) || "Products";
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-  return data.publicUrl || "/Images/placeholder-package.jpg";
+
+  const img = payload.target as HTMLImageElement;
+  if (img) {
+    img.src = "/Images/placeholder.png";
+  }
 };
 
-const onImgError = (e: Event) => {
-  const img = e.target as HTMLImageElement;
-  if (img) img.src = "/Images/placeholder.png";
-};
+const onEmptyImgError = (payload: string | Event) => {
+  if (typeof payload === "string") {
+    console.error("Empty image load error:", payload);
+    return;
+  }
 
-const onEmptyImgError = (e: Event) => {
-  const img = e.target as HTMLImageElement;
-  if (img) img.src = "/Images/Festivo/cart-empty.png";
+  const img = payload.target as HTMLImageElement;
+  if (img) {
+    img.src = "/Images/placeholder.png";
+  }
 };
 
 const removeItem = async (id: string | number) => {

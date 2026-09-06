@@ -1,5 +1,5 @@
 // server/api/orders/confirm.post.ts
-import { serverSupabaseClient } from '#supabase/server'
+import { getSupabase } from '~~/server/utils/supabase'
 
 type ConfirmOrderBody = {
   order_number: string
@@ -81,7 +81,7 @@ export default defineEventHandler(async (event) => {
     return { success: false, error: "Order number and email are required" };
   }
 
-  const supabase = await serverSupabaseClient<any>(event);
+  const supabase = getSupabase();
 
   const { data, error } = await supabase
     .from("orders")

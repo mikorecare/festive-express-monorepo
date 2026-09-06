@@ -1,10 +1,10 @@
-import { serverSupabaseClient } from '#supabase/server'
+import { getSupabase } from '~~/server/utils/supabase'
 
 const STORAGE_BUCKET = 'Gallery'
 
 export default defineEventHandler(async (event) => {
     try {
-        const supabase = await serverSupabaseClient<any>(event)
+        const supabase = getSupabase()
 
         const { data, error } = await supabase
             .from('gallery_items')

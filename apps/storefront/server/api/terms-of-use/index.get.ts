@@ -1,4 +1,4 @@
-import { serverSupabaseClient } from '#supabase/server'
+import { getSupabase } from '~~/server/utils/supabase'
 
 type TermsContent = {
     id?: string
@@ -16,7 +16,7 @@ type TermsResponse = {
 }
 
 export default defineEventHandler(async (event) => {
-    const supabase = await serverSupabaseClient(event)
+    const supabase = getSupabase()
 
     try {
         const { data, error } = await supabase

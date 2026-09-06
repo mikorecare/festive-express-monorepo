@@ -1,5 +1,5 @@
 
-import { serverSupabaseClient } from '#supabase/server'
+import { getSupabase } from '~~/server/utils/supabase'
 
 // Helper function to check if early bird is active (duplicated from composable for server use)
 const isEarlyBirdActive = (enabled?: boolean, expiresAt?: string | null) => {
@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
         })
     }
 
-    const supabase = await serverSupabaseClient<any>(event)
+    const supabase = getSupabase()
 
     try {
         const { data: productData, error: productError } = await supabase

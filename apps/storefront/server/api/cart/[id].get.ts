@@ -1,4 +1,6 @@
-import { serverSupabaseClient } from '#supabase/server'
+import { getSupabase } from '~~/server/utils/supabase'
+
+const STORAGE_BUCKET = 'Products'
 
 export default defineEventHandler(async (event) => {
     const cartId = getRouterParam(event, 'id')
@@ -10,7 +12,7 @@ export default defineEventHandler(async (event) => {
         })
     }
 
-    const supabase = await serverSupabaseClient<any>(event)
+    const supabase = getSupabase()
 
     try {
         const { data, error } = await supabase
@@ -39,7 +41,35 @@ export default defineEventHandler(async (event) => {
             })
         }
 
-        const items = data || []
+        const items = (data || []).map((item: any) => {
+            let product = item.product || {}
+
+            if (Array.isArray(product)) {
+                product = product[0] || {}
+            }
+
+            let imageUrl = product.image_url
+
+            if (imageUrl && typeof imageUrl === 'string' &&
+                !imageUrl.startsWith('http://') &&
+                !imageUrl.startsWith('https://')) {
+                const { data: urlData } = supabase
+                    .storage
+                    .from(STORAGE_BUCKET)
+                    .getPublicUrl(imageUrl.replace(/^\/+/, ''))
+                imageUrl = urlData?.publicUrl || imageUrl
+            }
+
+            // Return the item with transformed product
+            return {
+                ...item,
+                product: {
+                    ...product,
+                    image_url: imageUrl
+                }
+            }
+        })
+
         const count = items.reduce((sum, item) => sum + (Number(item.quantity) || 1), 0)
 
         return {
