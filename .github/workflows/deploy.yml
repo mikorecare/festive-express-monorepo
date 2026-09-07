@@ -21,57 +21,45 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            # 1. Exit immediately if any command fails
-            set -e
-
-            # 2. Navigate to monorepo root
+            # 1. Navigate to monorepo root
             cd /var/www/festive-express/festive-express-monorepo
 
-            # 3. FORCE PULL the latest code from production branch
+            # 2. FORCE PULL the latest code from production branch
             echo "Pulling latest code from production branch..."
             git fetch origin production
             git reset --hard origin/production
+            # This ensures the server EXACTLY matches the remote production branch
 
-            # 4. Load Node/NVM environment rules cleanly
+            # 3. Load Node/NVM environment rules
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-            # 5. Verify vital API paths exist
+            # 4. Verify the files exist after pull
             echo "Checking elavon API files..."
             ls -la apps/storefront/server/api/elavon/ || echo "Elavon directory not found!"
 
-            # 6. ATOMIC BUILD: Storefront (Zero-Downtime)
+            # 5. BUILD & DEPLOY APP 1: Storefront
             echo "Building Storefront..."
             cd /var/www/festive-express/festive-express-monorepo/apps/storefront
             npm install
-            
-            # Build safely into an isolated workspace directory to prevent live Nginx 502s
-            NITRO_OUTPUT_DIR=./.output_temp npm run build
-            
-            # Instantly swap the old directory with the new directory at the OS level
             rm -rf .output .nuxt node_modules/.cache
-            mv .output_temp .output
+            npm run build
 
-            # 7. ATOMIC BUILD: Admin (Zero-Downtime)
+            # 6. BUILD & DEPLOY APP 2: Admin
             echo "Building Admin..."
             cd /var/www/festive-express/festive-express-monorepo/apps/admin
             npm install
-            
-            # Build safely into an isolated workspace directory
-            NITRO_OUTPUT_DIR=./.output_temp npm run build
-            
-            # Instantly swap the folders
             rm -rf .output .nuxt node_modules/.cache
-            mv .output_temp .output
+            npm run build
 
-            # 8. HOT-RELOAD APPLICATION VIA PM2
-            echo "Hot-reloading applications with PM2..."
+            # 7. RESTART VIA PM2
+            echo "Restarting applications with PM2..."
             cd /var/www/festive-express/festive-express-monorepo
-            
-            # Enforce an active reload to safely swap memory mappings without closing connections
-            pm2 reload ecosystem.config.js --update-env
+            pm2 restart ecosystem.config.js --update-env
             pm2 save
 
-            # 9. Verify System Integrity
+            # 8. Check status
             pm2 list
+            
+            # 9. Show recent logs
             pm2 logs --lines 20 --nostream
