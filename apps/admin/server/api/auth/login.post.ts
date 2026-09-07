@@ -5,6 +5,7 @@ export default defineEventHandler(async (event) => {
     try {
         const body = await readBody(event);
         const { email, password, turnstileToken } = body;
+        const config = useRuntimeConfig()
 
         if (!email || !password) {
             throw createError({
@@ -20,7 +21,7 @@ export default defineEventHandler(async (event) => {
             });
         }
 
-        const turnstileSecret = process.env.NUXT_TURNSTILE_SECRET_KEY;
+        const turnstileSecret = config.turnstileSecretKey;
         if (!turnstileSecret) {
             console.error('Turnstile secret key not configured');
             throw createError({
