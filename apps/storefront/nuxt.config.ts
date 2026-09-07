@@ -143,6 +143,12 @@ export default defineNuxtConfig({
 
   modules: ["@nuxtjs/tailwindcss", "@nuxtjs/turnstile", "nuxt-security", '@nuxtjs/sitemap', '@nuxt/image'],
 
+  vite: {
+    esbuild: {
+      drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
+    },
+  },
+
   image: {
     provider: process.env.NODE_ENV === 'development'
       ? 'none'
@@ -380,6 +386,7 @@ export default defineNuxtConfig({
   nitro: {
     minify: true,
     compressPublicAssets: true,
+    logLevel: process.env.NODE_ENV === 'production' ? 0 : 1,
     routeRules: {
       '/api/**': {
         headers: {

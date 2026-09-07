@@ -1,7 +1,9 @@
 <template>
   <div class="font-poppins">
     <Header />
-    <NuxtPage />
+    <main id="main-content" role="main">
+      <NuxtPage />
+    </main>
     <Toaster position="top-center" richColors closeButton />
     <Footer />
     <FloatingCart />
@@ -9,6 +11,7 @@
     <ChatWidget ref="chatWidget" />
   </div>
 </template>
+
 <script setup lang="ts">
 const chatWidget = ref();
 
