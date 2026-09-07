@@ -53,9 +53,11 @@ jobs:
             npm run build
 
             # 7. RESTART VIA PM2
-            echo "Restarting applications with PM2..."
+            echo "Hot-reloading applications with PM2..."
             cd /var/www/festive-express/festive-express-monorepo
-            pm2 restart ecosystem.config.js --update-env
+            
+            # CHANGED: Changed 'restart' to 'reload' to fetch fresh .output pointers
+            pm2 reload ecosystem.config.js --update-env
             pm2 save
 
             # 8. Check status
