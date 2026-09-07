@@ -65,9 +65,6 @@
                   :src="earlyBirdIconUrl"
                   alt="Early Bird Special"
                   class="relative z-0 h-8 md:h-9 w-auto origin-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
-                  width="100"
-                  height="36"
-                  fit="contain"
                   loading="lazy"
                 />
                 <!-- img for absolute positioning (NuxtImg wrapper breaks absolute) -->

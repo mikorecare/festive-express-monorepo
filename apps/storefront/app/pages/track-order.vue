@@ -11,7 +11,7 @@
           Enter your order number and billing email to see the current status.
         </p>
 
-        <form class="space-y-3" @submit.prevent="trackOrder">
+        <form role="form"  class="space-y-3" @submit.prevent="trackOrder">
           <input
             v-model="form.order_number"
             type="text"

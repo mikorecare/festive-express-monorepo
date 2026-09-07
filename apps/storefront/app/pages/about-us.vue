@@ -1,13 +1,17 @@
 <template>
   <div>
-    <section class="page-hero snow-bg">
+    <section
+      aria-label="About Us hero banner"
+      role="region"
+      class="page-hero snow-bg"
+    >
       <div class="hero-overlay">
         <div class="container">
           <div class="hero-content">
             <h1 v-fade>
               About <span class="text-brand-orange">Festive Express</span>
             </h1>
-            <p v-fade class="breadcrumb">
+            <p v-fade class="breadcrumb" aria-label="Page subtitle">
               {{ pending ? "Loading..." : data?.data?.subtitle || "" }}
             </p>
           </div>
@@ -16,15 +20,20 @@
     </section>
 
     <!-- About Us Content Section -->
-    <section class="bg-white text-slate-800 py-20">
+    <section
+      aria-label="About us content"
+      role="region"
+      class="bg-white text-slate-800 py-20"
+    >
       <div
         class="container flex flex-col lg:flex-row items-center gap-10 lg:gap-12"
       >
         <!-- Content Left -->
         <div class="flex-1">
           <h2 class="sr-only">Who we are</h2>
+
           <!-- Handle Error State -->
-          <div v-if="error" class="text-red-500">
+          <div v-if="error" class="text-red-500" role="alert">
             Failed to load about us content.
           </div>
 
@@ -37,14 +46,17 @@
         </div>
 
         <!-- Image Right -->
-        <div class="flex-1 flex justify-center w-full">
+        <div
+          class="flex-1 flex justify-center w-full"
+          aria-label="Festive Express team image"
+        >
           <div
             v-if="data?.data?.description_image_url || sideImage"
             class="about-image relative w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] rounded-full -rotate-12 border-[10px] border-brand-orange shadow-[0_15px_25px_rgba(0,0,0,0.2),0_5px_10px_rgba(0,0,0,0.1)] overflow-hidden will-change-transform"
           >
             <NuxtImg
               :src="data?.data?.description_image_url || sideImage"
-              alt="Festive Express Holiday Lighting"
+              alt="Festive Express team creating holiday lighting displays"
               format="webp"
               quality="85"
               width="400"
@@ -58,6 +70,7 @@
             />
             <div
               class="absolute -top-[50%] -left-[150%] w-[200%] h-[200%] bg-gradient-to-r from-transparent via-white/30 to-transparent rotate-[25deg] pointer-events-none animate-shine"
+              aria-hidden="true"
             />
           </div>
         </div>
@@ -100,6 +113,18 @@ const handleImageError = (error: string | Event) => {
 </script>
 
 <style scoped>
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .about-body :deep(p) {
   font-size: 1.05rem;
   line-height: 1.7;

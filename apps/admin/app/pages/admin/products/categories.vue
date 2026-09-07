@@ -12,7 +12,7 @@
         <!-- Left: Add New Category -->
         <div class="add-form">
           <h3>{{ editingCategory ? "Edit Category" : "Add New Category" }}</h3>
-          <form @submit.prevent="createCategory">
+          <form role="form"  @submit.prevent="createCategory">
             <div class="form-section mt-4">
               <label class="form-label"
                 >Category Name <span class="required">*</span></label

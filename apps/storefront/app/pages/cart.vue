@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-[#e7e7e7] pb-10">
     <!-- Hero -->
-    <section class="page-hero snow-bg relative">
+    <section role="region" class="page-hero snow-bg relative">
       <div class="hero-overlay">
         <div class="container mx-auto max-w-[1280px] px-5">
           <div class="hero-content py-12 text-center">

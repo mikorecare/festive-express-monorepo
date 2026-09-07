@@ -1,58 +1,89 @@
 <template>
-  <section class="collections">
+  <section aria-label="Our collections" role="region" class="collections">
     <div class="container">
       <div class="section-header">
-        <span class="badge">SHOP BY CATEGORY</span>
+        <span class="badge" aria-hidden="true">SHOP BY CATEGORY</span>
         <h2 class="section-title">Our Collections</h2>
       </div>
 
-      <div class="collections-grid">
+      <div class="collections-grid" role="list">
         <!-- Collection 1 -->
-        <div class="collection-card">
-          <img
+        <div class="collection-card" role="listitem">
+          <NuxtImg
             src="/Images/Permanent-outdoor-lights.jpg"
-            alt="Roofline Lighting"
+            alt="Roofline lighting display on a house"
+            class="collection-image"
+            loading="lazy"
           />
           <div class="card-content">
             <h3>Roofline Lighting</h3>
             <p class="popular">Most Popular</p>
-            <button class="view-btn">View Products</button>
+            <button
+              class="view-btn"
+              aria-label="View Roofline Lighting products"
+            >
+              View Products
+            </button>
           </div>
         </div>
 
         <!-- Collection 2 -->
-        <div class="collection-card">
-          <img src="/Images/roofline-lighting-2.jpg" alt="Wreath & Garlands" />
+        <div class="collection-card" role="listitem">
+          <NuxtImg
+            src="/Images/roofline-lighting-2.jpg"
+            alt="Wreath and garlands holiday decoration"
+            class="collection-image"
+            loading="lazy"
+          />
           <div class="card-content">
-            <h3>Wreath, Garlands & Bows</h3>
+            <h3>Wreath, Garlands &amp; Bows</h3>
             <p class="popular">Classic</p>
-            <button class="view-btn">View Products</button>
+            <button
+              class="view-btn"
+              aria-label="View Wreath and Garlands products"
+            >
+              View Products
+            </button>
           </div>
         </div>
 
         <!-- Collection 3 -->
-        <div class="collection-card">
-          <img
+        <div class="collection-card" role="listitem">
+          <NuxtImg
             src="/Images/21-web-or-mls-4605-5th-Ave-NE23.jpg"
-            alt="Ground & Shrub"
+            alt="Ground and shrub landscape lighting"
+            class="collection-image"
+            loading="lazy"
           />
           <div class="card-content">
-            <h3>Ground & Shrub Lighting</h3>
+            <h3>Ground &amp; Shrub Lighting</h3>
             <p class="popular">Most Popular</p>
-            <button class="view-btn">View Products</button>
+            <button
+              class="view-btn"
+              aria-label="View Ground and Shrub Lighting products"
+            >
+              View Products
+            </button>
           </div>
         </div>
 
         <!-- Collection 4 -->
-        <div class="collection-card">
-          <img
+        <div class="collection-card" role="listitem">
+          <NuxtImg
             src="/Images/Ground-Lighting-Bundle.jpg"
-            alt="Light Burst & Spritzers"
+            alt="Light burst and spritzer decorative lights"
+            class="collection-image"
+            loading="lazy"
           />
           <div class="card-content">
-            <h3>Light Burst & Spritzers</h3>
+            <h3>Light Burst &amp; Spritzers</h3>
             <p class="popular">Seasonal</p>
-            <button class="view-btn">View Products</button>
+            <button
+              class="view-btn"
+              aria-label="View Light Burst and Spritzers products"
+            >
+              View Products
+            </button>
           </div>
         </div>
       </div>
@@ -66,10 +97,26 @@
   background: #f9f9f9;
 }
 
+.section-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.badge {
+  background: #1c2d5b;
+  color: white;
+  padding: 6px 16px;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
 .section-title {
   text-align: center;
   font-size: 2.4rem;
-  margin-bottom: 50px;
+  margin-bottom: 0;
   color: #1c2d5b;
 }
 
@@ -94,10 +141,11 @@
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
 }
 
-.collection-card img {
+.collection-image {
   width: 100%;
   height: 280px;
   object-fit: cover;
+  display: block;
 }
 
 .card-content {
@@ -113,20 +161,6 @@
 .card-content h3 {
   margin: 0 0 8px;
   font-size: 1.35rem;
-}
-.section-header {
-  text-align: center;
-  margin-bottom: 50px;
-}
-.badge {
-  background: #1c2d5b;
-  color: white;
-  padding: 6px 16px;
-  border-radius: 30px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  display: inline-block;
-  margin-bottom: 12px;
 }
 
 .popular {
@@ -151,13 +185,23 @@
   color: white;
 }
 
+.view-btn:focus-visible {
+  outline: 2px solid #f49321;
+  outline-offset: 2px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .collections {
     padding: 40px 0;
   }
+
   .section-title {
     font-size: 2rem;
+  }
+
+  .collection-image {
+    height: 220px;
   }
 }
 </style>

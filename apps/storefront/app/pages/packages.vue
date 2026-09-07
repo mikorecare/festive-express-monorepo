@@ -2,6 +2,8 @@
   <div class="packages-page min-h-screen bg-white font-sans text-slate-800">
     <!-- Hero -->
     <section
+      aria-label="Holiday lighting packages hero banner"
+      role="region"
       class="page-hero snow-bg relative bg-slate-900 py-16 text-white overflow-hidden"
     >
       <div class="hero-overlay absolute inset-0 bg-black/40 z-10 min-h-[200px]">
@@ -16,9 +18,13 @@
               <span class="text-brand-orange">Holiday Lighting</span> Packages
             </h1>
 
-            <p v-fade class="text-base md:text-lg text-slate-200">
+            <p
+              v-fade
+              class="text-base md:text-lg text-slate-200"
+              aria-label="Package description"
+            >
               <template v-if="subtitleParts.length > 1">
-                <span class="md:hidden">
+                <span class="md:hidden" aria-hidden="true">
                   {{ subtitleParts[0] }}<br />
                   {{ subtitleParts[1] }}
                 </span>
@@ -35,14 +41,24 @@
       </div>
     </section>
 
-    <section class="py-12 md:py-16 bg-white relative">
+    <section
+      aria-label="Our holiday lighting packages"
+      role="region"
+      class="py-12 md:py-16 bg-white relative"
+    >
       <PreviewYourHomeButton />
 
-      <div v-if="pending" class="text-center py-20 text-slate-500">
+      <div
+        v-if="pending"
+        role="status"
+        aria-live="polite"
+        class="text-center py-20 text-slate-500"
+      >
         Loading packages...
       </div>
       <div
         v-else-if="!packages.length"
+        role="alert"
         class="text-center py-20 text-slate-500"
       >
         No packages available.
@@ -155,7 +171,7 @@
                   pkg.title_image_url ||
                   undefined
                 "
-                :alt="pkg.name"
+                :alt="`${pkg.name} holiday lighting package`"
                 format="webp"
                 quality="85"
                 width="800"
@@ -195,6 +211,7 @@
                 type="button"
                 class="hotspot group/spot absolute z-30 w-7 h-7 -translate-x-1/2 -translate-y-1/2 cursor-pointer focus:outline-none"
                 :style="{ top: spot.top, left: spot.left }"
+                :aria-label="`View ${spot.label} details`"
                 @click.stop="activateHotspot(pkg.id, spot.key)"
               >
                 <span
@@ -208,6 +225,7 @@
                 <span
                   v-if="activeHotspot[String(pkg.id)] === spot.key"
                   class="hotspot-pulse absolute inset-0 rounded-full border-2 border-[#f59e0b] animate-ping opacity-75"
+                  aria-hidden="true"
                 />
               </button>
 
@@ -227,6 +245,8 @@
                   top: getActiveSpot(pkg)?.top,
                   left: getActiveSpot(pkg)?.left,
                 }"
+                role="dialog"
+                aria-label="Package feature details"
                 @click.stop
               >
                 <!-- Glossy shine -->
@@ -242,6 +262,7 @@
                 <button
                   type="button"
                   class="absolute top-1.5 right-1.5 z-10 w-5 h-5 rounded-full bg-slate-900 text-white text-xs flex items-center justify-center opacity-80 hover:bg-[#f59e0b]"
+                  aria-label="Close details"
                   @click.stop="activeHotspot[String(pkg.id)] = null"
                 >
                   ×
@@ -277,11 +298,20 @@
               <p class="text-sm font-bold text-slate-900 mb-3">
                 Select C-9 Light Color
               </p>
-              <div class="flex justify-center flex-wrap gap-3">
+              <div
+                class="flex justify-center flex-wrap gap-3"
+                role="radiogroup"
+                aria-label="Light color options"
+              >
                 <button
                   v-for="sku in skusFor(pkg.id)"
                   :key="sku.id"
                   type="button"
+                  role="radio"
+                  :aria-checked="
+                    String(selectedSkuId[String(pkg.id)]) === String(sku.id)
+                  "
+                  :aria-label="`${sku.color_label || byKey(sku.color_key)?.color_label || sku.color_key} color option`"
                   class="flex flex-col items-center gap-1.5 cursor-pointer px-3.5 py-2 rounded-xl border-2 transition-all"
                   :class="
                     String(selectedSkuId[String(pkg.id)]) === String(sku.id)
@@ -324,13 +354,14 @@
               <h3 class="text-lg font-bold text-slate-900 mb-3">
                 Package Inclusions:
               </h3>
-              <ul class="space-y-2 list-none p-0 m-0">
+              <ul class="space-y-2 list-none p-0 m-0" role="list">
                 <li
                   v-for="(row, i) in inclusionsFor(pkg).filter(
                     (r) => r.is_included,
                   )"
                   :key="i"
                   class="flex items-center gap-2.5 p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-[#f59e0b] hover:bg-[#fff7ed] transition-colors"
+                  role="listitem"
                   @click="highlightInclusion(pkg, row)"
                 >
                   <NuxtImg
@@ -344,8 +375,14 @@
                     fit="contain"
                     loading="lazy"
                     class="w-8 h-8 object-contain flex-shrink-0"
+                    aria-hidden="true"
                   />
-                  <span v-else class="text-emerald-500 font-bold">✔</span>
+                  <span
+                    v-else
+                    class="text-emerald-500 font-bold"
+                    aria-hidden="true"
+                    >✔</span
+                  >
                   <span class="text-xs font-semibold leading-snug text-navy">
                     {{ row.label_override || row.inclusion_items?.name }}
                   </span>
@@ -356,19 +393,22 @@
             <button
               type="button"
               class="inline-flex items-center justify-center gap-2 bg-transparent text-navy border-2 border-slate-900 px-6 py-3 text-sm font-semibold rounded-lg hover:bg-slate-900 hover:text-white transition-all"
+              aria-label="Scroll to product specifications"
               @click="scrollToSpecs"
             >
               For More Product Information
-              <span>↓</span>
+              <span aria-hidden="true">↓</span>
             </button>
 
             <div
               class="p-4 bg-blue-50 border border-dashed border-blue-200 rounded-xl"
+              role="note"
+              aria-label="Package information"
             >
               <p
                 class="m-0 text-xs sm:text-smtext-navy flex items-start gap-2.5 leading-relaxed"
               >
-                <span class="flex-shrink-0">ℹ</span>
+                <span class="flex-shrink-0" aria-hidden="true">ℹ</span>
                 Includes commercial-grade LEDs, custom fit sizing, professional
                 installation, maintenance and removal.
               </p>
@@ -380,6 +420,7 @@
               :disabled="
                 !selectedSku(pkg)?.id || addingId === selectedSku(pkg)?.id
               "
+              :aria-label="`Add ${pkg.name} to cart`"
               @click="addPackageSku(pkg)"
             >
               <span
@@ -424,7 +465,12 @@
     </section>
 
     <!-- Product Information Section -->
-    <section id="package-specs" class="product-info-section py-20 bg-slate-50">
+    <section
+      aria-label="Product specifications"
+      role="region"
+      id="package-specs"
+      class="product-info-section py-20 bg-slate-50"
+    >
       <div class="container mx-auto px-4 max-w-7xl">
         <div class="section-header2 text-center mb-12">
           <h2 class="text-3xl font-extrabold text-navy mb-3">
@@ -436,25 +482,36 @@
           </p>
         </div>
 
-        <div v-if="specsLoading" class="text-center text-navy py-10">
+        <!-- Loading State -->
+        <div
+          v-if="specsLoading"
+          role="status"
+          aria-live="polite"
+          class="text-center text-navy py-10"
+        >
           Loading specifications...
         </div>
 
+        <!-- Empty State -->
         <div
           v-else-if="!inclusionItems.length"
+          role="alert"
           class="text-center text-navy py-10"
         >
           No product specifications available.
         </div>
 
+        <!-- Product Grid -->
         <div
           v-else
           class="product-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          role="list"
         >
           <div
             v-for="item in inclusionItems"
             :key="item.id"
             class="product-card bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden"
+            role="listitem"
           >
             <div
               class="product-header bg-[#1C2D5B] text-white p-5 flex justify-between items-center gap-3"
@@ -488,8 +545,13 @@
                 </h4>
                 <ul
                   class="list-disc list-inside text-sm text-navy space-y-1.5 p-0 m-0"
+                  role="list"
                 >
-                  <li v-for="(f, i) in featureList(item)" :key="i">
+                  <li
+                    v-for="(f, i) in featureList(item)"
+                    :key="i"
+                    role="listitem"
+                  >
                     {{ f }}
                   </li>
                 </ul>
@@ -506,8 +568,13 @@
                 </h4>
                 <div
                   class="spec-grid grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-lg text-sm text-slate-600"
+                  role="list"
                 >
-                  <div v-for="(val, key) in specMap(item)" :key="key">
+                  <div
+                    v-for="(val, key) in specMap(item)"
+                    :key="key"
+                    role="listitem"
+                  >
                     <span class="font-bold text-navy">{{ key }}:</span>
                     {{ val }}
                   </div>

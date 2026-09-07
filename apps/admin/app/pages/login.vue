@@ -11,7 +11,7 @@
           Welcome back to Festive Express
         </p>
 
-        <form @submit.prevent="login" class="space-y-6 text-left">
+        <form role="form"  @submit.prevent="login" class="space-y-6 text-left">
           <div>
             <label class="block text-slate-700 font-semibold mb-2 text-sm"
               >Email Address</label

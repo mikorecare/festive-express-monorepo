@@ -1,14 +1,20 @@
 <template>
   <div>
     <!-- Hero Banner -->
-    <section class="page-hero snow-bg">
+    <section
+      aria-label="How it works page header"
+      role="region"
+      class="page-hero snow-bg"
+    >
       <div class="hero-overlay">
         <div class="container">
           <div class="hero-content">
             <h1 v-fade class="">
               How It <span class="text-brand-orange">Works</span>
             </h1>
-            <p v-fade class="breadcrumb">{{ data?.subtitle }}</p>
+            <p v-fade class="text-white/80 max-w-2xl mx-auto mt-2">
+              {{ data?.subtitle }}
+            </p>
           </div>
         </div>
       </div>
@@ -19,20 +25,26 @@
     <div class="page-main-section container">
       <div class="how-layout">
         <!-- Steps -->
-        <div class="timeline" v-if="steps.length">
+        <div v-if="steps.length" class="timeline" role="list">
           <h2 class="sr-only">The Festive Express process</h2>
           <div
             v-for="(step, index) in steps"
             :key="index"
             class="timeline-item"
             :class="{ active: visibleSteps.has(index) }"
+            role="listitem"
           >
-            <div class="timeline-dot"></div>
+            <div class="timeline-dot" aria-hidden="true"></div>
             <div class="timeline-content">
               <h3>{{ step.title }}</h3>
               <p>{{ step.description }}</p>
             </div>
           </div>
+        </div>
+
+        <!-- Empty State -->
+        <div v-else role="alert" class="text-center text-slate-500 py-10">
+          No steps available.
         </div>
 
         <!-- Festivo — right of steps on desktop -->
@@ -42,7 +54,11 @@
       </div>
 
       <div class="mt-5">
-        <div v-if="footerHtml" class="footer-description" v-html="footerHtml" />
+        <div
+          v-if="footerHtml"
+          class="footer-description prose prose-slate max-w-none prose-p:text-slate-600 prose-strong:text-[#1C2D5B] prose-a:text-[#F49321] hover:prose-a:text-[#1C2D5B]"
+          v-html="footerHtml"
+        />
       </div>
     </div>
 

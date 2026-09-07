@@ -1,14 +1,31 @@
 <template>
-  <section class="newsletter-bar">
+  <section
+    aria-label="Newsletter subscription"
+    role="region"
+    class="newsletter-bar"
+  >
     <div class="container">
       <div class="newsletter-inner">
         <div class="newsletter-left">
-          <span class="paper-plane d-none">✉️</span>
-          <span class="newsletter-title">Sign Up to Newsletter</span>
+          <span class="paper-plane d-none" aria-hidden="true">✉️</span>
+          <h2 class="newsletter-title">Sign Up to Newsletter</h2>
         </div>
 
-        <form class="newsletter-form" @submit.prevent="subscribe">
-          <input type="email" v-model="email" placeholder="Email" required />
+        <form
+          class="newsletter-form"
+          @submit.prevent="subscribe"
+          aria-label="Subscribe to our newsletter"
+        >
+          <label for="newsletter-email" class="sr-only">Email address</label>
+          <input
+            id="newsletter-email"
+            type="email"
+            v-model="email"
+            placeholder="Email"
+            required
+            autocomplete="email"
+            aria-required="true"
+          />
           <button type="submit">Subscribe</button>
         </form>
       </div>
@@ -28,6 +45,18 @@ const subscribe = () => {
 </script>
 
 <style scoped>
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .newsletter-bar {
   background: #1a1a1a;
   color: white;
@@ -53,8 +82,12 @@ const subscribe = () => {
 .paper-plane {
   font-size: 1.5rem;
 }
+
 .newsletter-title {
   font-size: 1.375rem;
+  font-weight: 600;
+  color: white;
+  margin: 0;
 }
 
 .newsletter-form {
@@ -71,6 +104,7 @@ const subscribe = () => {
   border-radius: 4px 0 0 4px;
   font-size: 1rem;
   outline: none;
+  min-width: 0;
 }
 
 .newsletter-form button {
@@ -87,6 +121,16 @@ const subscribe = () => {
 
 .newsletter-form button:hover {
   background: #f49321;
+}
+
+.newsletter-form button:focus-visible {
+  outline: 2px solid #f49321;
+  outline-offset: 2px;
+}
+
+.newsletter-form input:focus-visible {
+  outline: 2px solid #f49321;
+  outline-offset: 2px;
 }
 
 /* Responsive */

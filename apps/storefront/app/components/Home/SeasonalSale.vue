@@ -1,5 +1,5 @@
 <template>
-  <section class="seasonal-sale">
+  <section role="region" class="seasonal-sale">
     <div class="container">
       <div class="sale-content">
         <!-- Left Content -->

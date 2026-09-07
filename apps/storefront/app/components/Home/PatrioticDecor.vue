@@ -1,5 +1,5 @@
 <template>
-  <section class="patriotic-section">
+  <section role="region" class="patriotic-section">
     <div class="container">
       <div class="section-header">
         <div>

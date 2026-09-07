@@ -1,5 +1,5 @@
 <template>
-  <section class="halloween-section">
+  <section role="region" class="halloween-section">
     <div class="container">
       <div class="section-header">
         <span class="badge">FALL COLLECTION</span>

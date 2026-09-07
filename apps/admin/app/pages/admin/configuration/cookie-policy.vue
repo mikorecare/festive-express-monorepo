@@ -17,7 +17,7 @@
       </button>
     </div>
 
-    <form class="space-y-6" @submit.prevent="saveContent">
+    <form role="form"  class="space-y-6" @submit.prevent="saveContent">
       <div
         class="bg-white rounded-xl border border-slate-100 shadow-sm p-6 space-y-5"
       >

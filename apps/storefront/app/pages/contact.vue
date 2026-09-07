@@ -1,6 +1,10 @@
 <template>
   <div>
-    <section class="page-hero snow-bg">
+    <section
+      aria-label="Contact page header"
+      role="region"
+      class="page-hero snow-bg"
+    >
       <div class="hero-overlay">
         <div class="container">
           <div class="hero-content">
@@ -92,6 +96,7 @@
               </div>
 
               <form
+                role="form"
                 v-if="stage < 4"
                 @submit.prevent="submitForm"
                 class="contact-form bg-white rounded-xl shadow-lg p-8 space-y-5"

@@ -1,5 +1,5 @@
 <template>
-  <section class="dream-holiday" id="how-it-works">
+  <section role="region" class="dream-holiday" id="how-it-works">
     <div class="container">
       <div class="dream-content">
         <div class="dream-text">
@@ -29,7 +29,7 @@
 import { ref } from "vue";
 
 const titleRef = ref(null);
-useScrollAnimate(titleRef); // Works instantly on any element!
+useScrollAnimate(titleRef);
 </script>
 
 <style scoped>

@@ -1,32 +1,69 @@
 <template>
   <div>
-    <section class="page-hero snow-bg">
+    <section
+      aria-label="Privacy policy page header"
+      role="region"
+      class="page-hero snow-bg"
+    >
       <div class="hero-overlay">
         <div class="container">
           <div class="hero-content">
             <h1><span class="text-brand-orange">Privacy</span> Policy</h1>
-            {{ data?.subtitle || "" }}
+            <p
+              v-if="data?.subtitle"
+              class="text-white/80 max-w-2xl mx-auto mt-2"
+            >
+              {{ data?.subtitle }}
+            </p>
           </div>
         </div>
       </div>
     </section>
 
-    <div class="container">
+    <!-- Loading State -->
+    <div
+      v-if="loading"
+      role="status"
+      aria-live="polite"
+      class="text-center text-gray-500 py-16"
+    >
+      Loading privacy policy...
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" role="alert" class="text-center text-red-500 py-16">
+      {{ error }}
+    </div>
+
+    <!-- Content -->
+    <div v-else class="container">
       <div
         class="max-w-[860px] mx-auto pt-10 pb-20 text-slate-700 leading-relaxed"
       >
         <div
           v-if="data?.description"
-          class="privacy-body prose max-w-none text-navy"
+          class="privacy-body prose prose-slate max-w-none prose-headings:text-[#1C2D5B] prose-headings:font-bold prose-h2:border-b-2 prose-h2:border-[#F49321] prose-h2:pb-2 prose-h2:mt-6 prose-h2:mb-3 prose-p:text-slate-600 prose-p:leading-relaxed prose-a:text-[#F49321] prose-a:no-underline hover:prose-a:text-[#1C2D5B] prose-strong:text-[#1C2D5B] prose-li:text-slate-600 prose-blockquote:border-l-4 prose-blockquote:border-[#F49321] prose-blockquote:pl-4 prose-blockquote:my-4 prose-blockquote:text-slate-600 prose-blockquote:italic"
           v-html="data.description"
         />
+        <p v-else class="text-center text-gray-500 py-16">
+          Privacy policy content is currently unavailable.
+        </p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-useHead({ title: "Privacy Policy" });
+useHead({
+  title: "Privacy Policy - Festive Express",
+  meta: [
+    {
+      name: "description",
+      content:
+        "Privacy policy for Festive Express holiday lighting services. Learn how we protect your personal information.",
+    },
+  ],
+});
 
 type PrivacyContent = {
   id?: string;

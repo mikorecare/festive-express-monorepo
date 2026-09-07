@@ -1,5 +1,5 @@
 <template>
-  <section class="featured-bundles">
+  <section role="region" class="featured-bundles">
     <div class="container">
       <div class="section-header">
         <h2 class="section-title">Holiday Package Programs</h2>

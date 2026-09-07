@@ -25,7 +25,7 @@
           {{ editingUser ? "Edit User" : "Add New User" }}
         </h3>
 
-        <form class="space-y-4" @submit.prevent="saveUser">
+        <form role="form"  class="space-y-4" @submit.prevent="saveUser">
           <div>
             <label class="block text-sm font-semibold text-slate-700 mb-1.5"
               >Display Name</label

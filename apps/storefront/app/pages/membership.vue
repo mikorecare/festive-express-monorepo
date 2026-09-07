@@ -1,7 +1,10 @@
 <template>
   <div>
-    <!-- Hero Banner -->
-    <section class="page-hero">
+    <section
+      aria-label="Membership page header"
+      role="region"
+      class="page-hero snow-bg"
+    >
       <div class="hero-overlay">
         <div class="container">
           <div class="hero-content">

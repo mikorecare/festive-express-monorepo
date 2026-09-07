@@ -1,6 +1,10 @@
 <template>
   <div class="faq-page min-h-screen bg-[#f8fafc]">
-    <section class="page-hero snow-bg relative">
+    <section
+      aria-label="FAQ page header"
+      role="region"
+      class="page-hero snow-bg relative"
+    >
       <div class="hero-overlay">
         <div class="container mx-auto max-w-[1280px] px-5 py-14 text-center">
           <h1 class="text-3xl md:text-4xl text-white">
@@ -15,61 +19,102 @@
     </section>
 
     <div class="container mx-auto max-w-[900px] px-5 py-12">
-      <div v-if="loading" class="text-center text-gray-500 py-16">
+      <!-- Loading State -->
+      <div
+        v-if="loading"
+        role="status"
+        aria-live="polite"
+        class="text-center text-gray-500 py-16"
+      >
         Loading FAQs…
       </div>
 
-      <div v-else-if="error" class="text-center text-red-500 py-16">
+      <!-- Error State -->
+      <div
+        v-else-if="error"
+        role="alert"
+        class="text-center text-red-500 py-16"
+      >
         {{ error }}
       </div>
 
+      <!-- FAQ Content -->
       <div v-else class="space-y-10">
-        <section v-for="cat in categories" :key="cat.id">
+        <section
+          v-for="cat in categories"
+          :key="cat.id"
+          :aria-label="`${cat.name} frequently asked questions`"
+          role="region"
+        >
           <h2
             class="text-2xl font-bold text-[#1C2D5B] mb-4 border-b-2 border-[#F49321] pb-2"
           >
             {{ cat.name }}
           </h2>
 
-          <div class="space-y-2">
+          <div class="space-y-2" role="list">
             <div
               v-for="faq in cat.faqs"
               :key="faq.id"
               class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+              role="listitem"
             >
               <button
                 type="button"
                 class="w-full flex items-center justify-between gap-4 px-5 py-4 text-left font-semibold text-[#1C2D5B] hover:bg-orange-50 transition"
+                :aria-expanded="openId === faq.id"
+                :aria-controls="`faq-answer-${faq.id}`"
+                :id="`faq-question-${faq.id}`"
                 @click="toggle(faq.id)"
               >
                 <span>{{ faq.question }}</span>
                 <i
-                  class="fas fa-chevron-down text-[#F49321] transition-transform"
+                  class="fas fa-chevron-down text-[#F49321] transition-transform duration-300"
                   :class="{ 'rotate-180': openId === faq.id }"
+                  aria-hidden="true"
                 />
               </button>
+
+              <!-- Smooth Collapse/Expand -->
               <div
-                v-show="openId === faq.id"
-                class="px-5 pb-5 text-navy leading-relaxed whitespace-pre-line border-t border-gray-50"
+                :id="`faq-answer-${faq.id}`"
+                role="region"
+                :aria-labelledby="`faq-question-${faq.id}`"
+                class="faq-answer-wrapper"
+                :class="{ 'is-open': openId === faq.id }"
               >
-                {{ faq.answer }}
+                <div
+                  class="faq-answer-inner px-5 py-2 text-navy leading-relaxed whitespace-pre-line border-t border-gray-50"
+                >
+                  {{ faq.answer }}
+                </div>
               </div>
             </div>
           </div>
         </section>
       </div>
 
-      <div class="mt-14 text-center bg-white rounded-2xl p-8 shadow-sm">
+      <!-- Still have questions? Section -->
+      <div
+        class="mt-14 text-center bg-white rounded-2xl p-8 shadow-sm"
+        role="complementary"
+        aria-label="Contact support"
+      >
         <p class="text-navy mb-2">Still have questions?</p>
         <a
           :href="`tel:${phoneHref}`"
-          class="text-xl font-bold text-[#F49321] hover:text-[#1C2D5B]"
+          class="text-xl font-bold text-[#F49321] hover:text-[#1C2D5B] transition-colors"
+          :aria-label="`Call us at ${supportPhone}`"
         >
           {{ supportPhone }}
         </a>
         <p class="text-sm text-navy mt-2">
           or email
-          <a :href="`mailto:${supportEmail}`" class="hover:text-[#F49321]">
+          <a
+            :href="`mailto:${supportEmail}`"
+            class="hover:text-[#F49321] transition-colors"
+            :aria-label="`Email us at ${supportEmail}`"
+          >
             {{ supportEmail }}
           </a>
         </p>
@@ -79,7 +124,16 @@
 </template>
 
 <script setup lang="ts">
-useHead({ title: "FAQ - Festive Express" });
+useHead({
+  title: "FAQ - Festive Express",
+  meta: [
+    {
+      name: "description",
+      content:
+        "Frequently asked questions about Festive Express holiday lighting packages and services.",
+    },
+  ],
+});
 
 interface FaqItem {
   id: number;
@@ -145,3 +199,41 @@ const loadFaqs = async () => {
 
 onMounted(loadFaqs);
 </script>
+
+<style scoped>
+button:focus-visible {
+  outline: 2px solid #f49321;
+  outline-offset: 2px;
+}
+
+/* Smooth FAQ Answer Animation */
+.faq-answer-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease-in-out;
+}
+
+.faq-answer-wrapper.is-open {
+  grid-template-rows: 1fr;
+}
+
+.faq-answer-inner {
+  overflow: hidden;
+}
+
+.faq-answer-wrapper:not(.is-open) .faq-answer-inner {
+  opacity: 0;
+  transform: translateY(-8px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.faq-answer-wrapper.is-open .faq-answer-inner {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.3s ease 0.05s,
+    transform 0.3s ease 0.05s;
+}
+</style>

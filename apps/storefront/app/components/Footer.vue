@@ -1,5 +1,9 @@
 <template>
-  <footer class="bg-[#101518] text-white pt-5 !pt-12" role="navigation">
+  <footer
+    class="bg-[#101518] text-white pt-5 !pt-12"
+    role="contentinfo"
+    aria-label="Site footer"
+  >
     <div class="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-7xl">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-5">
         <div>
@@ -74,6 +78,12 @@
             class="text-slate-300 hover:text-brand-orange block mb-2.5 transition-colors duration-300"
           >
             Privacy Policy
+          </NuxtLink>
+          <NuxtLink
+            to="/cookie-policy"
+            class="text-slate-300 hover:text-brand-orange block mb-2.5 transition-colors duration-300"
+          >
+            Cookie Policy
           </NuxtLink>
           <NuxtLink
             to="/terms"

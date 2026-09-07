@@ -95,7 +95,7 @@
         </div>
 
         <div class="border-t border-gray-200 pt-6 md:pt-8">
-          <form @submit.prevent="submitSurvey">
+          <form role="form"  @submit.prevent="submitSurvey">
             <div class="space-y-6 md:space-y-8">
               <!-- Question 1: Overall Rating -->
               <div

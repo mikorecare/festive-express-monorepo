@@ -1,5 +1,5 @@
 <template>
-  <section class="hero">
+  <section role="region" class="hero">
     <div class="container">
       <!-- Background Images Slider -->
       <div class="hero-images">
