@@ -21,45 +21,104 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            # 1. Navigate to monorepo root
+            # 1. Exit immediately if any command fails
+            set -e
+
+            # 2. Navigate to monorepo root
             cd /var/www/festive-express/festive-express-monorepo
 
-            # 2. FORCE PULL the latest code from production branch
+            # 3. FORCE PULL the latest code from production branch
             echo "Pulling latest code from production branch..."
             git fetch origin production
             git reset --hard origin/production
-            # This ensures the server EXACTLY matches the remote production branch
 
-            # 3. Load Node/NVM environment rules
+            # 4. Load Node/NVM environment
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-            # 4. Verify the files exist after pull
-            echo "Checking elavon API files..."
-            ls -la apps/storefront/server/api/elavon/ || echo "Elavon directory not found!"
+            # 5. Increase Node memory limit for builds
+            export NODE_OPTIONS="--max-old-space-size=4096"
 
-            # 5. BUILD & DEPLOY APP 1: Storefront
+            # 6. Check available memory
+            echo "Available memory before build:"
+            free -h
+
+            # ============================================
+            # BUILD STOREFRONT (Sequential)
+            # ============================================
+            echo "========================================="
             echo "Building Storefront..."
+            echo "========================================="
             cd /var/www/festive-express/festive-express-monorepo/apps/storefront
+            
+            # Install dependencies
             npm install
-            rm -rf .output .nuxt node_modules/.cache
-            npm run build
+            
+            # Clean old builds to free memory
+            rm -rf .nuxt .output_temp node_modules/.cache
+            
+            # Build to temp directory for zero-downtime swap
+            NITRO_OUTPUT_DIR=./.output_temp npm run build
+            
+            # Swap the build
+            rm -rf .output
+            mv .output_temp .output
 
-            # 6. BUILD & DEPLOY APP 2: Admin
+            # 7. Force memory cleanup before Admin build
+            echo "Cleaning up memory before Admin build..."
+            sync
+            echo 3 | sudo tee /proc/sys/vm/drop_caches 2>/dev/null || true
+            free -h
+
+            # ============================================
+            # BUILD ADMIN (Sequential)
+            # ============================================
+            echo "========================================="
             echo "Building Admin..."
+            echo "========================================="
             cd /var/www/festive-express/festive-express-monorepo/apps/admin
+            
+            # Install dependencies
             npm install
-            rm -rf .output .nuxt node_modules/.cache
-            npm run build
+            
+            # Clean old builds
+            rm -rf .nuxt .output_temp node_modules/.cache
+            
+            # Build to temp directory
+            NITRO_OUTPUT_DIR=./.output_temp npm run build
+            
+            # Swap the build
+            rm -rf .output
+            mv .output_temp .output
 
-            # 7. RESTART VIA PM2
-            echo "Restarting applications with PM2..."
+            # 8. Force memory cleanup before restart
+            echo "Cleaning up memory before PM2 restart..."
+            sync
+            echo 3 | sudo tee /proc/sys/vm/drop_caches 2>/dev/null || true
+
+            # 9. HOT-RELOAD APPLICATIONS VIA PM2
+            echo "========================================="
+            echo "Hot-reloading applications with PM2..."
+            echo "========================================="
             cd /var/www/festive-express/festive-express-monorepo
-            pm2 restart ecosystem.config.js --update-env
+            
+            # Reload without downtime
+            pm2 reload ecosystem.config.js --update-env
             pm2 save
 
-            # 8. Check status
+            # 10. Verify System Integrity
+            echo "========================================="
+            echo "PM2 Status:"
             pm2 list
-            
-            # 9. Show recent logs
+            echo ""
+            echo "Recent logs:"
             pm2 logs --lines 20 --nostream
+
+            # 11. Final memory check
+            echo ""
+            echo "Available memory after build:"
+            free -h
+            
+            echo "========================================="
+            echo "Deployment complete!"
+            echo "========================================="
