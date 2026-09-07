@@ -144,7 +144,9 @@ export default defineNuxtConfig({
   modules: ["@nuxtjs/tailwindcss", "@nuxtjs/turnstile", "nuxt-security", '@nuxtjs/sitemap', '@nuxt/image'],
 
   image: {
-    provider: process.env.VERCEL ? 'vercel' : 'ipx',
+    provider: process.env.NODE_ENV === 'development'
+      ? 'none'
+      : (process.env.VERCEL ? 'vercel' : 'ipx'),
     dir: 'public',
     // dir: "/apps/storefront/public/",
     quality: 80,

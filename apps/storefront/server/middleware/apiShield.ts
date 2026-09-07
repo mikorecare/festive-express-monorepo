@@ -1,4 +1,3 @@
-// server/middleware/api-blocker.ts
 import { getHeader, createError, defineEventHandler, getRequestURL } from 'h3'
 
 export default defineEventHandler((event) => {
@@ -14,7 +13,6 @@ export default defineEventHandler((event) => {
 
     const secFetchMode = getHeader(event, 'sec-fetch-mode')
 
-    // BLOCK any request with sec-fetch-mode: navigate
     if (secFetchMode === 'navigate') {
         throw createError({
             statusCode: 404,
