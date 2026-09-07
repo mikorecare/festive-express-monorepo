@@ -19,7 +19,7 @@
       </button>
     </div>
 
-    <form role="form"  class="space-y-6" @submit.prevent="saveContent">
+    <form role="form" class="space-y-6" @submit.prevent="saveContent">
       <!-- Banner & Titles (same pattern as How It Works) -->
       <div
         class="bg-white rounded-xl border border-slate-100 shadow-sm p-6 space-y-5"
@@ -157,28 +157,24 @@ const emptyForm = (): AboutUsRow => ({
   description_image_url: "",
 });
 
-const supabase = useSupabaseClient();
 const { showToast } = useToast();
 
 const form = ref<AboutUsRow>(emptyForm());
 const rowId = ref<string | null>(null);
 const saving = ref(false);
 const descEditor = ref<HTMLElement | null>(null);
+const isQuoteActive = ref(false);
 
 const loadContent = async () => {
   try {
-    const { data, error } = await supabase
-      .from("about_us")
-      .select("*")
-      .eq("is_active", true)
-      .limit(1)
-      .maybeSingle();
+    const response = await $fetch<{
+      success: boolean;
+      data: AboutUsRow | null;
+    }>("/api/about-us");
 
-    if (error) throw error;
-
-    const row = data as AboutUsRow | null;
-    if (row) {
-      rowId.value = (row as any).id || null;
+    if (response.success && response.data) {
+      const row = response.data;
+      rowId.value = row.id || null;
       form.value = {
         banner_image_url: row.banner_image_url || "",
         title: row.title || "",
@@ -200,8 +196,6 @@ const loadContent = async () => {
     descEditor.value.innerHTML = form.value.description || "";
   }
 };
-
-const isQuoteActive = ref(false);
 
 const onDescInput = () => {
   if (descEditor.value) {
@@ -257,7 +251,6 @@ const applyQuote = () => {
   const sel = window.getSelection();
   const selected = sel?.toString()?.trim();
 
-  // If caret is already inside a blockquote → unwrap
   let node: Node | null = sel?.anchorNode || null;
   if (node?.nodeType === Node.TEXT_NODE) node = node.parentElement;
   const existing = (node as HTMLElement)?.closest?.("blockquote");
@@ -275,10 +268,8 @@ const applyQuote = () => {
   const text = selected || "Quote text here...";
   const html = `<blockquote class="about-quote">${text}</blockquote><p><br></p>`;
 
-  // Preferred
   const ok = document.execCommand("insertHTML", false, html);
 
-  // Fallback if insertHTML fails
   if (!ok && sel && sel.rangeCount) {
     const range = sel.getRangeAt(0);
     range.deleteContents();
@@ -293,21 +284,30 @@ const applyQuote = () => {
 };
 
 const uploadImage = async (file: File, folder: string) => {
-  const ext = file.name.split(".").pop() || "jpg";
-  const path = `${folder}/${Date.now()}.${ext}`;
-  const { error } = await supabase.storage
-    .from("about-us")
-    .upload(path, file, { upsert: true });
-  if (error) throw error;
-  const { data } = supabase.storage.from("about-us").getPublicUrl(path);
-  return data.publicUrl;
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("folder", folder);
+
+  const response = await $fetch<{ success: boolean; url: string }>(
+    "/api/upload",
+    {
+      method: "POST",
+      body: formData,
+    },
+  );
+
+  if (!response.success) {
+    throw new Error("Upload failed");
+  }
+
+  return response.url;
 };
 
 const onUploadBanner = async (e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0];
   if (!file) return;
   try {
-    form.value.banner_image_url = await uploadImage(file, "banner");
+    form.value.banner_image_url = await uploadImage(file, "about-us/banner");
     showToast("Banner uploaded", "success");
   } catch (err: any) {
     showToast(err?.message || "Upload failed", "error");
@@ -318,7 +318,10 @@ const onUploadDescImage = async (e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0];
   if (!file) return;
   try {
-    form.value.description_image_url = await uploadImage(file, "description");
+    form.value.description_image_url = await uploadImage(
+      file,
+      "about-us/description",
+    );
     showToast("Image uploaded", "success");
   } catch (err: any) {
     showToast(err?.message || "Upload failed", "error");
@@ -339,26 +342,29 @@ const saveContent = async () => {
     description: form.value.description || null,
     description_image_url: form.value.description_image_url || null,
     is_active: true,
-    updated_at: new Date().toISOString(),
   };
 
   saving.value = true;
   try {
-    if (rowId.value) {
-      const { error } = await supabase
-        .from("about_us")
-        .update(payload as never)
-        .eq("id", rowId.value);
-      if (error) throw error;
-    } else {
-      const { data, error } = await supabase
-        .from("about_us")
-        .insert(payload as never)
-        .select("id")
-        .single();
-      if (error) throw error;
-      rowId.value = (data as { id: string }).id;
+    const response = await $fetch<{ success: boolean; id?: string }>(
+      "/api/about-us",
+      {
+        method: rowId.value ? "PUT" : "POST",
+        body: {
+          id: rowId.value,
+          ...payload,
+        },
+      },
+    );
+
+    if (!response.success) {
+      throw new Error("Save failed");
     }
+
+    if (response.id) {
+      rowId.value = response.id;
+    }
+
     showToast("About Us saved", "success");
   } catch (e: any) {
     showToast(e?.message || "Save failed", "error");
@@ -367,7 +373,6 @@ const saveContent = async () => {
   }
 };
 
-// Track selection changes for highlight
 onMounted(() => {
   loadContent();
   document.addEventListener("selectionchange", updateQuoteActive);

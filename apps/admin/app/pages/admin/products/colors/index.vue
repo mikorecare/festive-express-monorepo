@@ -277,7 +277,18 @@ interface ProductColor {
   is_active: boolean;
 }
 
-const supabase = useSupabaseClient();
+interface ColorsResponse {
+  success: boolean;
+  data: ProductColor[];
+}
+
+interface SaveResponse {
+  success: boolean;
+  id?: string;
+  error?: string;
+}
+
+const { showToast } = useToast();
 
 const colors = ref<ProductColor[]>([]);
 const loading = ref(true);
@@ -319,16 +330,14 @@ const swatchStyle = (c: {
 const loadColors = async () => {
   loading.value = true;
   try {
-    const { data, error } = await supabase
-      .from("product_colors")
-      .select("*")
-      .order("sort_order", { ascending: true });
-
-    if (error) throw error;
-    colors.value = (data || []) as ProductColor[];
+    const response = await $fetch<ColorsResponse>("/api/product-colors/list");
+    if (response.success) {
+      colors.value = response.data || [];
+    }
   } catch (e) {
     console.error(e);
     colors.value = [];
+    showToast("Failed to load colors", "error");
   } finally {
     loading.value = false;
   }
@@ -367,40 +376,39 @@ const editColor = (c: ProductColor) => {
 
 const saveColor = async () => {
   if (!form.value.color_label.trim() || !form.value.color_key.trim()) {
-    alert("Label and key are required");
+    showToast("Label and key are required", "error");
     return;
   }
 
   isSaving.value = true;
   try {
-    const row = {
+    const payload = {
       color_key: form.value.color_key.trim(),
       color_label: form.value.color_label.trim(),
       hex: form.value.hex || null,
       swatch_css: form.value.swatch_css.trim() || null,
       sort_order: Number(form.value.sort_order) || 0,
       is_active: form.value.is_active,
-      updated_at: new Date().toISOString(),
     };
 
-    if (editingId.value) {
-      const { error } = await supabase
-        .from("product_colors")
-        .update(row as never)
-        .eq("id", editingId.value);
-      if (error) throw error;
-    } else {
-      const { error } = await supabase
-        .from("product_colors")
-        .insert(row as never);
-      if (error) throw error;
+    const response = await $fetch<SaveResponse>("/api/product-colors", {
+      method: editingId.value ? "PUT" : "POST",
+      body: {
+        id: editingId.value,
+        ...payload,
+      },
+    });
+
+    if (!response.success) {
+      throw new Error(response.error || "Failed to save color");
     }
 
     await loadColors();
     resetForm();
+    showToast(editingId.value ? "Color updated" : "Color added", "success");
   } catch (e: any) {
     console.error(e);
-    alert(e?.message || "Failed to save color");
+    showToast(e?.message || "Failed to save color", "error");
   } finally {
     isSaving.value = false;
   }
@@ -414,17 +422,24 @@ const confirmDelete = (c: ProductColor) => {
 const executeDelete = async () => {
   if (!colorToDelete.value) return;
   try {
-    const { error } = await supabase
-      .from("product_colors")
-      .delete()
-      .eq("id", colorToDelete.value.id);
-    if (error) throw error;
+    const response = await $fetch<{ success: boolean }>(
+      `/api/product-colors/${colorToDelete.value.id}`,
+      {
+        method: "DELETE",
+      },
+    );
+
+    if (!response.success) {
+      throw new Error("Failed to delete color");
+    }
+
     showModal.value = false;
     colorToDelete.value = null;
     await loadColors();
+    showToast("Color deleted", "success");
   } catch (e: any) {
     console.error(e);
-    alert(e?.message || "Failed to delete");
+    showToast(e?.message || "Failed to delete", "error");
   }
 };
 

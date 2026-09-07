@@ -1,7 +1,9 @@
 <template>
   <div class="p-6 space-y-6 bg-slate-50 min-h-screen">
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+    >
       <div>
         <h1 class="text-2xl font-bold text-navy">Add FAQ</h1>
         <p class="text-slate-500 text-sm">Create a new question and answer</p>
@@ -20,13 +22,15 @@
           :disabled="isSaving"
           @click="saveFaq"
         >
-          {{ isSaving ? 'Saving...' : 'Save FAQ' }}
+          {{ isSaving ? "Saving..." : "Save FAQ" }}
         </button>
       </div>
     </div>
 
     <!-- Form -->
-    <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-6 max-w-3xl space-y-5">
+    <div
+      class="bg-white rounded-xl border border-slate-100 shadow-sm p-6 max-w-3xl space-y-5"
+    >
       <div>
         <label class="block text-sm font-semibold text-navy mb-2">
           Category <span class="text-red-500">*</span>
@@ -41,7 +45,9 @@
             {{ c.name }}
           </option>
         </select>
-        <p v-if="errors.category_id" class="text-red-500 text-xs mt-1">{{ errors.category_id }}</p>
+        <p v-if="errors.category_id" class="text-red-500 text-xs mt-1">
+          {{ errors.category_id }}
+        </p>
       </div>
 
       <div>
@@ -54,8 +60,10 @@
           class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange"
           :class="{ 'border-red-500': errors.question }"
           placeholder="e.g. What is Festive Express?"
-        >
-        <p v-if="errors.question" class="text-red-500 text-xs mt-1">{{ errors.question }}</p>
+        />
+        <p v-if="errors.question" class="text-red-500 text-xs mt-1">
+          {{ errors.question }}
+        </p>
       </div>
 
       <div>
@@ -69,22 +77,32 @@
           :class="{ 'border-red-500': errors.answer }"
           placeholder="Full answer text..."
         />
-        <p v-if="errors.answer" class="text-red-500 text-xs mt-1">{{ errors.answer }}</p>
+        <p v-if="errors.answer" class="text-red-500 text-xs mt-1">
+          {{ errors.answer }}
+        </p>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label class="block text-sm font-semibold text-navy mb-2">Sort order</label>
+          <label class="block text-sm font-semibold text-navy mb-2"
+            >Sort order</label
+          >
           <input
             v-model.number="form.sort_order"
             type="number"
             min="0"
             class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange"
-          >
+          />
         </div>
         <div class="flex items-end pb-2">
-          <label class="flex items-center gap-2 cursor-pointer text-sm text-navy">
-            <input v-model="form.is_active" type="checkbox" class="w-auto rounded border-slate-300">
+          <label
+            class="flex items-center gap-2 cursor-pointer text-sm text-navy"
+          >
+            <input
+              v-model="form.is_active"
+              type="checkbox"
+              class="w-auto rounded border-slate-300"
+            />
             Active
           </label>
         </div>
@@ -95,87 +113,105 @@
 
 <script setup lang="ts">
 interface Category {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
-const supabase = useSupabaseClient()
-const isSaving = ref(false)
-const categories = ref<Category[]>([])
-const errors = ref<Record<string, string>>({})
+const isSaving = ref(false);
+const categories = ref<Category[]>([]);
+const errors = ref<Record<string, string>>({});
 
 const form = ref({
   category_id: null as string | null,
-  question: '',
-  answer: '',
+  question: "",
+  answer: "",
   sort_order: 0,
   is_active: true,
-})
+});
+
+interface CategoryResponse {
+  success: boolean;
+  data: Category[];
+}
+
+interface NextOrderResponse {
+  success: boolean;
+  nextOrder: number;
+}
 
 const nextFaqSortOrder = async (categoryId: string) => {
-  const { data, error } = await supabase
-    .from('faqs')
-    .select('sort_order')
-    .eq('category_id', categoryId)
-    .order('sort_order', { ascending: false })
-    .limit(1)
-
-  if (error) {
-    console.error(error)
-    return 1
+  try {
+    const response = await $fetch<NextOrderResponse>(
+      `/api/faqs/next-order?categoryId=${categoryId}`,
+    );
+    if (response.success) {
+      return response.nextOrder;
+    }
+    return 1;
+  } catch (error) {
+    console.error(error);
+    return 1;
   }
-
-  const last = (data as { sort_order: number }[] | null)?.[0]?.sort_order
-  return (Number(last) || 0) + 1
-}
+};
 
 const loadCategories = async () => {
-  const { data } = await supabase
-    .from('faq_categories')
-    .select('id, name')
-    .order('sort_order')
-  categories.value = (data as Category[]) || []
-}
+  try {
+    const response = await $fetch<CategoryResponse>("/api/faq-categories");
+    if (response.success) {
+      categories.value = response.data || [];
+    }
+  } catch (error) {
+    console.error("Failed to load categories:", error);
+  }
+};
 
 const validate = () => {
-  errors.value = {}
-  if (!form.value.category_id) errors.value.category_id = 'Category is required'
-  if (!form.value.question.trim()) errors.value.question = 'Question is required'
-  if (!form.value.answer.trim()) errors.value.answer = 'Answer is required'
-  return Object.keys(errors.value).length === 0
-}
+  errors.value = {};
+  if (!form.value.category_id)
+    errors.value.category_id = "Category is required";
+  if (!form.value.question.trim())
+    errors.value.question = "Question is required";
+  if (!form.value.answer.trim()) errors.value.answer = "Answer is required";
+  return Object.keys(errors.value).length === 0;
+};
 
 const saveFaq = async () => {
-  if (!validate()) return
-  isSaving.value = true
+  if (!validate()) return;
+  isSaving.value = true;
   try {
-    const { error } = await supabase.from('faqs').insert({
-      category_id: form.value.category_id,
-      question: form.value.question.trim(),
-      answer: form.value.answer.trim(),
-      sort_order: form.value.sort_order || 0,
-      is_active: form.value.is_active,
-    } as never)
-    if (error) throw error
-    navigateTo('/admin/configuration/faq')
+    const response = await $fetch<{ success: boolean }>("/api/faqs", {
+      method: "POST",
+      body: {
+        category_id: form.value.category_id,
+        question: form.value.question.trim(),
+        answer: form.value.answer.trim(),
+        sort_order: form.value.sort_order || 0,
+        is_active: form.value.is_active,
+      },
+    });
+
+    if (!response.success) {
+      throw new Error("Failed to save FAQ");
+    }
+
+    navigateTo("/admin/configuration/faq");
   } catch (e) {
-    console.error(e)
+    console.error(e);
   } finally {
-    isSaving.value = false
+    isSaving.value = false;
   }
-}
+};
 
-onMounted(loadCategories)
+onMounted(loadCategories);
 
-// When user picks a category → set next order
 watch(
   () => form.value.category_id,
   async (id) => {
     if (!id) {
-      form.value.sort_order = 1
-      return
+      form.value.sort_order = 1;
+      return;
     }
-    form.value.sort_order = await nextFaqSortOrder(id)
-  }
-)
+    form.value.sort_order = await nextFaqSortOrder(id);
+  },
+);
 </script>

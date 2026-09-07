@@ -107,7 +107,6 @@
 
 <script setup lang="ts">
 import type { Column } from "~/components/FestiveTable.vue";
-const config = useRuntimeConfig();
 
 type PackageRow = {
   id: string | number;
@@ -121,7 +120,18 @@ type PackageRow = {
   image_url?: string | null;
 };
 
-const supabase = useSupabaseClient();
+interface PackagesResponse {
+  success: boolean;
+  data: PackageRow[];
+  pagination: {
+    currentPage: number;
+    itemsPerPage: number;
+    totalItems: number;
+    totalPages: number;
+  };
+}
+
+const { showToast } = useToast();
 
 const columns: Column[] = [
   { key: "sort_order", label: "Order", align: "center" },
@@ -150,30 +160,38 @@ const formatPrice = (v: number | string | null | undefined) => {
   })}`;
 };
 
+const getImageUrl = (url?: string | null) => {
+  if (!url) return "";
+  if (url.startsWith("http") || url.startsWith("/")) return url;
+  return url;
+};
+
 const loadPackages = async () => {
   loading.value = true;
   try {
-    const from = (currentPage.value - 1) * itemsPerPage.value;
-    const to = from + itemsPerPage.value - 1;
+    const params = new URLSearchParams({
+      page: String(currentPage.value),
+      limit: String(itemsPerPage.value),
+    });
 
-    const { data, error, count } = await supabase
-      .from("packages")
-      .select(
-        "id, name, slug, price, sale_price, sort_order, is_popular, is_active, image_url",
-        {
-          count: "exact",
-        },
-      )
-      .order("sort_order", { ascending: true })
-      .range(from, to);
+    const response = await $fetch<PackagesResponse>(
+      `/api/packages?${params.toString()}`,
+    );
 
-    if (error) throw error;
-    packages.value = data || [];
-    totalItems.value = count || 0;
+    if (response.success) {
+      packages.value = response.data || [];
+      totalItems.value = response.pagination?.totalItems || 0;
+    } else {
+      throw new Error("Failed to load packages");
+    }
   } catch (e) {
     console.error(e);
     packages.value = [];
     totalItems.value = 0;
+    showToast(
+      e instanceof Error ? e.message : "Failed to load packages",
+      "error",
+    );
   } finally {
     loading.value = false;
   }
@@ -182,18 +200,6 @@ const loadPackages = async () => {
 const onPageChange = (page: number) => {
   currentPage.value = page;
   loadPackages();
-};
-
-const getImageUrl = (url?: string | null) => {
-  if (!url) return "";
-  if (url.startsWith("http") || url.startsWith("/")) return url;
-  const path = url.replace(/^\/+/, "");
-  const supabaseUrl =
-    (config.public as any).supabaseUrl ||
-    (config.public as any).supabase?.url ||
-    "";
-  const bucket = ((config.public as any).storageBucket as string) || "Products";
-  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
 };
 
 onMounted(loadPackages);

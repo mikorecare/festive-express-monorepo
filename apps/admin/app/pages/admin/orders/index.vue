@@ -225,9 +225,40 @@ import {
 } from "@heroicons/vue/24/outline";
 import type { Column } from "~/components/FestiveTable.vue";
 
-const { getOrders, deleteOrder: apiDeleteOrder } = useOrders();
+interface Order {
+  id: string;
+  order_number: string;
+  billing_first_name: string;
+  billing_last_name: string;
+  billing_email: string;
+  billing_phone: string;
+  total: number;
+  status: string;
+  payment_status: string;
+  install_status: string;
+  created_at: string;
+  preferred_install_dates: string[];
+  confirmed_install_date: string;
+  promo_codes?: {
+    code: string;
+    discount_type: string;
+    discount_value: number;
+  };
+}
+
+interface OrdersResponse {
+  success: boolean;
+  data: Order[];
+  pagination: {
+    currentPage: number;
+    itemsPerPage: number;
+    totalItems: number;
+    totalPages: number;
+  };
+  error?: string;
+}
+
 const { showToast } = useToast();
-const supabase = useSupabaseClient();
 
 const columns: Column[] = [
   { key: "order_number", label: "Order ID", sortable: true },
@@ -241,7 +272,7 @@ const columns: Column[] = [
   { key: "actions", label: "Actions", align: "right" },
 ];
 
-const orders = ref<any[]>([]);
+const orders = ref<Order[]>([]);
 const isLoading = ref(true);
 const statusFilter = ref("");
 const paymentStatusFilter = ref("");
@@ -261,55 +292,42 @@ let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 const loadOrders = async () => {
   isLoading.value = true;
   try {
-    let query = supabase
-      .from("orders")
-      .select(
-        `
-        *,
-        promo_codes (
-          code,
-          discount_type,
-          discount_value
-        )
-      `,
-        { count: "exact" },
-      )
-      .order("created_at", { ascending: false });
+    // Build query parameters
+    const params = new URLSearchParams({
+      page: String(currentPage.value),
+      limit: String(itemsPerPage.value),
+    });
 
-    // Status filter
-    if (statusFilter.value) {
-      query = query.eq("status", statusFilter.value);
-    }
-
-    // Payment status filter
-    if (paymentStatusFilter.value) {
-      query = query.eq("payment_status", paymentStatusFilter.value);
-    }
-
-    // Search
     if (searchQuery.value) {
-      query = query.or(
-        `order_number.ilike.%${searchQuery.value}%,` +
-          `billing_first_name.ilike.%${searchQuery.value}%,` +
-          `billing_last_name.ilike.%${searchQuery.value}%,` +
-          `billing_email.ilike.%${searchQuery.value}%`,
-      );
+      params.append("search", searchQuery.value);
     }
 
-    // Pagination
-    const from = (currentPage.value - 1) * itemsPerPage.value;
-    const to = from + itemsPerPage.value - 1;
-    query = query.range(from, to);
+    if (statusFilter.value) {
+      params.append("status", statusFilter.value);
+    }
 
-    const { data, error, count } = await query;
-    if (error) throw error;
+    if (paymentStatusFilter.value) {
+      params.append("paymentStatus", paymentStatusFilter.value);
+    }
 
-    orders.value = data || [];
-    totalItems.value = count ?? 0;
+    const response = await $fetch<OrdersResponse>(
+      `/api/orders?${params.toString()}`,
+    );
+
+    if (response.success) {
+      orders.value = response.data || [];
+      totalItems.value = response.pagination?.totalItems || 0;
+    } else {
+      throw new Error(response.error || "Failed to load orders");
+    }
   } catch (error) {
     console.error("Failed to load orders:", error);
     orders.value = [];
     totalItems.value = 0;
+    showToast(
+      error instanceof Error ? error.message : "Failed to load orders",
+      "error",
+    );
   } finally {
     isLoading.value = false;
   }
@@ -319,12 +337,10 @@ const onSearch = (query: string) => {
   searchQuery.value = query;
   currentPage.value = 1;
 
-  // Clear existing timeout
   if (searchTimeout) {
     clearTimeout(searchTimeout);
   }
 
-  // Set new timeout (500ms delay)
   searchTimeout = setTimeout(() => {
     loadOrders();
   }, 500);
@@ -392,7 +408,17 @@ const executeDelete = async () => {
   if (deleteConfirmText.value !== "DELETE") return;
 
   try {
-    await apiDeleteOrder(orderToDelete.value.id);
+    const response = await $fetch<{ success: boolean }>(
+      `/api/orders/${orderToDelete.value.id}`,
+      {
+        method: "DELETE",
+      },
+    );
+
+    if (!response.success) {
+      throw new Error("Failed to delete order");
+    }
+
     showToast(
       `Order #${orderToDelete.value.order_number} deleted successfully!`,
     );
@@ -401,57 +427,39 @@ const executeDelete = async () => {
     await loadOrders();
   } catch (error: any) {
     console.error(error);
-    showToast(error?.data?.message || "Failed to delete order", "error");
+    showToast(error?.message || "Failed to delete order", "error");
   }
 };
 
 const exportOrders = async () => {
   try {
-    let query = supabase
-      .from("orders")
-      .select(
-        `
-        order_number,
-        status,
-        payment_status,
-        install_status,
-        billing_first_name,
-        billing_last_name,
-        billing_email,
-        billing_phone,
-        total,
-        created_at,
-        preferred_install_dates,
-        confirmed_install_date
-      `,
-      )
-      .order("created_at", { ascending: false });
+    // Build query parameters for export
+    const params = new URLSearchParams();
 
     if (statusFilter.value) {
-      query = query.eq("status", statusFilter.value);
+      params.append("status", statusFilter.value);
     }
 
     if (paymentStatusFilter.value) {
-      query = query.eq("payment_status", paymentStatusFilter.value);
+      params.append("paymentStatus", paymentStatusFilter.value);
     }
 
     if (searchQuery.value) {
-      query = query.or(
-        `order_number.ilike.%${searchQuery.value}%,` +
-          `billing_first_name.ilike.%${searchQuery.value}%,` +
-          `billing_last_name.ilike.%${searchQuery.value}%,` +
-          `billing_email.ilike.%${searchQuery.value}%`,
-      );
+      params.append("search", searchQuery.value);
     }
 
-    const { data, error } = await query;
-    if (error) throw error;
+    params.append("export", "true");
 
-    const rows = data || [];
-    if (!rows.length) {
+    const response = await $fetch<{ success: boolean; data: Order[] }>(
+      `/api/orders?${params.toString()}`,
+    );
+
+    if (!response.success || !response.data?.length) {
       showToast("No orders match the current filters", "error");
       return;
     }
+
+    const rows = response.data;
 
     const headers = [
       "created_at",

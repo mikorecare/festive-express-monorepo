@@ -25,7 +25,7 @@
           {{ editingUser ? "Edit User" : "Add New User" }}
         </h3>
 
-        <form role="form"  class="space-y-4" @submit.prevent="saveUser">
+        <form role="form" class="space-y-4" @submit.prevent="saveUser">
           <div>
             <label class="block text-sm font-semibold text-slate-700 mb-1.5"
               >Display Name</label
@@ -248,6 +248,22 @@ type UserProfile = {
   mobile_phone?: string | null;
 };
 
+interface UsersResponse {
+  success: boolean;
+  data: UserProfile[];
+  pagination: {
+    currentPage: number;
+    itemsPerPage: number;
+    totalItems: number;
+    totalPages: number;
+  };
+}
+
+interface SaveResponse {
+  success: boolean;
+  error?: string;
+}
+
 const emptyForm = () => ({
   id: null as number | string | null,
   display_name: "",
@@ -260,7 +276,6 @@ const emptyForm = () => ({
   mobile_phone: "",
 });
 
-const supabase = useSupabaseClient() as any;
 const { showToast } = useToast();
 
 const columns: Column[] = [
@@ -290,35 +305,30 @@ const deleteConfirmText = ref("");
 const loadUsers = async () => {
   loading.value = true;
   try {
-    const from = (currentPage.value - 1) * itemsPerPage.value;
-    const to = from + itemsPerPage.value - 1;
+    const params = new URLSearchParams({
+      page: String(currentPage.value),
+      limit: String(itemsPerPage.value),
+    });
 
-    let query = supabase
-      .from("user_profiles")
-      .select(
-        "id, display_name, first_name, last_name, email, department, role, phone, mobile_phone",
-        { count: "exact" },
-      )
-      .order("id", { ascending: false })
-      .range(from, to);
-
-    const q = searchTerm.value.trim();
-    if (q) {
-      query = query.or(
-        `display_name.ilike.%${q}%,first_name.ilike.%${q}%,last_name.ilike.%${q}%,email.ilike.%${q}%,department.ilike.%${q}%`,
-      );
+    if (searchTerm.value.trim()) {
+      params.append("search", searchTerm.value.trim());
     }
 
-    const { data, error, count } = await query;
-    if (error) throw error;
+    const response = await $fetch<UsersResponse>(
+      `/api/users?${params.toString()}`,
+    );
 
-    users.value = (data || []) as UserProfile[];
-    totalItems.value = count || 0;
+    if (response.success) {
+      users.value = response.data || [];
+      totalItems.value = response.pagination?.totalItems || 0;
+    } else {
+      throw new Error("Failed to load users");
+    }
   } catch (e) {
     console.error(e);
     users.value = [];
     totalItems.value = 0;
-    showToast("Failed to load users", "error");
+    showToast(e instanceof Error ? e.message : "Failed to load users", "error");
   } finally {
     loading.value = false;
   }
@@ -356,18 +366,24 @@ const saveUser = async () => {
       mobile_phone: form.value.mobile_phone || null,
     };
 
-    if (editingUser.value && form.value.id != null) {
-      const { error } = await supabase
-        .from("user_profiles")
-        .update(payload)
-        .eq("id", form.value.id);
-      if (error) throw error;
-      showToast("User updated successfully", "success");
-    } else {
-      const { error } = await supabase.from("user_profiles").insert(payload);
-      if (error) throw error;
-      showToast("User created successfully", "success");
+    const response = await $fetch<SaveResponse>("/api/users", {
+      method: editingUser.value && form.value.id != null ? "PUT" : "POST",
+      body: {
+        id: form.value.id,
+        ...payload,
+      },
+    });
+
+    if (!response.success) {
+      throw new Error(response.error || "Failed to save user");
     }
+
+    showToast(
+      editingUser.value
+        ? "User updated successfully"
+        : "User created successfully",
+      "success",
+    );
 
     cancelEdit();
     await loadUsers();
@@ -414,11 +430,17 @@ const cancelDelete = () => {
 const executeDelete = async () => {
   if (!userToDelete.value || deleteConfirmText.value !== "DELETE") return;
   try {
-    const { error } = await supabase
-      .from("user_profiles")
-      .delete()
-      .eq("id", userToDelete.value.id);
-    if (error) throw error;
+    const response = await $fetch<SaveResponse>(
+      `/api/users/${userToDelete.value.id}`,
+      {
+        method: "DELETE",
+      },
+    );
+
+    if (!response.success) {
+      throw new Error(response.error || "Failed to delete user");
+    }
+
     showToast("User deleted successfully", "success");
     cancelDelete();
     await loadUsers();

@@ -64,7 +64,7 @@
                 class="w-full sm:w-[100px] h-[100px] shrink-0 rounded-xl overflow-hidden bg-gray-100"
               >
                 <img
-                  :src="getImageUrl(item.product?.image_url)"
+                  :src="item.product?.image_url"
                   :alt="item.product?.name || 'Product'"
                   class="w-full h-full object-cover"
                   @error="handleImageError"
@@ -343,8 +343,6 @@ import { usePromo } from "~/composables/usePromo";
 const { settings, loadSettings, telHref } = useSettings();
 
 const config = useRuntimeConfig();
-const supabase = useSupabaseClient();
-console.log(supabase)
 const FL_TAX_RATE = computed(() => {
   // Object / map shape: { fl_tax_rate: '0.07', contact_email: '...', ... }
   const raw =
@@ -386,35 +384,6 @@ const lineTotal = (item: any) => {
   const unit = Number(item.price) || Number(item.product?.price) || 0;
   const qty = Number(item.quantity) || 1;
   return unit * qty;
-};
-
-// const getImageUrl = (url?: string) => {
-//   if (!url) return '/Images/Colors/default-house.jpg'
-//   if (url.startsWith('http')) return url
-//   const base = String(config.public.imageBase || '').replace(/\/$/, '')
-//   return `${base}/${url.replace(/^\//, '')}`
-// }
-
-const getImageUrl = (url?: string | null) => {
-  if (!url) return "/Images/placeholder-package.jpg";
-
-  // Already absolute, site path, or local preview
-  if (
-    url.startsWith("http://") ||
-    url.startsWith("https://") ||
-    url.startsWith("/") ||
-    url.startsWith("blob:")
-  ) {
-    return url;
-  }
-
-  // DB may store "Products/foo.jpg" or "foo.jpg"
-  const path = url.replace(/^\//, "").replace(/^Products\//i, "");
-
-  const bucket = (config.public.storageBucket as string) || "Products";
-
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-  return data.publicUrl || "/Images/placeholder-package.jpg";
 };
 
 const handleImageError = (e: Event) => {

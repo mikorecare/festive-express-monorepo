@@ -182,28 +182,25 @@
 </template>
 
 <script setup lang="ts">
-// definePageMeta({ middleware: 'auth' })
-
 type PackageRow = {
   id: string | number;
   name: string;
   price?: number | string | null;
 };
 
-const route = useRoute();
-const config = useRuntimeConfig();
-const supabase = useSupabaseClient();
-const db = supabase as any;
+interface PackagesResponse {
+  success: boolean;
+  data: PackageRow[];
+}
 
-const showToast = (msg: string, type: "success" | "error" = "success") => {
-  try {
-    // @ts-ignore
-    const t = useToast?.();
-    if (t?.showToast) return t.showToast(msg, type);
-  } catch {}
-  if (type === "error") console.error(msg);
-  else console.log(msg);
-};
+interface SaveResponse {
+  success: boolean;
+  id?: string;
+  error?: string;
+}
+
+const route = useRoute();
+const { showToast } = useToast();
 
 const packages = ref<PackageRow[]>([]);
 const saving = ref(false);
@@ -228,13 +225,7 @@ const getImageUrl = (url?: string | null) => {
   if (!url) return "";
   if (url.startsWith("http") || url.startsWith("blob:") || url.startsWith("/"))
     return url;
-  let path = url
-    .replace(/^\//, "")
-    .replace(/^Products\//i, "")
-    .replace(/^products\//i, "");
-  const bucket = (config.public.storageBucket as string) || "Products";
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-  return data?.publicUrl || "";
+  return url;
 };
 
 const onFileChange = (e: Event) => {
@@ -244,37 +235,45 @@ const onFileChange = (e: Event) => {
   previewUrl.value = file ? URL.createObjectURL(file) : null;
 };
 
-const uploadImage = async (): Promise<string | null> => {
-  if (!imageFile.value) return form.value.image_url?.trim() || null;
-  const file = imageFile.value;
-  const ext = (file.name.split(".").pop() || "png").toLowerCase();
-  const path = `package-skus/${Date.now()}_${Math.random().toString(36).slice(2, 10)}.${ext}`;
-  const bucket = (config.public.storageBucket as string) || "Products";
-  const { error } = await supabase.storage.from(bucket).upload(path, file, {
-    cacheControl: "3600",
-    upsert: true,
-    contentType: file.type || `image/${ext}`,
-  });
-  if (error) throw error;
-  return path;
+const uploadImage = async (file: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("folder", "package-skus");
+
+  const response = await $fetch<{ success: boolean; url: string }>(
+    "/api/upload",
+    {
+      method: "POST",
+      body: formData,
+    },
+  );
+
+  if (!response.success) {
+    throw new Error("Upload failed");
+  }
+
+  return response.url;
 };
 
 const loadPackages = async () => {
-  const { data, error } = await db
-    .from("packages")
-    .select("id, name, price")
-    .order("sort_order", { ascending: true });
-  if (error) throw error;
-  packages.value = data || [];
+  try {
+    const response = await $fetch<PackagesResponse>("/api/packages");
+    if (response.success) {
+      packages.value = response.data || [];
 
-  // prefill price from package price when package chosen from query
-  if (form.value.package_id) {
-    const p = packages.value.find(
-      (x) => String(x.id) === form.value.package_id,
-    );
-    if (p?.price != null && !form.value.price) {
-      form.value.price = Number(p.price) || 0;
+      // prefill price from package price when package chosen from query
+      if (form.value.package_id) {
+        const p = packages.value.find(
+          (x) => String(x.id) === form.value.package_id,
+        );
+        if (p?.price != null && !form.value.price) {
+          form.value.price = Number(p.price) || 0;
+        }
+      }
     }
+  } catch (error) {
+    console.error("Failed to load packages:", error);
+    showToast("Failed to load packages", "error");
   }
 };
 
@@ -298,7 +297,10 @@ const saveSku = async () => {
 
   saving.value = true;
   try {
-    const image_url = await uploadImage();
+    let imageUrl = form.value.image_url;
+    if (imageFile.value) {
+      imageUrl = await uploadImage(imageFile.value);
+    }
 
     const payload = {
       name: form.value.name.trim(),
@@ -310,21 +312,22 @@ const saveSku = async () => {
       stock: Number(form.value.stock) || 0,
       status: form.value.status || "draft",
       description: form.value.description?.trim() || null,
-      image_url: image_url,
+      image_url: imageUrl || null,
       is_package: true,
       is_active: true,
     };
 
-    const { data, error } = await db
-      .from("products")
-      .insert(payload)
-      .select("id")
-      .limit(1);
-    if (error) throw error;
-    if (!data?.length) throw new Error("Insert returned 0 rows (check RLS)");
+    const response = await $fetch<SaveResponse>("/api/package-skus", {
+      method: "POST",
+      body: payload,
+    });
+
+    if (!response.success) {
+      throw new Error(response.error || "Failed to create package SKU");
+    }
 
     showToast("Package SKU created");
-    navigateTo(`/admin/products/package-skus/${data[0].id}`);
+    navigateTo(`/admin/products/package-skus/${response.id}`);
   } catch (e: any) {
     console.error(e);
     showToast(e?.message || "Save failed", "error");

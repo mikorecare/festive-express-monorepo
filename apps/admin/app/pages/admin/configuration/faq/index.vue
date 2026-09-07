@@ -1,10 +1,14 @@
 <template>
   <div class="p-6 space-y-6 bg-slate-50 min-h-screen">
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+    >
       <div>
         <h1 class="text-2xl font-bold text-navy">FAQs</h1>
-        <p class="text-slate-500 text-sm">Manage FAQ categories and questions</p>
+        <p class="text-slate-500 text-sm">
+          Manage FAQ categories and questions
+        </p>
       </div>
       <div class="flex flex-wrap items-center gap-3">
         <NuxtLink
@@ -29,7 +33,7 @@
         type="text"
         placeholder="Search questions..."
         class="flex-1 border border-slate-200 rounded-lg px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange"
-      >
+      />
       <select
         v-model="categoryFilter"
         class="sm:w-56 border border-slate-200 rounded-lg px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange"
@@ -42,7 +46,9 @@
     </div>
 
     <!-- Table -->
-    <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+    <div
+      class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden"
+    >
       <table class="w-full text-left">
         <thead>
           <tr class="bg-navy text-white">
@@ -64,7 +70,7 @@
               {{ faq.question }}
             </td>
             <td class="p-4 text-slate-600 text-sm">
-              {{ faq.category?.name || '—' }}
+              {{ faq.category?.name || "—" }}
             </td>
             <td class="p-4 text-slate-600 text-sm">{{ faq.sort_order }}</td>
             <td class="p-4">
@@ -76,7 +82,7 @@
                     : 'bg-slate-200 text-slate-600'
                 "
               >
-                {{ faq.is_active ? 'Active' : 'Inactive' }}
+                {{ faq.is_active ? "Active" : "Inactive" }}
               </span>
             </td>
             <td class="p-4">
@@ -101,8 +107,15 @@
         </tbody>
       </table>
 
-      <div v-if="!filteredFaqs.length" class="p-12 text-center text-slate-400 text-sm">
-        {{ faqs.length ? 'No FAQs match your search.' : 'No FAQs yet. Add your first question.' }}
+      <div
+        v-if="!filteredFaqs.length"
+        class="p-12 text-center text-slate-400 text-sm"
+      >
+        {{
+          faqs.length
+            ? "No FAQs match your search."
+            : "No FAQs yet. Add your first question."
+        }}
       </div>
     </div>
 
@@ -137,97 +150,110 @@
 
 <script setup lang="ts">
 interface FaqCategory {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 interface Faq {
-  id: string
-  question: string
-  answer: string
-  sort_order: number
-  is_active: boolean
-  category_id?: string
-  category?: FaqCategory
+  id: string;
+  question: string;
+  answer: string;
+  sort_order: number;
+  is_active: boolean;
+  category_id?: string;
+  category?: FaqCategory;
 }
 
-const supabase = useSupabaseClient()
-const faqs = ref<Faq[]>([])
-const categories = ref<FaqCategory[]>([])
-const searchTerm = ref('')
-const categoryFilter = ref('')
-const showModal = ref(false)
-const faqToDelete = ref<Faq | null>(null)
+const faqs = ref<Faq[]>([]);
+const categories = ref<FaqCategory[]>([]);
+const searchTerm = ref("");
+const categoryFilter = ref("");
+const showModal = ref(false);
+const faqToDelete = ref<Faq | null>(null);
+
+interface FaqsResponse {
+  success: boolean;
+  data: Faq[];
+}
+
+interface CategoriesResponse {
+  success: boolean;
+  data: FaqCategory[];
+}
 
 const filteredFaqs = computed(() => {
-  const q = searchTerm.value.trim().toLowerCase()
-  const catId = categoryFilter.value
+  const q = searchTerm.value.trim().toLowerCase();
+  const catId = categoryFilter.value;
 
   return faqs.value.filter((faq) => {
     const matchSearch =
       !q ||
       faq.question.toLowerCase().includes(q) ||
-      (faq.answer || '').toLowerCase().includes(q)
+      (faq.answer || "").toLowerCase().includes(q);
 
     const matchCategory =
-      !catId ||
-      faq.category?.id === catId ||
-      faq.category_id === catId
+      !catId || faq.category?.id === catId || faq.category_id === catId;
 
-    return matchSearch && matchCategory
-  })
-})
+    return matchSearch && matchCategory;
+  });
+});
 
 const loadFaqs = async () => {
-  const { data, error } = await supabase
-    .from('faqs')
-    .select(`
-      id, question, answer, sort_order, is_active, category_id,
-      category:faq_categories ( id, name )
-    `)
-    .order('sort_order', { ascending: true })
-
-  if (error) {
-    console.error(error)
-    faqs.value = []
-    return
+  try {
+    const response = await $fetch<FaqsResponse>("/api/faqs");
+    if (response.success) {
+      faqs.value = response.data || [];
+    }
+  } catch (error) {
+    console.error("Failed to load FAQs:", error);
+    faqs.value = [];
   }
-  faqs.value = (data as unknown as Faq[]) || []
-}
+};
 
 const loadCategories = async () => {
-  const { data } = await supabase
-    .from('faq_categories')
-    .select('id, name')
-    .order('sort_order', { ascending: true })
-  categories.value = (data as FaqCategory[]) || []
-}
+  try {
+    const response = await $fetch<CategoriesResponse>("/api/faq-categories");
+    if (response.success) {
+      categories.value = response.data || [];
+    }
+  } catch (error) {
+    console.error("Failed to load categories:", error);
+    categories.value = [];
+  }
+};
 
 const editFaq = (id: string) =>
-  navigateTo(`/admin/configuration/faq/edit/${id}`)
+  navigateTo(`/admin/configuration/faq/edit/${id}`);
 
 const confirmDelete = (faq: Faq) => {
-  faqToDelete.value = faq
-  showModal.value = true
-}
+  faqToDelete.value = faq;
+  showModal.value = true;
+};
 
 const executeDelete = async () => {
-  if (!faqToDelete.value) return
-  const { error } = await supabase
-    .from('faqs')
-    .delete()
-    .eq('id', faqToDelete.value.id)
+  if (!faqToDelete.value) return;
 
-  if (error) {
-    console.error(error)
-    return
+  try {
+    const response = await $fetch<{ success: boolean }>(
+      `/api/faqs/${faqToDelete.value.id}`,
+      {
+        method: "DELETE",
+      },
+    );
+
+    if (!response.success) {
+      throw new Error("Failed to delete FAQ");
+    }
+
+    showModal.value = false;
+    faqToDelete.value = null;
+    await loadFaqs();
+  } catch (error) {
+    console.error("Failed to delete FAQ:", error);
   }
-  showModal.value = false
-  faqToDelete.value = null
-  await loadFaqs()
-}
+};
 
 onMounted(async () => {
-  await Promise.all([loadFaqs(), loadCategories()])
-})
+  await Promise.all([loadFaqs(), loadCategories()]);
+});
 </script>

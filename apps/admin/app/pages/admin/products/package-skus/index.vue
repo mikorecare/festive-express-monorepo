@@ -195,6 +195,7 @@
 <script setup lang="ts">
 import { PlusIcon, ExclamationTriangleIcon } from "@heroicons/vue/24/outline";
 import type { Column } from "~/components/FestiveTable.vue";
+
 type PackageRow = { id: string | number; name: string };
 type SkuRow = {
   id: string | number;
@@ -208,10 +209,30 @@ type SkuRow = {
   package_id?: string | number | null;
 };
 
+interface PackagesResponse {
+  success: boolean;
+  data: PackageRow[];
+}
+
+interface SkusResponse {
+  success: boolean;
+  data: SkuRow[];
+  pagination: {
+    currentPage: number;
+    itemsPerPage: number;
+    totalItems: number;
+    totalPages: number;
+  };
+}
+
+interface DeleteResponse {
+  success: boolean;
+  error?: string;
+}
+
 const route = useRoute();
 const router = useRouter();
-const config = useRuntimeConfig();
-const supabase = useSupabaseClient();
+const { showToast } = useToast();
 
 const columns: Column[] = [
   { key: "image_url", label: "Image" },
@@ -268,13 +289,7 @@ const getImageUrl = (url?: string | null) => {
   if (!url) return "";
   if (url.startsWith("http") || url.startsWith("blob:") || url.startsWith("/"))
     return url;
-  let path = url
-    .replace(/^\//, "")
-    .replace(/^Products\//i, "")
-    .replace(/^products\//i, "");
-  const bucket = (config.public.storageBucket as string) || "Products";
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-  return data?.publicUrl || "";
+  return url;
 };
 
 const onImgError = (e: Event) => {
@@ -283,58 +298,59 @@ const onImgError = (e: Event) => {
 };
 
 const loadPackages = async () => {
-  const { data, error } = await supabase
-    .from("packages")
-    .select("id, name")
-    .order("sort_order", { ascending: true });
-  if (error) {
-    console.error(error);
-    return;
+  try {
+    const response = await $fetch<PackagesResponse>("/api/packages");
+    if (response.success) {
+      packages.value = response.data || [];
+    }
+  } catch (error) {
+    console.error("Failed to load packages:", error);
   }
-  packages.value = data || [];
 };
 
 const loadSkus = async () => {
   loading.value = true;
   try {
-    const query: Record<string, string> = {};
-    if (packageFilter.value) query.package_id = packageFilter.value;
-    router.replace({ query });
+    // Build query parameters
+    const params = new URLSearchParams({
+      page: String(currentPage.value),
+      limit: String(itemsPerPage.value),
+    });
 
-    let q = supabase
-      .from("products")
-      .select(
-        "id, name, sku, price, stock, status, image_url, color_label, package_id",
-        { count: "exact" },
-      )
-      .eq("is_package", true)
-      .order("name", { ascending: true });
+    if (searchQuery.value) {
+      params.append("search", searchQuery.value);
+    }
 
     if (packageFilter.value) {
-      q = q.eq("package_id", packageFilter.value);
+      params.append("packageId", packageFilter.value);
     }
+
     if (colorFilter.value) {
-      q = q.eq("color_label", colorFilter.value);
-    }
-    if (searchQuery.value) {
-      q = q.or(
-        `name.ilike.%${searchQuery.value}%,sku.ilike.%${searchQuery.value}%,color_label.ilike.%${searchQuery.value}%`,
-      );
+      params.append("color", colorFilter.value);
     }
 
-    // Pagination
-    const from = (currentPage.value - 1) * itemsPerPage.value;
-    const to = from + itemsPerPage.value - 1;
-    q = q.range(from, to);
+    // Update URL with package filter
+    if (packageFilter.value) {
+      router.replace({ query: { package_id: packageFilter.value } });
+    } else {
+      router.replace({ query: {} });
+    }
 
-    const { data, error, count } = await q;
-    if (error) throw error;
-    skus.value = data || [];
-    totalItems.value = count || 0;
+    const response = await $fetch<SkusResponse>(
+      `/api/package-skus?${params.toString()}`,
+    );
+
+    if (response.success) {
+      skus.value = response.data || [];
+      totalItems.value = response.pagination?.totalItems || 0;
+    } else {
+      throw new Error("Failed to load package SKUs");
+    }
   } catch (e: any) {
     console.error(e);
     skus.value = [];
     totalItems.value = 0;
+    showToast(e?.message || "Failed to load package SKUs", "error");
   } finally {
     loading.value = false;
   }
@@ -379,16 +395,24 @@ const executeDelete = async () => {
   if (!skuToDelete.value) return;
   deleting.value = true;
   try {
-    const { error } = await supabase
-      .from("products")
-      .delete()
-      .eq("id", skuToDelete.value.id);
-    if (error) throw error;
+    const response = await $fetch<DeleteResponse>(
+      `/api/package-skus/${skuToDelete.value.id}`,
+      {
+        method: "DELETE",
+      },
+    );
+
+    if (!response.success) {
+      throw new Error(response.error || "Failed to delete");
+    }
+
     showDeleteModal.value = false;
     skuToDelete.value = null;
+    showToast("Package SKU deleted", "success");
     await loadSkus();
   } catch (e: any) {
     console.error(e);
+    showToast(e?.message || "Failed to delete", "error");
   } finally {
     deleting.value = false;
   }

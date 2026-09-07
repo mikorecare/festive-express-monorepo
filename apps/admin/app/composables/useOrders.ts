@@ -26,8 +26,6 @@ export const useOrders = () => {
       useCookie('auth_token').value ||
       (import.meta.client ? localStorage.getItem('token') : null)
 
-    console.log('useOrders token:', token)
-
     return await $fetch(`${API_BASE}/orders/${id}`, {
       method: 'DELETE',
       headers: {

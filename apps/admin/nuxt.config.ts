@@ -11,26 +11,17 @@ export default defineNuxtConfig({
     "/confirm": { ssr: false },
   },
 
-  modules: ['@vueuse/nuxt', '@nuxtjs/tailwindcss', '@nuxtjs/supabase', '@nuxtjs/turnstile', 'nuxt-security'],
-
-  supabase: {
-    url: process.env.SUPABASE_URL,
-    key: process.env.SUPABASE_KEY,
-    serviceKey: process.env.SUPABASE_SERVICE_KEY,
-    redirect: false,
-    cookieOptions: {
-      maxAge: 60 * 60 * 8,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-    },
-  },
+  modules: ['@vueuse/nuxt', '@nuxtjs/tailwindcss', '@nuxtjs/turnstile', 'nuxt-security'],
 
   runtimeConfig: {
     azureClientId: process.env.AZURE_CLIENT_ID,
     azureTenantId: process.env.AZURE_TENANT_ID,
     azureClientSecret: process.env.AZURE_CLIENT_SECRET,
     azureRedirectUri: process.env.AZURE_REDIRECT_URI,
-    supabaseServiceKey: process.env.NUXT_SUPABASE_SECRET_KEY,
+    supabase: {
+      serviceKey: process.env.SUPABASE_SERVICE_KEY,
+      secretKey: process.env.SUPABASE_KEY,
+    },
     turnstileSecretKey: process.env.NUXT_TURNSTILE_SECRET_KEY,
     elavonAccountId: process.env.ELAVON_ACCOUNT_ID || "",
     elavonUserId: process.env.ELAVON_USER_ID || "",
@@ -44,6 +35,7 @@ export default defineNuxtConfig({
       turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY,
       apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api',
       azureClientId: process.env.AZURE_CLIENT_ID,
+      supabaseUrl: process.env.SUPABASE_URL
     },
   },
 

@@ -17,7 +17,7 @@
       </button>
     </div>
 
-    <form role="form"  class="space-y-6" @submit.prevent="saveContent">
+    <form role="form" class="space-y-6" @submit.prevent="saveContent">
       <div
         class="bg-white rounded-xl border border-slate-100 shadow-sm p-6 space-y-5"
       >
@@ -130,7 +130,6 @@ const emptyForm = (): CookieRow => ({
   description: "",
 });
 
-const supabase = useSupabaseClient();
 const { showToast } = useToast();
 
 const form = ref<CookieRow>(emptyForm());
@@ -139,18 +138,13 @@ const saving = ref(false);
 
 const loadContent = async () => {
   try {
-    const { data, error } = await supabase
-      .from("cookie_policy")
-      .select("*")
-      .eq("is_active", true)
-      .limit(1)
-      .maybeSingle();
+    const response = await $fetch<{ success: boolean; data: CookieRow | null }>(
+      "/api/cookie-policy",
+    );
 
-    if (error) throw error;
-
-    const row = data as CookieRow | null;
-    if (row) {
-      rowId.value = (row as { id?: string }).id || null;
+    if (response.success && response.data) {
+      const row = response.data;
+      rowId.value = row.id || null;
       form.value = {
         banner_image_url: row.banner_image_url || "",
         title: row.title || "Cookie Policy",
@@ -169,14 +163,23 @@ const loadContent = async () => {
 };
 
 const uploadImage = async (file: File) => {
-  const ext = file.name.split(".").pop() || "jpg";
-  const path = `banner/${Date.now()}.${ext}`;
-  const { error } = await supabase.storage
-    .from("about-us")
-    .upload(path, file, { upsert: true });
-  if (error) throw error;
-  const { data } = supabase.storage.from("about-us").getPublicUrl(path);
-  return data.publicUrl;
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("folder", "cookie-policy/banner");
+
+  const response = await $fetch<{ success: boolean; url: string }>(
+    "/api/upload",
+    {
+      method: "POST",
+      body: formData,
+    },
+  );
+
+  if (!response.success) {
+    throw new Error("Upload failed");
+  }
+
+  return response.url;
 };
 
 const onUploadBanner = async (e: Event) => {
@@ -203,26 +206,29 @@ const saveContent = async () => {
     short_description: form.value.short_description || null,
     description: form.value.description || null,
     is_active: true,
-    updated_at: new Date().toISOString(),
   };
 
   saving.value = true;
   try {
-    if (rowId.value) {
-      const { error } = await supabase
-        .from("cookie_policy")
-        .update(payload as never)
-        .eq("id", rowId.value);
-      if (error) throw error;
-    } else {
-      const { data, error } = await supabase
-        .from("cookie_policy")
-        .insert(payload as never)
-        .select("id")
-        .single();
-      if (error) throw error;
-      rowId.value = (data as { id: string }).id;
+    const response = await $fetch<{ success: boolean; id?: string }>(
+      "/api/cookie-policy",
+      {
+        method: rowId.value ? "PUT" : "POST",
+        body: {
+          id: rowId.value,
+          ...payload,
+        },
+      },
+    );
+
+    if (!response.success) {
+      throw new Error("Save failed");
     }
+
+    if (response.id) {
+      rowId.value = response.id;
+    }
+
     showToast("Cookie Policy saved", "success");
   } catch (e: any) {
     showToast(e?.message || "Save failed", "error");

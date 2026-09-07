@@ -1,3 +1,4 @@
+// /composables/useProductColors.ts
 export type ProductColor = {
   id: string
   color_key: string
@@ -8,26 +9,38 @@ export type ProductColor = {
 }
 
 export const useProductColors = () => {
-  const supabase = useSupabaseClient()
-  const db = supabase as any
   const colors = useState<ProductColor[]>('product-colors', () => [])
   const loaded = useState('product-colors-loaded', () => false)
+  const loading = ref(false)
 
   const loadColors = async () => {
     if (loaded.value && colors.value.length) return colors.value
-    const { data, error } = await db
-      .from('product_colors')
-      .select('id, color_key, color_label, hex, swatch_css, sort_order')
-      .eq('is_active', true)
-      .order('sort_order', { ascending: true })
-    if (error) throw error
-    colors.value = data || []
-    loaded.value = true
-    return colors.value
+    if (loading.value) return colors.value
+
+    loading.value = true
+
+    try {
+      const response = await $fetch<{ success: boolean; data: ProductColor[] }>('/api/product-colors')
+
+      if (response.success) {
+        colors.value = response.data || []
+        loaded.value = true
+        return colors.value
+      } else {
+        throw new Error('Failed to load colors')
+      }
+    } catch (error) {
+      console.error('Error loading product colors:', error)
+      return colors.value
+    } finally {
+      loading.value = false
+    }
   }
 
-  const byKey = (key?: string | null) =>
-    colors.value.find((c) => c.color_key === key) || null
+  const byKey = (key?: string | null) => {
+    if (!key) return null
+    return colors.value.find((c) => c.color_key === key) || null
+  }
 
   const swatchStyle = (key?: string | null) => {
     const c = byKey(key)
@@ -36,5 +49,18 @@ export const useProductColors = () => {
     return { backgroundColor: c.hex }
   }
 
-  return { colors, loadColors, byKey, swatchStyle }
+  const clearCache = () => {
+    colors.value = []
+    loaded.value = false
+  }
+
+  return {
+    colors,
+    loadColors,
+    byKey,
+    swatchStyle,
+    clearCache,
+    loaded: readonly(loaded),
+    loading: readonly(loading)
+  }
 }

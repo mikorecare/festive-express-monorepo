@@ -358,10 +358,12 @@
 
     <!-- User Info -->
     <div
-      v-if="user"
+      v-if="currentUser"
       class="flex-shrink-0 px-4 py-3 bg-slate-800/50 mx-3 rounded-lg mb-2"
     >
-      <p class="font-semibold text-sm text-white truncate">{{ user.email }}</p>
+      <p class="font-semibold text-sm text-white truncate">
+        {{ currentUser.email }}
+      </p>
     </div>
 
     <!-- Logout Button -->
@@ -416,7 +418,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import {
   ChartBarIcon,
   ShoppingBagIcon,
@@ -425,12 +427,9 @@ import {
   UserIcon,
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
-  WrenchScrewdriverIcon,
 } from "@heroicons/vue/24/outline";
 
 const route = useRoute();
-const supabase = useSupabaseClient();
-const user = useSupabaseUser();
 
 const isCollapsed = ref(false);
 const showLogoutModal = ref(false);
@@ -438,20 +437,50 @@ const isProductsOpen = ref(true);
 const isCustomersOpen = ref(true);
 const isConfigurationOpen = ref(true);
 const pendingReviewsCount = ref(0);
+const currentUser = ref<any>(null);
 
-// Fetch pending reviews count
+// Type definitions
+interface UserResponse {
+  user?: {
+    id: string;
+    email: string;
+    role: string;
+    display_name: string;
+    full_name: string;
+  };
+  success?: boolean;
+  message?: string;
+}
+
+interface ReviewsCountResponse {
+  success: boolean;
+  count?: number;
+  error?: string;
+}
+
+// Fetch pending reviews count via API
 const fetchPendingReviewsCount = async () => {
   try {
-    const { count, error } = await supabase
-      .from("reviews")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "pending");
-
-    if (!error) {
-      pendingReviewsCount.value = count || 0;
+    const response = await $fetch<ReviewsCountResponse>(
+      "/api/reviews/pending/count",
+    );
+    if (response.success) {
+      pendingReviewsCount.value = response.count || 0;
     }
   } catch (error) {
     console.error("Error fetching pending reviews count:", error);
+  }
+};
+
+// Get user info from localStorage (set during login)
+const getUserInfo = () => {
+  try {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      currentUser.value = JSON.parse(userData);
+    }
+  } catch (error) {
+    console.error("Error getting user info:", error);
   }
 };
 
@@ -473,13 +502,21 @@ const showLogoutConfirm = () => {
 
 const logout = async () => {
   try {
-    await supabase.auth.signOut();
+    // Call logout API endpoint
     await $fetch("/api/auth/logout", { method: "POST" });
+
+    // Clear local storage
+    localStorage.removeItem("user");
+    localStorage.removeItem("sb-auth");
+
+    // Navigate to login
+    navigateTo("/login");
   } catch (error) {
     console.error("Logout process error:", error);
+    // Still navigate to login even if there's an error
+    navigateTo("/login");
   } finally {
     showLogoutModal.value = false;
-    navigateTo("/login");
   }
 };
 
@@ -517,8 +554,43 @@ watch(
   },
 );
 
-onMounted(() => {
-  fetchPendingReviewsCount();
+// Check auth status on mount
+onMounted(async () => {
+  try {
+    // Check if user is authenticated via cookie
+    const authCookie = useCookie("sb-auth");
+    if (!authCookie.value) {
+      navigateTo("/login");
+      return;
+    }
+
+    // Get user info from localStorage
+    getUserInfo();
+
+    // If no user info in localStorage, fetch from API
+    if (!currentUser.value) {
+      try {
+        const response = await $fetch<UserResponse>("/api/auth/me");
+        if (response && response.user) {
+          currentUser.value = response.user;
+          localStorage.setItem("user", JSON.stringify(response.user));
+        } else {
+          navigateTo("/login");
+          return;
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        navigateTo("/login");
+        return;
+      }
+    }
+
+    // Fetch pending reviews count
+    await fetchPendingReviewsCount();
+  } catch (error) {
+    console.error("Auth check error:", error);
+    navigateTo("/login");
+  }
 });
 </script>
 

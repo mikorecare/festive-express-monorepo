@@ -376,12 +376,7 @@
 </template>
 
 <script setup lang="ts">
-// definePageMeta({ middleware: 'auth' })
-
 const route = useRoute();
-const config = useRuntimeConfig();
-const supabase = useSupabaseClient();
-const db = supabase as any;
 const { showToast } = useToast();
 
 const id = computed(() => String(route.params.id));
@@ -416,41 +411,60 @@ const inclusionState = ref<
   Record<string, { checked: boolean; quantity: number }>
 >({});
 
+interface PackageResponse {
+  success: boolean;
+  data: {
+    name: string;
+    slug: string;
+    description: string;
+    price: number;
+    sale_price: number;
+    sort_order: number;
+    is_popular: boolean;
+    is_active: boolean;
+    image_url: string;
+    title_image_url: string;
+    icon_url: string;
+  } | null;
+}
+
+interface InclusionItemsResponse {
+  success: boolean;
+  data: InclusionItem[];
+}
+
+interface PackageInclusionsResponse {
+  success: boolean;
+  data: Array<{
+    inclusion_item_id: string;
+    quantity: number;
+    is_included: boolean;
+  }>;
+}
+
+interface SaveResponse {
+  success: boolean;
+  error?: string;
+}
+
 const getImageUrl = (url?: string | null) => {
   if (!url) return "";
   if (url.startsWith("http") || url.startsWith("/")) return url;
-  const path = url.replace(/^\//, "");
-  const supabaseUrl =
-    (config.public.supabaseUrl as string) ||
-    (config.public.supabase as any)?.url ||
-    "";
-  const bucket = (config.public.storageBucket as string) || "Products";
-  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
+  return url;
 };
 
 const load = async () => {
   loading.value = true;
   try {
-    const [
-      { data: pkg, error: e1 },
-      { data: items, error: e2 },
-      { data: links, error: e3 },
-    ] = await Promise.all([
-      db.from("packages").select("*").eq("id", id.value).single(),
-      db
-        .from("inclusion_items")
-        .select("id, name, slug, image_url, sort_order")
-        .order("sort_order"),
-      db
-        .from("package_inclusions")
-        .select("inclusion_item_id, quantity, is_included")
-        .eq("package_id", id.value),
-    ]);
+    // Load package details
+    const packageResponse = await $fetch<PackageResponse>(
+      `/api/packages/${id.value}`,
+    );
+    if (!packageResponse.success || !packageResponse.data) {
+      throw new Error("Failed to load package");
+    }
 
-    if (e1) throw e1;
-    if (e2) throw e2;
-    if (e3) throw e3;
-
+    const pkg = packageResponse.data;
     form.value = {
       name: pkg.name || "",
       slug: pkg.slug || "",
@@ -465,26 +479,62 @@ const load = async () => {
       icon_url: pkg.icon_url || "",
     };
 
-    inclusionItems.value = items || [];
-
-    const map: Record<string, { checked: boolean; quantity: number }> = {};
-    for (const item of inclusionItems.value) {
-      const row = (links || []).find(
-        (l: any) => String(l.inclusion_item_id) === String(item.id),
-      );
-      map[item.id] = {
-        checked: row ? !!row.is_included : false,
-        quantity: row?.quantity ?? 1,
-      };
+    // Load inclusion items
+    const itemsResponse =
+      await $fetch<InclusionItemsResponse>("/api/inclusions");
+    if (itemsResponse.success) {
+      inclusionItems.value = itemsResponse.data || [];
     }
 
-    inclusionState.value = map;
+    // Load package inclusions
+    const inclusionsResponse = await $fetch<PackageInclusionsResponse>(
+      `/api/packages/${id.value}/inclusions`,
+    );
+    if (inclusionsResponse.success) {
+      const links = inclusionsResponse.data || [];
+      const map: Record<string, { checked: boolean; quantity: number }> = {};
+      for (const item of inclusionItems.value) {
+        const row = links.find(
+          (l: any) => String(l.inclusion_item_id) === String(item.id),
+        );
+        map[item.id] = {
+          checked: row ? !!row.is_included : false,
+          quantity: row?.quantity ?? 1,
+        };
+      }
+      inclusionState.value = map;
+    }
   } catch (e: any) {
     console.error(e);
     showToast?.(e?.message || "Failed to load package", "error");
   } finally {
     loading.value = false;
   }
+};
+
+const uploadToPackages = async (
+  file: File | null,
+  existingPath: string,
+): Promise<string | null> => {
+  if (!file) return existingPath?.trim() || null;
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("folder", "packages");
+
+  const response = await $fetch<{ success: boolean; url: string }>(
+    "/api/upload",
+    {
+      method: "POST",
+      body: formData,
+    },
+  );
+
+  if (!response.success) {
+    throw new Error("Upload failed");
+  }
+
+  return response.url;
 };
 
 const saveDetails = async () => {
@@ -515,21 +565,18 @@ const saveDetails = async () => {
     image_url: image_url,
     title_image_url: title_image_url,
     icon_url: icon_url,
-    updated_at: new Date().toISOString(),
   };
 
-  console.log("Saving package", id.value, payload);
+  const response = await $fetch<SaveResponse>(`/api/packages/${id.value}`, {
+    method: "PUT",
+    body: payload,
+  });
 
-  const { data, error } = await db
-    .from("packages")
-    .update(payload)
-    .eq("id", id.value)
-    .select()
-    .maybeSingle();
+  if (!response.success) {
+    throw new Error("Failed to save package details");
+  }
 
-  console.log("Update result", { data, error });
-
-  // after successful save:
+  // Update form with new URLs
   form.value.title_image_url = title_image_url || "";
   form.value.icon_url = icon_url || "";
 
@@ -541,7 +588,6 @@ const saveDetails = async () => {
     URL.revokeObjectURL(imagePreviewUrl.value);
     imagePreviewUrl.value = null;
   }
-
   if (titlePreviewUrl.value) {
     URL.revokeObjectURL(titlePreviewUrl.value);
     titlePreviewUrl.value = null;
@@ -550,20 +596,9 @@ const saveDetails = async () => {
     URL.revokeObjectURL(iconPreviewUrl.value);
     iconPreviewUrl.value = null;
   }
-
-  if (error) throw error;
-  if (!data) throw new Error("No row updated (check id / RLS)");
 };
 
 const saveInclusions = async () => {
-  // Replace strategy: delete existing links, insert current checklist
-  const { error: delErr } = await db
-    .from("package_inclusions")
-    .delete()
-    .eq("package_id", id.value);
-
-  if (delErr) throw delErr;
-
   const rows = inclusionItems.value.map((item, index) => {
     const state = inclusionState.value[item.id];
     return {
@@ -575,11 +610,16 @@ const saveInclusions = async () => {
     };
   });
 
-  // Only store rows that are checked — OR store all for strikeout UI
-  // Store ALL so storefront can show struck-out items:
-  if (rows.length) {
-    const { error } = await db.from("package_inclusions").insert(rows);
-    if (error) throw error;
+  const response = await $fetch<SaveResponse>(
+    `/api/packages/${id.value}/inclusions`,
+    {
+      method: "PUT",
+      body: { inclusions: rows },
+    },
+  );
+
+  if (!response.success) {
+    throw new Error("Failed to save inclusions");
   }
 };
 
@@ -615,7 +655,7 @@ const setQuantity = (itemId: string, quantity: number) => {
   row.quantity = Number.isFinite(quantity) && quantity > 0 ? quantity : 1;
 };
 
-//
+// File upload refs
 const imageFileInput = ref<HTMLInputElement | null>(null);
 const titleFileInput = ref<HTMLInputElement | null>(null);
 const iconFileInput = ref<HTMLInputElement | null>(null);
@@ -647,25 +687,6 @@ const onIconFileChange = (e: Event) => {
   iconImageFile.value = file;
   if (iconPreviewUrl.value) URL.revokeObjectURL(iconPreviewUrl.value);
   iconPreviewUrl.value = file ? URL.createObjectURL(file) : null;
-};
-
-const uploadToPackages = async (
-  file: File | null,
-  existingPath: string,
-): Promise<string | null> => {
-  if (!file) return existingPath?.trim() || null;
-
-  const ext = (file.name.split(".").pop() || "png").toLowerCase();
-  const path = `packages/${Date.now()}_${Math.random().toString(36).slice(2, 10)}.${ext}`;
-  const bucket = (config.public.storageBucket as string) || "Products";
-
-  const { error } = await supabase.storage.from(bucket).upload(path, file, {
-    cacheControl: "3600",
-    upsert: true,
-    contentType: file.type || `image/${ext}`,
-  });
-  if (error) throw error;
-  return path; // e.g. packages/1786....png
 };
 
 onMounted(load);

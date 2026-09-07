@@ -344,13 +344,33 @@ interface Category {
   slug?: string;
 }
 
-const config = useRuntimeConfig();
+interface ProductResponse {
+  success: boolean;
+  data: {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    sale_price: number;
+    stock: number;
+    sku: string;
+    category_id: string | null;
+    status: string;
+    image_url: string;
+    has_variations: boolean;
+    is_package: boolean;
+    package_data: string;
+    variations: ProductVariation[];
+  } | null;
+}
+
+interface CategoriesResponse {
+  success: boolean;
+  data: Category[];
+}
+
 const route = useRoute();
 const productId = route.params.id;
-const supabase = useSupabaseClient();
-const supabaseUrl = config.public.supabaseUrl;
-const bucket = config.public.storageBucket || "Products";
-
 const { showToast } = useToast();
 
 const isSaving = ref(false);
@@ -395,90 +415,96 @@ const handleDrop = (e: DragEvent) => {
   }
 };
 
-// const getImageUrl = (url?: string | null) => {
-//   if (!url) return '/Images/placeholder.jpg'
-//   if (url.startsWith('http')) return url
-//   return `${useRuntimeConfig().public.supabase.url}/storage/v1/object/public/${url.replace(/^\//, '')}`
-// }
-
-const getImageUrl = (url?: string | null, folder: "" | "variations" = "") => {
+const getImageUrl = (url?: string | null) => {
   if (!url) return "/Images/placeholder.jpg";
-
-  // already full URL
   if (url.startsWith("http")) return url;
-
-  let path = url
-    .replace(/^\//, "")
-    .replace(/^products\//i, "")
-    .replace(/^Products\//i, "")
-    .replace(/^variations\//i, "");
-
-  // if DB already stored "variations/xxx.webp"
-  if (url.toLowerCase().includes("variations/")) {
-    path = url
-      .replace(/^\//, "")
-      .replace(/^products\//i, "")
-      .replace(/^Products\//i, "");
-    return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
-  }
-
-  const prefix = folder ? `${folder}/` : "";
-  return `${supabaseUrl}/storage/v1/object/public/${bucket}/${prefix}${path}`;
+  return url;
 };
 
-// const uploadOptionImage = async (vIndex: number, oIndex: number, e: Event) => {
-//   const file = (e.target as HTMLInputElement).files?.[0]
-//   if (!file) return
+const uploadImage = async (file: File, folder: string = "products") => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("folder", folder);
 
-//   try {
-//     const fileExt = file.name.split('.').pop()
-//     const fileName = `variations/${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`
+  const response = await $fetch<{ success: boolean; url: string }>(
+    "/api/upload",
+    {
+      method: "POST",
+      body: formData,
+    },
+  );
 
-//     const { error: uploadErr } = await supabase.storage
-//       .from('Products')
-//       .upload(fileName, file, { upsert: true })
+  if (!response.success) {
+    throw new Error("Upload failed");
+  }
 
-//     if (uploadErr) throw uploadErr
+  return response.url;
+};
 
-//     if (product.value.variations?.[vIndex]?.options?.[oIndex]) {
-//       product.value.variations[vIndex].options[oIndex].image_url = `products/${fileName}`
-//     }
-//     showToast('Option image uploaded', 'success')
-//   } catch (error: any) {
-//     console.error('Failed to upload option image:', error)
-//     showToast(error.message || 'Failed to upload option image', 'error')
-//   }
-// }
 const uploadOptionImage = async (vIndex: number, oIndex: number, e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0];
   if (!file) return;
 
   try {
-    const config = useRuntimeConfig();
-    const bucket = config.public.storageBucket || "Products";
+    const url = await uploadImage(file, "variations");
 
-    const fileExt = file.name.split(".").pop();
-    const fileName = `variations/${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`;
-
-    const { error: uploadErr } = await supabase.storage
-      .from(bucket)
-      .upload(fileName, file, {
-        upsert: true,
-        contentType: file.type,
-      });
-
-    if (uploadErr) throw uploadErr;
-
-    // Save path relative to bucket only (includes variations/)
     if (product.value.variations?.[vIndex]?.options?.[oIndex]) {
-      product.value.variations[vIndex].options[oIndex].image_url = fileName;
-      // → "variations/1786-abc.jpg"
+      product.value.variations[vIndex].options[oIndex].image_url = url;
     }
 
     showToast("Option image uploaded", "success");
   } catch (error: any) {
     console.error("Failed to upload option image:", error);
     showToast(error?.message || "Failed to upload option image", "error");
+  }
+};
+
+const loadCategories = async () => {
+  try {
+    const response = await $fetch<CategoriesResponse>("/api/categories");
+    if (response.success) {
+      categories.value = response.data || [];
+    }
+  } catch (error) {
+    console.error("Failed to load categories:", error);
+  }
+};
+
+const loadProduct = async () => {
+  try {
+    const response = await $fetch<ProductResponse>(
+      `/api/products/${productId}`,
+    );
+    if (response.success && response.data) {
+      const loadedProduct = response.data;
+      product.value = {
+        name: loadedProduct.name || "",
+        description: loadedProduct.description || "",
+        price: loadedProduct.price,
+        sale_price: loadedProduct.sale_price,
+        stock: loadedProduct.stock,
+        sku: loadedProduct.sku || "",
+        category_id: loadedProduct.category_id,
+        status: loadedProduct.status || "publish",
+        image_url: loadedProduct.image_url || "",
+        has_variations: Boolean(loadedProduct.has_variations),
+        is_package: Boolean(loadedProduct.is_package),
+        package_data: loadedProduct.package_data || "",
+        variations:
+          loadedProduct.variations?.map((v: any) => ({
+            id: v.id,
+            name: v.name || "",
+            options: v.options || [{ name: "", image_url: "" }],
+          })) || [],
+      };
+
+      if (loadedProduct.image_url) {
+        imagePreview.value = getImageUrl(loadedProduct.image_url);
+      }
+    }
+  } catch (error: any) {
+    console.error("Failed to load product:", error);
+    showToast(error.message || "Failed to load product", "error");
   }
 };
 
@@ -491,87 +517,41 @@ const updateProduct = async () => {
   isSaving.value = true;
 
   try {
-    // let finalImageUrl = product.value.image_url
-
-    // if (imageFile.value) {
-    //   const fileExt = imageFile.value.name.split('.').pop()
-    //   const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`
-
-    //   const { error: uploadErr } = await supabase.storage
-    //     .from('Products')
-    //     .upload(fileName, imageFile.value, { upsert: true })
-
-    //   if (uploadErr) throw uploadErr
-    //   finalImageUrl = `products/${fileName}`
-    // }
-
     let finalImageUrl = product.value.image_url;
 
     if (imageFile.value) {
-      const fileExt = imageFile.value.name.split(".").pop();
-      // matches your style: 1785938191_JoyPhoto.webp
-      const baseName = imageFile.value.name
-        .replace(/\.[^/.]+$/, "")
-        .replace(/[^a-zA-Z0-9_-]/g, "_");
-      const fileName = `${Date.now()}_${baseName}.${fileExt}`;
-
-      const { error: uploadErr } = await supabase.storage
-        .from("Products")
-        .upload(fileName, imageFile.value, {
-          upsert: true,
-          contentType: imageFile.value.type,
-        });
-
-      if (uploadErr) throw uploadErr;
-
-      // Option A — store only the object path (recommended)
-      finalImageUrl = fileName;
-      // e.g. "1786622799859_JoyPhoto.webp"
-
-      // Option B — store full public URL
-      // const { data } = supabase.storage.from('Products').getPublicUrl(fileName)
-      // finalImageUrl = data.publicUrl
+      finalImageUrl = await uploadImage(imageFile.value, "products");
     }
 
-    const { error: updateErr } = await (supabase.from("products") as any)
-      .update({
-        name: product.value.name,
-        description: product.value.description,
-        price: product.value.price || 0,
-        sale_price: product.value.sale_price || 0,
-        stock: product.value.stock || 0,
-        sku: product.value.sku,
-        category_id: product.value.category_id,
-        status: product.value.status,
-        image_url: finalImageUrl,
-        has_variations: product.value.has_variations,
-        is_package: product.value.is_package,
-        package_data: product.value.package_data,
-      })
-      .eq("id", productId);
+    const response = await $fetch<{ success: boolean }>(
+      `/api/products/${productId}`,
+      {
+        method: "PUT",
+        body: {
+          name: product.value.name,
+          description: product.value.description,
+          price: product.value.price || 0,
+          sale_price: product.value.sale_price || 0,
+          stock: product.value.stock || 0,
+          sku: product.value.sku,
+          category_id: product.value.category_id,
+          status: product.value.status,
+          image_url: finalImageUrl,
+          has_variations: product.value.has_variations,
+          is_package: product.value.is_package,
+          package_data: product.value.package_data,
+          variations: product.value.has_variations
+            ? product.value.variations
+            : [],
+        },
+      },
+    );
 
-    if (updateErr) throw updateErr;
-
-    if (product.value.has_variations) {
-      await (supabase.from("variations") as any)
-        .delete()
-        .eq("product_id", productId);
-
-      for (const v of product.value.variations) {
-        if (!v.name) continue;
-        await (supabase.from("variations") as any).insert({
-          product_id: productId,
-          name: v.name,
-          options: v.options,
-        });
-      }
-    } else {
-      await (supabase.from("variations") as any)
-        .delete()
-        .eq("product_id", productId);
+    if (!response.success) {
+      throw new Error("Failed to update product");
     }
 
-    showToast("✅ Product updated successfully!", "success");
+    showToast("Product updated successfully!", "success");
     navigateTo("/admin/products");
   } catch (error: any) {
     console.error("Update product failed:", error);
@@ -607,50 +587,6 @@ const removeOption = (vIndex: number, oIndex: number) => {
 };
 
 onMounted(async () => {
-  try {
-    const { data: catData } = await (supabase.from("categories") as any).select(
-      "*",
-    );
-    categories.value = catData || [];
-
-    const { data: loadedProduct, error: pError } = await (
-      supabase.from("products") as any
-    )
-      .select("*, variations(*)")
-      .eq("id", productId)
-      .single();
-
-    if (pError) throw pError;
-
-    if (loadedProduct) {
-      product.value = {
-        name: loadedProduct.name || "",
-        description: loadedProduct.description || "",
-        price: loadedProduct.price,
-        sale_price: loadedProduct.sale_price,
-        stock: loadedProduct.stock,
-        sku: loadedProduct.sku || "",
-        category_id: loadedProduct.category_id,
-        status: loadedProduct.status || "publish",
-        image_url: loadedProduct.image_url || "",
-        has_variations: Boolean(loadedProduct.has_variations),
-        is_package: Boolean(loadedProduct.is_package),
-        package_data: loadedProduct.package_data || "",
-        variations:
-          loadedProduct.variations?.map((v: any) => ({
-            id: v.id,
-            name: v.name || "",
-            options: v.options || [{ name: "", image_url: "" }],
-          })) || [],
-      };
-
-      if (loadedProduct.image_url) {
-        imagePreview.value = getImageUrl(loadedProduct.image_url);
-      }
-    }
-  } catch (error: any) {
-    console.error("Failed to load product:", error);
-    showToast(error.message || "Failed to load product", "error");
-  }
+  await Promise.all([loadCategories(), loadProduct()]);
 });
 </script>

@@ -402,9 +402,6 @@ const ICON_BUCKET = "email-assets";
 const ICON_PATH = "early-bird-icon.png";
 const ICON_PATH_SECONDARY = "early-bird-icon-secondary.png";
 
-const supabase = useSupabaseClient();
-const db = supabase as any;
-const user = useSupabaseUser();
 const { showToast } = useToast();
 
 const loading = ref(true);
@@ -436,6 +433,11 @@ const emptyForm = (): SettingsForm => ({
 });
 
 const form = ref<SettingsForm>(emptyForm());
+
+interface SettingsResponse {
+  success: boolean;
+  data: SettingRow[];
+}
 
 const socialFields: { key: SocialKey; label: string; placeholder: string }[] = [
   {
@@ -490,7 +492,6 @@ watch(
       return;
     }
 
-    // Just extract the date part for the input
     form.value.early_bird_expires_at_local = newVal.split("T")[0] || "";
   },
   { immediate: true },
@@ -504,7 +505,6 @@ watch(
       return;
     }
 
-    // Store as 11:59 PM ET on that date (3:59 AM UTC the next day)
     const utcDate = new Date(`${newVal}T03:59:00.000Z`);
     form.value.early_bird_expires_at = utcDate.toISOString();
   },
@@ -514,6 +514,27 @@ const unwrapSettingValue = (value: unknown) => {
   if (value == null) return "";
   if (typeof value === "string") return value.replace(/^"|"$/g, "");
   return String(value);
+};
+
+const uploadIcon = async (file: File, path: string): Promise<string> => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("folder", path);
+  formData.append("bucket", ICON_BUCKET);
+
+  const response = await $fetch<{ success: boolean; url: string }>(
+    "/api/upload",
+    {
+      method: "POST",
+      body: formData,
+    },
+  );
+
+  if (!response.success) {
+    throw new Error("Upload failed");
+  }
+
+  return response.url;
 };
 
 const onEarlyBirdIconChange = async (e: Event) => {
@@ -530,19 +551,8 @@ const onEarlyBirdIconChange = async (e: Event) => {
 
   iconUploading.value = true;
   try {
-    const { error: uploadError } = await db.storage
-      .from(ICON_BUCKET)
-      .upload(ICON_PATH, file, {
-        upsert: true,
-        contentType: "image/png",
-        cacheControl: "3600",
-      });
-
-    if (uploadError) throw uploadError;
-
-    const { data } = db.storage.from(ICON_BUCKET).getPublicUrl(ICON_PATH);
-    const publicUrl = `${data.publicUrl}?t=${Date.now()}`;
-    form.value.early_bird_icon_url = publicUrl;
+    const url = await uploadIcon(file, ICON_PATH);
+    form.value.early_bird_icon_url = `${url}?t=${Date.now()}`;
   } catch (err: any) {
     console.error("icon upload", err);
     iconUploadError.value = err?.message || "Upload failed";
@@ -566,20 +576,8 @@ const onEarlyBirdIconSecondaryChange = async (e: Event) => {
 
   iconUploading.value = true;
   try {
-    const { error: uploadError } = await db.storage
-      .from(ICON_BUCKET)
-      .upload(ICON_PATH_SECONDARY, file, {
-        upsert: true,
-        contentType: "image/png",
-        cacheControl: "3600",
-      });
-
-    if (uploadError) throw uploadError;
-
-    const { data } = db.storage
-      .from(ICON_BUCKET)
-      .getPublicUrl(ICON_PATH_SECONDARY);
-    form.value.early_bird_icon_secondary_url = `${data.publicUrl}?t=${Date.now()}`;
+    const url = await uploadIcon(file, ICON_PATH_SECONDARY);
+    form.value.early_bird_icon_secondary_url = `${url}?t=${Date.now()}`;
   } catch (err: any) {
     console.error("icon upload secondary", err);
     iconUploadError.value = err?.message || "Upload failed";
@@ -592,10 +590,13 @@ const onEarlyBirdIconSecondaryChange = async (e: Event) => {
 const loadSettings = async () => {
   loading.value = true;
   try {
-    const { data, error } = await db.from("settings").select("id, key, value");
-    if (error) throw error;
+    const response = await $fetch<SettingsResponse>("/api/settings");
 
-    const rows = (data || []) as SettingRow[];
+    if (!response.success) {
+      throw new Error("Failed to load settings");
+    }
+
+    const rows = response.data || [];
     const next = emptyForm();
 
     for (const row of rows) {
@@ -628,11 +629,6 @@ const loadSettings = async () => {
 };
 
 const saveSettings = async () => {
-  if (!user.value) {
-    showToast("Please log in.", "error");
-    return;
-  }
-
   saving.value = true;
   try {
     const rows = SETTING_KEYS.map((key) => {
@@ -658,15 +654,18 @@ const saveSettings = async () => {
       return {
         key,
         value,
-        updated_at: new Date().toISOString(),
       };
     });
 
-    const { error } = await db
-      .from("settings")
-      .upsert(rows, { onConflict: "key" });
+    const response = await $fetch<{ success: boolean }>("/api/settings", {
+      method: "POST",
+      body: { settings: rows },
+    });
 
-    if (error) throw error;
+    if (!response.success) {
+      throw new Error("Failed to save settings");
+    }
+
     showToast("Settings saved", "success");
   } catch (e: any) {
     console.error("saveSettings", e);
@@ -676,13 +675,10 @@ const saveSettings = async () => {
   }
 };
 
-watch(
-  user,
-  async (u) => {
-    if (!u || initialized.value) return;
+onMounted(async () => {
+  if (!initialized.value) {
     initialized.value = true;
     await loadSettings();
-  },
-  { immediate: true },
-);
+  }
+});
 </script>

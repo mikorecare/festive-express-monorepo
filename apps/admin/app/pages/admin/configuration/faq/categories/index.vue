@@ -1,10 +1,14 @@
 <template>
   <div class="p-6 space-y-6 bg-slate-50 min-h-screen">
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div
+      class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+    >
       <div>
         <h1 class="text-2xl font-bold text-navy">FAQ Categories</h1>
-        <p class="text-slate-500 text-sm">Sections shown on the storefront FAQ page</p>
+        <p class="text-slate-500 text-sm">
+          Sections shown on the storefront FAQ page
+        </p>
       </div>
       <NuxtLink
         to="/admin/configuration/faq"
@@ -19,7 +23,7 @@
       <div class="lg:col-span-5">
         <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-6">
           <h2 class="text-lg font-bold text-navy mb-5">
-            {{ editingId ? 'Edit Category' : 'Add Category' }}
+            {{ editingId ? "Edit Category" : "Add Category" }}
           </h2>
 
           <div class="space-y-4">
@@ -34,8 +38,10 @@
                 :class="{ 'border-red-500': errors.name }"
                 placeholder="e.g. About Festive Express"
                 @input="onNameInput"
-              >
-              <p v-if="errors.name" class="text-red-500 text-xs mt-1">{{ errors.name }}</p>
+              />
+              <p v-if="errors.name" class="text-red-500 text-xs mt-1">
+                {{ errors.name }}
+              </p>
             </div>
 
             <div>
@@ -48,22 +54,32 @@
                 class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange"
                 :class="{ 'border-red-500': errors.slug }"
                 placeholder="about-festive-express"
-              >
-              <p v-if="errors.slug" class="text-red-500 text-xs mt-1">{{ errors.slug }}</p>
+              />
+              <p v-if="errors.slug" class="text-red-500 text-xs mt-1">
+                {{ errors.slug }}
+              </p>
             </div>
 
             <div>
-              <label class="block text-sm font-semibold text-navy mb-2">Sort order</label>
+              <label class="block text-sm font-semibold text-navy mb-2"
+                >Sort order</label
+              >
               <input
                 v-model.number="form.sort_order"
                 type="number"
                 min="0"
                 class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange"
-              >
+              />
             </div>
 
-            <label class="flex items-center gap-2 cursor-pointer text-sm text-navy">
-              <input v-model="form.is_active" type="checkbox" class="w-auto rounded border-slate-300">
+            <label
+              class="flex items-center gap-2 cursor-pointer text-sm text-navy"
+            >
+              <input
+                v-model="form.is_active"
+                type="checkbox"
+                class="w-auto rounded border-slate-300"
+              />
               Active
             </label>
 
@@ -74,7 +90,9 @@
                 :disabled="isSaving"
                 @click="saveCategory"
               >
-                {{ isSaving ? 'Saving...' : (editingId ? 'Update' : 'Add Category') }}
+                {{
+                  isSaving ? "Saving..." : editingId ? "Update" : "Add Category"
+                }}
               </button>
               <button
                 v-if="editingId"
@@ -91,14 +109,19 @@
 
       <!-- Right: list -->
       <div class="lg:col-span-7">
-        <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+        <div
+          class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden"
+        >
           <div class="px-5 py-4 border-b border-slate-100">
             <h3 class="font-bold text-navy text-sm">
               Existing Categories ({{ categories.length }})
             </h3>
           </div>
 
-          <div v-if="!categories.length" class="p-10 text-center text-slate-400 text-sm">
+          <div
+            v-if="!categories.length"
+            class="p-10 text-center text-slate-400 text-sm"
+          >
             No categories yet.
           </div>
 
@@ -123,7 +146,7 @@
                     : 'bg-slate-200 text-slate-600'
                 "
               >
-                {{ cat.is_active ? 'Active' : 'Inactive' }}
+                {{ cat.is_active ? "Active" : "Inactive" }}
               </span>
               <button
                 type="button"
@@ -179,149 +202,168 @@
 
 <script setup lang="ts">
 interface FaqCategory {
-  id: string
-  name: string
-  slug: string
-  sort_order: number
-  is_active: boolean
+  id: string;
+  name: string;
+  slug: string;
+  sort_order: number;
+  is_active: boolean;
 }
 
-const supabase = useSupabaseClient()
-const categories = ref<FaqCategory[]>([])
-const isSaving = ref(false)
-const editingId = ref<string | null>(null)
-const errors = ref<Record<string, string>>({})
-const showModal = ref(false)
-const catToDelete = ref<FaqCategory | null>(null)
+const categories = ref<FaqCategory[]>([]);
+const isSaving = ref(false);
+const editingId = ref<string | null>(null);
+const errors = ref<Record<string, string>>({});
+const showModal = ref(false);
+const catToDelete = ref<FaqCategory | null>(null);
 
 const form = ref({
-  name: '',
-  slug: '',
+  name: "",
+  slug: "",
   sort_order: 0,
   is_active: true,
-})
+});
+
+interface CategoriesResponse {
+  success: boolean;
+  data: FaqCategory[];
+}
+
+interface SaveResponse {
+  success: boolean;
+  id?: string;
+  error?: string;
+}
 
 const generateSlug = (name: string) =>
   name
     .toLowerCase()
     .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 
 const onNameInput = () => {
   if (!editingId.value) {
-    form.value.slug = generateSlug(form.value.name)
+    form.value.slug = generateSlug(form.value.name);
   }
-}
+};
 
 const nextSortOrder = () => {
-  if (!categories.value.length) return 1
-  const max = Math.max(...categories.value.map((c) => Number(c.sort_order) || 0))
-  return max + 1
-}
+  if (!categories.value.length) return 1;
+  const max = Math.max(
+    ...categories.value.map((c) => Number(c.sort_order) || 0),
+  );
+  return max + 1;
+};
 
 const loadCategories = async () => {
-  const { data, error } = await supabase
-    .from('faq_categories')
-    .select('id, name, slug, sort_order, is_active')
-    .order('sort_order', { ascending: true })
+  try {
+    const response = await $fetch<CategoriesResponse>("/api/faq-categories");
+    if (response.success) {
+      categories.value = response.data || [];
 
-  if (error) {
-    console.error(error)
-    categories.value = []
-    return
+      // Only auto-fill when creating (not editing)
+      if (!editingId.value) {
+        form.value.sort_order = nextSortOrder();
+      }
+    }
+  } catch (error) {
+    console.error("Failed to load categories:", error);
+    categories.value = [];
   }
-  categories.value = (data as FaqCategory[]) || []
-
-  // Only auto-fill when creating (not editing)
-  if (!editingId.value) {
-    form.value.sort_order = nextSortOrder()
-  }
-}
+};
 
 const validate = () => {
-  errors.value = {}
-  if (!form.value.name.trim()) errors.value.name = 'Name is required'
-  if (!form.value.slug.trim()) errors.value.slug = 'Slug is required'
-  return Object.keys(errors.value).length === 0
-}
+  errors.value = {};
+  if (!form.value.name.trim()) errors.value.name = "Name is required";
+  if (!form.value.slug.trim()) errors.value.slug = "Slug is required";
+  return Object.keys(errors.value).length === 0;
+};
 
 const saveCategory = async () => {
-  if (!validate()) return
-  isSaving.value = true
+  if (!validate()) return;
+  isSaving.value = true;
 
   const payload = {
     name: form.value.name.trim(),
     slug: form.value.slug.trim(),
     sort_order: form.value.sort_order || 0,
     is_active: form.value.is_active,
-    updated_at: new Date().toISOString(),
-  }
+  };
 
   try {
-    if (editingId.value) {
-      const { error } = await supabase
-        .from('faq_categories')
-        .update(payload as never)
-        .eq('id', editingId.value)
-      if (error) throw error
-    } else {
-      const { error } = await supabase
-        .from('faq_categories')
-        .insert(payload as never)
-      if (error) throw error
+    const response = await $fetch<SaveResponse>("/api/faq-categories", {
+      method: editingId.value ? "PUT" : "POST",
+      body: {
+        id: editingId.value,
+        ...payload,
+      },
+    });
+
+    if (!response.success) {
+      throw new Error(response.error || "Failed to save category");
     }
-    cancelEdit()
-    await loadCategories()
+
+    cancelEdit();
+    await loadCategories();
   } catch (e) {
-    console.error(e)
+    console.error(e);
   } finally {
-    isSaving.value = false
+    isSaving.value = false;
   }
-}
+};
 
 const editCategory = (cat: FaqCategory) => {
-  editingId.value = cat.id
+  editingId.value = cat.id;
   form.value = {
     name: cat.name,
     slug: cat.slug,
     sort_order: cat.sort_order,
     is_active: cat.is_active,
-  }
-  errors.value = {}
-}
+  };
+  errors.value = {};
+};
 
 const cancelEdit = () => {
-  editingId.value = null
-  form.value = { name: '', slug: '', sort_order: nextSortOrder(), is_active: true }
-  errors.value = {}
-}
+  editingId.value = null;
+  form.value = {
+    name: "",
+    slug: "",
+    sort_order: nextSortOrder(),
+    is_active: true,
+  };
+  errors.value = {};
+};
 
 const confirmDelete = (cat: FaqCategory) => {
-  catToDelete.value = cat
-  showModal.value = true
-}
+  catToDelete.value = cat;
+  showModal.value = true;
+};
 
 const executeDelete = async () => {
-  if (!catToDelete.value) return
-  const id = catToDelete.value.id
+  if (!catToDelete.value) return;
+  const id = catToDelete.value.id;
 
-  const { error } = await supabase
-    .from('faq_categories')
-    .delete()
-    .eq('id', id)
+  try {
+    const response = await $fetch<{ success: boolean }>(
+      `/api/faq-categories/${id}`,
+      {
+        method: "DELETE",
+      },
+    );
 
-  if (error) {
-    console.error(error)
-    return
+    if (!response.success) {
+      throw new Error("Failed to delete category");
+    }
+
+    showModal.value = false;
+    catToDelete.value = null;
+    if (editingId.value === id) cancelEdit();
+    await loadCategories();
+  } catch (error) {
+    console.error("Failed to delete category:", error);
   }
+};
 
-  showModal.value = false
-  catToDelete.value = null
-  if (editingId.value === id) cancelEdit()
-  await loadCategories()
-}
-
-onMounted(loadCategories)
+onMounted(loadCategories);
 </script>

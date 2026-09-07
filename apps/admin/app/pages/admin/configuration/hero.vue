@@ -161,35 +161,43 @@ const emptyForm = (): HeroForm => ({
   hero_countdown_enabled: "true",
 });
 
-const supabase = useSupabaseClient() as any;
-const user = useSupabaseUser();
 const { showToast } = useToast();
 
 const loading = ref(true);
 const saving = ref(false);
 const form = ref<HeroForm>(emptyForm());
 
+interface Setting {
+  key: string;
+  value: string;
+}
+
 const loadHero = async () => {
   loading.value = true;
   try {
-    const { data, error } = await supabase
-      .from("settings")
-      .select("key, value")
-      .in("key", [...HERO_KEYS]);
-    if (error) throw error;
+    const response = await $fetch<{ success: boolean; data: Setting[] }>(
+      "/api/settings",
+      {
+        query: { keys: HERO_KEYS.join(",") },
+      },
+    );
 
-    const next = emptyForm();
-    for (const row of data || []) {
-      const k = row.key as keyof HeroForm;
-      if (!(k in next)) continue;
-      next[k] = String(row.value ?? "").replace(/^"|"$/g, "");
+    if (response.success) {
+      const next = emptyForm();
+      for (const row of response.data || []) {
+        const k = row.key as keyof HeroForm;
+        if (!(k in next)) continue;
+        next[k] = String(row.value ?? "").replace(/^"|"$/g, "");
+      }
+      next.hero_countdown_enabled =
+        next.hero_countdown_enabled === "true" ||
+        next.hero_countdown_enabled === "1"
+          ? "true"
+          : "false";
+      form.value = next;
+    } else {
+      throw new Error("Failed to load settings");
     }
-    next.hero_countdown_enabled =
-      next.hero_countdown_enabled === "true" ||
-      next.hero_countdown_enabled === "1"
-        ? "true"
-        : "false";
-    form.value = next;
   } catch (e: any) {
     showToast(e?.message || "Failed to load hero settings", "error");
   } finally {
@@ -198,10 +206,6 @@ const loadHero = async () => {
 };
 
 const saveHero = async () => {
-  if (!user.value) {
-    showToast("Please log in.", "error");
-    return;
-  }
   saving.value = true;
   try {
     const rows = HERO_KEYS.map((key) => ({
@@ -212,12 +216,17 @@ const saveHero = async () => {
             ? "true"
             : "false"
           : form.value[key].trim(),
-      updated_at: new Date().toISOString(),
     }));
-    const { error } = await supabase
-      .from("settings")
-      .upsert(rows, { onConflict: "key" });
-    if (error) throw error;
+
+    const response = await $fetch<{ success: boolean }>("/api/settings", {
+      method: "POST",
+      body: { settings: rows },
+    });
+
+    if (!response.success) {
+      throw new Error("Save failed");
+    }
+
     showToast("Hero settings saved", "success");
   } catch (e: any) {
     showToast(e?.message || "Failed to save hero settings", "error");

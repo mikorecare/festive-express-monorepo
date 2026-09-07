@@ -1,33 +1,26 @@
-import { serverSupabaseClient } from '#supabase/server'
-
-type Category = {
-    id: string
-    name: string
-}
-
-type CategoriesResponse = {
-    categories: Category[]
-}
+import { getSupabase } from '~~/server/utils/supabase'
 
 export default defineEventHandler(async (event) => {
-    const supabase = await serverSupabaseClient(event);
+    try {
+        const supabase = getSupabase()
 
-    const { data, error } = await supabase
-        .from("categories")
-        .select("id, name")
-        .order("name", { ascending: true });
+        const { data, error } = await supabase
+            .from('categories')
+            .select('*')
+            .order('name')
 
-    if (error) {
-        console.error("categories list", error);
-        throw createError({
-            statusCode: 500,
-            message: "Failed to load categories",
-        });
+        if (error) throw error
+
+        return {
+            success: true,
+            data: data || []
+        }
+    } catch (error) {
+        console.error('Error fetching categories:', error)
+        return {
+            success: false,
+            data: [],
+            error: error instanceof Error ? error.message : 'Failed to fetch categories'
+        }
     }
-
-    const response: CategoriesResponse = {
-        categories: data || []
-    };
-
-    return response;
-});
+})

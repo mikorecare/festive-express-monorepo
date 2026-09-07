@@ -330,8 +330,6 @@
 </template>
 
 <script setup lang="ts">
-// definePageMeta({ middleware: 'auth' })
-
 type InclusionItem = {
   id: string;
   name: string;
@@ -344,19 +342,19 @@ type InclusionItem = {
   specifications?: Record<string, string> | null;
 };
 
-const config = useRuntimeConfig();
-const supabase = useSupabaseClient();
-const db = supabase as any;
+interface InclusionResponse {
+  success: boolean;
+  data: InclusionItem[];
+}
 
-const showToast = (msg: string, type: "success" | "error" = "success") => {
-  try {
-    // @ts-ignore
-    const t = useToast?.();
-    if (t?.showToast) return t.showToast(msg, type);
-  } catch {}
-  if (type === "error") console.error(msg);
-  else console.log(msg);
-};
+interface SaveResponse {
+  success: boolean;
+  id?: string;
+  error?: string;
+}
+
+const config = useRuntimeConfig();
+const { showToast } = useToast();
 
 const loading = ref(true);
 const saving = ref(false);
@@ -442,13 +440,7 @@ const getImageUrl = (url?: string | null) => {
   if (!url) return "";
   if (url.startsWith("http") || url.startsWith("blob:")) return url;
   if (url.startsWith("/")) return url;
-
-  let path = url.replace(/^\//, "");
-  path = path.replace(/^Products\//i, "").replace(/^products\//i, "");
-
-  const bucket = (config.public.storageBucket as string) || "Products";
-  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-  return data?.publicUrl || "";
+  return url;
 };
 
 const slugify = (text: string) =>
@@ -515,29 +507,24 @@ const onFileChange = (e: Event) => {
   previewUrl.value = URL.createObjectURL(file);
 };
 
-const uploadImage = async (): Promise<string | null> => {
-  if (!imageFile.value) {
-    const existing = form.value.image_url?.trim();
-    return existing || null;
+const uploadImage = async (file: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("folder", "inclusions");
+
+  const response = await $fetch<{ success: boolean; url: string }>(
+    "/api/upload",
+    {
+      method: "POST",
+      body: formData,
+    },
+  );
+
+  if (!response.success) {
+    throw new Error("Upload failed");
   }
 
-  const file = imageFile.value;
-  const ext = (file.name.split(".").pop() || "png").toLowerCase();
-  const path = `inclusions/${Date.now()}_${Math.random().toString(36).slice(2, 10)}.${ext}`;
-  const bucket = (config.public.storageBucket as string) || "Products";
-
-  const { error } = await supabase.storage.from(bucket).upload(path, file, {
-    cacheControl: "3600",
-    upsert: true,
-    contentType: file.type || `image/${ext}`,
-  });
-
-  if (error) {
-    console.error("Storage upload error:", error);
-    throw new Error(error.message || "Image upload failed");
-  }
-
-  return path;
+  return response.url;
 };
 
 const saveItem = async () => {
@@ -551,10 +538,12 @@ const saveItem = async () => {
 
   saving.value = true;
   try {
-    const uploadedPath = await uploadImage();
-    if (uploadedPath) form.value.image_url = uploadedPath;
+    let uploadedPath = form.value.image_url;
+    if (imageFile.value) {
+      uploadedPath = await uploadImage(imageFile.value);
+    }
 
-    const payload: Record<string, unknown> = {
+    const payload = {
       name: form.value.name.trim(),
       slug: form.value.slug.trim(),
       description: form.value.description?.trim() || null,
@@ -568,35 +557,22 @@ const saveItem = async () => {
         .map((s) => s.trim())
         .filter(Boolean),
       specifications: buildSpecsObject(),
+      image_url: uploadedPath || null,
     };
-    if (uploadedPath) payload.image_url = uploadedPath;
 
-    if (editingId.value) {
-      const { data, error } = await db
-        .from("inclusion_items")
-        .update(payload)
-        .eq("id", editingId.value)
-        .select("id, name, image_url");
+    const response = await $fetch<SaveResponse>("/api/inclusions", {
+      method: editingId.value ? "PUT" : "POST",
+      body: {
+        id: editingId.value,
+        ...payload,
+      },
+    });
 
-      if (error) throw error;
-      if (!data || data.length === 0) {
-        throw new Error(
-          "Update matched 0 rows. Check id and RLS UPDATE policy.",
-        );
-      }
-      showToast("Inclusion updated");
-    } else {
-      const { data, error } = await db
-        .from("inclusion_items")
-        .insert({ ...payload, image_url: uploadedPath || null })
-        .select("id, name, image_url");
-
-      if (error) throw error;
-      if (!data || data.length === 0) {
-        throw new Error("Insert returned 0 rows. Check RLS INSERT policy.");
-      }
-      showToast("Inclusion added");
+    if (!response.success) {
+      throw new Error(response.error || "Save failed");
     }
+
+    showToast(editingId.value ? "Inclusion updated" : "Inclusion added");
 
     imageFile.value = null;
     if (previewUrl.value) {
@@ -617,15 +593,10 @@ const saveItem = async () => {
 const loadItems = async () => {
   loading.value = true;
   try {
-    const { data, error } = await db
-      .from("inclusion_items")
-      .select(
-        "id, name, slug, description, image_url, sort_order, color_options, features, specifications",
-      )
-      .order("sort_order", { ascending: true });
-
-    if (error) throw error;
-    items.value = data || [];
+    const response = await $fetch<InclusionResponse>("/api/inclusions");
+    if (response.success) {
+      items.value = response.data || [];
+    }
   } catch (e: any) {
     console.error(e);
     showToast(e?.message || "Failed to load inclusions", "error");
@@ -653,12 +624,16 @@ const executeDelete = async () => {
 
   deleting.value = true;
   try {
-    const { error } = await db
-      .from("inclusion_items")
-      .delete()
-      .eq("id", itemToDelete.value.id);
+    const response = await $fetch<{ success: boolean }>(
+      `/api/inclusions/${itemToDelete.value.id}`,
+      {
+        method: "DELETE",
+      },
+    );
 
-    if (error) throw error;
+    if (!response.success) {
+      throw new Error("Delete failed");
+    }
 
     showToast(`Deleted “${itemToDelete.value.name}”`);
     if (editingId.value === itemToDelete.value.id) resetForm();

@@ -508,7 +508,28 @@ interface Review {
   completed_at: string | null;
 }
 
-const supabase = useSupabaseClient();
+interface ReviewsResponse {
+  success: boolean;
+  data: Review[];
+  pagination: {
+    currentPage: number;
+    itemsPerPage: number;
+    totalItems: number;
+    totalPages: number;
+  };
+  stats: {
+    total: number;
+    pending: number;
+    completed: number;
+    expired: number;
+  };
+}
+
+interface DeleteResponse {
+  success: boolean;
+  error?: string;
+}
+
 const { showToast } = useToast();
 
 const columns: Column[] = [
@@ -555,61 +576,48 @@ let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 const loadReviews = async () => {
   isLoading.value = true;
   try {
-    const { data: statsData, error: statsError } = await supabase
-      .from("reviews")
-      .select("status");
+    // Build query parameters
+    const params = new URLSearchParams({
+      page: String(currentPage.value),
+      limit: String(itemsPerPage.value),
+    });
 
-    if (!statsError && statsData) {
-      stats.value.total = statsData.length;
-      stats.value.pending = statsData.filter(
-        (r: Review) => r.status === "pending",
-      ).length;
-      stats.value.completed = statsData.filter(
-        (r: Review) => r.status === "completed",
-      ).length;
-      stats.value.expired = statsData.filter(
-        (r: Review) => r.status === "expired",
-      ).length;
-    }
-
-    let query = supabase
-      .from("reviews")
-      .select("*", { count: "exact" })
-      .order("created_at", { ascending: false });
-
-    // Status filter
-    if (statusFilter.value) {
-      query = query.eq("status", statusFilter.value);
-    }
-
-    // Rating filter
-    if (ratingFilter.value) {
-      query = query.eq("rating_overall", parseInt(ratingFilter.value));
-    }
-
-    // Search
     if (searchQuery.value) {
-      query = query.or(
-        `customer_name.ilike.%${searchQuery.value}%,` +
-          `order_number.ilike.%${searchQuery.value}%,` +
-          `customer_email.ilike.%${searchQuery.value}%`,
-      );
+      params.append("search", searchQuery.value);
     }
 
-    // Pagination
-    const from = (currentPage.value - 1) * itemsPerPage.value;
-    const to = from + itemsPerPage.value - 1;
-    query = query.range(from, to);
+    if (statusFilter.value) {
+      params.append("status", statusFilter.value);
+    }
 
-    const { data, error, count } = await query;
-    if (error) throw error;
+    if (ratingFilter.value) {
+      params.append("rating", ratingFilter.value);
+    }
 
-    reviews.value = data || [];
-    totalItems.value = count || 0;
+    const response = await $fetch<ReviewsResponse>(
+      `/api/reviews?${params.toString()}`,
+    );
+
+    if (response.success) {
+      reviews.value = response.data || [];
+      totalItems.value = response.pagination?.totalItems || 0;
+      stats.value = response.stats || {
+        total: 0,
+        pending: 0,
+        completed: 0,
+        expired: 0,
+      };
+    } else {
+      throw new Error("Failed to load reviews");
+    }
   } catch (error) {
     console.error("Failed to load reviews:", error);
     reviews.value = [];
     totalItems.value = 0;
+    showToast(
+      error instanceof Error ? error.message : "Failed to load reviews",
+      "error",
+    );
   } finally {
     isLoading.value = false;
   }
@@ -703,13 +711,16 @@ const executeDeleteReview = async () => {
   if (deleteConfirmText.value !== "DELETE") return;
 
   try {
-    // Delete the review
-    const { error } = await supabase
-      .from("reviews")
-      .delete()
-      .eq("id", reviewToDelete.value.id);
+    const response = await $fetch<DeleteResponse>(
+      `/api/reviews/${reviewToDelete.value.id}`,
+      {
+        method: "DELETE",
+      },
+    );
 
-    if (error) throw error;
+    if (!response.success) {
+      throw new Error(response.error || "Failed to delete review");
+    }
 
     showToast("Review deleted successfully!", "success");
     showDeleteModal.value = false;
@@ -723,15 +734,33 @@ const executeDeleteReview = async () => {
 
 const exportReviews = async () => {
   try {
-    const { data } = await supabase
-      .from("reviews")
-      .select("*")
-      .order("created_at", { ascending: false });
+    // Build query parameters for export
+    const params = new URLSearchParams();
 
-    if (!data || data.length === 0) {
+    if (statusFilter.value) {
+      params.append("status", statusFilter.value);
+    }
+
+    if (ratingFilter.value) {
+      params.append("rating", ratingFilter.value);
+    }
+
+    if (searchQuery.value) {
+      params.append("search", searchQuery.value);
+    }
+
+    params.append("export", "true");
+
+    const response = await $fetch<{ success: boolean; data: Review[] }>(
+      `/api/reviews?${params.toString()}`,
+    );
+
+    if (!response.success || !response.data?.length) {
       showToast("No reviews to export", "error");
       return;
     }
+
+    const data = response.data;
 
     const headers = [
       "Order Number",

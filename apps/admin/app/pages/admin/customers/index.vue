@@ -69,8 +69,6 @@
 </template>
 
 <script setup lang="ts">
-const supabase = useSupabaseClient();
-
 type CustomerRow = {
   id: string;
   email: string;
@@ -80,19 +78,22 @@ type CustomerRow = {
   phone?: string | null;
   postcode?: string | null;
   created_at?: string | null;
-  orders?: Array<{ count: number }>;
+  order_count?: number;
 };
+
+interface CustomersResponse {
+  success: boolean;
+  data: CustomerRow[];
+}
 
 const loading = ref(true);
 const search = ref("");
 const customers = ref<CustomerRow[]>([]);
-const orderCounts = ref<Record<string, number>>({});
 
 const displayName = (c: CustomerRow) =>
   c.full_name || `${c.first_name || ""} ${c.last_name || ""}`.trim() || "—";
 
-const orderCount = (c: CustomerRow) =>
-  Number(c.orders?.[0]?.count ?? orderCounts.value[c.email] ?? 0);
+const orderCount = (c: CustomerRow) => c.order_count || 0;
 
 const filtered = computed(() => {
   const q = search.value.trim().toLowerCase();
@@ -117,51 +118,16 @@ const formatDate = (date?: string | null) => {
   });
 };
 
-const loadOrderCountsByEmail = async () => {
-  const { data, error } = await supabase.from("orders").select("billing_email");
-
-  if (error || !data) return;
-
-  const map: Record<string, number> = {};
-  data.forEach((row: any) => {
-    const email = String(row.billing_email || "")
-      .trim()
-      .toLowerCase();
-    if (!email) return;
-    map[email] = (map[email] || 0) + 1;
-  });
-  orderCounts.value = map;
-};
-
 const loadCustomers = async () => {
   loading.value = true;
   try {
-    const { data, error } = await supabase
-      .from("customers")
-      .select(
-        "id, email, first_name, last_name, full_name, phone, postcode, created_at, orders(count)",
-      )
-      .order("created_at", { ascending: false });
+    const response = await $fetch<CustomersResponse>("/api/customers");
 
-    if (error) {
-      console.warn(
-        "customers embed failed, loading without orders(count)",
-        error,
-      );
-      const fallback = await supabase
-        .from("customers")
-        .select(
-          "id, email, first_name, last_name, full_name, phone, postcode, created_at",
-        )
-        .order("created_at", { ascending: false });
-
-      if (fallback.error) throw fallback.error;
-      customers.value = (fallback.data || []) as CustomerRow[];
+    if (response.success) {
+      customers.value = response.data || [];
     } else {
-      customers.value = (data || []) as CustomerRow[];
+      customers.value = [];
     }
-
-    await loadOrderCountsByEmail();
   } catch (e) {
     console.error("Failed to load customers:", e);
     customers.value = [];

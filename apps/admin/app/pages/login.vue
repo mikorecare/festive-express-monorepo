@@ -11,7 +11,7 @@
           Welcome back to Festive Express
         </p>
 
-        <form role="form"  @submit.prevent="login" class="space-y-6 text-left">
+        <form @submit.prevent="login" class="space-y-6 text-left">
           <div>
             <label class="block text-slate-700 font-semibold mb-2 text-sm"
               >Email Address</label
@@ -98,11 +98,15 @@ definePageMeta({
   layout: "guest",
 });
 
-const supabase = useSupabaseClient();
 const turnstileRef = ref<any>(null);
 
-interface TurnstileResponse {
+interface LoginResponse {
   success: boolean;
+  user?: {
+    id: string;
+    email: string;
+    role?: string;
+  };
   message?: string;
 }
 
@@ -149,13 +153,17 @@ const login = async () => {
   error.value = "";
 
   try {
-    const verifyResponse = await $fetch<TurnstileResponse>("/api/auth/verify", {
+    const response = await $fetch<LoginResponse>("/api/auth/login", {
       method: "POST",
-      body: { token: turnstileToken.value },
+      body: {
+        email: form.value.email,
+        password: form.value.password,
+        turnstileToken: turnstileToken.value,
+      },
     });
 
-    if (!verifyResponse.success) {
-      error.value = verifyResponse.message || "Security verification failed";
+    if (!response.success) {
+      error.value = response.message || "Login failed";
       isTurnstileVerified.value = false;
       if (turnstileRef.value) {
         turnstileRef.value.reset();
@@ -163,39 +171,23 @@ const login = async () => {
       return;
     }
 
-    const { data, error: authError } = await supabase.auth.signInWithPassword({
-      email: form.value.email,
-      password: form.value.password,
-    });
-
-    if (authError) {
-      error.value = authError.message;
-      return;
-    }
-
-    if (data.session) {
-      const accessToken = useCookie("sb-access-token", {
-        maxAge: 60 * 60 * 8,
-        path: "/",
-      });
-      accessToken.value = data.session.access_token;
-
-      const refreshToken = useCookie("sb-refresh-token", {
-        maxAge: 60 * 60 * 24 * 30,
-        path: "/",
-      });
-      refreshToken.value = data.session.refresh_token;
-
-      const authCookie = useCookie("sb-auth", {
-        maxAge: 60 * 60 * 8,
-        path: "/",
-      });
-      authCookie.value = "true";
+    if (response.user) {
+      localStorage.setItem("user", JSON.stringify(response.user));
     }
 
     navigateTo("/admin");
   } catch (err: any) {
-    error.value = err.message || "An unexpected error occurred during login";
+    console.error("Login error:", err);
+    error.value =
+      err.data?.message ||
+      err.message ||
+      "An unexpected error occurred during login";
+
+    // Reset Turnstile on error
+    isTurnstileVerified.value = false;
+    if (turnstileRef.value) {
+      turnstileRef.value.reset();
+    }
   } finally {
     isLoading.value = false;
   }

@@ -324,7 +324,19 @@ interface PromoCode {
   is_active: boolean;
 }
 
-const supabase = useSupabaseClient();
+interface PromoCodesResponse {
+  success: boolean;
+  data: PromoCode[];
+}
+
+interface SaveResponse {
+  success: boolean;
+  id?: string;
+  error?: string;
+}
+
+const { showToast } = useToast();
+
 const promoCodes = ref<PromoCode[]>([]);
 const isSaving = ref(false);
 const editingId = ref<string | null>(null);
@@ -370,17 +382,16 @@ const formatDateRange = (promo: PromoCode) => {
 };
 
 const loadPromoCodes = async () => {
-  const { data, error } = await supabase
-    .from("promo_codes")
-    .select("*")
-    .order("created_at", { ascending: false });
-
-  if (error) {
+  try {
+    const response = await $fetch<PromoCodesResponse>("/api/promo-codes");
+    if (response.success) {
+      promoCodes.value = response.data || [];
+    }
+  } catch (error) {
     console.error(error);
     promoCodes.value = [];
-    return;
+    showToast("Failed to load promo codes", "error");
   }
-  promoCodes.value = (data as PromoCode[]) || [];
 };
 
 const validate = () => {
@@ -422,28 +433,36 @@ const savePromoCode = async () => {
     starts_at: form.value.starts_at || null,
     expires_at: form.value.expires_at || null,
     is_active: form.value.is_active,
-    updated_at: new Date().toISOString(),
   };
 
   try {
-    if (editingId.value) {
-      const { error } = await supabase
-        .from("promo_codes")
-        .update(payload as never)
-        .eq("id", editingId.value);
-      if (error) throw error;
-    } else {
-      const { error } = await supabase
-        .from("promo_codes")
-        .insert(payload as never);
-      if (error) throw error;
+    const response = await $fetch<SaveResponse>("/api/promo-codes", {
+      method: editingId.value ? "PUT" : "POST",
+      body: {
+        id: editingId.value,
+        ...payload,
+      },
+    });
+
+    if (!response.success) {
+      throw new Error(response.error || "Failed to save promo code");
     }
+
     cancelEdit();
     await loadPromoCodes();
+    showToast(
+      editingId.value ? "Promo code updated" : "Promo code created",
+      "success",
+    );
   } catch (e: any) {
     console.error(e);
-    if (e?.code === "23505" || e?.message?.includes("duplicate")) {
+    if (
+      e?.message?.includes("duplicate") ||
+      e?.message?.includes("already exists")
+    ) {
       errors.value.code = "This code already exists";
+    } else {
+      showToast(e?.message || "Failed to save promo code", "error");
     }
   } finally {
     isSaving.value = false;
@@ -487,17 +506,30 @@ const executeDelete = async () => {
   if (!promoToDelete.value) return;
   const id = promoToDelete.value.id;
 
-  const { error } = await supabase.from("promo_codes").delete().eq("id", id);
+  try {
+    const response = await $fetch<{ success: boolean }>(
+      `/api/promo-codes/${id}`,
+      {
+        method: "DELETE",
+      },
+    );
 
-  if (error) {
+    if (!response.success) {
+      throw new Error("Failed to delete promo code");
+    }
+
+    showModal.value = false;
+    promoToDelete.value = null;
+    if (editingId.value === id) cancelEdit();
+    await loadPromoCodes();
+    showToast("Promo code deleted", "success");
+  } catch (error) {
     console.error(error);
-    return;
+    showToast(
+      error instanceof Error ? error.message : "Failed to delete promo code",
+      "error",
+    );
   }
-
-  showModal.value = false;
-  promoToDelete.value = null;
-  if (editingId.value === id) cancelEdit();
-  await loadPromoCodes();
 };
 
 onMounted(loadPromoCodes);

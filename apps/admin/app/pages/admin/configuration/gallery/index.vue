@@ -64,7 +64,7 @@
               />
               <div v-if="previewUrl || form.image_url" class="mt-3">
                 <img
-                  :src="previewUrl || getImageUrl(form.image_url)"
+                  :src="previewUrl || form.image_url"
                   class="w-full max-h-48 object-cover rounded-lg border"
                   alt=""
                 />
@@ -221,7 +221,7 @@
               @dragend="onDragEnd"
             >
               <img
-                :src="getImageUrl(item.image_url)"
+                :src="item.image_url"
                 class="w-full h-full object-cover pointer-events-none"
                 alt=""
               />
@@ -296,25 +296,45 @@
   </div>
 </template>
 
-<script setup>
-const config = useRuntimeConfig();
-const supabase = useSupabaseClient();
+<script setup lang="ts">
+interface GalleryItem {
+  id: string;
+  year: string | null;
+  description: string | null;
+  image_url: string;
+  image_position: "left" | "right";
+  divider_image_url: string | null;
+  sort_order: number;
+  is_active: boolean;
+}
 
-const items = ref([]);
+interface GalleryResponse {
+  success: boolean;
+  data: GalleryItem[];
+}
+
+interface SingleGalleryResponse {
+  success: boolean;
+  data: GalleryItem | null;
+}
+
+const config = useRuntimeConfig();
+
+const items = ref<GalleryItem[]>([]);
 const loading = ref(true);
 const isSaving = ref(false);
-const editingId = ref(null);
+const editingId = ref<string | null>(null);
 const showModal = ref(false);
-const itemToDelete = ref(null);
-const imageFile = ref(null);
-const previewUrl = ref(null);
-const dragIndex = ref(null);
+const itemToDelete = ref<GalleryItem | null>(null);
+const imageFile = ref<File | null>(null);
+const previewUrl = ref<string | null>(null);
+const dragIndex = ref<number | null>(null);
 
 const form = ref({
   year: "",
   description: "",
   image_url: "",
-  image_position: "right",
+  image_position: "right" as "left" | "right",
   divider_image_url: "",
   sort_order: 0,
   is_active: true,
@@ -326,25 +346,13 @@ const colorLabel = computed(() => {
   return i.year || i.description || i.image_url || "This item";
 });
 
-const getImageUrl = (url) => {
-  if (!url) return "/Images/placeholder.png";
-  if (url.startsWith("http") || url.startsWith("/Images/")) return url;
-  const path = String(url).replace(/^\/+/, "");
-  const supabaseUrl =
-    config.public.supabaseUrl || config.public.supabase?.url || "";
-  return `${supabaseUrl}/storage/v1/object/public/Gallery/${path}`;
-};
-
 const loadItems = async () => {
   loading.value = true;
   try {
-    const { data, error } = await supabase
-      .from("gallery_items")
-      .select("*")
-      .order("sort_order", { ascending: true });
-
-    if (error) throw error;
-    items.value = data || [];
+    const response = await $fetch<GalleryResponse>("/api/gallery");
+    if (response.success) {
+      items.value = response.data || [];
+    }
   } catch (e) {
     console.error(e);
     items.value = [];
@@ -373,7 +381,7 @@ const openCreate = () => {
   form.value.sort_order = items.value.length + 1;
 };
 
-const editItem = (item) => {
+const editItem = (item: GalleryItem) => {
   editingId.value = item.id;
   imageFile.value = null;
   previewUrl.value = null;
@@ -388,32 +396,53 @@ const editItem = (item) => {
   };
 };
 
-const onImageSelect = (e) => {
-  const file = e.target.files?.[0];
+const onImageSelect = (e: Event) => {
+  const target = e.target as HTMLInputElement;
+  const file = target.files?.[0];
   if (!file) return;
   imageFile.value = file;
   previewUrl.value = URL.createObjectURL(file);
 };
 
-const uploadImage = async (file) => {
-  const ext = file.name.split(".").pop() || "webp";
-  const path = `Festive-Images-${Date.now()}.${ext}`;
-  const { error } = await supabase.storage.from("Gallery").upload(path, file, {
-    upsert: true,
-  });
-  if (error) throw error;
-  return path;
+const uploadImage = async (file: File, folder: string = "gallery") => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("folder", folder);
+
+  const response = await $fetch<{ success: boolean; url: string }>(
+    "/api/upload",
+    {
+      method: "POST",
+      body: formData,
+    },
+  );
+
+  if (!response.success) {
+    throw new Error("Upload failed");
+  }
+
+  return response.url;
 };
 
-const onDragStart = (index) => {
+const onDragStart = (index: number, event?: DragEvent) => {
   dragIndex.value = index;
+
+  if (event && event.dataTransfer) {
+    event.dataTransfer.effectAllowed = "move";
+  }
 };
 
-const onDragOver = (index) => {
+const onDragOver = (index: number) => {
   if (dragIndex.value === null || dragIndex.value === index) return;
 
   const list = [...items.value];
-  const [moved] = list.splice(dragIndex.value, 1);
+  const dragIdx = dragIndex.value;
+
+  if (dragIdx === null || dragIdx < 0 || dragIdx >= list.length) return;
+
+  const [moved] = list.splice(dragIdx, 1);
+  if (!moved) return;
+
   list.splice(index, 0, moved);
   items.value = list;
   dragIndex.value = index;
@@ -424,26 +453,38 @@ const onDragEnd = async () => {
   await saveOrder();
 };
 
-const onDrop = (index) => {
-  // order already updated in onDragOver
+const onDrop = (index: number) => {
   dragIndex.value = null;
 };
 
 const saveOrder = async () => {
   try {
-    // update sort_order for each item
-    await Promise.all(
-      items.value.map((item, i) =>
-        supabase
-          .from("gallery_items")
-          .update({ sort_order: i + 1, updated_at: new Date().toISOString() })
-          .eq("id", item.id),
-      ),
+    const validItems = items.value.filter((item) => item && item.id);
+
+    const updates = validItems.map((item, i) => ({
+      id: item.id,
+      sort_order: i + 1,
+    }));
+
+    if (updates.length === 0) {
+      return;
+    }
+
+    const response = await $fetch<{ success: boolean }>(
+      "/api/gallery/reorder",
+      {
+        method: "POST",
+        body: { updates },
+      },
     );
+
+    if (!response.success) {
+      throw new Error("Failed to save order");
+    }
   } catch (e) {
     console.error(e);
-    alert(e?.message || "Failed to save order");
-    await loadItems(); // revert on error
+    alert(e instanceof Error ? e.message : "Failed to save order");
+    await loadItems();
   }
 };
 
@@ -457,10 +498,10 @@ const saveItem = async () => {
   try {
     let imageUrl = form.value.image_url;
     if (imageFile.value) {
-      imageUrl = await uploadImage(imageFile.value);
+      imageUrl = await uploadImage(imageFile.value, "gallery");
     }
 
-    const row = {
+    const payload = {
       year: form.value.year || null,
       description: form.value.description || null,
       image_url: imageUrl,
@@ -468,31 +509,39 @@ const saveItem = async () => {
       divider_image_url: form.value.divider_image_url || null,
       sort_order: Number(form.value.sort_order) || 0,
       is_active: form.value.is_active,
-      updated_at: new Date().toISOString(),
     };
 
+    let response;
     if (editingId.value) {
-      const { error } = await supabase
-        .from("gallery_items")
-        .update(row)
-        .eq("id", editingId.value);
-      if (error) throw error;
+      response = await $fetch<{ success: boolean }>(
+        `/api/gallery/${editingId.value}`,
+        {
+          method: "PUT",
+          body: payload,
+        },
+      );
     } else {
-      const { error } = await supabase.from("gallery_items").insert(row);
-      if (error) throw error;
+      response = await $fetch<{ success: boolean }>("/api/gallery", {
+        method: "POST",
+        body: payload,
+      });
+    }
+
+    if (!response.success) {
+      throw new Error("Failed to save");
     }
 
     await loadItems();
     resetForm();
   } catch (e) {
     console.error(e);
-    alert(e?.message || "Failed to save");
+    alert(e instanceof Error ? e.message : "Failed to save");
   } finally {
     isSaving.value = false;
   }
 };
 
-const confirmDelete = (item) => {
+const confirmDelete = (item: GalleryItem) => {
   itemToDelete.value = item;
   showModal.value = true;
 };
@@ -500,17 +549,23 @@ const confirmDelete = (item) => {
 const executeDelete = async () => {
   if (!itemToDelete.value) return;
   try {
-    const { error } = await supabase
-      .from("gallery_items")
-      .delete()
-      .eq("id", itemToDelete.value.id);
-    if (error) throw error;
+    const response = await $fetch<{ success: boolean }>(
+      `/api/gallery/${itemToDelete.value.id}`,
+      {
+        method: "DELETE",
+      },
+    );
+
+    if (!response.success) {
+      throw new Error("Failed to delete");
+    }
+
     showModal.value = false;
     itemToDelete.value = null;
     await loadItems();
   } catch (e) {
     console.error(e);
-    alert(e?.message || "Failed to delete");
+    alert(e instanceof Error ? e.message : "Failed to delete");
   }
 };
 

@@ -1,5 +1,5 @@
 
-import { serverSupabaseClient } from '#supabase/server'
+import { getSupabase } from '~~/server/utils/supabase'
 
 type Category = {
     id: string
@@ -31,92 +31,111 @@ type Product = {
 }
 
 type ProductsResponse = {
-    products: Product[]
+    success: boolean
+    data: Product[]
     total: number
     page: number
     limit: number
+    totalPages: number
 }
 
 export default defineEventHandler(async (event) => {
-    const query = getQuery(event);
-    const page = Math.max(1, Number(query.page) || 1);
-    const limit = Math.min(100, Math.max(1, Number(query.limit) || 20));
-    const categoryId = String(query.category_id || "").trim();
-    const stock = String(query.stock || "").trim();
-    const status = String(query.status || "").trim();
-    const search = String(query.search || "").trim();
+    try {
+        const query = getQuery(event);
+        const page = Math.max(1, Number(query.page) || 1);
+        const limit = Math.min(100, Math.max(1, Number(query.limit) || 20));
+        const categoryId = String(query.category_id || "").trim();
+        const stock = String(query.stock || "").trim();
+        const status = String(query.status || "").trim();
+        const search = String(query.search || "").trim();
+        const isPackage = query.is_package !== undefined ? query.is_package === 'true' : null;
 
-    const supabase = await serverSupabaseClient<Product>(event);
+        const supabase = getSupabase();
 
-    const from = (page - 1) * limit;
-    const to = from + limit - 1;
+        const from = (page - 1) * limit;
+        const to = from + limit - 1;
 
-    let q = supabase
-        .from("products")
-        .select("*, categories(id, name)", { count: "exact" })
-        .order("created_at", { ascending: false })
-        .range(from, to);
+        let q = supabase
+            .from("products")
+            .select("*, categories(id, name)", { count: "exact" })
+            .order("created_at", { ascending: false })
+            .range(from, to);
 
-    if (categoryId) q = q.eq("category_id", categoryId);
-    if (status) q = q.eq("status", status);
+        if (categoryId) q = q.eq("category_id", categoryId);
+        if (status) q = q.eq("status", status);
+        if (isPackage !== null) q = q.eq("is_package", isPackage);
 
-    if (stock === "instock") q = q.gt("stock", 0);
-    else if (stock === "outofstock") q = q.lte("stock", 0);
-    else if (stock === "lowstock") q = q.gt("stock", 0).lte("stock", 10);
+        if (stock === "instock") q = q.gt("stock", 0);
+        else if (stock === "outofstock") q = q.lte("stock", 0);
+        else if (stock === "lowstock") q = q.gt("stock", 0).lte("stock", 10);
 
-    if (search) {
-        q = q.or(`name.ilike.%${search}%,sku.ilike.%${search}%`);
-    }
-
-    const { data, error, count } = await q;
-
-    if (error) {
-        console.error("products list", error);
-        throw createError({ statusCode: 500, message: "Failed to load products" });
-    }
-
-    const productsWithFullUrl = (data || []).map((product) => {
-        let fullImageUrl = product.image_url;
-
-        if (product.image_url) {
-            if (product.image_url.startsWith('http://') || product.image_url.startsWith('https://')) {
-                fullImageUrl = product.image_url;
-            } else {
-                const { data: urlData } = supabase
-                    .storage
-                    .from('Products')
-                    .getPublicUrl(product.image_url);
-                fullImageUrl = urlData?.publicUrl || product.image_url;
-            }
+        if (search) {
+            q = q.or(`name.ilike.%${search}%,sku.ilike.%${search}%`);
         }
 
-        let fullGallery = product.gallery;
-        if (product.gallery && Array.isArray(product.gallery)) {
-            fullGallery = product.gallery.map((image: string) => {
-                if (image.startsWith('http://') || image.startsWith('https://')) {
-                    return image;
+        const { data, error, count } = await q;
+
+        if (error) {
+            console.error("products list", error);
+            throw createError({ statusCode: 500, message: "Failed to load products" });
+        }
+
+        const productsWithFullUrl = (data || []).map((product) => {
+            let fullImageUrl = product.image_url;
+
+            if (product.image_url) {
+                if (product.image_url.startsWith('http://') || product.image_url.startsWith('https://')) {
+                    fullImageUrl = product.image_url;
+                } else {
+                    const { data: urlData } = supabase
+                        .storage
+                        .from('Products')
+                        .getPublicUrl(product.image_url.replace(/^\/+/, ''));
+                    fullImageUrl = urlData?.publicUrl || product.image_url;
                 }
-                const { data: urlData } = supabase
-                    .storage
-                    .from('Products')
-                    .getPublicUrl(image);
-                return urlData?.publicUrl || image;
-            });
-        }
+            }
 
-        return {
-            ...product,
-            image_url: fullImageUrl,
-            gallery: fullGallery
+            let fullGallery = product.gallery;
+            if (product.gallery && Array.isArray(product.gallery)) {
+                fullGallery = product.gallery.map((image: string) => {
+                    if (image.startsWith('http://') || image.startsWith('https://')) {
+                        return image;
+                    }
+                    const { data: urlData } = supabase
+                        .storage
+                        .from('Products')
+                        .getPublicUrl(image.replace(/^\/+/, ''));
+                    return urlData?.publicUrl || image;
+                });
+            }
+
+            return {
+                ...product,
+                image_url: fullImageUrl,
+                gallery: fullGallery
+            };
+        });
+
+        const response: ProductsResponse = {
+            success: true,
+            data: productsWithFullUrl,
+            total: count || 0,
+            page,
+            limit,
+            totalPages: Math.ceil((count || 0) / limit),
         };
-    });
 
-    const response: ProductsResponse = {
-        products: productsWithFullUrl,
-        total: count || 0,
-        page,
-        limit,
-    };
-
-    return response;
-});
+        return response;
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        return {
+            success: false,
+            data: [],
+            total: 0,
+            page: 1,
+            limit: 20,
+            totalPages: 0,
+            error: error instanceof Error ? error.message : 'Failed to fetch products'
+        }
+    }
+})
