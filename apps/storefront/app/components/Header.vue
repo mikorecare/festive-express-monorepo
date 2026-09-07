@@ -1,5 +1,5 @@
 <template>
-  <header class="sticky top-0 z-[9999] w-full shadow-md">
+  <header class="sticky top-0 z-[9999] w-full shadow-md" role="banner">
     <!-- Top Bar -->
     <div class="bg-navy text-white py-2.5 text-base font-semibold">
       <!-- Use max-w-7xl and mx-auto instead of container -->
@@ -148,7 +148,7 @@
               </li>
             </ul>
           </nav> -->
-          <nav class="hidden lg:block flex-1 min-w-0">
+          <nav class="hidden lg:block flex-1 min-w-0" role="navigation">
             <ul
               class="flex justify-center items-center gap-1 xl:gap-6 list-none p-0 m-0"
             >
