@@ -23,9 +23,26 @@ export default defineEventHandler(async (event) => {
 
         if (error) throw error
 
+        const transformedData = (data || []).map((item) => {
+            let imageUrl = item.image_url
+
+            if (imageUrl && !imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
+                const { data: urlData } = supabase
+                    .storage
+                    .from('Products')
+                    .getPublicUrl(imageUrl.replace(/^\/+/, ''))
+                imageUrl = urlData?.publicUrl || imageUrl
+            }
+
+            return {
+                ...item,
+                image_url: imageUrl || null
+            }
+        })
+
         return {
             success: true,
-            data: data || [],
+            data: transformedData || [],
             pagination: {
                 currentPage: page,
                 itemsPerPage: itemsPerPage,

@@ -214,6 +214,8 @@ const columns = [
 
 const categoryFilter = ref("");
 const stockFilter = ref("");
+const statusFilter = ref("");
+const searchQuery = ref("");
 const categories = ref<any[]>([]);
 const products = ref<any[]>([]);
 const isLoading = ref(true);
@@ -225,60 +227,6 @@ const deleteConfirmText = ref("");
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
 const totalItems = ref(0);
-const searchQuery = ref("");
-
-const statusFilter = ref("");
-
-// const loadProducts = async () => {
-//   isLoading.value = true;
-//   try {
-//     let query = supabase
-//       .from("products")
-//       .select("*, categories(id, name)", { count: "exact" })
-//       .order("created_at", { ascending: false })
-//       .range(
-//         (currentPage.value - 1) * itemsPerPage.value,
-//         currentPage.value * itemsPerPage.value - 1,
-//       );
-
-//     if (categoryFilter.value) {
-//       query = query.eq("category_id", categoryFilter.value);
-//     }
-//     if (stockFilter.value === "instock") {
-//       query = query.gt("stock", 0);
-//     } else if (stockFilter.value === "outofstock") {
-//       query = query.lte("stock", 0);
-//     } else if (stockFilter.value === "lowstock") {
-//       query = query.gt("stock", 0).lte("stock", 10);
-//     }
-
-//     if (statusFilter.value) {
-//       query = query.eq("status", statusFilter.value);
-//     }
-
-//     if (searchQuery.value) {
-//       query = query.or(
-//         `name.ilike.%${searchQuery.value}%,sku.ilike.%${searchQuery.value}%`,
-//       );
-//     }
-
-//     const from = (currentPage.value - 1) * itemsPerPage.value;
-//     const to = from + itemsPerPage.value - 1;
-//     query = query.range(from, to);
-
-//     const { data, error, count } = await query;
-//     if (error) throw error;
-
-//     products.value = data || [];
-//     totalItems.value = count || 0;
-//   } catch (err) {
-//     console.error(err);
-//     products.value = [];
-//     totalItems.value = 0;
-//   } finally {
-//     isLoading.value = false;
-//   }
-// };
 
 const loadProducts = async () => {
   isLoading.value = true;
@@ -294,7 +242,8 @@ const loadProducts = async () => {
       },
     });
 
-    products.value = res.products || [];
+    // Use res.data (not res.products)
+    products.value = res.data || [];
     totalItems.value = res.total || 0;
   } catch (err) {
     console.error(err);
@@ -321,22 +270,20 @@ const formatMoney = (value: unknown) => {
   })}`;
 };
 
-// const loadCategories = async () => {
-//   const { data } = await supabase
-//     .from("categories")
-//     .select("id, name")
-//     .order("name");
-//   categories.value = data || [];
-// };
-
 const loadCategories = async () => {
   try {
     const res = await $fetch("/api/categories");
-    categories.value = res.categories || [];
+    categories.value = res.data || [];
   } catch (err) {
     console.error(err);
     categories.value = [];
   }
+};
+
+const getCategoryName = (categoryId: string | null) => {
+  if (!categoryId) return "—";
+  const cat = categories.value.find((c) => c.id === categoryId);
+  return cat?.name || "—";
 };
 
 const applyFilters = () => {
@@ -368,11 +315,22 @@ const cancelDelete = () => {
 };
 
 const executeDelete = async () => {
-  // if (!productToDelete.value || deleteConfirmText.value !== "DELETE") return;
-  // await supabase.from("products").delete().eq("id", productToDelete.value.id);
-  console.log("TRANSFER THIS TO API --- products/index.delete.ts");
-  showModal.value = false;
-  await loadProducts();
+  if (!productToDelete.value || deleteConfirmText.value !== "DELETE") return;
+
+  try {
+    const response = await $fetch(`/api/products/${productToDelete.value.id}`, {
+      method: "DELETE" as any,
+    });
+
+    if (response.success) {
+      showModal.value = false;
+      productToDelete.value = null;
+      deleteConfirmText.value = "";
+      await loadProducts();
+    }
+  } catch (err) {
+    console.error("Failed to delete product:", err);
+  }
 };
 
 onMounted(async () => {

@@ -207,7 +207,7 @@
                     <!-- Image Preview -->
                     <img
                       v-if="option.image_url"
-                      :src="getImageUrl(option.image_url, 'variations')"
+                      :src="getImageUrl(option.image_url)"
                       class="w-8 h-8 object-cover rounded-md border border-gray-300 shrink-0"
                     />
 
