@@ -2,169 +2,172 @@
   <ClientOnly>
     <Teleport to="body">
       <Transition
-        enter-active-class="transition duration-300 ease-out"
-        enter-from-class="opacity-0 translate-y-4"
-        enter-to-class="opacity-100 translate-y-0"
-        leave-active-class="transition duration-200 ease-in"
-        leave-from-class="opacity-100 translate-y-0"
-        leave-to-class="opacity-0 translate-y-4"
+        enter-active-class="transition duration-500 cubic-bezier(0.16, 1, 0.3, 1)"
+        enter-from-class="opacity-0 translate-y-8 md:scale-95"
+        enter-to-class="opacity-100 translate-y-0 md:scale-100"
+        leave-active-class="transition duration-300 ease-in"
+        leave-from-class="opacity-100 translate-y-0 md:scale-100"
+        leave-to-class="opacity-0 translate-y-6 md:scale-95"
       >
         <div
           v-if="visible"
-          class="fixed inset-0 z-[2147483648] flex pointer-events-none items-end justify-start p-4 md:p-6 max-md:items-end max-md:justify-center max-md:px-3 max-md:pb-5"
-          role="dialog"
-          aria-labelledby="cookie-title"
-          aria-modal="true"
+          class="fixed bottom-0 left-0 z-[2147483646] w-full p-0 sm:p-6 md:max-w-[480px] pointer-events-none"
+          role="region"
+          aria-label="Privacy & Cookie Preferences"
         >
           <div
-            class="absolute inset-0 pointer-events-auto bg-[#1C2D5B]/35 max-md:bg-[#1C2D5B]/50 backdrop-blur-sm"
-            @click="continueWithout"
-          />
-
-          <div
-            class="relative z-10 pointer-events-auto w-full max-w-[520px] rounded-2xl bg-white p-4 shadow-2xl shadow-[#1C2D5B]/20 max-md:max-w-[calc(100%-0.5rem)] max-md:max-h-[85vh] max-md:overflow-y-auto"
+            class="pointer-events-auto w-full bg-white border border-slate-100 shadow-[0_20px_60px_-15px_rgba(28,45,91,0.18)] transition-all duration-300 ease-in-out rounded-t-3xl sm:rounded-2xl p-6 md:p-7 max-md:max-h-[88vh] max-md:overflow-y-auto"
           >
-            <!-- Top: Continue without accepting -->
-            <div class="mb-3 flex justify-end">
+            <!-- Header Section -->
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <span
+                  class="text-[10px] uppercase tracking-widest font-bold text-[#F49321]/90 block mb-1"
+                  >Privacy Control</span
+                >
+                <h2
+                  id="cookie-title"
+                  class="text-xl font-bold tracking-tight text-[#1C2D5B]"
+                >
+                  Privacy Settings
+                </h2>
+              </div>
               <button
                 type="button"
-                class="inline-flex cursor-pointer items-center gap-1 border-0 bg-transparent text-sm font-medium text-[#1C2D5B] underline hover:text-brand-orange"
+                class="text-xs font-semibold text-slate-400 hover:text-[#1C2D5B] transition-colors cursor-pointer underline underline-offset-4 decoration-slate-200 hover:decoration-[#1C2D5B]"
                 @click="continueWithout"
               >
                 Continue without accepting
-                <span aria-hidden="true">→</span>
               </button>
             </div>
 
-            <h2 id="cookie-title" class="mb-2 text-lg font-bold text-[#1C2D5B]">
-              Privacy Settings
-            </h2>
-
+            <!-- Intro Text -->
             <p
               v-text="cookieIntro"
-              class="mb-4 text-sm leading-relaxed text-slate-600"
+              class="text-xs md:text-[13px] leading-relaxed text-slate-500 mb-6 font-normal"
             />
 
-            <!-- Desktop: one row · Mobile: stack -->
-            <div
-              class="mb-5 flex flex-wrap items-center gap-x-5 gap-y-3 max-md:flex-col max-md:items-stretch"
-            >
+            <!-- 3 Sliders - Horizontal Row on Desktop -->
+            <div class="flex flex-col md:flex-row md:gap-3 gap-3 mb-6">
+              <!-- Marketing Slider -->
               <div
-                class="flex items-center justify-between gap-2 max-md:w-full"
+                class="flex-1 flex items-center justify-between p-3 rounded-xl bg-slate-50/60 border border-slate-100/80 transition-all hover:bg-slate-50 md:flex-col md:items-center md:gap-2"
               >
-                <span class="text-sm font-medium text-[#1C2D5B]"
+                <span
+                  id="lbl-marketing"
+                  class="text-sm font-semibold text-[#1C2D5B]"
                   >Marketing</span
                 >
                 <button
                   type="button"
                   role="switch"
                   :aria-checked="prefs.marketing"
-                  class="relative h-6 w-11 shrink-0 cursor-pointer rounded-full border border-slate-300 p-0 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-orange focus:ring-offset-2"
-                  :class="
-                    prefs.marketing
-                      ? 'border-[#F49321] bg-[#F49321]'
-                      : 'bg-slate-100'
-                  "
+                  aria-labelledby="lbl-marketing"
+                  class="relative h-5 w-9 shrink-0 cursor-pointer rounded-full p-0 transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[#1C2D5B] focus-visible:ring-offset-2"
+                  :class="prefs.marketing ? 'bg-[#1C2D5B]' : 'bg-slate-200'"
                   @click="prefs.marketing = !prefs.marketing"
                 >
                   <span
-                    class="absolute top-0.5 left-0.5 h-[18px] w-[18px] rounded-full bg-white shadow transition-transform"
-                    :class="prefs.marketing ? 'translate-x-5' : 'translate-x-0'"
+                    class="absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200"
+                    :class="prefs.marketing ? 'translate-x-4' : 'translate-x-0'"
                   />
                 </button>
               </div>
 
+              <!-- Functional Slider -->
               <div
-                class="flex items-center justify-between gap-2 max-md:w-full"
+                class="flex-1 flex items-center justify-between p-3 rounded-xl bg-slate-50/60 border border-slate-100/80 transition-all hover:bg-slate-50 md:flex-col md:items-center md:gap-2"
               >
-                <span class="text-sm font-medium text-[#1C2D5B]"
+                <span
+                  id="lbl-functional"
+                  class="text-sm font-semibold text-[#1C2D5B]"
                   >Functional</span
                 >
                 <button
                   type="button"
                   role="switch"
                   :aria-checked="prefs.functional"
-                  class="relative h-6 w-11 shrink-0 cursor-pointer rounded-full border border-slate-300 p-0 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-orange focus:ring-offset-2"
-                  :class="
-                    prefs.functional
-                      ? 'border-[#F49321] bg-[#F49321]'
-                      : 'bg-slate-100'
-                  "
+                  aria-labelledby="lbl-functional"
+                  class="relative h-5 w-9 shrink-0 cursor-pointer rounded-full p-0 transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[#1C2D5B] focus-visible:ring-offset-2"
+                  :class="prefs.functional ? 'bg-[#1C2D5B]' : 'bg-slate-200'"
                   @click="prefs.functional = !prefs.functional"
                 >
                   <span
-                    class="absolute top-0.5 left-0.5 h-[18px] w-[18px] rounded-full bg-white shadow transition-transform"
+                    class="absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200"
                     :class="
-                      prefs.functional ? 'translate-x-5' : 'translate-x-0'
+                      prefs.functional ? 'translate-x-4' : 'translate-x-0'
                     "
                   />
                 </button>
               </div>
 
+              <!-- Essential Slider (Disabled) -->
               <div
-                class="flex items-center justify-between gap-2 max-md:w-full"
+                class="flex-1 flex items-center justify-between p-3 rounded-xl bg-slate-50/40 border border-slate-100/50 opacity-70 md:flex-col md:items-center md:gap-2"
               >
-                <span class="text-sm font-medium text-[#1C2D5B]"
+                <span
+                  id="lbl-essential"
+                  class="text-sm font-semibold text-slate-500"
                   >Essential</span
                 >
                 <button
                   type="button"
                   role="switch"
                   aria-checked="true"
+                  aria-labelledby="lbl-essential"
                   disabled
-                  title="Required for the site to work"
-                  class="relative h-6 w-11 shrink-0 cursor-not-allowed rounded-full border border-slate-300 bg-slate-200 p-0 opacity-60"
+                  class="relative h-5 w-9 shrink-0 cursor-not-allowed rounded-full bg-slate-400 p-0"
                 >
                   <span
-                    class="absolute top-0.5 left-0.5 h-[18px] w-[18px] translate-x-5 rounded-full bg-white shadow"
+                    class="absolute top-0.5 left-0.5 h-4 w-4 translate-x-4 rounded-full bg-white shadow-sm"
                   />
                 </button>
               </div>
             </div>
 
-            <div class="mb-3 flex gap-4 text-sm flex-wrap">
-              <NuxtLink
-                to="/privacy-policy"
-                class="font-medium text-[#1C2D5B] underline hover:text-brand-orange"
-              >
-                Privacy Policy
-              </NuxtLink>
-              <NuxtLink
-                to="/cookie-policy"
-                class="font-medium text-[#1C2D5B] underline hover:text-brand-orange"
-              >
-                Cookie Policy
-              </NuxtLink>
+            <!-- Policy Hyperlinks -->
+            <div
+              class="flex items-center justify-between pt-2 border-t border-slate-100 mb-5"
+            >
+              <div class="flex gap-3 text-[11px] font-medium text-slate-400">
+                <NuxtLink
+                  to="/privacy-policy"
+                  class="hover:text-[#1C2D5B] transition-colors"
+                  >Privacy Policy</NuxtLink
+                >
+                <span>·</span>
+                <NuxtLink
+                  to="/cookie-policy"
+                  class="hover:text-[#1C2D5B] transition-colors"
+                  >Cookie Policy</NuxtLink
+                >
+                <span>·</span>
+                <span class="text-slate-300">Festive Express</span>
+              </div>
             </div>
 
-            <p class="mb-4 text-xs text-slate-400">
-              Cookie preferences · Festive Express
-            </p>
-
-            <!-- Desktop: row · Mobile: column -->
-            <div
-              class="flex flex-row items-center justify-end gap-2 max-md:!flex-col max-md:!items-stretch max-md:!gap-2.5"
-            >
+            <!-- Button Layout -->
+            <div class="grid grid-cols-3 gap-2 max-md:flex max-md:flex-col">
               <button
                 type="button"
-                class="cursor-pointer rounded-lg border-0 bg-[#F49321] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1C2D5B] active:scale-95 max-md:order-1 max-md:w-full max-md:py-3"
-                @click="acceptAll"
+                class="order-3 md:order-1 cursor-pointer rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-[#1C2D5B] tracking-wide transition-all hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98] max-md:py-3.5"
+                @click="saveSettings"
               >
-                Accept All
+                Save Settings
               </button>
               <button
                 type="button"
-                class="cursor-pointer rounded-lg border-0 bg-[#F49321] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1C2D5B] active:scale-95 max-md:order-2 max-md:w-full max-md:py-3"
+                class="order-2 md:order-2 cursor-pointer rounded-xl border border-transparent bg-slate-100 px-3 py-2.5 text-xs font-bold text-slate-700 tracking-wide transition-all hover:bg-slate-200 hover:text-slate-900 active:scale-[0.98] max-md:py-3.5"
                 @click="denyAll"
               >
                 Deny
               </button>
               <button
                 type="button"
-                class="cursor-pointer rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-[#1C2D5B] transition hover:border-[#1C2D5B] hover:bg-slate-50 active:scale-95 max-md:order-3 max-md:w-full max-md:py-3"
-                @click="saveSettings"
+                class="order-1 md:order-3 cursor-pointer rounded-xl border border-transparent bg-[#1C2D5B] px-3 py-2.5 text-xs font-bold text-white tracking-wide shadow-sm transition-all hover:bg-[#F49321] hover:shadow-md active:scale-[0.98] max-md:py-3.5"
+                @click="acceptAll"
               >
-                Save Settings
+                Accept All
               </button>
             </div>
           </div>
