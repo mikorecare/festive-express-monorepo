@@ -27,10 +27,12 @@
         />
 
         <!-- Early Bird image - responsive sizing -->
-        <img
-          src="/Images/earlybird2.png"
+        <NuxtImg
+          v-if="earlyBirdIconUrl && isEarlyBirdLive"
+          :src="earlyBirdIconUrl"
           alt="Early Bird Special"
           class="h-[18px] md:h-[28px] w-auto absolute bottom-4 right-2"
+          loading="lazy"
         />
       </div>
 
@@ -223,6 +225,8 @@ const {
   OVERAGE_RATE,
 } = useEstimator();
 
+const { loadEarlyBird, earlyBirdIconUrl, isEarlyBirdLive } = useEarlyBirdSpecial();
+
 // Turnstile ref and state
 const turnstileRef = ref<InstanceType<typeof TurnstileWidget> | null>(null);
 const turnstileToken = ref<string>("");
@@ -353,6 +357,10 @@ const closeModal = () => {
     redirectTimer = null;
   }
 };
+
+onMounted(() => {
+  loadEarlyBird();
+});
 
 onUnmounted(() => {
   if (redirectTimer) {

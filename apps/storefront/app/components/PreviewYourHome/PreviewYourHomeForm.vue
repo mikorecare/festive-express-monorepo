@@ -3,7 +3,9 @@
   <div class="space-y-8">
     <!-- Address - Now Required -->
     <div>
-      <label class="block !text-[16px] font-semibold text-gray-700 mb-2 form-label">
+      <label
+        class="block !text-[16px] font-semibold text-gray-700 mb-2 .form-label-preview"
+      >
         Property address *
       </label>
       <div class="relative">
@@ -40,7 +42,9 @@
 
     <!-- Photo Upload - Now Optional -->
     <div>
-      <label class="block !text-[16px] font-semibold text-gray-700 mb-2 form-label">
+      <label
+        class="block !text-[16px] font-semibold text-gray-700 mb-2 .form-label-preview"
+      >
         Photo of your home
         <span class="text-xs font-normal text-gray-400">(optional)</span>
       </label>
@@ -113,7 +117,9 @@
 
     <!-- Package Options -->
     <div>
-      <label class="block !text-[16px] font-semibold text-gray-700 mb-4 form-label">
+      <label
+        class="block !text-[16px] font-semibold text-gray-700 mb-4 .form-label-preview"
+      >
         Select your package
       </label>
 
@@ -186,10 +192,12 @@
           </div>
 
           <!-- Early Bird Ribbon - inside the card, below price -->
-          <img
-            src="/Images/earlybird2.png"
+          <NuxtImg
+            v-if="earlyBirdIconUrl && isEarlyBirdLive"
+            :src="earlyBirdIconUrl"
             alt="Early Bird Special"
             class="h-[28px] w-auto mt-2"
+            loading="lazy"
           />
         </button>
       </div>
@@ -197,7 +205,9 @@
 
     <!-- Color Options -->
     <div class="pt-4">
-      <label class="block !text-[16px] font-semibold text-gray-700 mb-2 form-label">
+      <label
+        class="block !text-[16px] font-semibold text-gray-700 mb-2 .form-label-preview"
+      >
         Select C-9 Light Color
       </label>
       <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
@@ -236,7 +246,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div>
         <label
-          class="block !text-[16px] font-semibold !text-[#1C2F5B] mb-2 form-label"
+          class="block !text-[16px] font-semibold !text-[#1C2F5B] mb-2 .form-label-preview"
         >
           Your name *
         </label>
@@ -252,7 +262,7 @@
       </div>
       <div>
         <label
-          class="block !text-[16px] font-semibold !text-[#1C2F5B] mb-2 form-label"
+          class="block !text-[16px] font-semibold !text-[#1C2F5B] mb-2 .form-label-preview"
         >
           Email *
         </label>
@@ -272,7 +282,7 @@
 
     <div>
       <label
-        class="block !text-[16px] font-semibold !text-[#1C2F5B] mb-2 form-label"
+        class="block !text-[16px] font-semibold !text-[#1C2F5B] mb-2 .form-label-preview"
       >
         Mobile
         <span class="text-xs font-normal text-gray-400">(optional)</span>
@@ -312,15 +322,21 @@
     <!-- Submit Buttons -->
     <div class="space-y-3">
       <button
-        class="w-full bg-brand-orange text-xl tracking-wide hover:bg-orange-600 text-white font-semibold py-4 px-4 rounded-[16px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        class="w-full bg-brand-orange text-xl tracking-wide text-white font-semibold py-3 px-4 rounded-[16px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
         @click="submitRender(false)"
         :disabled="isLoading || !turnstileVerified"
       >
-        <i v-if="isLoading" class="fas fa-spinner fa-spin mr-2"></i>
-        {{ isLoading ? "Lighting up..." : "Light up my home →" }}
+        <span
+          class="absolute inset-0 bg-[#1c2d5b] w-0 group-hover:w-full transition-all duration-500 ease-in-out origin-left"
+        ></span>
+
+        <span class="relative z-10 flex items-center justify-center gap-2">
+          <i v-if="isLoading" class="fas fa-spinner fa-spin"></i>
+          {{ isLoading ? "Lighting up..." : "Light up my home →" }}
+        </span>
       </button>
       <button
-        class="w-full border border-gray-300 hover:bg-gray-50 text-xl text-gray-700 font-semibold py-4 px-4 rounded-[16px] transition-colors"
+        class="w-full border border-gray-300 hover:bg-gray-50 text-xl text-gray-700 font-semibold py-3 px-4 rounded-[16px] transition-colors"
         @click="submitRender(true)"
         :disabled="isLoading || !turnstileVerified"
       >
@@ -367,6 +383,9 @@ const {
   fetchPackages,
   loadingPackages,
 } = useEstimator();
+
+const { loadEarlyBird, earlyBirdIconUrl, isEarlyBirdLive } =
+  useEarlyBirdSpecial();
 
 // Turnstile ref and state - matching checkout pattern
 const turnstileRef = ref<InstanceType<typeof TurnstileWidget> | null>(null);
@@ -466,14 +485,15 @@ defineExpose({
 
 onMounted(() => {
   fetchPackages();
+  loadEarlyBird();
 });
 </script>
 
 <style scoped>
-.form-label {
+.form-label-preview {
   color: #f7931e;
   font-size: 20px;
-  font-family: Poppins;
+  font-family: Poppins !important;
   font-weight: 700;
   line-height: 32.8px;
   word-wrap: break-word;

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="font-poppins">
     <Header />
     <NuxtPage />
     <Toaster position="top-center" richColors closeButton />

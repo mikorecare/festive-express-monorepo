@@ -222,6 +222,7 @@ interface PackageRow {
   variations?: PackageVariation[];
   package_inclusions?: any[];
   inclusions?: any[];
+  title_image_url: string
 }
 
 const { data, pending, error } = await useFetch("/api/packages");
@@ -287,7 +288,7 @@ const getPackageButtonName = (pkg: { name: string }) => {
 const { loadEarlyBird, showSale, effectivePrice, earlyBirdIconUrl } =
   useEarlyBirdSpecial();
 
-const starburstSrc = "/Images/Holiday-Lighting-Package/starburst.png";
+const starburstSrc = "/Images/Holiday-Lighting-Package/starburst-small.png";
 
 onMounted(async () => {
   await loadEarlyBird();

@@ -346,7 +346,7 @@ const festivoConfig = computed<FestivoConfig>(() => {
   };
 });
 
-const starburstSrc = "/Images/Holiday-Lighting-Package/starburst.png";
+const starburstSrc = "/Images/Holiday-Lighting-Package/starburst-small.png";
 
 const inclusionsFor = (pkg: PackageRow): InclusionDisplay[] => {
   const rows = pkg.package_inclusions || [];
