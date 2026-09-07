@@ -50,19 +50,15 @@ jobs:
             echo "Building Storefront..."
             echo "========================================="
             cd /var/www/festive-express/festive-express-monorepo/apps/storefront
-            
+
             # Install dependencies
             npm install
-            
+
             # Clean old builds to free memory
-            rm -rf .nuxt .output_temp node_modules/.cache
-            
-            # Build to temp directory for zero-downtime swap
-            NITRO_OUTPUT_DIR=./.output_temp npm run build
-            
-            # Swap the build
-            rm -rf .output
-            mv .output_temp .output
+            rm -rf .nuxt .output node_modules/.cache
+
+            # Build
+            npm run build
 
             # 7. Force memory cleanup before Admin build
             echo "Cleaning up memory before Admin build..."
@@ -77,19 +73,15 @@ jobs:
             echo "Building Admin..."
             echo "========================================="
             cd /var/www/festive-express/festive-express-monorepo/apps/admin
-            
+
             # Install dependencies
             npm install
-            
+
             # Clean old builds
-            rm -rf .nuxt .output_temp node_modules/.cache
-            
-            # Build to temp directory
-            NITRO_OUTPUT_DIR=./.output_temp npm run build
-            
-            # Swap the build
-            rm -rf .output
-            mv .output_temp .output
+            rm -rf .nuxt .output node_modules/.cache
+
+            # Build
+            npm run build
 
             # 8. Force memory cleanup before restart
             echo "Cleaning up memory before PM2 restart..."
@@ -101,7 +93,7 @@ jobs:
             echo "Hot-reloading applications with PM2..."
             echo "========================================="
             cd /var/www/festive-express/festive-express-monorepo
-            
+
             # Reload without downtime
             pm2 reload ecosystem.config.js --update-env
             pm2 save
@@ -118,7 +110,7 @@ jobs:
             echo ""
             echo "Available memory after build:"
             free -h
-            
+
             echo "========================================="
             echo "Deployment complete!"
             echo "========================================="
