@@ -148,7 +148,6 @@ export default defineNuxtConfig({
       ? 'none'
       : (process.env.VERCEL ? 'vercel' : 'ipx'),
     dir: 'public',
-    // dir: "/apps/storefront/public/",
     quality: 80,
     format: ['webp', 'avif'],
     domains: [
@@ -156,6 +155,7 @@ export default defineNuxtConfig({
       'festive.express',
       process.env.NUXT_PUBLIC_SITE_URL?.replace('https://', '') || '',
       'festive-express-monorepo-storefront.vercel.app',
+      'phwcfiukyiexdvtccopt.supabase.co'
     ],
     alias: {
       'supabase': 'https://supabase.co',
@@ -397,6 +397,11 @@ export default defineNuxtConfig({
         }
       },
       '/fonts/**': {
+        headers: {
+          'Cache-Control': 'public, max-age=31536000, immutable',
+        }
+      },
+      '/_ipx/**': {
         headers: {
           'Cache-Control': 'public, max-age=31536000, immutable',
         }
