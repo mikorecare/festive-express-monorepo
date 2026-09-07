@@ -66,11 +66,6 @@
               v-if="pkg.title_image_url || pkg.icon_url"
               :src="pkg.title_image_url || pkg.icon_url || undefined"
               :alt="pkg.name"
-              format="webp"
-              quality="85"
-              width="100"
-              height="100"
-              fit="contain"
               loading="lazy"
               class="pkg-title-img h-16 md:h-24 w-auto object-contain drop-shadow-md"
             />
@@ -90,11 +85,7 @@
               <NuxtImg
                 :src="earlyBirdIconSecondaryUrl"
                 alt="Early Bird Special"
-                format="webp"
-                quality="85"
-                width="44"
-                height="44"
-                fit="contain"
+                sizes="sm:120px md:150px"
                 loading="lazy"
                 class="relative z-[2] mb-2 h-8 md:h-10 lg:h-11 w-auto object-contain scale-100 origin-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
               />

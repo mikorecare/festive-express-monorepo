@@ -126,9 +126,7 @@
               <NuxtImg
                 :src="earlyBirdIconSecondaryUrl"
                 alt="Early Bird Special"
-                width="32"
-                height="32"
-                fit="contain"
+                sizes="sm:120px md:150px"
                 class="relative z-10 h-8 w-auto object-contain drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)] max-lg:h-6"
               />
               <span
