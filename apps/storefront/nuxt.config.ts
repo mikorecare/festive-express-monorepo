@@ -12,10 +12,6 @@ export default defineNuxtConfig({
     "~/assets/css/pages.css",
   ],
 
-  site: {
-    url: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-  },
-
   sitemap: {
     exclude: [
       '/admin/**',
@@ -146,12 +142,6 @@ export default defineNuxtConfig({
   },
 
   modules: ["@nuxtjs/tailwindcss", "@nuxtjs/turnstile", "nuxt-security", '@nuxtjs/sitemap', '@nuxt/image'],
-
-  vite: {
-    esbuild: {
-      drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
-    },
-  },
 
   image: {
     provider: process.env.NODE_ENV === 'development'
