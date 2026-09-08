@@ -53,7 +53,6 @@ const initWidget = async () => {
       chatContainer.value.appendChild(chatElement);
       widgetInstance = chatElement;
 
-      // Wait for render
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Move the bubble off-screen but keep it functional
