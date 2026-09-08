@@ -137,6 +137,10 @@ export default defineNuxtConfig({
         { name: "twitter:title", content: "Festive Express - Premium Festive & Holiday Lighting" },
         { name: "twitter:description", content: "Professional festive lighting solutions based in Sarasota, FL. Transform your home with customized holiday installation plans." },
         { name: "twitter:image", content: "https://festive.express/Images/FE-Logo-2.png" },
+        {
+          name: 'google-site-verification',
+          content: 'yqxq-8yrnljhbp2vphVu6PVpMle1CkIWrFcFNcAX-kw'
+        }
       ],
     },
   },
