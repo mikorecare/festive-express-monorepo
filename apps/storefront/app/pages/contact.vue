@@ -207,6 +207,9 @@
 
 <script setup>
 import TurnstileWidget from "~/components/Checkout/TurnstileWidget.vue";
+useHead({
+  title: "Contact Us - Festive Express",
+});
 
 const { settings } = useSettings();
 

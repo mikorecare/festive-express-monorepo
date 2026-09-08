@@ -13,11 +13,12 @@
           <span class="text-brand-orange">holiday lighting</span> simple.
         </h2>
         <p
-          class="text-center text-navy font-bold tracking-[0.4px] text-[0.72rem] sm:text-[1.15rem] leading-tight mt-2 max-w-[80%] mx-auto"
+          class="text-center text-navy font-bold tracking-[0.4px] text-[0.72rem] sm:text-[1.15rem] mb-4 leading-tight mt-2 max-w-[80%] mx-auto"
         >
           Choose one of three fixed rental packages*.<br />
           Pay online. Pick your install and take-down dates. We handle the rest.
         </p>
+        <p class="text-navy">*Each package is a rental for one season.</p>
       </div>
 
       <!-- Loading State -->
@@ -125,7 +126,7 @@
                 >
               </button>
 
-              <div
+              <!-- <div
                 class="absolute top-full left-0 bg-white border border-gray-300 rounded-xl p-3.5 w-[280px] max-w-[90vw] shadow-[0_10px_25px_rgba(28,45,91,0.15)] opacity-0 invisible transition-all duration-250 z-30 mt-2 text-left text-navy"
                 :class="{ '!opacity-100 !visible': openTooltipId === index }"
                 @click.stop
@@ -158,7 +159,70 @@
                   </div>
                 </template>
                 <p v-else class="mb-0">No inclusions listed.</p>
+              </div> -->
+              <div
+                class="absolute top-full left-0 bg-white border border-gray-300 rounded-xl p-3.5 w-[280px] max-w-[90vw] shadow-[0_10px_25px_rgba(28,45,91,0.15)] opacity-0 invisible transition-all duration-250 z-30 mt-2 text-left text-navy"
+                :class="{ '!opacity-100 !visible': openTooltipId === index }"
+                @click.stop
+              >
+                <template
+                  v-if="inclusionsFor(pkg).filter((r) => r.is_included).length"
+                >
+                  <button
+                    v-for="(row, i) in inclusionsFor(pkg).filter(
+                      (r) => r.is_included,
+                    )"
+                    :key="i"
+                    type="button"
+                    class="flex w-full items-center gap-2.5 py-1.5 border-b border-gray-300 text-sm last:border-b-0 text-left hover:bg-slate-50"
+                    @click.stop="openInclusionImage(row)"
+                  >
+                    <NuxtImg
+                      v-if="row.image_url"
+                      :src="row.image_url"
+                      class="w-8 h-8 object-contain flex-shrink-0"
+                      alt=""
+                      width="32"
+                      height="32"
+                      fit="contain"
+                      loading="lazy"
+                    />
+                    <span>{{ row.name }}</span>
+                  </button>
+                </template>
+                <p v-else class="mb-0">No inclusions listed.</p>
               </div>
+
+              <Teleport to="body">
+                <div
+                  v-if="inclusionPreview"
+                  class="fixed inset-0 z-[999999] flex items-center justify-center bg-black/80 p-6"
+                  @click.self="inclusionPreview = null"
+                >
+                  <button
+                    type="button"
+                    class="absolute top-4 right-5 text-white text-3xl"
+                    aria-label="Close"
+                    @click="inclusionPreview = null"
+                  >
+                    ×
+                  </button>
+                  <div
+                    class="max-w-[92vw] max-h-[90vh] text-center rounded-xl bg-black/40 p-4"
+                    @click.stop
+                  >
+                    <NuxtImg
+                      :src="inclusionPreview.image_url"
+                      :alt="inclusionPreview.name"
+                      class="w-auto max-w-[800px] max-h-[80vh] object-contain rounded-lg mx-auto"
+                      sizes="800px"
+                    />
+                    <p class="mt-3 text-white font-semibold">
+                      {{ inclusionPreview.name }}
+                    </p>
+                  </div>
+                </div>
+              </Teleport>
             </div>
 
             <div class="flex flex-col items-end gap-2">
@@ -248,28 +312,26 @@
 
       <!-- Footer Note -->
       <div class="text-center mt-6 mb-4">
-        <p
-          class="text-navy font-medium leading-[1.3] max-w-[80%] mx-auto mb-5 text-sm sm:text-base md:text-lg text-center"
-        >
-          Every package is professionally installed, maintained through the
-          season, and taken down when you’re ready.<br />You simply enjoy the
-          holidays.
-        </p>
-
         <div
           class="relative isolate my-8 max-lg:my-6 flex flex-col items-center justify-center gap-2 text-center"
         >
-          <PreviewYourHomeButton />
-
           <NuxtLink
             to="/packages"
-            class="relative z-10 overflow-hidden inline-block font-semibold px-6 py-3 rounded-full bg-brand-orange text-white animate-[festive-express-animation-pulse-grow_1.4s_ease-in-out_infinite_alternate] after:content-[''] after:absolute after:-top-1/2 after:-left-[150%] after:w-[200%] after:h-[200%] after:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] after:rotate-[25deg] after:pointer-events-none"
+            class="relative mb-5 z-10 overflow-hidden inline-block font-semibold px-6 py-3 rounded-full bg-brand-orange text-white animate-[festive-express-animation-pulse-grow_1.4s_ease-in-out_infinite_alternate] after:content-[''] after:absolute after:-top-1/2 after:-left-[150%] after:w-[200%] after:h-[200%] after:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] after:rotate-[25deg] after:pointer-events-none"
           >
             Which Package Fits Your Home?
           </NuxtLink>
-        </div>
 
-        <p class="text-navy">*Each package is a rental for one season.</p>
+          <p
+            class="text-navy font-medium leading-[1.3] max-w-[80%] mx-auto mb-5 text-sm sm:text-base md:text-lg text-center"
+          >
+            Every package is professionally installed, maintained through the
+            season, and taken down when you’re ready.<br />You simply enjoy the
+            holidays.
+          </p>
+
+          <PreviewYourHomeButton />
+        </div>
       </div>
     </div>
   </section>
@@ -448,6 +510,17 @@ const packageProducts = computed(() => packages.value);
 
 const selectPackage = (pkg: PackageRow) => {
   navigateTo(`/packages?package=${pkg.slug}`);
+};
+
+const inclusionPreview = ref<{ name: string; image_url: string } | null>(null);
+
+const openInclusionImage = (row: any) => {
+  const url = row.image_url || row.image || row.inclusion_items?.image_url;
+  if (!url) return;
+  inclusionPreview.value = {
+    name: row.name || row.label_override || row.inclusion_items?.name || "",
+    image_url: url,
+  };
 };
 </script>
 
