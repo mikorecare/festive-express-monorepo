@@ -382,31 +382,77 @@ export default defineNuxtConfig({
     compressPublicAssets: true,
     logLevel: process.env.NODE_ENV === 'production' ? 0 : 1,
     routeRules: {
+      '/': {
+        isr: 60 * 60 * 24,
+        headers: { 'Cache-Control': 'public, max-age=3600, stale-while-revalidate' }
+      },
+      '/about-us': {
+        isr: 60 * 60 * 24,
+        headers: { 'Cache-Control': 'public, max-age=3600, stale-while-revalidate' }
+      },
+      '/packages': {
+        isr: 60 * 60 * 24,
+        headers: { 'Cache-Control': 'public, max-age=3600, stale-while-revalidate' }
+      },
+      '/how-it-works': {
+        isr: 60 * 60 * 24,
+        headers: { 'Cache-Control': 'public, max-age=3600, stale-while-revalidate' }
+      },
+      '/faq': {
+        isr: 60 * 60 * 24,
+        headers: { 'Cache-Control': 'public, max-age=3600, stale-while-revalidate' }
+      },
+      '/membership': {
+        isr: 60 * 60 * 24,
+        headers: { 'Cache-Control': 'public, max-age=3600, stale-while-revalidate' }
+      },
+      '/reviews': {
+        isr: 60 * 60 * 24,
+        headers: { 'Cache-Control': 'public, max-age=3600, stale-while-revalidate' }
+      },
+
+      '/privacy-policy': {
+        isr: 60 * 60 * 24 * 7,
+        headers: { 'Cache-Control': 'public, max-age=86400, stale-while-revalidate' }
+      },
+      '/cookie-policy': {
+        isr: 60 * 60 * 24 * 7,
+        headers: { 'Cache-Control': 'public, max-age=86400, stale-while-revalidate' }
+      },
+      '/terms': {
+        isr: 60 * 60 * 24 * 7,
+        headers: { 'Cache-Control': 'public, max-age=86400, stale-while-revalidate' }
+      },
+
+      '/contact': { ssr: false },
+      '/preview-your-home': { ssr: false },
+      '/cart': { ssr: false },
+      '/checkout': { ssr: false },
+      '/thank-you': { ssr: false },
+      '/track-order': { ssr: false },
+
+      '/favicon.ico': {
+        headers: { 'Cache-Control': 'public, max-age=31536000, immutable' }
+      },
+      '/robots.txt': {
+        headers: { 'Cache-Control': 'public, max-age=86400, stale-while-revalidate' }
+      },
+
       '/api/**': {
-        headers: {
-          'Cache-Control': 'no-store, must-revalidate',
-        }
+        headers: { 'Cache-Control': 'no-store, must-revalidate' }
       },
       '/_nuxt/**': {
-        headers: {
-          'Cache-Control': 'public, max-age=31536000, immutable',
-        }
+        headers: { 'Cache-Control': 'public, max-age=31536000, immutable' }
       },
       '/Images/**': {
-        headers: {
-          'Cache-Control': 'public, max-age=31536000, immutable',
-        }
+        headers: { 'Cache-Control': 'public, max-age=31536000, immutable' }
       },
       '/fonts/**': {
-        headers: {
-          'Cache-Control': 'public, max-age=31536000, immutable',
-        }
+        headers: { 'Cache-Control': 'public, max-age=31536000, immutable' }
       },
       '/_ipx/**': {
-        headers: {
-          'Cache-Control': 'public, max-age=31536000, immutable',
-        }
+        headers: { 'Cache-Control': 'public, max-age=31536000, immutable' }
       }
     }
-  },
+  }
 });
