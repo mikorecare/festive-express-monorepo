@@ -85,9 +85,17 @@ type HowItWorksContent = {
   footer_description?: string | null;
 };
 
-const data = ref<HowItWorksContent | null>(null);
-const loading = ref(false);
-const error = ref<string | null>(null);
+const {
+  data: response,
+  pending: loading,
+  error: fetchError,
+} = useFetch<{
+  success: boolean;
+  data: HowItWorksContent | null;
+}>("/api/how-it-works");
+
+const data = computed(() => response.value?.data ?? null);
+const error = computed(() => (fetchError.value ? "An error occurred" : null));
 
 const steps = computed(() => data.value?.steps ?? []);
 const footerHtml = computed(() => data.value?.footer_description || "");
@@ -95,32 +103,7 @@ const footerHtml = computed(() => data.value?.footer_description || "");
 const visibleSteps = ref(new Set<number>());
 const activeStep = ref(0);
 
-const load = async () => {
-  loading.value = true;
-  error.value = null;
-
-  try {
-    const response = await $fetch<{
-      success: boolean;
-      data: HowItWorksContent | null;
-    }>("/api/how-it-works");
-
-    if (response.success) {
-      data.value = response.data;
-    } else {
-      throw new Error("Failed to load how it works content");
-    }
-  } catch (e) {
-    console.error(e);
-    error.value = e instanceof Error ? e.message : "An error occurred";
-    data.value = null;
-  } finally {
-    loading.value = false;
-  }
-};
-
 onMounted(async () => {
-  await load();
   await nextTick();
 
   const items = Array.from(document.querySelectorAll(".timeline-item"));

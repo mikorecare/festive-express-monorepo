@@ -22,7 +22,7 @@ type HowItWorksResponse = {
     data: HowItWorksContent | null
 }
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     const supabase = getSupabase()
 
     try {
@@ -41,6 +41,14 @@ export default defineEventHandler(async (event) => {
             })
         }
 
+        if (data && data.banner_image_url && !data.banner_image_url.startsWith('http')) {
+            const { data: urlData } = supabase
+                .storage
+                .from('Products')
+                .getPublicUrl(data.banner_image_url.replace(/^\/+/, ''))
+            data.banner_image_url = urlData?.publicUrl || data.banner_image_url
+        }
+
         return {
             success: true,
             data: data || null
@@ -53,4 +61,9 @@ export default defineEventHandler(async (event) => {
             message: error.message || "Failed to load how it works content"
         })
     }
+}, {
+    name: 'how_it_works_cache',
+    maxAge: 60 * 60 * 24 * 7,
+    staleMaxAge: 60 * 60 * 24 * 30,
+    swr: true
 })

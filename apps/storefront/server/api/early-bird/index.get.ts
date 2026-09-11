@@ -9,7 +9,7 @@ interface EarlyBirdSettings {
     early_bird_icon_secondary_url: string
 }
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     const supabase = getSupabase()
 
     try {
@@ -98,4 +98,9 @@ export default defineEventHandler(async (event) => {
             message: error.message || "Failed to load early bird settings"
         })
     }
+}, {
+    maxAge: 60 * 5,
+    staleMaxAge: 60 * 15,
+    swr: true,
+    name: 'earlyBirdSettings'
 })

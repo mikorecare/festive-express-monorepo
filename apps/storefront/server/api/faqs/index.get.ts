@@ -21,16 +21,10 @@ type Settings = {
     contact_email: string
 }
 
-type FaqsResponse = {
-    categories: CategoryWithFaqs[]
-    settings: Settings
-}
-
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     const supabase = getSupabase()
 
     try {
-        // Fetch FAQ categories with their FAQs
         const { data: categoriesData, error: categoriesError } = await supabase
             .from("faq_categories")
             .select(`
@@ -56,7 +50,6 @@ export default defineEventHandler(async (event) => {
             })
         }
 
-        // Fetch settings
         const { data: settingsData, error: settingsError } = await supabase
             .from("settings")
             .select("key, value")
@@ -70,7 +63,6 @@ export default defineEventHandler(async (event) => {
             })
         }
 
-        // Process categories and filter FAQs
         const categories: CategoryWithFaqs[] = ((categoriesData || []) as any[]).map((cat) => ({
             id: cat.id,
             name: cat.name,
@@ -80,7 +72,6 @@ export default defineEventHandler(async (event) => {
                 .sort((a: any, b: any) => a.sort_order - b.sort_order)
         }))
 
-        // Process settings
         const settingsMap: Record<string, string> = {}
         if (settingsData && Array.isArray(settingsData)) {
             settingsData.forEach((row: any) => {
@@ -114,4 +105,9 @@ export default defineEventHandler(async (event) => {
             message: error.message || "Failed to load FAQs"
         })
     }
+}, {
+    name: 'faqs_list_cache',
+    maxAge: 60 * 60 * 24 * 7,
+    staleMaxAge: 60 * 60 * 24 * 30,
+    swr: true
 })

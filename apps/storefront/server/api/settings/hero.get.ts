@@ -1,6 +1,6 @@
 import { getSupabase } from '~~/server/utils/supabase'
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     const supabase = getSupabase()
 
     try {
@@ -38,4 +38,9 @@ export default defineEventHandler(async (event) => {
             message: error.message || "Failed to load hero settings"
         })
     }
+}, {
+    name: 'hero_subtitle_cache',
+    maxAge: 60 * 60 * 24 * 7,
+    staleMaxAge: 60 * 60 * 24 * 30,
+    swr: true
 })

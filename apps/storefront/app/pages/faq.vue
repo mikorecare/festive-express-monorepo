@@ -156,48 +156,33 @@ interface Settings {
   contact_email: string;
 }
 
-const categories = ref<CategoryWithFaqs[]>([]);
-const loading = ref(true);
-const error = ref<string | null>(null);
-const openId = ref<number | null>(null);
+const {
+  data: faqResponse,
+  pending: loading,
+  error: fetchError,
+} = useFetch<{
+  success: boolean;
+  categories: CategoryWithFaqs[];
+  settings: Settings;
+}>("/api/faqs");
 
-const supportPhone = ref("");
-const supportEmail = ref("");
-const phoneHref = ref("");
+const categories = computed(() => faqResponse.value?.categories || []);
+const supportPhone = computed(
+  () => faqResponse.value?.settings?.contact_phone_display || "",
+);
+const phoneHref = computed(
+  () => faqResponse.value?.settings?.contact_phone || "",
+);
+const supportEmail = computed(
+  () => faqResponse.value?.settings?.contact_email || "",
+);
+const error = computed(() => (fetchError.value ? "Failed to load FAQs" : null));
+
+const openId = ref<number | null>(null);
 
 const toggle = (id: number) => {
   openId.value = openId.value === id ? null : id;
 };
-
-const loadFaqs = async () => {
-  loading.value = true;
-  error.value = null;
-
-  try {
-    const response = await $fetch<{
-      success: boolean;
-      categories: CategoryWithFaqs[];
-      settings: Settings;
-    }>("/api/faqs");
-
-    if (response.success) {
-      categories.value = response.categories || [];
-      supportPhone.value = response.settings.contact_phone_display || "";
-      phoneHref.value = response.settings.contact_phone || "";
-      supportEmail.value = response.settings.contact_email || "";
-    } else {
-      throw new Error("Failed to load FAQs");
-    }
-  } catch (e) {
-    console.error("Failed to load FAQs:", e);
-    error.value = e instanceof Error ? e.message : "An error occurred";
-    categories.value = [];
-  } finally {
-    loading.value = false;
-  }
-};
-
-onMounted(loadFaqs);
 </script>
 
 <style scoped>

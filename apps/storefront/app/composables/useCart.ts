@@ -82,8 +82,6 @@ export const useCart = () => {
     }
   }
 
-  const { isEarlyBirdActive } = useEarlyBirdSpecial()
-
   const addToCart = async (productId: string | number, quantity = 1) => {
     if (!import.meta.client) return false
 

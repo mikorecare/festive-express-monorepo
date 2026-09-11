@@ -2,7 +2,7 @@ import { getSupabase } from '~~/server/utils/supabase'
 
 const STORAGE_BUCKET = 'Gallery'
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     try {
         const supabase = getSupabase()
 
@@ -55,4 +55,9 @@ export default defineEventHandler(async (event) => {
             data: []
         }
     }
+}, {
+    name: 'gallery_landing_cache',
+    maxAge: 60 * 60 * 24 * 7,
+    staleMaxAge: 60 * 60 * 24 * 30,
+    swr: true
 })

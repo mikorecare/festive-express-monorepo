@@ -1,3 +1,5 @@
+import { CACHE_MAP } from '~~/server/utils/cache-map'
+import { purgeLandingCache } from '~~/server/utils/purge'
 import { getSupabase } from '~~/server/utils/supabase'
 
 export default defineEventHandler(async (event) => {
@@ -26,7 +28,7 @@ export default defineEventHandler(async (event) => {
             .eq('id', body.id)
 
         if (error) throw error
-
+        await purgeLandingCache(CACHE_MAP.GALLERY)
         return {
             success: true
         }

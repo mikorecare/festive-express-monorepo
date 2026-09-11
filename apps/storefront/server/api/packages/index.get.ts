@@ -1,4 +1,3 @@
-
 import { getSupabase } from '~~/server/utils/supabase'
 
 type InclusionItem = {
@@ -40,7 +39,7 @@ type PackagesResponse = {
 
 const STORAGE_BUCKET = 'Products'
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     const supabase = getSupabase()
 
     const { data, error } = await supabase
@@ -132,4 +131,10 @@ export default defineEventHandler(async (event) => {
     };
 
     return response;
-});
+}, {
+    // --- NITRO CACHE CONFIGURATION ---
+    name: 'admin_packages_list_cache', // Distinct namespace for tracking this route
+    maxAge: 60 * 60 * 24 * 7,           // Securely store data elements for 7 days
+    staleMaxAge: 60 * 60 * 24 * 30,     // Stale data buffer limit set to 30 days
+    swr: true                           // Stale-While-Revalidate background loop hydration
+})

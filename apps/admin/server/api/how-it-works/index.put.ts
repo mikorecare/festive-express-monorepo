@@ -1,3 +1,5 @@
+import { CACHE_MAP } from '~~/server/utils/cache-map'
+import { purgeLandingCache } from '~~/server/utils/purge'
 import { getSupabase } from '~~/server/utils/supabase'
 
 export default defineEventHandler(async (event) => {
@@ -25,6 +27,7 @@ export default defineEventHandler(async (event) => {
 
         if (error) throw error
 
+        await purgeLandingCache(CACHE_MAP.HOW_IT_WORKS)
         return {
             success: true
         }

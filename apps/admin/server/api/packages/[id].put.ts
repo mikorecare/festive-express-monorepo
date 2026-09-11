@@ -1,3 +1,5 @@
+import { CACHE_MAP } from '~~/server/utils/cache-map'
+import { purgeLandingCache } from '~~/server/utils/purge'
 import { getSupabase } from '~~/server/utils/supabase'
 
 export default defineEventHandler(async (event) => {
@@ -31,7 +33,11 @@ export default defineEventHandler(async (event) => {
             .eq('id', id)
 
         if (error) throw error
-
+        await Promise.all([
+            purgeLandingCache(CACHE_MAP.PACKAGES_PUBLIC),
+            purgeLandingCache(CACHE_MAP.PACKAGES_ADMIN),
+            purgeLandingCache(CACHE_MAP.SKUS)
+        ])
         return {
             success: true
         }

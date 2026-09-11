@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
         const { data, error } = await queryBuilder
 
         if (error) throw error
-
+        
         return {
             success: true,
             data: data || []

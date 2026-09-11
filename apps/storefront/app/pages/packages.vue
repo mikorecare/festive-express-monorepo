@@ -679,25 +679,69 @@ type ApiResponse<T> = {
 };
 
 const cart = useCart();
+const {
+  data: landingPayload,
+  pending,
+  error,
+} = useAsyncData("landing-page-data", async () => {
+  const [packagesRes, skusRes, settingsRes] = await Promise.all([
+    $fetch<ApiResponse<PackageRow[]>>("/api/packages/main-list"),
+    $fetch<ApiResponse<SkuRow[]>>("/api/packages/skus"),
+    $fetch<ApiResponse<{ hero_subtitle?: string }>>("/api/settings/hero"),
+  ]);
 
-const packages = ref<PackageRow[]>([]);
-const skus = ref<SkuRow[]>([]);
+  return {
+    packages: packagesRes.success ? packagesRes.data || [] : [],
+    skus: skusRes.success ? skusRes.data || [] : [],
+    settings:
+      settingsRes.success && settingsRes.data
+        ? settingsRes.data
+        : { hero_subtitle: "" },
+  };
+});
+
+const packages = computed(() => landingPayload.value?.packages || []);
+const skus = computed(() => landingPayload.value?.skus || []);
+const settings = computed(
+  () => landingPayload.value?.settings || { hero_subtitle: "" },
+);
+
+const loading = computed(() => pending.value);
 const selectedSkuId = ref<Record<string, string | number>>({});
+
+watch(
+  landingPayload,
+  (newData) => {
+    if (!newData) return;
+
+    const map: Record<string, string | number> = {};
+    for (const pkg of newData.packages) {
+      // Matches your helper method logic safely
+      const first = skusFor(pkg.id)[0];
+      if (first) {
+        map[String(pkg.id)] = first.id;
+      }
+    }
+    selectedSkuId.value = map;
+  },
+  { immediate: true },
+);
+
+const { data: inclusionResponse, pending: specsLoading } = useFetch<{
+  success: boolean;
+  data: InclusionSpec[];
+}>("/api/inclusion-items");
+
+const inclusionItems = computed(() => inclusionResponse.value?.data || []);
+
 const activeHotspot = ref<Record<string, string | null>>({});
 const addingId = ref<string | number | null>(null);
-const loading = ref(true);
-const pending = computed(() => loading.value);
 
 const packageRefs = ref<Map<string | number, HTMLElement>>(new Map());
 const imageRefs = ref<Map<string | number, HTMLImageElement>>(new Map());
-
-const inclusionItems = ref<InclusionSpec[]>([]);
-const specsLoading = ref(true);
-
 const { loadEarlyBird, showSale, effectivePrice, earlyBirdIconSecondaryUrl } =
   useEarlyBirdSpecial();
 
-const settings = ref<{ hero_subtitle?: string } | null>(null);
 const subtitleParts = computed(() => {
   const raw =
     settings.value?.hero_subtitle || "Choose the perfect package|for your home";
@@ -874,52 +918,6 @@ const setImageRef = (
   }
 };
 
-// Load data
-const loadData = async () => {
-  loading.value = true;
-  try {
-    // Load packages
-    const packagesRes = await $fetch<ApiResponse<PackageRow[]>>(
-      "/api/packages/main-list",
-    );
-    if (packagesRes.success) {
-      packages.value = packagesRes.data || [];
-    }
-
-    // Load SKUs
-    const skusRes = await $fetch<ApiResponse<SkuRow[]>>("/api/packages/skus");
-    if (skusRes.success) {
-      skus.value = skusRes.data || [];
-    }
-
-    // Load settings
-    const settingsRes =
-      await $fetch<ApiResponse<{ hero_subtitle?: string }>>(
-        "/api/settings/hero",
-      );
-    if (settingsRes.success && settingsRes.data) {
-      settings.value = settingsRes.data;
-    }
-
-    // Map SKUs to packages
-    const map: Record<string, string | number> = {};
-    for (const pkg of packages.value) {
-      const first = skusFor(pkg.id)[0];
-      if (first) map[String(pkg.id)] = first.id;
-    }
-    selectedSkuId.value = map;
-  } catch (e) {
-    console.error(e);
-    packages.value = [];
-    skus.value = [];
-  } finally {
-    loading.value = false;
-  }
-};
-
-// Call loadData
-await loadData();
-
 const cartModal = reactive({
   open: false,
   type: "success" as "success" | "error",
@@ -1057,27 +1055,8 @@ const colorList = (item: any) => asArray(item.color_options);
 const featureList = (item: any) => asArray(item.features);
 const specMap = (item: any) => asObject(item.specifications);
 
-const loadInclusionSpecs = async () => {
-  specsLoading.value = true;
-  try {
-    const response = await $fetch<{ success: boolean; data: InclusionSpec[] }>(
-      "/api/inclusion-items",
-    );
-
-    if (response.success) {
-      inclusionItems.value = response.data || [];
-    }
-  } catch (e) {
-    console.error(e);
-    inclusionItems.value = [];
-  } finally {
-    specsLoading.value = false;
-  }
-};
-
 onMounted(async () => {
   await loadColors();
-  await loadInclusionSpecs();
   await loadEarlyBird();
 
   if (!import.meta.client) return;

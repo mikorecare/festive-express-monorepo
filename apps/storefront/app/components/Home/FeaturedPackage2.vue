@@ -189,7 +189,6 @@
 </template>
 
 <script setup lang="ts">
-
 interface InclusionDisplay {
   name: string;
   image_url: string | null;
@@ -219,7 +218,7 @@ interface PackageRow {
   variations?: PackageVariation[];
   package_inclusions?: any[];
   inclusions?: any[];
-  title_image_url: string
+  title_image_url: string;
 }
 
 const { data, pending, error } = await useFetch("/api/packages");

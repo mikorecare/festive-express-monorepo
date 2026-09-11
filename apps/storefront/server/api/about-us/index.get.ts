@@ -1,6 +1,6 @@
 import { getSupabase } from '~~/server/utils/supabase'
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     try {
         const supabase = getSupabase()
 
@@ -13,6 +13,14 @@ export default defineEventHandler(async (event) => {
 
         if (error) {
             throw error
+        }
+
+        if (data && data.banner_image_url && !data.banner_image_url.startsWith('http')) {
+            const { data: urlData } = supabase
+                .storage
+                .from('Products')
+                .getPublicUrl(data.banner_image_url.replace(/^\/+/, ''))
+            data.banner_image_url = urlData?.publicUrl || data.banner_image_url
         }
 
         return {
@@ -28,4 +36,9 @@ export default defineEventHandler(async (event) => {
             data: null
         }
     }
+}, {
+    name: 'about_us_cache',
+    maxAge: 60 * 60 * 24 * 7,
+    staleMaxAge: 60 * 60 * 24 * 30,
+    swr: true
 })

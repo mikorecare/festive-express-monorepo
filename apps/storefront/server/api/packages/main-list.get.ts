@@ -29,7 +29,7 @@ type PackageRow = {
     package_inclusions?: PackageInclusion[]
 }
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     const supabase = getSupabase()
 
     try {
@@ -136,4 +136,9 @@ export default defineEventHandler(async (event) => {
             message: error.message || "Failed to load packages"
         })
     }
+}, {
+    name: 'packages_list_cache',
+    maxAge: 60 * 60 * 24 * 7,
+    staleMaxAge: 60 * 60 * 24 * 30,
+    swr: true 
 })

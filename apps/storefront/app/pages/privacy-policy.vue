@@ -76,33 +76,15 @@ type PrivacyContent = {
   updated_at?: string;
 };
 
-const data = ref<PrivacyContent | null>(null);
-const loading = ref(false);
-const error = ref<string | null>(null);
+const {
+  data: response,
+  pending: loading,
+  error: fetchError,
+} = useFetch<{
+  success: boolean;
+  data: PrivacyContent | null;
+}>("/api/privacy-policy");
 
-const loadPrivacyPolicy = async () => {
-  loading.value = true;
-  error.value = null;
-
-  try {
-    const response = await $fetch<{
-      success: boolean;
-      data: PrivacyContent | null;
-    }>("/api/privacy-policy");
-
-    if (response.success) {
-      data.value = response.data;
-    } else {
-      throw new Error("Failed to load privacy policy");
-    }
-  } catch (e) {
-    console.error("Failed to load privacy policy:", e);
-    error.value = e instanceof Error ? e.message : "An error occurred";
-    data.value = null;
-  } finally {
-    loading.value = false;
-  }
-};
-
-onMounted(loadPrivacyPolicy);
+const data = computed(() => response.value?.data ?? null);
+const error = computed(() => (fetchError.value ? "An error occurred" : null));
 </script>
