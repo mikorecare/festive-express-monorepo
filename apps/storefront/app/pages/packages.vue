@@ -708,6 +708,21 @@ const settings = computed(
 
 const loading = computed(() => pending.value);
 const selectedSkuId = ref<Record<string, string | number>>({});
+const cartBump = useState("cart-bump", () => 0);
+const { colors, loadColors, swatchStyle, byKey } = useProductColors();
+const skusFor = (packageId: string | number) => {
+  const list = skus.value.filter(
+    (s) => String(s.package_id) === String(packageId),
+  );
+
+  return list.sort((a, b) => {
+    const orderOf = (key?: string | null) => {
+      const i = colors.value.findIndex((c) => c.color_key === key);
+      return i === -1 ? 999 : i;
+    };
+    return orderOf(a.color_key) - orderOf(b.color_key);
+  });
+};
 
 watch(
   landingPayload,
@@ -751,25 +766,6 @@ const subtitleParts = computed(() => {
     .map((s) => s.trim())
     .filter(Boolean);
 });
-
-const cartBump = useState("cart-bump", () => 0);
-
-const { colors, loadColors, swatchStyle, byKey } = useProductColors();
-
-// Define skusFor
-const skusFor = (packageId: string | number) => {
-  const list = skus.value.filter(
-    (s) => String(s.package_id) === String(packageId),
-  );
-
-  return list.sort((a, b) => {
-    const orderOf = (key?: string | null) => {
-      const i = colors.value.findIndex((c) => c.color_key === key);
-      return i === -1 ? 999 : i;
-    };
-    return orderOf(a.color_key) - orderOf(b.color_key);
-  });
-};
 
 /** Default hotspot positions per package slug */
 const HOTSPOT_LAYOUT: Record<

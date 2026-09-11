@@ -382,6 +382,11 @@ export default defineNuxtConfig({
     compressPublicAssets: true,
     logLevel: process.env.NODE_ENV === 'production' ? 0 : 1,
     routeRules: {
+      '/**': {
+        security: {
+          rateLimiter: false,
+        },
+      },
       '/': {
         isr: 60 * 60 * 24,
         headers: { 'Cache-Control': 'public, max-age=3600, stale-while-revalidate' }
@@ -439,7 +444,10 @@ export default defineNuxtConfig({
       },
 
       '/api/**': {
-        headers: { 'Cache-Control': 'no-store, must-revalidate' }
+        headers: { 'Cache-Control': 'no-store, must-revalidate' },
+        security: {
+          rateLimiter: false,
+        },
       },
       '/_nuxt/**': {
         headers: { 'Cache-Control': 'public, max-age=31536000, immutable' }
