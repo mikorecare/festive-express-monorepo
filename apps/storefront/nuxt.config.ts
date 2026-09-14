@@ -5,6 +5,10 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: true,
 
+  site: {
+    url: 'https://festive.express',
+    name: 'Festive Express',
+  },
 
   css: [
     "bootstrap/dist/css/bootstrap.min.css",
@@ -38,48 +42,75 @@ export default defineNuxtConfig({
   app: {
     head: {
       titleTemplate: "%s - Festive Express",
+
       htmlAttrs: {
         lang: "en-US",
       },
+
       link: [
-        { rel: "icon", type: "image/x-icon", href: "Images/favicon.png" },
-        { rel: "canonical", href: "https://festive.express" },
-        { rel: "preconnect", href: "https://fonts.googleapis.com" },
-        { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" },
-        { rel: "preconnect", href: "https://cdnjs.cloudflare.com" },
-        { rel: "preconnect", href: "https://cdn.jsdelivr.net" },
+        {
+          rel: "icon",
+          type: "image/x-icon",
+          href: "/Images/favicon.png",
+        },
+
+        {
+          rel: "preconnect",
+          href: "https://fonts.googleapis.com",
+        },
+
+        {
+          rel: "preconnect",
+          href: "https://fonts.gstatic.com",
+          crossorigin: "",
+        },
+
+        {
+          rel: "preconnect",
+          href: "https://cdnjs.cloudflare.com",
+        },
+
+        {
+          rel: "preconnect",
+          href: "https://cdn.jsdelivr.net",
+        },
+
         {
           rel: "preload",
           href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&family=Raleway:wght@400;500;600;700;800;900&display=swap",
-          as: "style"
+          as: "style",
         },
+
         {
           rel: "preload",
           as: "style",
           type: "text/css",
           href: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css",
           crossorigin: "anonymous",
-        }
-
+        },
       ],
+
       script: [
         {
           src: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js",
           defer: true,
         },
+
         {
           type: "application/ld+json",
           innerHTML: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "LocalBusiness",
             name: "Festive Express",
-            description: "Professional holiday lighting installation and removal services in Sarasota, Bradenton, and Lakewood Ranch. Premium Christmas light installation for homes and businesses.",
+            description:
+              "Professional holiday lighting installation and removal services in Sarasota, Bradenton, and Lakewood Ranch. Premium Christmas light installation for homes and businesses.",
             image: "https://festive.express/Images/logo.png",
             "@id": "https://festive.express",
             url: "https://festive.express",
             telephone: "+19412394722",
             email: "info@festive.express",
             priceRange: "$$",
+
             address: {
               "@type": "PostalAddress",
               streetAddress: "1973 Northgate Blvd",
@@ -88,15 +119,24 @@ export default defineNuxtConfig({
               postalCode: "34234",
               addressCountry: "US",
             },
+
             geo: {
               "@type": "GeoCoordinates",
               latitude: 27.3712,
               longitude: -82.5298,
             },
+
             openingHoursSpecification: [
               {
                 "@type": "OpeningHoursSpecification",
-                dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+                dayOfWeek: [
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                  "Friday",
+                  "Saturday",
+                ],
                 opens: "07:00",
                 closes: "20:00",
               },
@@ -107,6 +147,7 @@ export default defineNuxtConfig({
                 closes: "18:00",
               },
             ],
+
             sameAs: [
               "https://www.facebook.com/flp-express",
               "https://www.instagram.com/flp-express",
@@ -117,26 +158,55 @@ export default defineNuxtConfig({
           }),
         },
       ],
+
       meta: [
-        { charset: "utf-8" },
-        { name: "viewport", content: "width=device-width, initial-scale=1" },
-        { name: "description", content: "Premium festive lighting solutions in Florida. Professional holiday light setup, custom displays, and residential services out of Sarasota." },
-        { name: "robots", content: "index, follow" },
-        { name: "googlebot", content: "index, follow" },
-        { property: "og:title", content: "Festive Express - Premium Festive & Holiday Lighting" },
-        { property: "og:description", content: "Professional festive lighting solutions based in Sarasota, FL. Transform your home with customized holiday installation plans." },
-        { property: "og:image", content: "https://festive.express/Images/FE-Logo-2.png" },
-        { property: "og:url", content: "https://festive.express" },
-        { property: "og:type", content: "website" },
-        { property: "og:site_name", content: "Festive Express" },
-        { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:title", content: "Festive Express - Premium Festive & Holiday Lighting" },
-        { name: "twitter:description", content: "Professional festive lighting solutions based in Sarasota, FL. Transform your home with customized holiday installation plans." },
-        { name: "twitter:image", content: "https://festive.express/Images/FE-Logo-2.png" },
         {
-          name: 'google-site-verification',
-          content: 'yqxq-8yrnljhbp2vphVu6PVpMle1CkIWrFcFNcAX-kw'
-        }
+          name: "description",
+          content:
+            "Premium festive lighting solutions in Florida. Professional holiday light setup, custom displays, and residential services out of Sarasota.",
+        },
+
+        {
+          property: "og:title",
+          content: "Festive Express - Premium Festive & Holiday Lighting",
+        },
+
+        {
+          property: "og:description",
+          content:
+            "Professional festive lighting solutions based in Sarasota, FL. Transform your home with customized holiday installation plans.",
+        },
+
+        {
+          property: "og:image",
+          content: "https://festive.express/Images/FE-Logo-2.png",
+        },
+
+        {
+          name: "twitter:card",
+          content: "summary_large_image",
+        },
+
+        {
+          name: "twitter:title",
+          content: "Festive Express - Premium Festive & Holiday Lighting",
+        },
+
+        {
+          name: "twitter:description",
+          content:
+            "Professional festive lighting solutions based in Sarasota, FL. Transform your home with customized holiday installation plans.",
+        },
+
+        {
+          name: "twitter:image",
+          content: "https://festive.express/Images/FE-Logo-2.png",
+        },
+
+        {
+          name: "google-site-verification",
+          content: "yqxq-8yrnljhbp2vphVu6PVpMle1CkIWrFcFNcAX-kw",
+        },
       ],
     },
   },
@@ -224,8 +294,8 @@ export default defineNuxtConfig({
     elavonPartnerAppId: process.env.ELAVON_PARTNER_APP_ID || "",
     internalApiToken: process.env.INTERNAL_API_TOKEN,
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || "http://localhost:3000/api",
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || "https://festive.express/api",
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "https://festive.express",
       supabaseUrl: process.env.SUPABASE_URL
     },
   },
