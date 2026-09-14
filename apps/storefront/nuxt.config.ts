@@ -10,6 +10,10 @@ export default defineNuxtConfig({
     name: 'Festive Express',
   },
 
+  seo: {
+    canonicalLowercase: true
+  },
+
   css: [
     "bootstrap/dist/css/bootstrap.min.css",
     "~/assets/css/main.css",
@@ -211,7 +215,7 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/turnstile", "nuxt-security", '@nuxtjs/sitemap', '@nuxt/image'],
+  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/turnstile", "nuxt-security", '@nuxtjs/sitemap', '@nuxt/image', "@nuxtjs/seo",],
 
   image: {
     provider: process.env.NODE_ENV === 'development'
