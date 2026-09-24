@@ -172,7 +172,7 @@
             </a>
 
             <a
-              href="mailto:JoyJollyMerry@festive.express"
+              href="mailto:hello@festive.express"
               class="flex items-center gap-4 bg-white/10 border border-white/15 rounded-xl p-4 hover:bg-white/20 transition-colors text-white no-underline mb-4"
             >
               <i class="fas fa-envelope text-[#F49321] text-lg"></i>
@@ -182,7 +182,7 @@
                   >Email Support</span
                 >
                 <strong class="text-white"
-                  >JoyJollyMerry@festive.express</strong
+                  >hello@festive.express</strong
                 >
               </div>
             </a>

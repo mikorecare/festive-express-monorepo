@@ -1,4 +1,3 @@
-
 import { CACHE_MAP } from '~~/server/utils/cache-map'
 import { purgeLandingCache } from '~~/server/utils/purge'
 import { getSupabase } from '~~/server/utils/supabase'
@@ -13,21 +12,20 @@ export default defineEventHandler(async (event) => {
             throw new Error('Settings array is required')
         }
 
-        const rows = settings.map((setting: { key: string; value: string }) => ({
-            key: setting.key,
-            value: setting.value,
-            updated_at: new Date().toISOString(),
-        }))
+        for (const setting of settings) {
+            const { error } = await supabase
+                .from("settings")
+                .update({
+                    value: setting.value,
+                    updated_at: new Date().toISOString(),
+                })
+                .eq("key", setting.key)
 
-        const { error } = await supabase
-            .from("settings")
-            .upsert(rows, { onConflict: "key" })
-
-        if (error) throw error
-        await purgeLandingCache(CACHE_MAP.GLOBAL_SETTINGS)
-        return {
-            success: true
+            if (error) throw error
         }
+
+        await purgeLandingCache(CACHE_MAP.GLOBAL_SETTINGS)
+        return { success: true }
     } catch (error) {
         console.error("Error saving settings:", error)
         return {

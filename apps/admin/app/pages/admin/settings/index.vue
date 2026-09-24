@@ -658,7 +658,7 @@ const saveSettings = async () => {
     });
 
     const response = await $fetch<{ success: boolean }>("/api/settings", {
-      method: "POST",
+      method: "PUT",
       body: { settings: rows },
     });
 
