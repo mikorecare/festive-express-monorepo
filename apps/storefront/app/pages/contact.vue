@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="bg-[url('/Images/LV.webp')] bg-no-repeat bg-[position:50%] bg-cover">
     <section
       aria-label="Contact page header"
       role="region"
@@ -14,11 +14,11 @@
       </div>
     </section>
 
-    <div class="container py-12 lg:py-20 mb-5">
+    <div class="container py-12 lg:py-20 mb-5 ">
       <div class="flex flex-col items-center">
         <!-- Get In Touch Card - Centered -->
         <div
-          class="relative bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-navy-600 border-4 hover:shadow-[0_20px_40px_rgba(28,45,91,0.08)] transition-all duration-300 pt-10 pb-6 px-6 text-center w-full max-w-[400px] mx-auto mb-32"
+          class="relative bg-white rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.06)] border !border-navy !border-4 hover:shadow-[0_20px_40px_rgba(28,45,91,0.08)] transition-all duration-300 pt-10 pb-6 px-6 text-center w-full max-w-[400px] mx-auto mb-32"
         >
           <div
             class="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/95 to-white/80"
@@ -46,13 +46,19 @@
 
           <div class="relative z-10">
             <h2
-              class="text-XL font-semibold text-navy uppercase tracking-wider mb-2 mt-2"
+              class="text-md font-semibold text-navy uppercase tracking-wider mb-2"
             >
               Get In Touch
             </h2>
-            <div class="text-navy/70 text-sm leading-relaxed space-y-1">
+            <div class="text-navy/70 text-md leading-relaxed space-y-1">
               <p class="font-semibold text-brand-orange">
-                {{ settings.contact_phone_display || "(941) 239-4722" }}
+                <a
+                  :href="
+                    'tel:' + (settings.contact_phone_raw || '+19412394722')
+                  "
+                >
+                  {{ settings.contact_phone_display || "(941) 239-4722" }}
+                </a>
               </p>
               <a
                 :href="`mailto:${settings.contact_email}`"
@@ -99,22 +105,22 @@
                 role="form"
                 v-if="stage < 4"
                 @submit.prevent="submitForm"
-                class="contact-form bg-white rounded-xl shadow-lg p-8 space-y-5"
+                class="contact-form bg-white rounded-xl shadow-lg space-y-5 !border !border-brand-orange !border-4"
                 :class="{
                   'contact-form-sending': stage >= 1,
                   'contact-form-inserted': stage >= 2,
                 }"
               >
                 <div
-                  class="transition-all duration-500 text-center"
+                  class="transition-all duration-500 text-center bg-navy rounded-t-lg py-8 px-4"
                   :class="{ 'opacity-0 pointer-events-none': stage >= 1 }"
                 >
-                  <h3 class="text-2xl font-bold text-navy mb-1">
-                    Let's connect today.
+                  <h3 class="text-2xl font-bold text-white mb-1">
+                    Let's Connect Today
                   </h3>
-                  <p class="mb-[30px] text-navy">We're here to guide you.</p>
+                  <p class="text-brand-orange">We're here to guide you.</p>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 px-4">
                   <input
                     v-model="form.firstName"
                     type="text"
@@ -130,28 +136,37 @@
                     class="w-full px-4 py-3.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-base"
                   />
                 </div>
-                <input
-                  v-model="form.phone"
-                  type="tel"
-                  placeholder="Phone *"
-                  required
-                  class="w-full px-4 py-3.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-base"
-                />
-                <input
-                  v-model="form.email"
-                  type="email"
-                  placeholder="Email *"
-                  required
-                  class="w-full px-4 py-3.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-base"
-                />
-                <textarea
-                  v-model="form.message"
-                  placeholder="Message *"
-                  rows="5"
-                  required
-                  class="w-full px-4 py-3.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-y text-base"
-                ></textarea>
-
+                <div class="px-4">
+                  <input
+                    v-model="form.phone"
+                    type="tel"
+                    placeholder="Phone *"
+                    required
+                    class="w-full px-4 py-3.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-base"
+                  />
+                </div>
+                <div class="px-4">
+                  <input
+                    v-model="form.email"
+                    type="email"
+                    placeholder="Email *"
+                    required
+                    class="w-full px-4 py-3.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-base"
+                  />
+                </div>
+                <div class="px-4">
+                  <textarea
+                    v-model="form.message"
+                    placeholder="Message *"
+                    rows="5"
+                    required
+                    data-gramm="false"
+                    data-gramm-false="true"
+                    spellcheck="false"
+                    style="resize: none"
+                    class="w-full px-4 py-3.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-y text-base"
+                  ></textarea>
+                </div>
                 <!-- Turnstile -->
                 <TurnstileWidget
                   ref="turnstileRef"
@@ -165,37 +180,38 @@
                   @error="onTurnstileError"
                   @expired="onTurnstileExpired"
                 />
-
-                <button
-                  type="submit"
-                  class="bg-navy hover:bg-brand-orange text-white py-3.5 px-6 rounded-lg text-lg font-semibold w-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  :disabled="isSubmitting || !turnstileVerified"
-                >
-                  <span v-if="!isSubmitting">Send a Message</span>
-                  <span v-else class="flex items-center justify-center gap-2">
-                    <svg
-                      class="animate-spin h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"
-                      />
-                      <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    Sending...
-                  </span>
-                </button>
+                <div class="px-4 pb-4">
+                  <button
+                    type="submit"
+                    class="bg-navy hover:bg-brand-orange text-white py-3.5 px-6 rounded-lg text-lg font-semibold w-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    :disabled="isSubmitting || !turnstileVerified"
+                  >
+                    <span v-if="!isSubmitting">Send a Message</span>
+                    <span v-else class="flex items-center justify-center gap-2">
+                      <svg
+                        class="animate-spin h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          class="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          stroke-width="4"
+                        />
+                        <path
+                          class="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      Sending...
+                    </span>
+                  </button>
+                </div>
               </form>
             </div>
           </div>
@@ -299,13 +315,17 @@ const submitForm = async () => {
   isSubmitting.value = true;
 
   try {
-    const response = await $fetch("/api/contact-us", {
-      method: "POST",
-      body: {
-        ...form.value,
-        turnstileToken: turnstileToken.value,
-      },
-    });
+    // const response = await $fetch("/api/contact-us", {
+    //   method: "POST",
+    //   body: {
+    //     ...form.value,
+    //     turnstileToken: turnstileToken.value,
+    //   },
+    // });
+
+    const response = {
+      success: true,
+    };
 
     if (response.success) {
       stage.value = 1;
@@ -347,6 +367,10 @@ const resetForm = () => {
 </script>
 
 <style scoped>
+input {
+  font-family: "Poppins", "Arial";
+}
+
 .envelope-scene {
   position: relative;
   width: 100%;
@@ -523,7 +547,7 @@ const resetForm = () => {
 }
 
 .contact-form-inserted {
-  transform: translateY(-160px) scale(0.48);
+  transform: translateY(-120px) scale(0.4);
   pointer-events: none;
   z-index: 5;
   opacity: 1;

@@ -16,6 +16,7 @@ export default defineNuxtConfig({
 
   css: [
     "bootstrap/dist/css/bootstrap.min.css",
+    "~/assets/fonts/fontawesome/css/all.min.css",
     "~/assets/css/main.css",
     "~/assets/css/pages.css",
   ],
@@ -91,6 +92,7 @@ export default defineNuxtConfig({
           type: "text/css",
           href: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css",
           crossorigin: "anonymous",
+          integrity: "sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==",
         },
       ],
 
@@ -269,7 +271,11 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    // PRIVATE - Server only
+    azureClientId: process.env.AZURE_CLIENT_ID,
+    azureTenantId: process.env.AZURE_TENANT_ID,
+    azureClientSecret: process.env.AZURE_CLIENT_SECRET,
+    azureScheduleEmail: process.env.AZURE_SCHEDULE_EMAIL,
+    // azureScheduleEmail: "mrecare@flppros.com", 
     convergeMerchantId: process.env.CONVERGE_MERCHANT_ID || "",
     convergeUserId: process.env.CONVERGE_USER_ID || "",
     convergePin: process.env.CONVERGE_PIN || "",
