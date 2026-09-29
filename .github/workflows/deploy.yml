@@ -25,6 +25,7 @@ jobs:
           command_timeout: 30m
           script_stop: true
           script: |
+            #!/bin/bash
             set -e
 
             cd /var/www/festive-express/festive-express-monorepo
@@ -53,17 +54,40 @@ jobs:
             git reset --hard origin/production
             git log -1 --oneline
 
-            echo "── Node environment ──"
-            NODE_DIR=$(ls -d /home/ubuntu/.nvm/versions/node/v24.* 2>/dev/null | sort -V | tail -1)
-            if [ -z "$NODE_DIR" ]; then
-              echo "ERROR: Node 24 not found under /home/ubuntu/.nvm/versions/node/"
-              ls -la /home/ubuntu/.nvm/versions/node/ 2>&1 || true
+            echo "── Locating Node ──"
+            # Try nvm first (v24, then any v20+, then whatever's there)
+            if [ -d "$HOME/.nvm/versions/node" ]; then
+              NODE_DIR=$(ls -d "$HOME"/.nvm/versions/node/v24.* 2>/dev/null | sort -V | tail -1)
+              [ -z "$NODE_DIR" ] && NODE_DIR=$(ls -d "$HOME"/.nvm/versions/node/v20.* 2>/dev/null | sort -V | tail -1)
+              [ -z "$NODE_DIR" ] && NODE_DIR=$(ls -d "$HOME"/.nvm/versions/node/*/ 2>/dev/null | sort -V | tail -1)
+              [ -n "$NODE_DIR" ] && export PATH="$NODE_DIR/bin:$PATH"
+            fi
+            # Try nvm.sh as fallback
+            if ! command -v node >/dev/null 2>&1 && [ -s "$HOME/.nvm/nvm.sh" ]; then
+              \. "$HOME/.nvm/nvm.sh"
+              nvm use 24 2>/dev/null || nvm use 20 2>/dev/null || nvm use --lts 2>/dev/null || true
+            fi
+            # Try common system locations
+            if ! command -v node >/dev/null 2>&1; then
+              for d in /usr/local/bin /usr/bin /opt/node/bin; do
+                if [ -x "$d/node" ]; then
+                  export PATH="$d:$PATH"
+                  break
+                fi
+              done
+            fi
+            # Final check
+            if ! command -v node >/dev/null 2>&1; then
+              echo "ERROR: node not found anywhere."
+              echo "HOME=$HOME"
+              echo "PATH=$PATH"
+              ls -la "$HOME/.nvm/versions/node" 2>&1 || true
+              ls -la /usr/local/bin/node /usr/bin/node 2>&1 || true
               exit 1
             fi
-            export PATH="$NODE_DIR/bin:$PATH"
-            echo "Using Node from: $NODE_DIR"
-            node --version
-            npm --version
+            echo "Node: $(command -v node)"
+            echo "Version: $(node --version)"
+            echo "npm: $(npm --version)"
 
             export NODE_OPTIONS="--max-old-space-size=768"
             echo "── Memory ──"
