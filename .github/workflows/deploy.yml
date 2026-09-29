@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - production
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -28,17 +29,16 @@ jobs:
 
             cd /var/www/festive-express/festive-express-monorepo
 
-            # ─── Preflight: disk space ────────────────────────────
+            echo "── Preflight: disk space ──"
             FREE_GB=$(( $(df --output=avail . | tail -1) / 1024 / 1024 ))
             echo "Free disk: ${FREE_GB}GB"
             if [ "$FREE_GB" -lt 3 ]; then
-              echo "ERROR: Only ${FREE_GB}GB free. Aborting before fetch."
+              echo "ERROR: Only ${FREE_GB}GB free. Aborting."
               df -h .
               exit 1
             fi
 
-            # ─── Preflight: reclaim space BEFORE fetching ─────────
-            echo "Reclaiming space before fetch..."
+            echo "── Reclaiming space ──"
             pm2 flush 2>/dev/null || true
             npm cache clean --force 2>/dev/null || true
             rm -rf apps/*/.nuxt apps/*/.output apps/*/.next apps/*/dist 2>/dev/null || true
@@ -48,80 +48,56 @@ jobs:
             git gc --prune=now 2>/dev/null || true
             df -h
 
-            # ─── Fetch latest ─────────────────────────────────────
-            echo "Pulling latest code from production branch..."
+            echo "── Fetching latest ──"
             git fetch origin production
             git reset --hard origin/production
             git log -1 --oneline
 
-            # ─── Node environment ─────────────────────────────────
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use 20 2>/dev/null || nvm install 20
+            echo "── Node environment ──"
+            NODE_DIR=$(ls -d /home/ubuntu/.nvm/versions/node/v24.* 2>/dev/null | sort -V | tail -1)
+            if [ -z "$NODE_DIR" ]; then
+              echo "ERROR: Node 24 not found under /home/ubuntu/.nvm/versions/node/"
+              ls -la /home/ubuntu/.nvm/versions/node/ 2>&1 || true
+              exit 1
+            fi
+            export PATH="$NODE_DIR/bin:$PATH"
+            echo "Using Node from: $NODE_DIR"
             node --version
             npm --version
 
             export NODE_OPTIONS="--max-old-space-size=768"
-            echo "Available memory before build:"
+            echo "── Memory ──"
             free -h
 
-            # ─── BUILD STOREFRONT ─────────────────────────────────
-            echo "========================================="
-            echo "Building Storefront..."
-            echo "========================================="
+            echo "── Building Storefront ──"
             cd apps/storefront
-
-            # Clean BEFORE install so npm ci has room
             rm -rf .nuxt .output .next dist node_modules/.cache
             npm ci
             npm run build
-
-            # Reclaim storefront build cache before admin
             rm -rf node_modules/.cache 2>/dev/null || true
 
-            # ─── BUILD ADMIN ──────────────────────────────────────
-            echo "========================================="
-            echo "Building Admin..."
-            echo "========================================="
+            echo "── Building Admin ──"
             cd ../admin
-
             rm -rf .nuxt .output .next dist node_modules/.cache
             npm ci
             npm run build
             rm -rf node_modules/.cache 2>/dev/null || true
 
-            # ─── RELOAD VIA PM2 ───────────────────────────────────
-            echo "========================================="
-            echo "Reloading PM2 apps..."
-            echo "========================================="
+            echo "── Reloading PM2 ──"
             cd ../..
-
             pm2 reload ecosystem.config.js --update-env
             pm2 save
 
-            # ─── Verify ───────────────────────────────────────────
             sleep 5
-            echo "PM2 Status:"
             pm2 list
 
-            if pm2 jlist 2>/dev/null | grep -q '"status":"errored"'; then
-              echo "ERROR: Some PM2 processes are errored"
-              pm2 list
-              exit 1
-            fi
-
-            # ─── Post-deploy: reclaim space ───────────────────────
-            echo "Post-deploy cleanup..."
+            echo "── Post-deploy cleanup ──"
             find apps -type d -name ".cache" -prune -exec rm -rf {} + 2>/dev/null || true
             rm -rf apps/*/.nuxt/cache apps/*/.next/cache 2>/dev/null || true
             npm cache clean --force 2>/dev/null || true
             git gc --prune=now 2>/dev/null || true
 
-            # ─── Final report ─────────────────────────────────────
-            echo ""
-            echo "Final state:"
+            echo "── Final state ──"
             df -h .
             free -h
-            echo "========================================="
             echo "Deployment complete!"
-            echo "========================================="
