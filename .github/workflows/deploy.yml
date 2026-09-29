@@ -20,97 +20,108 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
+          timeout: 30m
+          command_timeout: 30m
+          script_stop: true
           script: |
-            # 1. Exit immediately if any command fails
             set -e
 
-            # 2. Navigate to monorepo root
             cd /var/www/festive-express/festive-express-monorepo
 
-            # 3. FORCE PULL the latest code from production branch
+            # ─── Preflight: disk space ────────────────────────────
+            FREE_GB=$(( $(df --output=avail . | tail -1) / 1024 / 1024 ))
+            echo "Free disk: ${FREE_GB}GB"
+            if [ "$FREE_GB" -lt 3 ]; then
+              echo "ERROR: Only ${FREE_GB}GB free. Aborting before fetch."
+              df -h .
+              exit 1
+            fi
+
+            # ─── Preflight: reclaim space BEFORE fetching ─────────
+            echo "Reclaiming space before fetch..."
+            pm2 flush 2>/dev/null || true
+            npm cache clean --force 2>/dev/null || true
+            rm -rf apps/*/.nuxt apps/*/.output apps/*/.next apps/*/dist 2>/dev/null || true
+            find apps -type d -name ".cache" -prune -exec rm -rf {} + 2>/dev/null || true
+            sudo journalctl --vacuum-size=200M 2>/dev/null || true
+            sudo apt clean 2>/dev/null || true
+            git gc --prune=now 2>/dev/null || true
+            df -h
+
+            # ─── Fetch latest ─────────────────────────────────────
             echo "Pulling latest code from production branch..."
             git fetch origin production
             git reset --hard origin/production
+            git log -1 --oneline
 
-            # 4. Load Node/NVM environment
+            # ─── Node environment ─────────────────────────────────
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use 20 2>/dev/null || nvm install 20
+            node --version
+            npm --version
 
-            # 5. Increase Node memory limit for builds
-            export NODE_OPTIONS="--max-old-space-size=4096"
-
-            # 6. Check available memory
+            export NODE_OPTIONS="--max-old-space-size=768"
             echo "Available memory before build:"
             free -h
 
-            # ============================================
-            # BUILD STOREFRONT (Sequential)
-            # ============================================
+            # ─── BUILD STOREFRONT ─────────────────────────────────
             echo "========================================="
             echo "Building Storefront..."
             echo "========================================="
-            cd /var/www/festive-express/festive-express-monorepo/apps/storefront
+            cd apps/storefront
 
-            # Install dependencies
-            npm install
-
-            # Clean old builds to free memory
-            rm -rf .nuxt .output node_modules/.cache
-
-            # Build
+            # Clean BEFORE install so npm ci has room
+            rm -rf .nuxt .output .next dist node_modules/.cache
+            npm ci
             npm run build
 
-            # 7. Force memory cleanup before Admin build
-            echo "Cleaning up memory before Admin build..."
-            sync
-            echo 3 | sudo tee /proc/sys/vm/drop_caches 2>/dev/null || true
-            free -h
+            # Reclaim storefront build cache before admin
+            rm -rf node_modules/.cache 2>/dev/null || true
 
-            # ============================================
-            # BUILD ADMIN (Sequential)
-            # ============================================
+            # ─── BUILD ADMIN ──────────────────────────────────────
             echo "========================================="
             echo "Building Admin..."
             echo "========================================="
-            cd /var/www/festive-express/festive-express-monorepo/apps/admin
+            cd ../admin
 
-            # Install dependencies
-            npm install
-
-            # Clean old builds
-            rm -rf .nuxt .output node_modules/.cache
-
-            # Build
+            rm -rf .nuxt .output .next dist node_modules/.cache
+            npm ci
             npm run build
+            rm -rf node_modules/.cache 2>/dev/null || true
 
-            # 8. Force memory cleanup before restart
-            echo "Cleaning up memory before PM2 restart..."
-            sync
-            echo 3 | sudo tee /proc/sys/vm/drop_caches 2>/dev/null || true
-
-            # 9. HOT-RELOAD APPLICATIONS VIA PM2
+            # ─── RELOAD VIA PM2 ───────────────────────────────────
             echo "========================================="
-            echo "Hot-reloading applications with PM2..."
+            echo "Reloading PM2 apps..."
             echo "========================================="
-            cd /var/www/festive-express/festive-express-monorepo
+            cd ../..
 
-            # Reload without downtime
             pm2 reload ecosystem.config.js --update-env
             pm2 save
 
-            # 10. Verify System Integrity
-            echo "========================================="
+            # ─── Verify ───────────────────────────────────────────
+            sleep 5
             echo "PM2 Status:"
             pm2 list
-            echo ""
-            echo "Recent logs:"
-            pm2 logs --lines 20 --nostream
 
-            # 11. Final memory check
+            if pm2 jlist 2>/dev/null | grep -q '"status":"errored"'; then
+              echo "ERROR: Some PM2 processes are errored"
+              pm2 list
+              exit 1
+            fi
+
+            # ─── Post-deploy: reclaim space ───────────────────────
+            echo "Post-deploy cleanup..."
+            find apps -type d -name ".cache" -prune -exec rm -rf {} + 2>/dev/null || true
+            rm -rf apps/*/.nuxt/cache apps/*/.next/cache 2>/dev/null || true
+            npm cache clean --force 2>/dev/null || true
+            git gc --prune=now 2>/dev/null || true
+
+            # ─── Final report ─────────────────────────────────────
             echo ""
-            echo "Available memory after build:"
+            echo "Final state:"
+            df -h .
             free -h
-
             echo "========================================="
             echo "Deployment complete!"
             echo "========================================="
