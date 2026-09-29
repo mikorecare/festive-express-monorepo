@@ -1,5 +1,7 @@
 <template>
-  <div class="bg-[url('/Images/LV.webp')] bg-no-repeat bg-[position:50%] bg-cover">
+  <div
+    class="bg-[url('/Images/LV.webp')] bg-no-repeat bg-[position:50%] bg-cover"
+  >
     <section
       aria-label="Contact page header"
       role="region"
@@ -14,7 +16,7 @@
       </div>
     </section>
 
-    <div class="container py-12 lg:py-20 mb-5 ">
+    <div class="container py-12 lg:py-20 mb-5">
       <div class="flex flex-col items-center">
         <!-- Get In Touch Card - Centered -->
         <div
@@ -315,17 +317,13 @@ const submitForm = async () => {
   isSubmitting.value = true;
 
   try {
-    // const response = await $fetch("/api/contact-us", {
-    //   method: "POST",
-    //   body: {
-    //     ...form.value,
-    //     turnstileToken: turnstileToken.value,
-    //   },
-    // });
-
-    const response = {
-      success: true,
-    };
+    const response = await $fetch("/api/contact-us", {
+      method: "POST",
+      body: {
+        ...form.value,
+        turnstileToken: turnstileToken.value,
+      },
+    });
 
     if (response.success) {
       stage.value = 1;
