@@ -89,15 +89,6 @@ import CheckoutTurnstileWidget from "../components/Checkout/TurnstileWidget.vue"
 import { usePaymentError } from "~/composables/usePaymentError";
 import { useToast } from "~/composables/useToast";
 
-interface OrderResponse {
-  success: boolean;
-  order: {
-    id: string;
-    order_number: string;
-    total: number;
-    status: string;
-  };
-}
 
 interface ConvergePaymentResponse {
   ssl_result: string;
@@ -113,7 +104,7 @@ interface ConvergePaymentResponse {
 const config = useRuntimeConfig();
 const siteKey = config.public.turnstile.siteKey as string;
 
-const { settings, loadSettings, telHref } = useSettings();
+const { settings } = useSettings();
 const FL_TAX_RATE = computed(() => {
   const raw =
     settings.value?.fl_tax_rate ?? (settings.value as any)?.["fl_tax_rate"];
@@ -527,42 +518,6 @@ const minDate = computed(() => {
   return d.toISOString().split("T")[0] || "";
 });
 
-const buildOrderPayload = () => {
-  const installDates = form.value.install_dates.filter((d) => d);
-  const removalDates = form.value.removal_dates.filter((d) => d);
-
-  return {
-    billing_first_name: form.value.billing_first_name || "",
-    billing_last_name: form.value.billing_last_name || "",
-    billing_email: form.value.billing_email,
-    billing_phone: form.value.billing_phone,
-    billing_postcode: form.value.billing_postcode,
-    shipping_address_1: form.value.shipping_address_1,
-    shipping_postcode: form.value.billing_postcode,
-    preferred_install_dates: installDates,
-    removal_dates: removalDates,
-    status: "pending",
-    payment_method: "converge",
-    payment_status: "paid",
-    subtotal: combinedSubtotal.value,
-    tax_total: estimatedTax.value,
-    total: grandTotal.value,
-    promo_code_id: appliedPromo.value?.id ?? null,
-    items: cartItems.value.map((item: any) => ({
-      product_id: item.product_id,
-      product_name: item.product?.name || item.name,
-      quantity: item.quantity,
-      price: item.price,
-      options: item.options || null,
-      is_package: item.is_package || false,
-    })),
-    customer_note: form.value.customer_note || null,
-    transaction_id: null,
-    approval_code: null,
-    payment_token: null,
-  };
-};
-
 const validateCheckout = () => {
   if (cartItems.value.length === 0) {
     toast.error("Your cart is empty");
@@ -657,26 +612,6 @@ const getCityFromZip = (zip: string): string => {
 // CHECKOUT.JS IMPLEMENTATION
 // ============================================
 
-const detectCardType = (cardNumber: string): string => {
-  const cleaned = cardNumber.replace(/\D/g, "");
-  if (!cleaned) return "Unknown";
-
-  const patterns: Record<string, RegExp> = {
-    "American Express": /^3[47]/,
-    Visa: /^4/,
-    Mastercard: /^5[1-5]/,
-    Discover: /^6(?:011|5)/,
-    "Diners Club": /^3(?:0[0-5]|[68])/,
-    JCB: /^(?:2131|1800|35)/,
-  };
-
-  for (const [type, pattern] of Object.entries(patterns)) {
-    if (pattern.test(cleaned)) {
-      return type;
-    }
-  }
-  return "Unknown";
-};
 
 const loadCheckoutScript = (): Promise<void> => {
   return new Promise((resolve, reject) => {
@@ -685,7 +620,8 @@ const loadCheckoutScript = (): Promise<void> => {
       return;
     }
 
-    const src = "https://api.demo.convergepay.com/hosted-payments/Checkout.js";
+    // const src = "https://api.demo.convergepay.com/hosted-payments/Checkout.js";
+    const src = "https://api.convergepay.com/hosted-payments/Checkout.js";
 
     const script = document.createElement("script");
     script.src = src;
@@ -702,45 +638,6 @@ const loadCheckoutScript = (): Promise<void> => {
   });
 };
 
-const processPaymentWithCheckout = async (
-  token: string,
-): Promise<ConvergePaymentResponse> => {
-  if (!(window as any).ConvergeCheckout) {
-    throw new Error("Checkout.js not loaded");
-  }
-
-  const paymentData = {
-    ssl_txn_auth_token: token,
-    ssl_card_number: form.value.card_number.replace(/\s/g, ""),
-    ssl_exp_date: form.value.card_expiry.replace("/", ""),
-    ssl_cvv2cvc2: form.value.card_cvv,
-    ssl_first_name: form.value.billing_first_name,
-    ssl_last_name: form.value.billing_last_name,
-    ssl_avs_address: form.value.shipping_address_1,
-    ssl_avs_zip: form.value.billing_postcode,
-    ssl_email: form.value.billing_email,
-    ssl_phone: form.value.billing_phone,
-    ssl_city: getCityFromZip(form.value.billing_postcode),
-    ssl_state: "FL",
-    ssl_country: "USA",
-  };
-
-  console.log("Sending payment to Converge via Checkout.js...");
-
-  return new Promise((resolve, reject) => {
-    (window as any).ConvergeCheckout.processPayment(
-      paymentData,
-      (response: ConvergePaymentResponse) => {
-        console.log("Converge response:", response);
-        resolve(response);
-      },
-      (error: any) => {
-        console.error("Converge error:", error);
-        reject(error);
-      },
-    );
-  });
-};
 
 // ============================================================
 // MAIN PAYMENT
@@ -749,14 +646,6 @@ const payWithConverge = async () => {
   if (!validateCheckout()) return;
 
   isPaying.value = true;
-
-  console.log("[payWithConverge]", {
-    appliedPromo: appliedPromo.value,
-    promoDiscount: promoDiscount.value,
-    combinedSubtotal: combinedSubtotal.value,
-    estimatedTax: estimatedTax.value,
-    grandTotal: grandTotal.value,
-  });
 
   try {
     const firstName = form.value.billing_first_name || "";

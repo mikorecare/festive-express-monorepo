@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
         hasUserId: !!config.elavonUserId,
         hasPin: !!config.elavonPin,
         hasVendorId: !!config.elavonVendorId,
-        demo: config.elavonDemo || 'true'
+        demo: process.env.NODE_ENV !== "production"
     });
 
     if (!config.elavonAccountId || !config.elavonUserId || !config.elavonPin) {
