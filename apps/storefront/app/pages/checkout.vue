@@ -750,6 +750,14 @@ const payWithConverge = async () => {
 
   isPaying.value = true;
 
+  console.log("[payWithConverge]", {
+    appliedPromo: appliedPromo.value,
+    promoDiscount: promoDiscount.value,
+    combinedSubtotal: combinedSubtotal.value,
+    estimatedTax: estimatedTax.value,
+    grandTotal: grandTotal.value,
+  });
+
   try {
     const firstName = form.value.billing_first_name || "";
     const lastName = form.value.billing_last_name || "";
