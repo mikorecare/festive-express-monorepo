@@ -299,7 +299,7 @@ export default defineNuxtConfig({
     elavonAccountId: process.env.ELAVON_ACCOUNT_ID || "",
     elavonUserId: process.env.ELAVON_USER_ID || "",
     elavonPin: process.env.ELAVON_PIN || "",
-    elavonDemo: process.env.NUXT_ELAVON_DEMO !== "false",
+    elavonDemo: false,
     elavonVendorId: process.env.ELAVON_VENDOR_ID || "",
     elavonPartnerAppId: process.env.ELAVON_PARTNER_APP_ID || "",
     internalApiToken: process.env.INTERNAL_API_TOKEN,
