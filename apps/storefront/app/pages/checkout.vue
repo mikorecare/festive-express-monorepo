@@ -496,16 +496,30 @@ const alacarteCartTotal = computed(() =>
   }, 0),
 );
 
+// ============================================================
+// TOTALS — now subtract promo discount from the grand total
+// ============================================================
 const { discountAmount, appliedPromo } = usePromo();
 
-const subtotal = computed(() => cartTotal.value);
-const promoDiscount = computed(() => discountAmount(subtotal.value));
-const estimatedTax = computed(
-  () => Math.max(0, subtotal.value - promoDiscount.value) * FL_TAX_RATE.value,
+const combinedSubtotal = computed(
+  () => Number(cartTotal.value) + Number(alacarteCartTotal.value),
 );
-const grandTotal = computed(
-  () => Number(cartTotal.value) + estimatedTax.value + alacarteCartTotal.value,
+
+const promoDiscount = computed(() => discountAmount(combinedSubtotal.value));
+
+const taxableAmount = computed(() =>
+  Math.max(0, combinedSubtotal.value - promoDiscount.value),
 );
+
+const estimatedTax = computed(() => taxableAmount.value * FL_TAX_RATE.value);
+
+const grandTotal = computed(() =>
+  Math.max(
+    0,
+    combinedSubtotal.value - promoDiscount.value + estimatedTax.value,
+  ),
+);
+// ============================================================
 
 const minDate = computed(() => {
   const d = new Date();
@@ -530,9 +544,10 @@ const buildOrderPayload = () => {
     status: "pending",
     payment_method: "converge",
     payment_status: "paid",
-    subtotal: cartTotal.value + alacarteCartTotal.value,
+    subtotal: combinedSubtotal.value,
     tax_total: estimatedTax.value,
     total: grandTotal.value,
+    promo_code_id: appliedPromo.value?.id ?? null,
     items: cartItems.value.map((item: any) => ({
       product_id: item.product_id,
       product_name: item.product?.name || item.name,
@@ -602,7 +617,6 @@ const getCityFromZip = (zip: string): string => {
     "34290",
     "34295",
   ];
-
   const bradentonZips = [
     "34201",
     "34203",
@@ -631,23 +645,18 @@ const getCityFromZip = (zip: string): string => {
     "34281",
     "34282",
   ];
-
   const lakewoodRanchZips = ["34202", "34211", "34212", "34240"];
 
   if (sarasotaZips.includes(zip)) return "Sarasota";
   if (bradentonZips.includes(zip)) return "Bradenton";
   if (lakewoodRanchZips.includes(zip)) return "Lakewood Ranch";
-
-  return "Sarasota"; // Default fallback
+  return "Sarasota";
 };
 
 // ============================================
 // CHECKOUT.JS IMPLEMENTATION
 // ============================================
 
-/**
- * Detect card type from card number
- */
 const detectCardType = (cardNumber: string): string => {
   const cleaned = cardNumber.replace(/\D/g, "");
   if (!cleaned) return "Unknown";
@@ -669,9 +678,6 @@ const detectCardType = (cardNumber: string): string => {
   return "Unknown";
 };
 
-/**
- * Load Checkout.js script
- */
 const loadCheckoutScript = (): Promise<void> => {
   return new Promise((resolve, reject) => {
     if ((window as any).ConvergeEmbeddedPayment) {
@@ -680,8 +686,6 @@ const loadCheckoutScript = (): Promise<void> => {
     }
 
     const src = "https://api.demo.convergepay.com/hosted-payments/Checkout.js";
-
-    console.log("Loading Checkout.js from:", src);
 
     const script = document.createElement("script");
     script.src = src;
@@ -698,10 +702,6 @@ const loadCheckoutScript = (): Promise<void> => {
   });
 };
 
-/**
- * Process payment using Checkout.js
- * Card data goes directly to Converge.
- */
 const processPaymentWithCheckout = async (
   token: string,
 ): Promise<ConvergePaymentResponse> => {
@@ -742,9 +742,9 @@ const processPaymentWithCheckout = async (
   });
 };
 
-/**
- * Main payment function using Checkout.js
- */
+// ============================================================
+// MAIN PAYMENT
+// ============================================================
 const payWithConverge = async () => {
   if (!validateCheckout()) return;
 
@@ -780,7 +780,7 @@ const payWithConverge = async () => {
         is_package: item.is_package || false,
         options: item.options || {},
       })),
-      subtotal: cartTotal.value + alacarteCartTotal.value,
+      subtotal: combinedSubtotal.value,
       tax_total: estimatedTax.value,
       total: grandTotal.value,
       promo_code_id: promoCodeId,
@@ -925,8 +925,6 @@ const payWithConverge = async () => {
         }
 
         try {
-          // const customerId = await upsertCustomer();
-
           const orderRes = (await $fetch("/api/orders/create", {
             method: "POST",
             body: {

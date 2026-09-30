@@ -13,10 +13,10 @@ interface PromoCode {
 }
 
 export const usePromo = () => {
-  const promoCode = ref('')
-  const promoError = ref('')
-  const appliedPromo = ref<PromoCode | null>(null)
-  const isChecking = ref(false)
+  const promoCode = useState<string>('promoCode', () => '')
+  const promoError = useState<string>('promoError', () => '')
+  const appliedPromo = useState<PromoCode | null>('appliedPromo', () => null)
+  const isChecking = useState<boolean>('isChecking', () => false)
 
   const discountAmount = (subtotal: number) => {
     if (!appliedPromo.value) return 0
@@ -52,23 +52,16 @@ export const usePromo = () => {
     }
 
     try {
-      const response = await $fetch<{ success: boolean; data: PromoCode | null; error?: string }>('/api/promo/validate', {
-        method: 'POST',
-        body: {
-          code,
-          subtotal
-        }
-      })
+      const response = await $fetch<{ success: boolean; data: PromoCode | null; error?: string }>(
+        '/api/promo/validate',
+        {
+          method: 'POST',
+          body: { code, subtotal },
+        },
+      )
 
-      if (!response.success) {
+      if (!response.success || !response.data) {
         promoError.value = response.error || 'Invalid promo code'
-        appliedPromo.value = null
-        isChecking.value = false
-        return false
-      }
-
-      if (!response.data) {
-        promoError.value = 'Invalid promo code'
         appliedPromo.value = null
         isChecking.value = false
         return false
@@ -95,7 +88,6 @@ export const usePromo = () => {
 
       isChecking.value = false
       return true
-
     } catch (error: any) {
       console.error('Error applying promo code:', error)
       promoError.value = error.message || 'Failed to apply promo code. Please try again.'
