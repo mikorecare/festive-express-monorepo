@@ -687,3 +687,9 @@ html:hover {
 ::-webkit-scrollbar-thumb:hover {
   background: #e8851a;
 }
+
+@supports (padding: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
