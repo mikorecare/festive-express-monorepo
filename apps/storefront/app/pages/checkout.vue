@@ -89,18 +89,6 @@ import CheckoutTurnstileWidget from "../components/Checkout/TurnstileWidget.vue"
 import { usePaymentError } from "~/composables/usePaymentError";
 import { useToast } from "~/composables/useToast";
 
-
-interface ConvergePaymentResponse {
-  ssl_result: string;
-  ssl_result_message?: string;
-  ssl_txn_id?: string;
-  ssl_approval_code?: string;
-  ssl_token?: string;
-  ssl_card_token?: string;
-  ssl_avs_response?: string;
-  ssl_cvv2_response?: string;
-}
-
 const config = useRuntimeConfig();
 const siteKey = config.public.turnstile.siteKey as string;
 
@@ -612,7 +600,6 @@ const getCityFromZip = (zip: string): string => {
 // CHECKOUT.JS IMPLEMENTATION
 // ============================================
 
-
 const loadCheckoutScript = (): Promise<void> => {
   return new Promise((resolve, reject) => {
     if ((window as any).ConvergeEmbeddedPayment) {
@@ -637,7 +624,6 @@ const loadCheckoutScript = (): Promise<void> => {
     document.head.appendChild(script);
   });
 };
-
 
 // ============================================================
 // MAIN PAYMENT

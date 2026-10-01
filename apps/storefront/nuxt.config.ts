@@ -155,7 +155,7 @@ export default defineNuxtConfig({
             ],
 
             sameAs: [
-              "https://www.facebook.com/flp-express",
+              "https://www.facebook.com/Festive.Express/",
               "https://www.instagram.com/flp-express",
               "https://www.x.com/flp-express",
               "https://www.youtube.com/flp-express",
@@ -185,7 +185,7 @@ export default defineNuxtConfig({
 
         {
           property: "og:image",
-          content: "https://festive.express/Images/FE-Logo-2.png",
+          content: "https://festive.express/Images/festive-express.png",
         },
 
         {
