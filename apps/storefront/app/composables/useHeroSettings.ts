@@ -1,14 +1,14 @@
 
 export const useHeroSettings = () => {
-  const heroH1White = useState("heroH1White", () => "RENT THE MAGIC")
-  const heroH1Orange = useState("heroH1Orange", () => "ENJOY THE SEASON")
+  const heroH1White = useState("heroH1White", () => "HOLIDAY DECORATING")
+  const heroH1Orange = useState("heroH1Orange", () => "FROM YOUR COUCH")
   const heroDescription1 = useState(
     "heroDescription1",
-    () => "Giftwrapped in One Simple Package.",
+    () => "Design your dream display in minutes, right from your phone.",
   )
   const heroDescription2 = useState(
     "heroDescription2",
-    () => "(No ladders. No tangled cords. No storage. No stress.)",
+    () => "Giftwrapped in One Simple Package.(No ladders.No tangled cords.No storage.No stress.)",
   )
   const heroButtonLabel = useState(
     "heroButtonLabel",
@@ -28,21 +28,21 @@ export const useHeroSettings = () => {
       if (response.success && response.data) {
         const data = response.data
 
-        if (data.hero_h1_white) {
-          heroH1White.value = data.hero_h1_white
-        }
-        if (data.hero_h1_orange) {
-          heroH1Orange.value = data.hero_h1_orange
-        }
-        if (data.hero_description_1) {
-          heroDescription1.value = data.hero_description_1
-        }
-        if (data.hero_description_2) {
-          heroDescription2.value = data.hero_description_2
-        }
-        if (data.hero_button_label) {
-          heroButtonLabel.value = data.hero_button_label
-        }
+        // if (data.hero_h1_white) {
+        //   heroH1White.value = data.hero_h1_white
+        // }
+        // if (data.hero_h1_orange) {
+        //   heroH1Orange.value = data.hero_h1_orange
+        // }
+        // if (data.hero_description_1) {
+        //   heroDescription1.value = data.hero_description_1
+        // }
+        // if (data.hero_description_2) {
+        //   heroDescription2.value = data.hero_description_2
+        // }
+        // if (data.hero_button_label) {
+        //   heroButtonLabel.value = data.hero_button_label
+        // }
         if (data.hero_countdown_enabled !== undefined) {
           heroCountdownEnabled.value = data.hero_countdown_enabled
         }

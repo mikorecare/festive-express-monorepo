@@ -1,24 +1,22 @@
-<template>
+<!-- <template>
   <div>
     <HomeHero />
-    <!-- <HomeCollections /> -->
-    <!-- <HomeFeaturedBundles /> -->
-    <HomeFeaturedPackage /> <!-- NEW Indoor Only Joy, Jolly, Merry -->
-    <!-- <HomeFeaturedPackage3 /> -->  <!-- Without Indoor -->
-    <!-- <HomeFeaturedPackage4 /> With Indoor -->
-    <!-- <HomePatrioticDecor />
-    <HomeSeasonalSale />
-    <HomeHalloweenDecor /> -->
+    <HomeFeaturedPackage />
     <HomeTimelineGallery />
-    <!-- <HomeDreamHoliday />     -->
-    <!-- <Newsletter /> -->
-    <HomeFeaturedPackage2 />    
+    <HomeFeaturedPackage2 />
     <HomeWhyChooseUs />
   </div>
+</template> -->
+
+<template>
+  <HomeNewHero />
+  <HomeNewHowItWorks />
+  <HomeNewChooseYourHolidayPackage />
+  <HomeWhyChooseUs />
 </template>
 
 <script setup lang="ts">
 useHead({
-  title: 'Illumineers Creating Wonder'
-})
+  title: "Illumineers Creating Wonder",
+});
 </script>
