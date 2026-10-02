@@ -1,12 +1,18 @@
 <template>
-  <NuxtLink
-    to="/preview-your-home"
-    class="group relative z-10 block w-fit transition-transform duration-200 hover:-translate-y-0.5 mx-auto"
+  <component
+    :is="hasLink ? NuxtLink : 'div'"
+    v-bind="hasLink ? { to: link } : {}"
+    class="group relative z-10 block w-fit transition-transform duration-200 mx-auto"
+    :class="
+      hasLink
+        ? 'cursor-pointer hover:-translate-y-0.5'
+        : 'cursor-default pointer-events-none'
+    "
   >
-    <div class="relative w-[320px] max-lg:w-[180px] h-[320px] max-lg:h-[180px]">
+    <div class="relative" :style="{ width: `${size}px`, height: `${size}px` }">
       <NuxtImg
-        src="/Images/Festivo/PreviewYourHomeButton.webp"
-        alt="Preview Your Home"
+        :src="imageA"
+        :alt="alt"
         class="absolute inset-0 z-0 h-full w-full object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.2)]"
         :class="{ 'opacity-0': showB }"
         fit="contain"
@@ -14,8 +20,8 @@
         draggable="false"
       />
       <NuxtImg
-        src="/Images/Festivo/PreviewYourHomeButton2.webp"
-        alt="Preview Your Home"
+        :src="imageB"
+        :alt="alt"
         class="absolute inset-0 z-0 h-full w-full object-contain drop-shadow-[0_12px_28px_rgba(0,0,0,0.2)]"
         :class="{ 'opacity-0': !showB }"
         fit="contain"
@@ -23,18 +29,42 @@
         draggable="false"
       />
     </div>
-  </NuxtLink>
+  </component>
 </template>
 
-<script setup>
-const showB = ref(false);
+<script setup lang="ts">
+import { NuxtLink } from "#components";
 
-let timer;
+const props = withDefaults(
+  defineProps<{
+    hasLink?: boolean;
+    link?: string;
+    interval?: number;
+    size?: number;
+    alt?: string;
+    imageA?: string;
+    imageB?: string;
+  }>(),
+  {
+    hasLink: true,
+    link: "/preview-your-home",
+    interval: 500,
+    size: 320,
+    alt: "Preview Your Home",
+    imageA: "/Images/Festivo/PreviewYourHomeButton.webp",
+    imageB: "/Images/Festivo/PreviewYourHomeButton2.webp",
+  },
+);
+
+const showB = ref(false);
+let timer: ReturnType<typeof setInterval> | null = null;
+
 onMounted(() => {
   timer = setInterval(() => {
     showB.value = !showB.value;
-  }, 500);
+  }, props.interval);
 });
+
 onUnmounted(() => {
   if (timer) clearInterval(timer);
 });

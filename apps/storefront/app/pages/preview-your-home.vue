@@ -23,7 +23,9 @@
       </div>
     </section>
 
-    <EstimatorWidget />
+    <div class="max-w-4xl mx-auto my-4">
+      <EstimatorWidget />
+    </div>
   </div>
 </template>
 

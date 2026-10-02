@@ -1,5 +1,5 @@
 <template>
-  <div v-if="result" class="mt-6 pt-6">
+  <div v-if="result">
     <p class="text-sm text-gray-700 mb-4">
       <i class="fas fa-info-circle mr-1"></i>
       This is a computer-generated preview at how your home could glow with our
@@ -7,7 +7,7 @@
       effect, not a perfect, pixel-for-pixel match.
     </p>
 
-    <!-- Success message - ABOVE the envelope -->
+    <!-- Success message -->
     <div v-if="isBooked" class="message-success animate-fadeIn">
       <div class="success-card">
         <div class="success-icon-wrapper">
@@ -72,25 +72,10 @@
       </div>
     </div>
 
-    <!-- Envelope Animation Section (hidden when booked) -->
-    <div v-if="!isBooked" class="envelope-scene">
-      <!-- Envelope Back (bottom layer) -->
-      <div
-        class="envelope-back-wrapper"
-        :class="{ 'envelope-visible': bookingStage >= 1 }"
-      >
-        <div class="envelope-circle-shadow"></div>
-        <div class="envelope-back"></div>
-        <div class="envelope-shadow"></div>
-      </div>
-
-      <!-- The content that gets inserted into the envelope (middle layer) -->
+    <!-- Preview card (hidden when booked) -->
+    <div v-else class="relative">
       <div
         class="result-card bg-white rounded-xl shadow-lg p-3 md:p-6 space-y-2 md:space-y-4"
-        :class="{
-          'result-card-sending': bookingStage >= 1 && !isBooked,
-          'result-card-inserted': bookingStage >= 2 && !isBooked,
-        }"
       >
         <!-- Desktop: Image left 4/5, Info right 1/5 -->
         <div class="flex flex-col md:flex-row gap-2 md:gap-4">
@@ -242,6 +227,7 @@
             <button
               class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-1.5 md:py-3 px-3 md:px-4 rounded-lg transition-colors text-[10px] md:text-base"
               @click="reset"
+              :disabled="booking"
             >
               <i class="fas fa-arrow-left mr-1 md:mr-2"></i>
               Try another look
@@ -266,30 +252,23 @@
         </p>
       </div>
 
-      <!-- Envelope Front (above form) -->
-      <div
-        class="envelope-front-wrapper"
-        :class="{ 'envelope-visible': bookingStage >= 1 }"
-      >
+      <!-- Loading overlay while sending -->
+      <Transition name="fade">
         <div
-          class="envelope-front"
-          :class="{ 'envelope-front-visible': bookingStage >= 1 }"
-        ></div>
-      </div>
-
-      <!-- Envelope Flap (top layer) -->
-      <div
-        class="envelope-flap-wrapper"
-        :class="{ 'envelope-visible': bookingStage >= 1 }"
-      >
-        <div
-          class="envelope-flap"
-          :class="{
-            'envelope-flap-visible': bookingStage >= 1,
-            'envelope-flap-closed': bookingStage >= 3,
-          }"
-        ></div>
-      </div>
+          v-if="booking"
+          class="absolute inset-0 z-30 flex items-center justify-center rounded-xl bg-white/85 backdrop-blur-sm"
+        >
+          <div class="flex flex-col items-center gap-3 text-center px-4">
+            <div class="loading-spinner"></div>
+            <p class="text-sm md:text-base font-semibold text-navy">
+              Sending your preview...
+            </p>
+            <p class="text-[11px] md:text-sm text-gray-500">
+              Hang tight — this only takes a moment.
+            </p>
+          </div>
+        </div>
+      </Transition>
     </div>
   </div>
 </template>
@@ -330,7 +309,6 @@ const {
 const { loadEarlyBird, earlyBirdIconUrl, isEarlyBirdLive } =
   useEarlyBirdSpecial();
 
-const bookingStage = ref(0);
 const countdown = ref(3);
 let countdownInterval: NodeJS.Timeout | null = null;
 
@@ -342,6 +320,7 @@ const turnstileStatusType = ref("");
 const turnstileErrors = ref({ turnstile: "" });
 const config = useRuntimeConfig();
 const siteKey = config.public.turnstile.siteKey as string;
+
 const turnstileStatusClass = computed(() => {
   switch (turnstileStatusType.value) {
     case "success":
@@ -397,7 +376,7 @@ const onTurnstileExpired = () => {
 };
 
 const isBooked = ref(false);
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const getPackageName = () => {
   const pkg = packageOptions.value.find(
     (p: IPackageOption) => p.id === selectedPackage.value,
@@ -440,24 +419,14 @@ const startCountdown = () => {
 const handleBookConsultation = async () => {
   if (isBooked.value || booking.value) return;
 
-  bookingStage.value = 1;
-  await sleep(900);
-  bookingStage.value = 2;
-  await sleep(900);
-  bookingStage.value = 3;
-  await sleep(800);
-
   await originalBookConsultation(turnstileToken.value);
 
   if (
     resultNote.value ===
     "Thanks — we received your design and contact info. We'll be in touch."
   ) {
-    bookingStage.value = 4;
     isBooked.value = true;
     startCountdown();
-  } else {
-    bookingStage.value = 0;
   }
 };
 
@@ -474,335 +443,57 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.envelope-scene {
-  position: relative;
-  width: 100%;
-  min-height: 740px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: visible;
-}
-
-/* Mobile envelope scene height */
-@media (max-width: 640px) {
-  .envelope-scene {
-    min-height: 520px;
-  }
-}
-
-@media (max-width: 480px) {
-  .envelope-scene {
-    min-height: 440px;
-  }
-}
-
-/* ---- Envelope Back (z-index: 1) ---- */
-.envelope-back-wrapper {
-  position: absolute;
-  width: 800px;
-  height: 440px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  visibility: hidden;
-  z-index: 1;
-  transition:
-    opacity 0.45s ease,
-    visibility 0s linear 0.45s;
-}
-
-@media (max-width: 640px) {
-  .envelope-back-wrapper {
-    width: 380px;
-    height: 260px;
-  }
-}
-
-@media (max-width: 480px) {
-  .envelope-back-wrapper {
-    width: 300px;
-    height: 200px;
-  }
-}
-
-/* ---- Result Card / Form (z-index: 10) ---- */
+/* ---- Result card ---- */
 .result-card {
   position: relative;
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
   z-index: 10;
-  transform: translateY(0) scale(1);
-  opacity: 1;
-  transition:
-    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.4s ease;
-}
-
-.result-card-sending {
-  transform: translateY(-380px) scale(0.42);
-  pointer-events: none;
-}
-
-.result-card-inserted {
-  transform: translateY(0px) scale(0.35);
-  pointer-events: none;
-  opacity: 1;
 }
 
 @media (max-width: 640px) {
   .result-card {
     padding: 0.5rem !important;
   }
-  .result-card-sending {
-    transform: translateY(-200px) scale(0.32);
-  }
-  .result-card-inserted {
-    transform: translateY(0px) scale(0.28);
-  }
 }
 
-@media (max-width: 480px) {
-  .result-card-sending {
-    transform: translateY(-150px) scale(0.28);
-  }
-  .result-card-inserted {
-    transform: translateY(0px) scale(0.24);
-  }
-}
-
-/* ---- Envelope Front (z-index: 15) ---- */
-.envelope-front-wrapper {
-  position: absolute;
-  width: 800px;
-  height: 440px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  visibility: hidden;
-  z-index: 15;
-  transition:
-    opacity 0.45s ease,
-    visibility 0s linear 0.45s;
-}
-
-@media (max-width: 640px) {
-  .envelope-front-wrapper {
-    width: 380px;
-    height: 260px;
-  }
-}
-
-@media (max-width: 480px) {
-  .envelope-front-wrapper {
-    width: 300px;
-    height: 200px;
-  }
-}
-
-.envelope-front {
-  position: absolute;
-  inset: 0;
-  background: #1c2d5b;
-  border: 6px solid #f49321;
-  border-top: none;
-  clip-path: polygon(0 0, 50% 52%, 100% 0, 100% 100%, 0 100%);
-  border-radius: 0 0 14px 14px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-@media (max-width: 640px) {
-  .envelope-front {
-    border-width: 3px;
-  }
-}
-
-@media (max-width: 480px) {
-  .envelope-front {
-    border-width: 2px;
-  }
-}
-
-.envelope-front-visible {
-  opacity: 1;
-}
-
-/* ---- Envelope Flap (z-index: 20) ---- */
-.envelope-flap-wrapper {
-  position: absolute;
-  width: 800px;
-  height: 440px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  visibility: hidden;
-  z-index: 20;
-  transition:
-    opacity 0.45s ease,
-    visibility 0s linear 0.45s;
-}
-
-@media (max-width: 640px) {
-  .envelope-flap-wrapper {
-    width: 380px;
-    height: 260px;
-  }
-}
-
-@media (max-width: 480px) {
-  .envelope-flap-wrapper {
-    width: 300px;
-    height: 200px;
-  }
-}
-
-.envelope-flap {
-  position: absolute;
-  top: 0px;
-  left: -6px;
-  width: calc(100% + 10px);
-  height: calc(52% + 12px);
-  background: #f49321;
-  clip-path: polygon(1% 0, 100% 0, 50% 100%);
-  border-radius: 8px 8px 0 0;
-  transform-origin: top center;
-  transform: rotateX(180deg);
-  opacity: 0;
-  pointer-events: none;
-  backface-visibility: hidden;
-  transition:
-    transform 0.7s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.3s ease;
-}
-
-@media (max-width: 640px) {
-  .envelope-flap {
-    border-width: 3px;
-    left: -3px;
-    width: calc(100% + 6px);
-  }
-}
-
-@media (max-width: 480px) {
-  .envelope-flap {
-    border-width: 2px;
-    left: -2px;
-    width: calc(100% + 4px);
-  }
-}
-
-.envelope-flap-visible {
-  opacity: 1;
-}
-
-.envelope-flap-closed {
-  transform: rotateX(0deg);
-  opacity: 1;
-}
-
-/* Shared visibility */
-.envelope-visible {
-  opacity: 1;
-  visibility: visible;
-  transition:
-    opacity 0.45s ease,
-    visibility 0s linear 0s;
-}
-
-.envelope-circle-shadow {
-  position: absolute;
-  bottom: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  height: 40px;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(0, 0, 0, 0.2) 0%,
-    rgba(0, 0, 0, 0) 70%
-  );
+/* ---- Loading spinner ---- */
+.loading-spinner {
+  width: 56px;
+  height: 56px;
+  border: 4px solid rgba(28, 45, 91, 0.15);
+  border-top-color: #f49321;
   border-radius: 50%;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.8s ease;
+  animation: spin 0.85s linear infinite;
 }
 
 @media (max-width: 640px) {
-  .envelope-circle-shadow {
-    bottom: -15px;
-    width: 70%;
-    height: 20px;
-  }
-}
-
-@media (max-width: 480px) {
-  .envelope-circle-shadow {
-    bottom: -10px;
-    width: 60%;
-    height: 15px;
-  }
-}
-
-.envelope-visible .envelope-circle-shadow {
-  opacity: 1;
-}
-
-.envelope-back {
-  position: absolute;
-  inset: 0;
-  background: #1c2d5b;
-  border: 6px solid #f49321;
-  border-radius: 14px;
-  box-shadow: 0 16px 40px rgba(28, 45, 91, 0.25);
-}
-
-@media (max-width: 640px) {
-  .envelope-back {
+  .loading-spinner {
+    width: 44px;
+    height: 44px;
     border-width: 3px;
   }
 }
 
-@media (max-width: 480px) {
-  .envelope-back {
-    border-width: 2px;
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
-.envelope-back::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 14px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.08) 0%,
-    rgba(255, 255, 255, 0) 20%,
-    rgba(0, 0, 0, 0) 60%,
-    rgba(0, 0, 0, 0.15) 100%
-  );
-  pointer-events: none;
+/* ---- Fade transition for overlay ---- */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.25s ease;
 }
 
-.envelope-shadow {
-  position: absolute;
-  inset: 0;
-  border-radius: 14px;
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.12) 0%,
-    rgba(255, 255, 255, 0) 30%,
-    rgba(0, 0, 0, 0) 70%,
-    rgba(0, 0, 0, 0.1) 100%
-  );
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
+/* ---- Success card ---- */
 .message-success {
   position: relative;
   width: 100%;
@@ -824,7 +515,7 @@ onUnmounted(() => {
 }
 
 .success-card::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -836,8 +527,12 @@ onUnmounted(() => {
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .success-icon-wrapper {
@@ -908,11 +603,6 @@ onUnmounted(() => {
   animation: spin 2s linear infinite;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
 .success-timer strong {
   color: #065f46;
   font-size: 1.125rem;
@@ -949,35 +639,34 @@ onUnmounted(() => {
   animation: fadeIn 0.6s ease-out forwards;
 }
 
-/* Mobile adjustments */
 @media (max-width: 640px) {
   .success-card {
     padding: 1.5rem 1rem;
     border-radius: 16px;
   }
-  
+
   .success-icon-wrapper {
     width: 60px;
     height: 60px;
   }
-  
+
   .success-icon {
     width: 28px;
     height: 28px;
   }
-  
+
   .success-title {
     font-size: 1.25rem;
   }
-  
+
   .success-message {
     font-size: 0.875rem;
   }
-  
+
   .success-timer {
     font-size: 0.75rem;
   }
-  
+
   .success-timer strong {
     font-size: 1rem;
   }
@@ -987,38 +676,23 @@ onUnmounted(() => {
   .success-card {
     padding: 1rem 0.75rem;
   }
-  
+
   .success-icon-wrapper {
     width: 48px;
     height: 48px;
   }
-  
+
   .success-icon {
     width: 22px;
     height: 22px;
   }
-  
+
   .success-title {
     font-size: 1rem;
   }
-  
+
   .success-message {
     font-size: 0.75rem;
   }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.4s ease-out forwards;
 }
 </style>

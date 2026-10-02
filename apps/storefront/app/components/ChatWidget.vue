@@ -174,6 +174,7 @@ onMounted(() => {
   filter: drop-shadow(0 6px 20px rgba(244, 147, 33, 0.3));
 }
 
+
 @media (max-width: 640px) {
   .custom-chat-btn {
     width: 50px;

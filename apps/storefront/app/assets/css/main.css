@@ -688,6 +688,11 @@ html:hover {
   background: #e8851a;
 }
 
+
+ctm-chat::part(engage-message-bubble) {
+  display: none !important;
+}
+
 @supports (padding: env(safe-area-inset-bottom)) {
   body {
     padding-bottom: env(safe-area-inset-bottom);

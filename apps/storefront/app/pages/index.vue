@@ -12,6 +12,11 @@
   <HomeNewHero />
   <HomeNewHowItWorks />
   <HomeNewChooseYourHolidayPackage />
+  <HomeNewPreviewYourHome />
+  <HomeNewReviews />
+  <HomeNewVideoTestimonials />
+  <HomeNewFaq />
+  <HomeNewContactUs />
   <HomeWhyChooseUs />
 </template>
 

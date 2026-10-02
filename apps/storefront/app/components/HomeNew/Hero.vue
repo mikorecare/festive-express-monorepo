@@ -95,7 +95,7 @@
         <!-- Bottom Section: Buttons -->
         <div class="flex flex-col gap-3 w-full max-lg:gap-3">
           <NuxtLink
-            to="/packages"
+            to="#preview"
             class="relative uppercase inline-flex flex-col py-2 items-center overflow-visible bg-transparent text-[#F49321] font-extrabold text-lg rounded-full border-[3px] border-[#F49321] px-16 hover:bg-[#e0850a] transition-colors max-lg:text-[0.85rem] max-lg:px-6 max-lg:py-3 max-lg:rounded-full max-lg:border-2 max-lg:mx-0 max-lg:w-full"
           >
             <span>Preview your home</span>

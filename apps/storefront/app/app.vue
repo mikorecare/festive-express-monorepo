@@ -1,5 +1,5 @@
 <template>
-  <div class="font-poppins">
+  <div class="font-poppins overflow-x-hidden">
     <Header />
     <main id="main-content" role="main">
       <NuxtPage />

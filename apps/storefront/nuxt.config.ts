@@ -333,8 +333,11 @@ export default defineNuxtConfig({
           "https://checkout.demo.convergepay.com",
           "https://checkout.convergepay.com",
           "https://chat.actm.xyz",
-          "https://challenges.cloudflare.com",
           "https://*.cloudflare.com",
+          "https://www.youtube.com",
+          "https://www.youtube-nocookie.com",
+          "https://s.ytimg.com",
+          "https://i.ytimg.com",
         ],
 
         'style-src': [
@@ -366,6 +369,10 @@ export default defineNuxtConfig({
           "https://checkout.demo.convergepay.com",
           "https://checkout.convergepay.com",
           "https://chat.actm.xyz",
+          "https://img.youtube.com",
+          "https://i.ytimg.com",
+          "https://i9.ytimg.com",
+          "https://*.ytimg.com",
         ],
 
         'font-src': [
@@ -391,8 +398,11 @@ export default defineNuxtConfig({
           "https://brunhild.challenges.cloudflare.com",
           "https://chat.actm.xyz",
           "wss://chat.actm.xyz",
-          "https://brunhild.challenges.cloudflare.com",
           "wss://*.challenges.cloudflare.com",
+          "https://www.youtube.com",
+          "https://www.youtube-nocookie.com",
+          "https://s.ytimg.com",
+          "https://i.ytimg.com",
         ],
 
         'frame-src': [
@@ -404,8 +414,11 @@ export default defineNuxtConfig({
           "https://checkout.demo.convergepay.com",
           "https://checkout.convergepay.com",
           "https://chat.actm.xyz",
-          "https://challenges.cloudflare.com",
           "https://*.challenges.cloudflare.com",
+          "https://www.youtube.com",
+          "https://www.youtube-nocookie.com",
+          "https://youtube.com",
+          "https://youtu.be",
         ],
 
         'frame-ancestors': ["'self'"],

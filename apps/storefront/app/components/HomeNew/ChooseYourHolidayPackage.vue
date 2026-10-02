@@ -1,6 +1,6 @@
 <template>
   <section
-    class="relative bg-[url('/Images/Choose-Your-Package.webp')] bg-cover bg-center bg-no-repeat bg-scroll md:bg-fixed py-20 z-[1] border-t-5 border-brand-orange"
+    class="relative bg-[url('/Images/Choose-Your-Package.webp')] bg-cover bg-center bg-no-repeat bg-scroll md:bg-fixed py-16 z-[1] border-b-[27px] border-[#F49321]"
   >
     <div class="absolute inset-0 z-[-1] pointer-events-none"></div>
     <div class="max-w-[1280px] mx-auto px-4 sm:px-5">
@@ -50,7 +50,7 @@
             <h3 class="sr-only">{{ pkg.name }}</h3>
 
             <NuxtImg
-              class="absolute z-[3] pointer-events-none w-auto drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)] -bottom-[28px] h-[60px] md:-bottom-[34px] md:h-[68px] lg:-bottom-[38px] lg:h-[72px] left-6 md:left-[58px] lg:left-[85px]"
+              class="absolute z-[3] pointer-events-none w-auto drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)] -bottom-[28px] h-[60px] md:-bottom-[34px] md:h-[68px] lg:-bottom-[38px] lg:h-[72px] left-[85px] md:left-[58px] lg:left-[85px]"
               :src="pkg.title_image_url || '/Images/placeholder.png'"
               :alt="pkg.name"
               sizes="60px md:68px lg:72px"
@@ -170,7 +170,7 @@
           >
             <div
               v-if="firstParagraph(pkg.description)"
-              class="text-[0.78rem] md:text-[0.82rem] text-[#1C2D5B] text-start font-medium leading-snug mb-3 [&_p]:m-0 [&_strong]:font-bold"
+              class="text-[0.78rem] md:text-[0.82rem] text-[#1C2D5B] text-start font-medium leading-snug mb-3 line-clamp-3 [&_p]:m-0 [&_strong]:font-bold [&_p]:line-clamp-3"
               v-html="firstParagraph(pkg.description)"
             ></div>
             <div
@@ -237,7 +237,7 @@
       </div>
     </div>
 
-    <div class="flex justify-center my-5">
+    <div class="flex justify-center mt-5">
       <EarlyBirdEndsBanner />
     </div>
   </section>
