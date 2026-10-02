@@ -50,10 +50,10 @@
       role="form"
       aria-label="Contact form"
       @submit.prevent="submitForm"
-      class="relative bg-white rounded-xl shadow-lg border-4 border-brand-orange overflow-hidden"
+      class="relative bg-white rounded-xl shadow-lg border-4 border-[#1C2D5B] overflow-hidden"
     >
       <!-- Form header -->
-      <div class="text-center bg-navy py-6 sm:py-8 px-4">
+      <div class="text-center bg-[#1C2D5B] py-4 px-4">
         <h3 class="text-xl sm:text-2xl font-bold text-white mb-1">
           {{ headerTitle }}
         </h3>

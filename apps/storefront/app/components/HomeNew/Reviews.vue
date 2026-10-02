@@ -19,11 +19,11 @@
         </p>
         <h2
           id="reviews-heading"
-          class="text-[1.5rem] sm:text-4xl lg:text-5xl font-extrabold text-[#1C2D5B] leading-[1.15] mb-3"
+          class="text-[1.5rem] sm:text-4xl lg:text-5xl font-extrabold text-[#1C2D5B] leading-[1.15] mb-3 [text-shadow:_0_4px_10px_rgba(28,45,91,0.45)]"
         >
           Five-Star Service Across Every Lighting Project
         </h2>
-        <p class="text-[#1C2D5B] text-sm sm:text-base lg:text-lg max-w-[720px]">
+        <p class="text-black text-sm sm:text-base lg:text-lg whitespace-nowrap">
           See why homeowners and businesses trust Humbug for professional
           holiday, permanent, commercial, and landscape lighting services.
         </p>

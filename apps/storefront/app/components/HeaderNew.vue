@@ -1,0 +1,412 @@
+<template>
+  <header class="sticky top-0 z-[9999] w-full shadow-md" role="banner">
+    <!-- Top Bar -->
+    <div class="bg-navy text-white py-2.5 text-base font-semibold">
+      <div class="w-full px-4 mx-auto max-w-7xl">
+        <div
+          class="flex flex-col md:flex-row items-center justify-between gap-1 md:gap-0"
+        >
+          <!-- Social Icons (desktop only) -->
+          <div
+            class="hidden md:flex gap-3 md:gap-4 justify-center md:justify-start w-full md:w-auto order-1"
+          >
+            <a
+              v-if="settings.social_facebook"
+              :href="settings.social_facebook"
+              target="_blank"
+              rel="noopener"
+              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49321] hover:-translate-y-1"
+              aria-label="Facebook"
+              ><i class="fab fa-facebook"></i
+            ></a>
+            <a
+              v-if="settings.social_instagram"
+              :href="settings.social_instagram"
+              target="_blank"
+              rel="noopener"
+              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49321] hover:-translate-y-1"
+              aria-label="Instagram"
+              ><i class="fab fa-instagram"></i
+            ></a>
+            <a
+              v-if="settings.social_x"
+              :href="settings.social_x"
+              target="_blank"
+              rel="noopener"
+              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49321] hover:-translate-y-1"
+              aria-label="X"
+              ><i class="fab fa-x-twitter"></i
+            ></a>
+            <a
+              v-if="settings.social_youtube"
+              :href="settings.social_youtube"
+              target="_blank"
+              rel="noopener"
+              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49321] hover:-translate-y-1"
+              aria-label="YouTube"
+              ><i class="fab fa-youtube"></i
+            ></a>
+            <a
+              v-if="settings.social_pinterest"
+              :href="settings.social_pinterest"
+              target="_blank"
+              rel="noopener"
+              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49321] hover:-translate-y-1"
+              aria-label="Pinterest"
+              ><i class="fab fa-pinterest-p"></i
+            ></a>
+          </div>
+
+          <div
+            class="welcome text-[0.7rem] sm:text-sm md:text-base text-center md:flex-1 order-2"
+          >
+            Welcome to
+            <span class="highlight">
+              <span class="brand-text">Festive Express</span>
+              <svg
+                class="underline-svg"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 500 150"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M7.7,145.6C109,125,299.9,116.2,401,121.3c42.1,2.2,87.6,11.8,87.3,25.7"
+                />
+              </svg>
+            </span>
+          </div>
+
+          <!-- Empty div to balance the layout (desktop only) -->
+          <div class="hidden md:block shrink-0 w-[180px] order-3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Header -->
+    <div class="bg-white py-3 md:py-4 transition-all duration-300 w-full">
+      <div class="w-full px-4 mx-auto max-w-7xl">
+        <div
+          class="flex items-center justify-between gap-2.5 md:gap-8 flex-nowrap"
+        >
+          <!-- Logo -->
+          <NuxtLink
+            to="/"
+            class="flex flex-col items-center gap-1 text-transparent shrink-0"
+          >
+            <img
+              src="/Images/FE-Logo.png"
+              alt="FLP Express"
+              class="max-h-[42px] sm:max-h-[48px] lg:max-h-[70px]"
+            />
+            <p
+              class="m-0 text-[0.75rem] md:text-base text-[#1d3156] font-semibold text-center"
+            >
+              Rent • Relax • Celebrate
+            </p>
+          </NuxtLink>
+
+          <!-- Desktop nav -->
+          <nav class="hidden lg:block flex-1 min-w-0" role="navigation">
+            <ul
+              class="flex justify-end items-center gap-4 xl:gap-8 list-none p-0 m-0"
+            >
+              <li>
+                <NuxtLink
+                  to="/"
+                  class="block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
+                  exact-active-class="text-[#ff7a00]"
+                >
+                  Home
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/packages"
+                  class="block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
+                  active-class="text-[#ff7a00]"
+                >
+                  Packages
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/faq"
+                  class="block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
+                  active-class="text-[#ff7a00]"
+                >
+                  FAQ
+                </NuxtLink>
+              </li>
+            </ul>
+          </nav>
+
+          <!-- Right actions -->
+          <div class="flex items-center gap-3 shrink-0">
+            <a
+              :href="`tel:${String(settings.contact_phone || '').replace(/[^\d+]/g, '')}`"
+              class="contact-box btn-secondary-2 relative overflow-hidden"
+              :aria-label="`Call ${settings.contact_phone_display || '(941) 239-4722'}`"
+            >
+              <span class="phone-icon shrink-0">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  class="w-5 h-5"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M1.5 4.5a3 3 0 013-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 01-.694 1.955l-1.293.97c-.135.101-.164.279-.087.431a15.2 15.2 0 006.414 6.414c.152.077.33.048.431-.087l.97-1.293a1.875 1.875 0 011.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 01-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </span>
+
+              <div class="contact-text">
+                <div class="call-now">CALL US NOW!</div>
+                <div class="phone-number">
+                  {{ settings.contact_phone_display || "(941) 239-4722" }}
+                </div>
+              </div>
+
+              <div
+                class="absolute -top-1/2 -left-[150%] w-[200%] h-[200%] bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] rotate-[25deg] pointer-events-none animate-[glossyShineContinuous_3s_linear_infinite]"
+              ></div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+</template>
+
+<script setup lang="ts">
+const { settings, loadSettings } = useSettings();
+
+onMounted(() => {
+  loadSettings();
+});
+</script>
+
+<style scoped>
+/* Welcome Text & SVG Animation */
+.welcome {
+  text-align: center;
+}
+
+.highlight {
+  position: relative;
+  display: inline-block;
+  color: #f49321;
+  font-weight: 700;
+}
+
+.brand-text {
+  display: inline-block;
+  animation: pulseText 2.8s infinite ease-in-out;
+}
+
+.underline-svg {
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 100%;
+  height: 18px;
+  overflow: visible;
+}
+
+.underline-svg path {
+  fill: none;
+  stroke: #f49321;
+  stroke-width: 12;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 800;
+  stroke-dashoffset: 800;
+  animation: drawLine 4s ease-in-out infinite;
+}
+
+@keyframes pulseText {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes drawLine {
+  0% {
+    stroke-dashoffset: 800;
+  }
+  25% {
+    stroke-dashoffset: 0;
+  }
+  70% {
+    stroke-dashoffset: 0;
+  }
+  80% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 800;
+    opacity: 0.6;
+  }
+}
+
+/* Contact Box Styles */
+.contact-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #fff;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background: #f49321 !important;
+  border: 3px solid #1c2d5b;
+}
+
+.contact-box:hover {
+  background: #1c2d5b !important;
+  color: #f49321 !important;
+  animation-name: festive-express-animation-pulse-grow;
+  animation-duration: 0.3s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  border: 3px solid #f49321;
+}
+
+/* 3D Glossy Contact Box Button */
+.contact-box.btn-secondary-2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.6rem 2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  color: #ffffff;
+  font-family: inherit;
+  background: linear-gradient(180deg, #f49321 0%, #f49321 50%, #f49321 100%);
+  border: none;
+  box-shadow:
+    0 6px 12px rgba(0, 0, 0, 0.35),
+    inset 0 2px 3px rgba(255, 255, 255, 0.6);
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.contact-box.btn-secondary-2::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  right: 6px;
+  height: 45%;
+  border-radius: 40px 40px 20px 20px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  pointer-events: none;
+}
+
+.contact-box.btn-secondary-2::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -150%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.08) 60%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+}
+
+.contact-box.btn-secondary-2:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 16px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.8);
+}
+
+.contact-box.btn-secondary-2:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.contact-box .phone-icon {
+  font-size: 1.25rem;
+  color: #ffffff;
+  position: relative;
+  z-index: 1;
+}
+
+.contact-box .contact-text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  line-height: 1.5;
+  position: relative;
+  z-index: 1;
+}
+
+.contact-box .phone-number {
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.contact-box .call-now {
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  opacity: 0.95;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* Mobile adjustments */
+@media (max-width: 1023px) {
+  .contact-box {
+    padding: 8px;
+    border-radius: 50%;
+    background: rgba(12, 35, 64, 0.08);
+  }
+  .contact-box .contact-text {
+    display: none;
+  }
+  .contact-box .phone-icon {
+    font-size: 1.15rem;
+  }
+  .underline-svg {
+    height: 12px;
+    bottom: -4px;
+  }
+}
+
+@keyframes festive-express-animation-pulse-grow {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.05);
+  }
+}
+</style>

@@ -64,7 +64,7 @@
                 {{ i + 1 }}
               </span>
               <span
-                class="text-lg sm:text-xl lg:text-2xl font-bold text-[#1C2D5B]"
+                class="text-lg sm:text-xl lg:text-2xl font-bold text-black"
               >
                 {{ step }}
               </span>
@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-const steps = ["Enter your address", "Select the package", "View your home"];
+const steps = ["Enter your address", "Select the package", "Pick your Color", "View your home"];
 
 useHead({
   script: [

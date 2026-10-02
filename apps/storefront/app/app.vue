@@ -1,6 +1,6 @@
 <template>
-  <div class="font-poppins overflow-x-hidden">
-    <Header />
+  <div class="font-poppins overflow-x-hidden pb-16 lg:pb-0">
+    <HeaderNew />
     <main id="main-content" role="main">
       <NuxtPage />
     </main>
@@ -9,6 +9,9 @@
     <FloatingCart />
     <CookieConsent />
     <ChatWidget ref="chatWidget" />
+
+    <!-- Mobile-only bottom nav -->
+    <MobileNav class="lg:hidden" />
   </div>
 </template>
 

@@ -19,7 +19,7 @@
             </span>
           </h2>
           <p
-            class="text-[#1C2D5B] text-sm sm:text-base mt-2 sm:mt-3 font-medium"
+            class="text-black text-sm sm:text-base mt-2 sm:mt-3 font-medium"
           >
             Real homeowners on renting the magic and enjoying the season from
             the couch.

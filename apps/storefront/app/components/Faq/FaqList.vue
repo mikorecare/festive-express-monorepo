@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-10">
+  <div class="space-y-8 sm:space-y-10">
     <section
       v-for="cat in categories"
       :key="cat.id"
@@ -8,7 +8,7 @@
       role="region"
     >
       <h2
-        class="text-2xl font-bold text-[#1C2D5B] mb-4 border-b-2 border-[#F49321] pb-2"
+        class="font-poppins text-[#1C2F5B] font-extrabold text-lg sm:text-xl lg:text-[1.25rem] leading-tight sm:leading-[1.4] lg:leading-[46px] mb-3 sm:mb-4 border-b-2 border-[#F49321] pb-2"
       >
         {{ cat.name }}
       </h2>
@@ -22,15 +22,15 @@
         >
           <button
             type="button"
-            class="w-full flex items-center justify-between gap-4 px-5 py-4 text-left font-semibold text-[#1C2D5B] hover:bg-orange-50 transition"
+            class="w-full flex items-center justify-between gap-3 sm:gap-4 px-4 sm:px-5 py-3.5 sm:py-4 text-left font-semibold text-[#1C2D5B] text-sm sm:text-base leading-snug hover:bg-orange-50 transition min-h-[52px]"
             :aria-expanded="isOpen(faq.id)"
             :aria-controls="`faq-answer-${faq.id}`"
             :id="`faq-question-${faq.id}`"
             @click="toggle(faq.id)"
           >
-            <span>{{ faq.question }}</span>
+            <span class="flex-1">{{ faq.question }}</span>
             <i
-              class="fas fa-chevron-down text-[#F49321] transition-transform duration-300"
+              class="fas fa-chevron-down text-[#F49321] transition-transform duration-300 shrink-0 text-xs sm:text-sm"
               :class="{ 'rotate-180': isOpen(faq.id) }"
               aria-hidden="true"
             />
@@ -44,7 +44,7 @@
             :class="{ 'is-open': isOpen(faq.id) }"
           >
             <div
-              class="faq-answer-inner px-5 py-2 text-navy leading-relaxed whitespace-pre-line border-t border-gray-50"
+              class="faq-answer-inner px-4 sm:px-5 py-3 sm:py-2 text-navy text-[0.85rem] sm:text-base leading-relaxed whitespace-pre-line border-t border-gray-50"
             >
               {{ faq.answer }}
             </div>

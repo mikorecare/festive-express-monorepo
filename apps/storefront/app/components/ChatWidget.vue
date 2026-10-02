@@ -1,8 +1,13 @@
 <template>
   <ClientOnly>
     <div ref="chatContainer">
-      <button v-if="widgetReady" class="custom-chat-btn" @click="toggleChat">
-        <img src="/Images/chat.png" alt="Chat" />
+      <button
+        v-if="widgetReady"
+        class="custom-chat-btn"
+        aria-label="Open chat"
+        @click="toggleChat"
+      >
+        <img src="/Images/chat.png" alt="" />
       </button>
     </div>
   </ClientOnly>
@@ -15,7 +20,7 @@ const chatContainer = ref<HTMLElement | null>(null);
 const widgetReady = ref(false);
 
 const token =
-  "eyJhbGciOiJub25lIn0.eyJyIjoicHJvZHVjdGlvbiIsImkiOjI2MDksImEiOjUxNTIxOCwi cCI6Imh0dHBzOiIsImgiOiJjaGF0LmFjdG0ueHl6In0.";
+  "eyJhbGciOiJub25lIn0.eyJyIjoicHJvZHVjdGlvbiIsImkiOjI2MDksImEiOjUxNTIxOCwiYCI6Imh0dHBzIiwiaCI6ImNoYXQuYWN0bS54eXoifQ.";
 
 let widgetInstance: any = null;
 
@@ -35,6 +40,90 @@ const loadScript = () => {
   });
 };
 
+// -------- Core action helpers --------
+
+const moveBubbleOffScreen = () => {
+  try {
+    const shadowRoot = widgetInstance?.shadowRoot;
+    if (!shadowRoot) return;
+    const bubble = shadowRoot.querySelector(".bubble") as HTMLElement | null;
+    if (!bubble) return;
+    bubble.style.position = "fixed";
+    bubble.style.bottom = "-9999px";
+    bubble.style.right = "-9999px";
+    bubble.style.opacity = "0";
+    bubble.style.pointerEvents = "none";
+    bubble.style.width = "1px";
+    bubble.style.height = "1px";
+  } catch {
+    // ignore
+  }
+};
+
+const clickBubble = () => {
+  if (!widgetInstance) return false;
+  try {
+    const shadowRoot = widgetInstance.shadowRoot;
+    if (!shadowRoot) return false;
+    const bubble = shadowRoot.querySelector(".bubble") as HTMLElement | null;
+    if (!bubble) return false;
+
+    // Temporarily restore bubble so it's clickable
+    bubble.style.position = "fixed";
+    bubble.style.bottom = "20px";
+    bubble.style.right = "20px";
+    bubble.style.opacity = "0.01";
+    bubble.style.pointerEvents = "auto";
+    bubble.style.width = "auto";
+    bubble.style.height = "auto";
+
+    bubble.click();
+
+    // Move back off-screen after the click
+    setTimeout(() => {
+      moveBubbleOffScreen();
+    }, 50);
+
+    return true;
+  } catch (e) {
+    console.error("Error clicking chat bubble:", e);
+    return false;
+  }
+};
+
+// -------- Public API (used by provide/inject) --------
+
+const open = () => {
+  if (!widgetInstance) return;
+  // If bubble is currently off-screen (closed), click to open
+  const opened = clickBubble();
+  if (!opened) {
+    // Fallback to widget methods if available
+    if (typeof widgetInstance.open === "function") widgetInstance.open();
+  }
+};
+
+const close = () => {
+  if (!widgetInstance) return;
+  // Same toggle pattern — clicking while open closes it
+  const closed = clickBubble();
+  if (!closed) {
+    if (typeof widgetInstance.close === "function") widgetInstance.close();
+  }
+};
+
+const toggle = () => {
+  if (!widgetInstance) return;
+  const toggled = clickBubble();
+  if (!toggled) {
+    if (typeof widgetInstance.toggle === "function") widgetInstance.toggle();
+  }
+};
+
+defineExpose({ open, close, toggle });
+
+// -------- Init --------
+
 const initWidget = async () => {
   try {
     await loadScript();
@@ -45,9 +134,9 @@ const initWidget = async () => {
       await new Promise((resolve) => setTimeout(resolve, 300));
     }
 
-    const widget = document.createElement("div");
-    widget.innerHTML = `<ctm-chat token="${token}"></ctm-chat>`;
-    const chatElement = widget.firstElementChild;
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = `<ctm-chat token="${token}"></ctm-chat>`;
+    const chatElement = wrapper.firstElementChild;
 
     if (chatElement && chatContainer.value) {
       chatContainer.value.appendChild(chatElement);
@@ -55,23 +144,8 @@ const initWidget = async () => {
 
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      // Move the bubble off-screen but keep it functional
-      try {
-        const shadowRoot = widgetInstance.shadowRoot;
-        if (shadowRoot) {
-          const bubble = shadowRoot.querySelector(".bubble");
-          if (bubble) {
-            // Move it off-screen instead of hiding
-            (bubble as HTMLElement).style.position = "fixed";
-            (bubble as HTMLElement).style.bottom = "-9999px";
-            (bubble as HTMLElement).style.right = "-9999px";
-            (bubble as HTMLElement).style.opacity = "0";
-            (bubble as HTMLElement).style.pointerEvents = "none";
-            (bubble as HTMLElement).style.width = "1px";
-            (bubble as HTMLElement).style.height = "1px";
-          }
-        }
-      } catch (e) {}
+      // Move the widget's own bubble off-screen — we use our own button
+      moveBubbleOffScreen();
 
       widgetReady.value = true;
     }
@@ -81,59 +155,7 @@ const initWidget = async () => {
 };
 
 const toggleChat = () => {
-  if (!widgetInstance) return;
-
-  try {
-    // Try to find and click the bubble
-    const shadowRoot = widgetInstance.shadowRoot;
-    if (shadowRoot) {
-      const bubble = shadowRoot.querySelector(".bubble");
-      if (bubble) {
-        // Restore the bubble temporarily for click
-        const originalDisplay = (bubble as HTMLElement).style.display;
-        const originalPosition = (bubble as HTMLElement).style.position;
-        const originalBottom = (bubble as HTMLElement).style.bottom;
-        const originalRight = (bubble as HTMLElement).style.right;
-        const originalOpacity = (bubble as HTMLElement).style.opacity;
-        const originalPointerEvents = (bubble as HTMLElement).style
-          .pointerEvents;
-
-        // Make it clickable briefly
-        (bubble as HTMLElement).style.position = "fixed";
-        (bubble as HTMLElement).style.bottom = "20px";
-        (bubble as HTMLElement).style.right = "20px";
-        (bubble as HTMLElement).style.opacity = "0.01";
-        (bubble as HTMLElement).style.pointerEvents = "auto";
-        (bubble as HTMLElement).style.width = "auto";
-        (bubble as HTMLElement).style.height = "auto";
-
-        // Click it
-        (bubble as HTMLElement).click();
-
-        // Move it back off-screen
-        setTimeout(() => {
-          (bubble as HTMLElement).style.position = "fixed";
-          (bubble as HTMLElement).style.bottom = "-9999px";
-          (bubble as HTMLElement).style.right = "-9999px";
-          (bubble as HTMLElement).style.opacity = "0";
-          (bubble as HTMLElement).style.pointerEvents = "none";
-          (bubble as HTMLElement).style.width = "1px";
-          (bubble as HTMLElement).style.height = "1px";
-        }, 50);
-
-        return;
-      }
-    }
-
-    // Fallback: try widget methods
-    if (typeof widgetInstance.toggle === "function") {
-      widgetInstance.toggle();
-    } else if (typeof widgetInstance.open === "function") {
-      widgetInstance.open();
-    }
-  } catch (e) {
-    console.error("Error toggling chat:", e);
-  }
+  toggle();
 };
 
 onMounted(() => {
@@ -155,7 +177,9 @@ onMounted(() => {
   border: none;
   cursor: pointer;
   z-index: 9999;
-  transition: transform 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    bottom 0.2s ease;
 }
 
 .custom-chat-btn:hover {
@@ -174,18 +198,21 @@ onMounted(() => {
   filter: drop-shadow(0 6px 20px rgba(244, 147, 33, 0.3));
 }
 
-
-@media (max-width: 640px) {
+/* Mobile: lift above the bottom nav */
+@media (max-width: 1023px) {
   .custom-chat-btn {
-    width: 50px;
-    height: 50px;
+    bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+    right: 16px;
+    width: 56px;
+    height: 56px;
+    z-index: 10000;
   }
 }
 
 @media (max-width: 400px) {
   .custom-chat-btn {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
   }
 }
 </style>
