@@ -20,7 +20,7 @@
         class="text-center text-white font-bold tracking-[0.4px] whitespace-nowrap text-[0.72rem] sm:text-[1.15rem] leading-tight my-8 drop-shadow-[0_1px_4px_rgba(0,0,0,0.4)]"
       >
         COMPARE WHAT’S INCLUDED IN EACH PLAN (Each package is a rental for one
-        season)D
+        season)
       </p>
 
       <div v-if="pending" class="text-center py-10 text-white font-semibold">
