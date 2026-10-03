@@ -7,7 +7,7 @@
           class="flex flex-col md:flex-row items-center justify-between gap-1 md:gap-0"
         >
           <!-- Social Icons (desktop only) -->
-          <div
+          <!-- <div
             class="hidden md:flex gap-3 md:gap-4 justify-center md:justify-start w-full md:w-auto order-1"
           >
             <a
@@ -55,7 +55,7 @@
               aria-label="Pinterest"
               ><i class="fab fa-pinterest-p"></i
             ></a>
-          </div>
+          </div> -->
 
           <div
             class="welcome text-[0.7rem] sm:text-sm md:text-base text-center md:flex-1 order-2"
