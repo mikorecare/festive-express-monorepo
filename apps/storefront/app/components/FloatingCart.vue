@@ -3,7 +3,7 @@
     <!-- Floating trigger -->
     <button
       type="button"
-      class="fixed bottom-[100px] right-[20px] z-[999] flex items-center justify-center bg-[#172a50] border-[3px] border-[#F49321] rounded-full w-[64px] h-[64px] p-0 shadow-[0_8px_24px_rgba(0,0,0,0.35)] cursor-pointer max-lg:bottom-[160px] max-lg:right-[16px] max-sm:bottom-[150px] max-sm:right-[14px] max-sm:w-[45px] max-sm:h-[45px] max-sm:border-[2px]"
+      class="fixed bottom-[100px] right-[20px] z-[999] flex items-center justify-center bg-[#172a50] border-[3px] border-[#F49321] rounded-full w-[64px] h-[64px] p-0 shadow-[0_8px_24px_rgba(0,0,0,0.35)] cursor-pointer max-lg:bottom-[160px] max-lg:right-[16px] max-sm:bottom-[130px] max-sm:right-[14px] max-sm:w-[45px] max-sm:h-[45px] max-sm:border-[2px]"
       :class="{ 'cart-shake': cartBump > 0 }"
       :key="cartBump"
       aria-label="Open cart"

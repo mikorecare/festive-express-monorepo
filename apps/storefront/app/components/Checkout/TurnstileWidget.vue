@@ -1,8 +1,8 @@
 <template>
   <ClientOnly>
-    <div class="mt-4 px-3 bg-transparent rounded-lg">
-      <div class="flex justify-center">
-        <div :id="containerId" class="min-h-[65px] min-w-[300px]"></div>
+    <div class="mt-1 px-3 bg-transparent rounded-lg">
+      <div class="mt-1 px-3">
+        <div :id="containerId" class="flex justify-center w-full h-[65px]"></div>
       </div>
     </div>
   </ClientOnly>

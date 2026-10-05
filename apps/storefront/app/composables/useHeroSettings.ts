@@ -1,14 +1,14 @@
 
 export const useHeroSettings = () => {
-  const heroH1White = useState("heroH1White", () => "HOLIDAY DECORATING")
-  const heroH1Orange = useState("heroH1Orange", () => "FROM YOUR COUCH")
+  const heroH1White = useState("heroH1White", () => "Holiday Decorating rentals, right from your device.")
+  const heroH1Orange = useState("heroH1Orange", () => "")
   const heroDescription1 = useState(
     "heroDescription1",
     () => "Design your dream display in minutes, right from your phone.",
   )
   const heroDescription2 = useState(
     "heroDescription2",
-    () => "Giftwrapped in One Simple Package.(No ladders.No tangled cords.No storage.No stress.)",
+    () => "Giftwrapped in One Simple Package. (No ladders.No tangled cords.No storage.No stress.)",
   )
   const heroButtonLabel = useState(
     "heroButtonLabel",

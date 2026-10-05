@@ -108,16 +108,24 @@
               v-if="showSale(pkg.sale_price)"
               class="flex flex-col items-center shrink-0"
             >
-              <div class="relative">
+              <!-- Lock the parent's height so top-% resolves consistently -->
+              <div class="relative h-8 md:h-9">
                 <NuxtImg
                   :src="earlyBirdIconUrl"
                   alt="Early Bird Special"
+                  loading="eager"
+                  decoding="sync"
                   class="relative z-0 h-8 md:h-9 w-auto origin-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
-                  loading="lazy"
                 />
+
+                <!-- width/height reserve the box before the image loads -->
                 <img
                   :src="starburstSrc"
                   alt=""
+                  width="56"
+                  height="56"
+                  loading="eager"
+                  decoding="sync"
                   class="absolute z-[1] top-[-52%] right-[-19px] md:top-[-44%] md:right-[-23px] lg:top-[-58%] lg:right-[-28px] h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 object-contain pointer-events-none"
                 />
               </div>

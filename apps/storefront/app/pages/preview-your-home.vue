@@ -1,29 +1,34 @@
 <template>
   <div>
     <section
-      class="page-hero-preview snow-bg relative bg-slate-900 py-16 text-white overflow-hidden"
+      class="page-hero-preview relative bg-slate-900 text-white overflow-hidden"
     >
-      <div class="hero-overlay absolute inset-0 bg-black/40 z-10 min-h-[200px]">
-        <div
-          class="container mx-auto px-4 h-full flex items-center justify-center min-h-[200px]"
-        >
-          <div class="hero-content text-center max-w-2xl mx-auto">
-            <h1
-              v-fade
-              class="text-3xl md:text-5xl tracking-tight text-white mb-4"
-            >
-              <span class="text-brand-orange">Preview</span> Your Home
-            </h1>
+      <!-- Overlay -->
+      <div class="absolute inset-0 bg-black/45 z-10" aria-hidden="true"></div>
 
-            <p v-fade class="text-base md:text-lg text-slate-200">
-              See your home gift-wrapped in lights.
-            </p>
-          </div>
+      <!-- Content -->
+      <div class="relative z-20 container mx-auto px-4 sm:px-6">
+        <div
+          class="hero-content text-center max-w-2xl mx-auto py-14 sm:py-20 lg:py-28"
+        >
+          <h1
+            v-fade
+            class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight text-white mb-3 sm:mb-4 leading-tight"
+          >
+            <span class="text-brand-orange">Preview</span> Your Home
+          </h1>
+
+          <p
+            v-fade
+            class="text-sm sm:text-base md:text-lg text-slate-200 max-w-md mx-auto"
+          >
+            See your home gift-wrapped in lights.
+          </p>
         </div>
       </div>
     </section>
 
-    <div class="max-w-4xl mx-auto my-4">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 my-6 sm:my-8 lg:my-10">
       <EstimatorWidget />
     </div>
   </div>
@@ -40,12 +45,9 @@ useHead({
 <style scoped>
 .page-hero-preview {
   position: relative;
-  height: 420px;
   background-image: url("/Images/Preview-Your-Home/hero.png");
   background-size: cover;
   background-position: center;
-  display: flex;
-  align-items: center;
-  color: white;
+  background-repeat: no-repeat;
 }
 </style>

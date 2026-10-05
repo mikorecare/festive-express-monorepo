@@ -23,9 +23,14 @@
         >
           Five-Star Service Across Every Lighting Project
         </h2>
-        <p class="text-black text-sm sm:text-base lg:text-lg whitespace-nowrap">
-          See why homeowners and businesses trust Humbug for professional
-          holiday, permanent, commercial, and landscape lighting services.
+        <p class="text-[#1C2D5B] font-semibold tracking-wide text-sm sm:text-base lg:text-lg">
+          See why homeowners and businesses trust
+          <strong
+            class="font-extrabold text-lg tracking-wide"
+          >
+            Festive Express
+          </strong>
+          for professional holiday lighting services.
         </p>
       </div>
 
@@ -33,118 +38,131 @@
       <div class="relative">
         <div
           ref="scrollRef"
-          class="flex gap-3 sm:gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide py-4 -mx-4 px-4 sm:mx-0 sm:px-0"
+          class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide py-4 -mx-4 px-4 sm:mx-0 sm:px-0"
           style="scrollbar-width: none; -ms-overflow-style: none"
+          @mouseenter="pauseAutoScroll"
+          @mouseleave="resumeAutoScroll"
+          @touchstart.passive="pauseAutoScroll"
+          @touchend.passive="resumeAutoScroll"
+          @focusin="pauseAutoScroll"
+          @focusout="resumeAutoScroll"
         >
           <article
             v-for="(review, i) in reviews"
             :key="i"
             v-fade
-            class="snap-start shrink-0 w-[85vw] max-w-[320px] sm:w-[300px] lg:w-[calc((100%-3rem)/4)] bg-white rounded-2xl p-4 sm:p-5 shadow-[0_4px_20px_rgba(28,45,91,0.08)] flex flex-col"
+            class="snap-start shrink-0 w-[85vw] max-w-[460px] sm:w-[340px] lg:w-[calc((100%-2rem)/3)] bg-[#1C2D5B] rounded-xl shadow-[0_6px_24px_rgba(28,45,91,0.12)] overflow-hidden h-[300px] flex flex-row transition-shadow duration-200 hover:shadow-[0_12px_28px_rgba(28,45,91,0.18)]"
             :style="{ transitionDelay: `${i * 60}ms` }"
           >
-            <!-- Header row -->
-            <div class="flex items-start justify-between gap-2 mb-3">
-              <div class="flex items-center gap-3 min-w-0">
-                <div
-                  class="w-10 h-10 rounded-full overflow-hidden shrink-0 bg-gray-100 flex items-center justify-center"
+            <!-- LEFT COLUMN — 45% -->
+            <div class="w-[50%] shrink-0 flex flex-col bg-white">
+              <!-- Square photo, flush to top-left -->
+              <div class="w-full aspect-square bg-gray-100 overflow-hidden">
+                <img
+                  v-if="review.image"
+                  :src="review.image"
+                  :alt="`Review by ${review.name}`"
+                  class="w-full h-full object-cover"
+                  loading="lazy"
+                />
+                <span
+                  v-else
+                  class="w-full h-full flex items-center justify-center text-3xl font-bold text-[#1C2D5B]"
                 >
-                  <img
-                    v-if="review.image"
-                    :src="review.image"
-                    :alt="`Review by ${review.name}`"
-                    class="w-full h-full object-cover"
-                    loading="lazy"
-                    width="40"
-                    height="40"
-                  />
-                  <span v-else class="text-lg font-bold text-[#1C2D5B]">
-                    {{ review.name.charAt(0) }}
-                  </span>
-                </div>
-                <div class="min-w-0">
-                  <p
-                    class="font-bold text-[#1C2D5B] text-sm truncate"
-                    :title="review.name"
-                  >
-                    {{ review.name }}
-                  </p>
-                  <p class="text-xs text-gray-500">1 week ago</p>
-                </div>
+                  {{ review.name.charAt(0) }}
+                </span>
               </div>
-              <svg
-                class="w-5 h-5 shrink-0 mt-1"
-                viewBox="0 0 48 48"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden="true"
+
+              <!-- Name + location below photo -->
+              <div class="px-3 pt-2">
+                <p
+                  class="font-bold text-[#1C2D5B] text-sm leading-tight truncate"
+                  :title="review.name"
+                >
+                  {{ review.name }}
+                </p>
+                <p
+                  class="text-[10px] font-semibold text-black opacity-80 mt-0.5 leading-snug break-words"
+                >
+                  {{ review.location }}
+                </p>
+              </div>
+
+              <!-- Stars + Google icon — pinned to bottom -->
+              <div
+                class="mt-auto px-3 pt-2 pb-3 flex flex-row items-center gap-2 flex-wrap"
               >
-                <path
-                  fill="#FFC107"
-                  d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"
-                />
-                <path
-                  fill="#FF3D00"
-                  d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"
-                />
-                <path
-                  fill="#4CAF50"
-                  d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"
-                />
-                <path
-                  fill="#1976D2"
-                  d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"
-                />
-              </svg>
+                <div
+                  class="clay-stars w-fit shrink-0"
+                  :aria-label="`5 out of 5 stars`"
+                >
+                  <i
+                    v-for="s in 5"
+                    :key="s"
+                    class="fa-solid fa-star w-4 h-4 star-clay"
+                    aria-hidden="true"
+                  ></i>
+                </div>
+                <svg
+                  class="w-4 h-4 shrink-0"
+                  viewBox="0 0 48 48"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="#FFC107"
+                    d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"
+                  />
+                  <path
+                    fill="#FF3D00"
+                    d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"
+                  />
+                  <path
+                    fill="#4CAF50"
+                    d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"
+                  />
+                  <path
+                    fill="#1976D2"
+                    d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"
+                  />
+                </svg>
+              </div>
             </div>
 
-            <!-- Stars -->
-            <div
-              class="flex items-center gap-0.5 mb-3"
-              :aria-label="`5 out of 5 stars`"
-            >
-              <svg
-                v-for="s in 5"
-                :key="s"
-                class="w-4 h-4 text-[#F49321]"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 0 0-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292z"
-                />
-              </svg>
-              <svg
-                class="w-3.5 h-3.5 text-blue-500 ml-0.5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+            <!-- SEPARATOR — vertical, orange then white -->
+            <div class="shrink-0 flex flex-row">
+              <div class="w-[5px] h-full bg-white shadow shadow-l-xl"></div>
+              <div class="w-[5px] h-full bg-[#F49321]"></div>
             </div>
 
-            <!-- Review text -->
-            <p
-              class="text-sm text-gray-700 leading-relaxed flex-1 line-clamp-4"
-            >
-              {{ review.text }}
-            </p>
+            <!-- RIGHT COLUMN — verbatim only -->
+            <div class="p-3 flex-1 min-w-0 flex flex-col">
+              <p class="text-sm text-white/90 leading-relaxed line-clamp-9">
+                {{ review.text }}
+              </p>
 
-            <!-- Read more -->
-            <button
-              v-if="isLongReview(review.text)"
-              type="button"
-              class="mt-2 self-start text-[#F49321] hover:text-[#d97e0a] font-semibold text-xs transition-colors min-h-[44px] flex items-center"
-              :aria-label="`Read full review from ${review.name}`"
-              @click="openReview(review)"
-            >
-              Read more
-            </button>
+              <button
+                type="button"
+                class="mt-auto pt-3 self-start text-[#F49321] hover:text-[#ffb347] font-bold text-xs transition-colors min-h-[36px] flex items-center gap-1 tracking-wide"
+                :aria-label="`Read full review for ${review.name}`"
+                @click="openReview(review)"
+              >
+                Read more
+                <svg
+                  class="w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+            </div>
           </article>
         </div>
 
@@ -253,8 +271,11 @@
                         width="40"
                         height="40"
                       />
-                      <span v-else class="text-lg font-bold text-[#1C2D5B]">
-                        {{ review.name.charAt(0) }}
+                      <span
+                        v-else
+                        class="w-full h-full flex items-center justify-center text-3xl font-bold text-[#1C2D5B]"
+                      >
+                        {{ review.name?.charAt(0) ?? "?" }}
                       </span>
                     </div>
                     <div class="min-w-0">
@@ -292,32 +313,21 @@
                 </div>
 
                 <div
-                  class="flex items-center gap-0.5 mb-2"
+                  class="clay-stars w-fit mb-2"
                   :aria-label="`5 out of 5 stars`"
                 >
                   <svg
                     v-for="s in 5"
                     :key="s"
-                    class="w-4 h-4 text-[#F49321]"
-                    viewBox="0 0 20 20"
+                    class="w-4 h-4 star-clay"
+                    viewBox="0 0 24 24"
                     fill="currentColor"
                     aria-hidden="true"
                   >
                     <path
-                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 0 0 .95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 0 0-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 0 0-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 0 0-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 0 .951-.69l1.07-3.292z"
+                      d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
                     />
-                  </svg>
-                  <svg
-                    class="w-3.5 h-3.5 text-blue-500 ml-0.5"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                      clip-rule="evenodd"
-                    />
+                    <circle cx="8" cy="7" r="1" fill="white" opacity="0.7" />
                   </svg>
                 </div>
 
@@ -336,6 +346,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, nextTick, onMounted, onUnmounted } from "vue";
+
 interface Review {
   name: string;
   location: string;
@@ -378,6 +390,7 @@ const reviews: Review[] = [
     name: "Brad Gucciardo",
     location: "Bella Sole, Bradenton, FL",
     text: "They did an amazing job decorating my home to say that Festive Lighting Pros changed my entire attitude about Christmas specially this year is an understatement. This is incredible to come home to this every day is amazing. You will have a smile on your face, every morning every night when you come home.",
+    image: "/New/Reviews/Brad-Gucciardo.UcbiY9kA.webp",
   },
   {
     name: "Dennis and Kathy Lasota",
@@ -409,6 +422,50 @@ const scrollRef = ref<HTMLElement | null>(null);
 const modalBodyRef = ref<HTMLElement | null>(null);
 const modalCardRefs = ref<Record<number, HTMLElement | null>>({});
 const showModal = ref(false);
+
+/* ---------- AUTO SCROLL ---------- */
+const AUTO_SCROLL_INTERVAL = 4000; // ms between advances
+let autoScrollTimer: ReturnType<typeof setInterval> | null = null;
+const isPaused = ref(false);
+
+const startAutoScroll = () => {
+  stopAutoScroll();
+  autoScrollTimer = setInterval(() => {
+    if (isPaused.value) return;
+    if (!scrollRef.value) return;
+
+    const el = scrollRef.value;
+    const card = el.querySelector("article") as HTMLElement | null;
+    if (!card) return;
+
+    const cardWidth = card.getBoundingClientRect().width + 16; // gap-4 = 16px
+    const maxScrollLeft = el.scrollWidth - el.clientWidth;
+
+    // If we're at (or past) the end, loop back to start
+    if (el.scrollLeft >= maxScrollLeft - 4) {
+      el.scrollTo({ left: 0, behavior: "smooth" });
+    } else {
+      el.scrollBy({ left: cardWidth, behavior: "smooth" });
+    }
+  }, AUTO_SCROLL_INTERVAL);
+};
+
+const stopAutoScroll = () => {
+  if (autoScrollTimer) {
+    clearInterval(autoScrollTimer);
+    autoScrollTimer = null;
+  }
+};
+
+const pauseAutoScroll = () => {
+  isPaused.value = true;
+};
+
+const resumeAutoScroll = () => {
+  isPaused.value = false;
+};
+
+/* ---------- EXISTING LOGIC ---------- */
 
 const registerModalCard = (el: any, i: number) => {
   if (el) modalCardRefs.value[i] = el as HTMLElement;
@@ -458,10 +515,12 @@ const onKeydown = (e: KeyboardEvent) => {
 
 onMounted(() => {
   document.addEventListener("keydown", onKeydown);
+  startAutoScroll();
 });
 
 onUnmounted(() => {
   document.removeEventListener("keydown", onKeydown);
+  stopAutoScroll();
 });
 
 useHead({
@@ -522,5 +581,64 @@ useHead({
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+/* Claymorphic star effect */
+.star-clay {
+  display: inline-block;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15))
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.7));
+  transition: transform 0.1s ease;
+  color: #f49321;
+  fill: #f49321;
+  stroke: rgba(255, 255, 255, 0.4);
+  stroke-width: 0.3;
+}
+
+.star-clay:hover {
+  transform: scale(1.05);
+}
+
+.clay-stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 8px 4px 6px;
+  border-radius: 40px;
+  background: #f8f2e7;
+  box-shadow:
+    inset 0 2px 6px rgba(255, 255, 255, 0.8),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.05),
+    0 6px 12px rgba(0, 0, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.line-clamp-7,
+.line-clamp-8,
+.line-clamp-9,
+.line-clamp-10,
+.line-clamp-11,
+.line-clamp-12 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.line-clamp-7 {
+  -webkit-line-clamp: 7;
+}
+.line-clamp-8 {
+  -webkit-line-clamp: 8;
+}
+.line-clamp-9 {
+  -webkit-line-clamp: 9;
+}
+.line-clamp-10 {
+  -webkit-line-clamp: 10;
+}
+.line-clamp-11 {
+  -webkit-line-clamp: 11;
+}
+.line-clamp-12 {
+  -webkit-line-clamp: 12;
 }
 </style>

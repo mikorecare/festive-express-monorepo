@@ -17,7 +17,10 @@
         <div
           v-for="faq in cat.faqs"
           :key="faq.id"
-          class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+          class="bg-white rounded-xl shadow-lg overflow-hidden transition-colors duration-200"
+          :style="{
+            borderLeft: `8px solid ${isOpen(faq.id) ? '#F49321' : '#1C2F5B'}`,
+          }"
           role="listitem"
         >
           <button
@@ -28,7 +31,7 @@
             :id="`faq-question-${faq.id}`"
             @click="toggle(faq.id)"
           >
-            <span class="flex-1">{{ faq.question }}</span>
+            <span class="flex-1 tracking-wide">{{ faq.question }}</span>
             <i
               class="fas fa-chevron-down text-[#F49321] transition-transform duration-300 shrink-0 text-xs sm:text-sm"
               :class="{ 'rotate-180': isOpen(faq.id) }"
@@ -43,10 +46,12 @@
             class="faq-answer-wrapper"
             :class="{ 'is-open': isOpen(faq.id) }"
           >
-            <div
-              class="faq-answer-inner px-4 sm:px-5 py-3 sm:py-2 text-navy text-[0.85rem] sm:text-base leading-relaxed whitespace-pre-line border-t border-gray-50"
-            >
-              {{ faq.answer }}
+            <div class="faq-answer-inner">
+              <div
+                class="px-4 sm:px-5 py-3 sm:py-4 text-navy text-[0.85rem] sm:text-base leading-relaxed whitespace-pre-line border-t border-gray-100"
+              >
+                {{ faq.answer }}
+              </div>
             </div>
           </div>
         </div>
@@ -119,6 +124,7 @@ button:focus-visible {
 
 .faq-answer-inner {
   overflow: hidden;
+  min-height: 0;
 }
 
 .faq-answer-wrapper:not(.is-open) .faq-answer-inner {

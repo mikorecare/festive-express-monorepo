@@ -1,6 +1,6 @@
 <template>
   <section
-    class="relative w-full overflow-hidden bg-white border-b-[27px] border-[#F49321]"
+    class="relative w-full overflow-hidden bg-white border-b-[27px] border-[#F49321] pt-12"
   >
     <!-- Decorative pattern background -->
     <div

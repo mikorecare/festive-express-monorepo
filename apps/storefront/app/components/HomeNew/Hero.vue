@@ -1,14 +1,14 @@
 <template>
   <div
     ref="heroRef"
-    class="hero-banner relative min-h-[70dvh] overflow-hidden flex items-center max-lg:min-h-auto max-lg:py-10 border-b-[27px] border-[#F49321]"
+    class="hero-banner relative min-h-[90dvh] overflow-hidden flex items-center max-lg:min-h-auto max-lg:py-10 border-b-[27px] border-[#F49321]"
   >
     <!-- ========================================== -->
     <!-- 📱 MOBILE ONLY HERO LAYER (High Performance) -->
     <!-- ========================================== -->
     <div class="lg:hidden absolute inset-0 z-0">
       <NuxtImg
-        src="/New/Banner/hero-new-mobile.webp"
+        src="/New/Banner/bg-family-mobile.webp"
         alt=""
         role="none"
         sizes="xs:100vw sm:100vw md:100vw"
@@ -70,40 +70,42 @@
           </h1>
 
           <p
-            class="tagline text-start text-[1.1rem] font-semibold leading-[1.35] mb-8 text-slate-200 max-lg:text-[0.9rem] max-lg:mb-0 max-lg:leading-[1.4] max-lg:[text-shadow:0_2px_4px_rgba(0,0,0,0.7)]"
+            class="tagline text-start text-[1.1rem] font-bold leading-[1.35] tracking-wide mb-8 text-slate-200 max-lg:text-[0.9rem] max-lg:mb-0 max-lg:leading-[1.4] max-lg:[text-shadow:0_2px_4px_rgba(0,0,0,0.7)]"
           >
             <template v-for="(part, i) in heroDescription1.split('|')" :key="i">
               <br v-if="i > 0" class="mobile-only" />
               {{ part }}
             </template>
             <br />
+          </p>
 
-            <span
-              class="subtext block text-[0.88rem] font-normal mt-4 opacity-90 max-lg:text-[0.78rem] max-lg:mt-2"
+          <p
+            class="subtext block text-start text-[0.88rem] tracking-widest font-semibold my-4 opacity-90 max-lg:text-[0.78rem] max-lg:mt-2"
+          >
+            <template
+              v-for="(part2, i) in heroDescription2.split('|')"
+              :key="i"
             >
-              <template
-                v-for="(part2, i) in heroDescription2.split('|')"
-                :key="i"
-              >
-                <br v-if="i > 0" class="mobile-only" />
-                {{ part2 }}
-              </template>
-            </span>
+              <br v-if="i > 0" class="mobile-only" />
+              {{ part2 }}<span v-if="i === 0">.</span>
+            </template>
           </p>
         </div>
 
         <!-- Bottom Section: Buttons -->
-        <div class="flex flex-col gap-3 w-full max-lg:gap-3">
+        <div class="flex flex-col gap-3 w-full">
+          <!-- Button 1 -->
           <NuxtLink
             to="#preview"
-            class="relative uppercase inline-flex flex-col py-2 items-center overflow-visible bg-transparent text-[#F49321] font-extrabold text-lg rounded-full border-[3px] border-[#F49321] px-16 hover:bg-[#e0850a] transition-colors max-lg:text-[0.85rem] max-lg:px-6 max-lg:py-3 max-lg:rounded-full max-lg:border-2 max-lg:mx-0 max-lg:w-full"
+            class="relative uppercase inline-flex items-center justify-center bg-transparent text-[#F49321] font-extrabold text-lg rounded-full border-[3px] border-[#F49321] px-12 py-2 hover:bg-[#e0850a] transition-colors max-lg:text-base max-lg:px-6 max-lg:py-3 max-lg:border-2 max-lg:w-full"
           >
             <span>Preview your home</span>
           </NuxtLink>
 
+          <!-- Button 2 -->
           <NuxtLink
             to="/packages"
-            class="relative uppercase inline-flex flex-col py-2 items-center overflow-visible bg-[#F49321] text-white font-extrabold text-lg rounded-full border-[3px] border-[#F49321] shadow-[0_0_0_4px_#F49321] px-12 hover:bg-[#e0850a] transition-colors max-lg:text-[0.85rem] max-lg:px-6 max-lg:py-3 max-lg:rounded-full max-lg:border-2 max-lg:mx-0 max-lg:w-full"
+            class="relative inline-flex items-center justify-center uppercase bg-[#F49321] text-white font-extrabold text-lg rounded-full border-[3px] border-[#F49321] shadow-[0_0_0_4px_#F49321] px-12 py-2 hover:bg-[#e0850a] transition-colors max-lg:text-base max-lg:px-6 max-lg:py-3 max-lg:border-2 max-lg:shadow-none max-lg:w-full"
           >
             <span>{{ heroButtonLabel }}</span>
           </NuxtLink>
@@ -193,16 +195,16 @@ const formatNumber = (num: number) => String(num).padStart(2, "0");
 const bgStyle = computed(() => {
   if (isMobile.value) {
     return {
-      backgroundImage: "url('/New/Banner/hero-mobile-new.webp')",
+      backgroundImage: "url('/New/Banner/bg-family-mobile.webp')",
       backgroundPosition: "center center",
-      backgroundSize: "cover",
+      backgroundSize: "100% 100%",
       backgroundRepeat: "no-repeat",
     };
   }
   return {
-    backgroundImage: "url('/New/Banner/hero-new.webp')",
-    backgroundPosition: "center 28%",
-    backgroundSize: "cover",
+    backgroundImage: "url('/New/Banner/bg-family.webp')",
+    backgroundPosition: "center center",
+    backgroundSize: "100% 100%",
     backgroundRepeat: "no-repeat",
   };
 });

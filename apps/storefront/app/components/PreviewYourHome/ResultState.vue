@@ -32,7 +32,11 @@
           We've sent your preview to your inbox.
           <br class="hidden sm:block" />
           We'll get back to you in a
-          <span class="text-brand-orange font-bold">FLASH</span>.
+          <strong
+            class="text-[#F49321] font-extrabold text-lg tracking-wide [text-shadow:_-2px_-2px_0_#fff,_2px_-2px_0_#fff,_-2px_2px_0_#fff,_2px_2px_0_#fff,_0_4px_10px_rgba(28,45,91,0.45)]"
+          >
+            Festive Express
+          </strong>
         </p>
 
         <div class="success-divider"></div>
