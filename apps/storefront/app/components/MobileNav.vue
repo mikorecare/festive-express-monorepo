@@ -16,7 +16,7 @@
           :class="
             isActive(item.to)
               ? 'text-[#F49321] bg-[#F49321]/10'
-              : 'text-[#1C2D5B]/80 hover:text-[#F49321] hover:bg-[#F49321]/5'
+              : 'text-[#1C2D5B] hover:text-[#F49321] hover:bg-[#F49321]/5'
           "
           :aria-label="item.label"
           :aria-current="isActive(item.to) ? 'page' : undefined"
@@ -61,7 +61,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { to: "/", label: "Home", icon: "fas fa-home" },
-  { to: "/packages", label: "Packages", icon: "fas fa-box-open" },
+  { to: "/packages", label: "Packages", icon: "fas fa-gifts" },
   { to: "/faq", label: "FAQ", icon: "fas fa-question-circle" },
 ];
 

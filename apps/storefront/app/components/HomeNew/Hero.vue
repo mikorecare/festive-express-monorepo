@@ -1,7 +1,7 @@
 <template>
   <div
     ref="heroRef"
-    class="hero-banner relative min-h-[90dvh] overflow-hidden flex items-center max-lg:min-h-auto max-lg:py-10 border-b-[27px] border-[#F49321]"
+    class="hero-banner relative min-h-[88dvh] overflow-hidden flex items-center max-lg:min-h-auto max-lg:py-10 border-b-[27px] border-[#F49321]"
   >
     <!-- ========================================== -->
     <!-- 📱 MOBILE ONLY HERO LAYER (High Performance) -->
@@ -28,12 +28,12 @@
     <!-- ========================================== -->
     <NuxtImg
       v-if="!isMobile"
-      src="/New/Banner/bg-family.webp"
+      src="/Images/Banner/hero-image.webp"
       alt=""
       role="none"
       sizes="xs:100vw sm:100vw md:100vw lg:100vw xl:100vw"
       format="webp"
-      quality="80"
+      quality="100"
       :img-attrs="{
         loading: 'eager',
         fetchpriority: 'high',
@@ -63,7 +63,7 @@
     />
 
     <div
-      class="hero-content-container relative z-[3] w-full max-w-[1200px] px-[5%] lg:pl-[22%] flex justify-start items-center gap-5 max-lg:flex-col max-lg:items-start max-lg:gap-8 max-lg:px-[6%] max-lg:py-6"
+      class="hero-content-container relative z-[3] w-full max-w-[1200px] px-[5%] lg:pl-[15%] flex justify-start items-center gap-5 max-lg:flex-col max-lg:items-start max-lg:gap-8 max-lg:px-[6%] max-lg:py-6"
     >
       <div
         class="hero-card relative w-full max-w-[460px] bg-[#161c30]/50 backdrop-blur-sm rounded-2xl p-11 px-8 shadow-[0_10px_30px_rgba(0,0,0,0.4)] text-white text-center border border-white/12 overflow-hidden before:content-[''] before:absolute before:-top-1/2 before:-left-[150%] before:w-[200%] before:h-[200%] before:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] before:rotate-[25deg] before:pointer-events-none before:animate-[glossyShineContinuous_3s_linear_infinite] max-lg:max-w-full max-lg:p-0 max-lg:text-left max-lg:!bg-transparent max-lg:!backdrop-blur-none max-lg:!border-none max-lg:!shadow-none max-lg:!rounded-none max-lg:before:!hidden max-lg:after:!hidden max-lg:flex max-lg:flex-col max-lg:gap-8"
