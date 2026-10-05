@@ -63,9 +63,7 @@
               >
                 {{ i + 1 }}
               </span>
-              <span
-                class="text-lg sm:text-xl lg:text-2xl font-bold text-black"
-              >
+              <span class="text-lg sm:text-xl lg:text-2xl font-bold text-black">
                 {{ step }}
               </span>
             </li>
@@ -77,25 +75,10 @@
 </template>
 
 <script setup lang="ts">
-const steps = ["Enter your address", "Select the package", "Pick your Color", "View your home"];
-
-useHead({
-  script: [
-    {
-      type: "application/ld+json",
-      innerHTML: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "HowTo",
-        name: "Preview your home with holiday lighting",
-        description:
-          "See how your home looks with professional holiday lighting. Enter your address, pick a package and color, and preview instantly.",
-        step: steps.map((step, i) => ({
-          "@type": "HowToStep",
-          position: i + 1,
-          name: step,
-        })),
-      }),
-    },
-  ],
-});
+const steps = [
+  "Enter your address",
+  "Select the package",
+  "Pick your Color",
+  "View your home",
+];
 </script>

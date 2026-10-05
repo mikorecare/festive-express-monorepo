@@ -48,17 +48,6 @@
 <script setup lang="ts">
 import type { CategoryWithFaqs } from "~/components/Faq/FaqList.vue";
 
-useHead({
-  title: "FAQ - Festive Express",
-  meta: [
-    {
-      name: "description",
-      content:
-        "Frequently asked questions about Festive Express holiday lighting packages and services.",
-    },
-  ],
-});
-
 const {
   data,
   pending: loading,

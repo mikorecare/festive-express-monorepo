@@ -46,16 +46,3 @@
     </div>
   </section>
 </template>
-
-<script setup lang="ts">
-useHead({
-  title: "Book a Free Consultation - Festive Express",
-  meta: [
-    {
-      name: "description",
-      content:
-        "Book a free consultation with our holiday lighting experts. Tell us about your home and we'll design the perfect display.",
-    },
-  ],
-});
-</script>

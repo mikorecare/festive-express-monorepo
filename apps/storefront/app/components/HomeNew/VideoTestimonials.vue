@@ -581,31 +581,6 @@ onUnmounted(() => {
   unlockBodyScroll();
   observer?.disconnect();
 });
-
-useHead({
-  script: [
-    {
-      type: "application/ld+json",
-      innerHTML: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "ItemList",
-        name: "Customer Video Testimonials",
-        itemListElement: videos.map((v, i) => ({
-          "@type": "ListItem",
-          position: i + 1,
-          item: {
-            "@type": "VideoObject",
-            name: `Video testimonial from ${v.name}`,
-            thumbnailUrl: v.thumbnail,
-            contentUrl: v.youtubeUrl,
-            embedUrl: v.embedUrl.replace("?autoplay=1", ""),
-            uploadDate: new Date().toISOString().split("T")[0],
-          },
-        })),
-      }),
-    },
-  ],
-});
 </script>
 
 <style scoped>

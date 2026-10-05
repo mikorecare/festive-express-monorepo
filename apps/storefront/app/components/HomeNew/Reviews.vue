@@ -524,43 +524,6 @@ onUnmounted(() => {
   document.removeEventListener("keydown", onKeydown);
   stopAutoScroll();
 });
-
-useHead({
-  script: [
-    {
-      type: "application/ld+json",
-      innerHTML: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "LocalBusiness",
-        name: "Festive Lighting Pros",
-        aggregateRating: {
-          "@type": "AggregateRating",
-          ratingValue: "5.0",
-          reviewCount: reviews.length,
-          bestRating: "5",
-          worstRating: "1",
-        },
-        review: reviews.map((r) => ({
-          "@type": "Review",
-          author: {
-            "@type": "Person",
-            name: r.name,
-          },
-          reviewRating: {
-            "@type": "Rating",
-            ratingValue: "5",
-            bestRating: "5",
-          },
-          reviewBody: r.text,
-          itemReviewed: {
-            "@type": "LocalBusiness",
-            name: "Festive Lighting Pros",
-          },
-        })),
-      }),
-    },
-  ],
-});
 </script>
 
 <style scoped>
