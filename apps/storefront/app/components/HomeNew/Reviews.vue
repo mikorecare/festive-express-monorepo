@@ -23,11 +23,11 @@
         >
           Five-Star Service Across Every Lighting Project
         </h2>
-        <p class="text-[#1C2D5B] font-semibold tracking-wide text-sm sm:text-base lg:text-lg">
+        <p
+          class="text-[#1C2D5B] font-semibold tracking-wide text-sm sm:text-base lg:text-lg"
+        >
           See why homeowners and businesses trust
-          <strong
-            class="font-extrabold text-lg tracking-wide"
-          >
+          <strong class="font-extrabold text-lg tracking-wide">
             Festive Express
           </strong>
           for professional holiday lighting services.
@@ -35,10 +35,10 @@
       </div>
 
       <!-- Reviews carousel -->
-      <div class="relative">
+      <div class="relative py-1">
         <div
           ref="scrollRef"
-          class="flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory scrollbar-hide py-4 -mx-4 px-4 sm:mx-0 sm:px-0"
+          class="flex gap-4 overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory scrollbar-hide scroll-px-4 px-4 sm:mx-0 sm:px-0 sm:scroll-px-0"
           style="scrollbar-width: none; -ms-overflow-style: none"
           @mouseenter="pauseAutoScroll"
           @mouseleave="resumeAutoScroll"
@@ -51,7 +51,7 @@
             v-for="(review, i) in reviews"
             :key="i"
             v-fade
-            class="snap-start shrink-0 w-[85vw] max-w-[460px] sm:w-[340px] lg:w-[calc((100%-2rem)/3)] bg-[#1C2D5B] rounded-tl-xl rounded-br-xl rounded-tr-none rounded-bl-none shadow-[0_6px_24px_rgba(28,45,91,0.12)] overflow-hidden h-[300px] flex flex-row transition-shadow duration-200 hover:shadow-[0_12px_28px_rgba(28,45,91,0.18)]"
+            class="snap-center sm:snap-start shrink-0 w-[85vw] max-w-[460px] sm:w-[340px] lg:w-[calc((100%-2rem)/3)] bg-[#1C2D5B] rounded-tl-xl rounded-br-xl rounded-tr-none rounded-bl-none shadow-[0_6px_24px_rgba(28,45,91,0.12)] overflow-hidden h-[300px] flex flex-row transition-shadow duration-200 hover:shadow-[0_12px_28px_rgba(28,45,91,0.18)]"
             :style="{ transitionDelay: `${i * 60}ms` }"
           >
             <!-- LEFT COLUMN — 45% -->
