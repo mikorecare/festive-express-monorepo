@@ -94,6 +94,7 @@
               >
                 <div
                   class="clay-stars w-fit shrink-0"
+                  role="img"
                   :aria-label="`5 out of 5 stars`"
                 >
                   <i
@@ -315,6 +316,7 @@
                 <div
                   class="clay-stars w-fit mb-2"
                   :aria-label="`5 out of 5 stars`"
+                  role="img"
                 >
                   <svg
                     v-for="s in 5"

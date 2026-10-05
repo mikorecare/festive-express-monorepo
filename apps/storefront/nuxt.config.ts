@@ -8,6 +8,7 @@ export default defineNuxtConfig({
   site: {
     url: 'https://festive.express',
     name: 'Festive Express',
+    indexable: true
   },
 
   seo: {
@@ -314,6 +315,7 @@ export default defineNuxtConfig({
     nonce: true,
 
     headers: {
+
       contentSecurityPolicy: {
         'default-src': ["'self'"],
 
@@ -466,6 +468,7 @@ export default defineNuxtConfig({
     '/**': {
       headers: {
         'alt-svc': 'h3=":443"; ma=86400',
+        'x-robots-tag': 'index, follow',
       }
     }
   },

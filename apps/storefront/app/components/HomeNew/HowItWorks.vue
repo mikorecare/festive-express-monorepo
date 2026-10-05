@@ -10,15 +10,8 @@
 
     <!-- Soft glow behind cards -->
     <div
-      class="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[500px] pointer-events-none"
+      class="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[500px] pointer-events-none bg-[radial-gradient(ellipse_at_center,rgba(244,147,33,0.12)_0%,transparent_60%)]"
       aria-hidden="true"
-      style="
-        background: radial-gradient(
-          ellipse at center,
-          rgba(244, 147, 33, 0.12) 0%,
-          transparent 60%
-        );
-      "
     ></div>
 
     <!-- Content -->

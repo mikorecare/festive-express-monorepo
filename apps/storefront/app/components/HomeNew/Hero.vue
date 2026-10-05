@@ -26,11 +26,22 @@
     <!-- ========================================== -->
     <!-- 💻 DESKTOP ONLY HERO LAYER (Static)        -->
     <!-- ========================================== -->
-    <div
+    <NuxtImg
       v-if="!isMobile"
-      class="hero-layer hero-layer-background absolute inset-0 bg-cover bg-no-repeat z-0 max-lg:hidden"
-      :style="bgStyle"
-    ></div>
+      src="/New/Banner/bg-family.webp"
+      alt=""
+      role="none"
+      sizes="xs:100vw sm:100vw md:100vw lg:100vw xl:100vw"
+      format="webp"
+      quality="80"
+      :img-attrs="{
+        loading: 'eager',
+        fetchpriority: 'high',
+        decoding: 'async',
+      }"
+      preload
+      class="hero-layer absolute inset-0 w-full h-full object-cover z-0 max-lg:hidden"
+    />
 
     <!-- ========================================== -->
     <!-- 🛠️ COMMON OVERLAYS & STRUCTURAL CONTENT     -->
@@ -218,7 +229,7 @@ const {
   earlyBirdExpiresAt,
   earlyBirdIconSecondaryUrl,
   formatEndsLabel,
-} = useEarlyBirdSpecial();
+} = await useEarlyBirdSpecial();
 
 const {
   heroH1White,

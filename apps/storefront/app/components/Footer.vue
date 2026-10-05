@@ -36,7 +36,7 @@
           </p>
           <p class="text-slate-300 mb-2 sm:mb-2.5 text-sm sm:text-base">
             <a
-              :href="`tel:${String(settings.contact_phone || '').replace(/[^\d+]/g, '')}`"
+              :href="telHref"
               class="contact-box btn-secondary-2 hover:text-brand-orange"
             >
               {{ settings.contact_phone_display || "(941) 239-4722" }}
@@ -112,7 +112,7 @@
         >
           {{
             settings?.copyright_text ||
-            `Copyright © ${new Date().getFullYear()} Festive Express. All Rights Reserved.`
+            `Copyright © ${currentYear} Festive Express. All Rights Reserved.`
           }}
         </div>
 
@@ -131,5 +131,6 @@
 </template>
 
 <script setup lang="ts">
-const { settings, loadSettings, telHref } = useSettings();
+const { settings, telHref } = useSettings();
+const currentYear = useState("current-year", () => new Date().getFullYear());
 </script>

@@ -352,7 +352,7 @@ const getPackageButtonName = (pkg: { name: string }) => {
 };
 
 const { loadEarlyBird, showSale, effectivePrice, earlyBirdIconUrl } =
-  useEarlyBirdSpecial();
+  await useEarlyBirdSpecial();
 
 const starburstSrc = "/Images/Holiday-Lighting-Package/starburst-small.png";
 

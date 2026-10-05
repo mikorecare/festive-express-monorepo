@@ -4,7 +4,6 @@
     <main id="main-content" role="main">
       <NuxtPage />
     </main>
-    <Toaster position="top-center" richColors closeButton />
     <Footer />
     <FloatingCart />
     <CookieConsent />

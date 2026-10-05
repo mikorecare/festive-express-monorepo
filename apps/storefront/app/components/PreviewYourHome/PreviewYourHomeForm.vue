@@ -4,12 +4,14 @@
     <!-- Address -->
     <div>
       <label
+        for="estimator-address"
         class="block text-[15px] lg:text-[16px] font-semibold text-gray-700 mb-1.5"
       >
         Property address *
       </label>
       <div class="relative">
         <input
+          id="estimator-address"
           v-model="address"
           autocomplete="off"
           placeholder="Start typing your street address"
@@ -43,12 +45,14 @@
     <!-- Photo Upload -->
     <div>
       <label
+        for="estimator-photo"
         class="block text-[15px] lg:text-[16px] font-semibold text-gray-700 mb-1.5"
       >
         Photo of your home
         <span class="text-xs font-normal text-gray-400">(optional)</span>
       </label>
       <input
+        id="estimator-photo"
         type="file"
         accept="image/*"
         ref="fileInput"
@@ -57,6 +61,7 @@
       />
       <button
         type="button"
+        aria-controls="estimator-photo"
         class="w-full px-3 py-2.5 lg:px-4 lg:py-3 border-2 border-dashed border-gray-300 rounded-[14px] hover:border-brand-orange hover:bg-orange-50 transition-colors text-[15px] lg:text-[16px] text-gray-600 flex items-center justify-between gap-2"
         @click="fileInput?.click()"
       >
@@ -104,13 +109,15 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 min-w-0">
       <!-- Package trigger -->
       <div class="min-w-0">
-        <label
+        <span
+          id="estimator-package-label"
           class="block text-[15px] lg:text-[16px] font-semibold text-gray-700 mb-1.5"
         >
           Your package
-        </label>
+        </span>
         <button
           type="button"
+          aria-labelledby="estimator-package-label"
           class="w-full min-w-0 px-3 py-2.5 lg:px-4 lg:py-3 border border-gray-300 rounded-[14px] bg-[#f8f9fa] hover:border-brand-orange transition-colors text-[15px] lg:text-[16px] flex items-center justify-between gap-2 text-left"
           @click="showPackageModal = true"
         >
@@ -131,13 +138,15 @@
 
       <!-- Color trigger -->
       <div class="min-w-0">
-        <label
+        <span
+          id="estimator-color-label"
           class="block text-[15px] lg:text-[16px] font-semibold text-gray-700 mb-1.5"
         >
           Light color
-        </label>
+        </span>
         <button
           type="button"
+          aria-labelledby="estimator-color-label"
           class="w-full min-w-0 px-3 py-2.5 lg:px-4 lg:py-3 border border-gray-300 rounded-[14px] bg-[#f8f9fa] hover:border-brand-orange transition-colors text-[15px] lg:text-[16px] flex items-center justify-between gap-2 text-left"
           @click="showColorModal = true"
         >
@@ -170,11 +179,13 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <div>
         <label
+          for="estimator-name"
           class="block text-[15px] lg:text-[16px] font-semibold !text-[#1C2F5B] mb-1.5"
         >
           Your name *
         </label>
         <input
+          id="estimator-name"
           v-model="name"
           autocomplete="name"
           class="w-full px-3 py-2.5 border border-gray-300 rounded-[14px] focus:ring-2 focus:ring-orange-500 focus:border-transparent text-[15px] lg:text-[16px] form-input"
@@ -186,11 +197,13 @@
       </div>
       <div>
         <label
+          for="estimator-email"
           class="block text-[15px] lg:text-[16px] font-semibold !text-[#1C2F5B] mb-1.5"
         >
           Email *
         </label>
         <input
+          id="estimator-email"
           v-model="email"
           type="email"
           inputmode="email"
@@ -206,12 +219,14 @@
 
     <div>
       <label
+        for="estimator-phone"
         class="block text-[15px] lg:text-[16px] font-semibold !text-[#1C2F5B] mb-1.5"
       >
         Mobile
         <span class="text-xs font-normal text-gray-400">(optional)</span>
       </label>
       <input
+        id="estimator-phone"
         v-model="phone"
         type="tel"
         inputmode="tel"
@@ -238,6 +253,8 @@
     <div
       v-if="error"
       class="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-[14px] text-[14px]"
+      role="alert"
+      aria-live="polite"
     >
       <i class="fas fa-exclamation-circle mr-2"></i>
       {{ error }}
@@ -282,6 +299,9 @@
         <div
           v-if="showPackageModal"
           class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="package-modal-heading"
           @click.self="showPackageModal = false"
         >
           <div
@@ -290,7 +310,10 @@
             <div
               class="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between z-10"
             >
-              <h3 class="text-[16px] lg:text-[17px] font-bold text-[#1C2F5B]">
+              <h3
+                id="package-modal-heading"
+                class="text-[16px] lg:text-[17px] font-bold text-[#1C2F5B]"
+              >
                 Select your package
               </h3>
               <button
@@ -321,6 +344,7 @@
                       ? '!border-[#F7931E] !border-4'
                       : 'border-gray-600 hover:border-gray-400'
                   "
+                  :aria-pressed="selectedPackage === pkg.id"
                   @click="
                     selectedPackage = pkg.id;
                     showPackageModal = false;
@@ -401,6 +425,9 @@
         <div
           v-if="showColorModal"
           class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="color-modal-heading"
           @click.self="showColorModal = false"
         >
           <div
@@ -409,7 +436,10 @@
             <div
               class="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between z-10"
             >
-              <h3 class="text-[16px] lg:text-[17px] font-bold text-[#1C2F5B]">
+              <h3
+                id="color-modal-heading"
+                class="text-[16px] lg:text-[17px] font-bold text-[#1C2F5B]"
+              >
                 Select C-9 Light Color
               </h3>
               <button
@@ -434,6 +464,8 @@
                       ? '!border-[#F7931E] border-4 bg-orange-50 text-brand-orange'
                       : 'border-gray-300 hover:border-gray-400 text-gray-700'
                   "
+                  :aria-pressed="selectedScheme === color.scheme"
+                  :aria-label="color.label"
                   @click="
                     selectedScheme = color.scheme;
                     showColorModal = false;
@@ -501,7 +533,7 @@ const {
 } = useEstimator();
 
 const { loadEarlyBird, earlyBirdIconUrl, isEarlyBirdLive } =
-  useEarlyBirdSpecial();
+  await useEarlyBirdSpecial();
 
 const showPackageModal = ref(false);
 const showColorModal = ref(false);

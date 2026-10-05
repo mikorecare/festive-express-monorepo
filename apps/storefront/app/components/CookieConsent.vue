@@ -16,15 +16,16 @@
           aria-label="Privacy & Cookie Preferences"
         >
           <div
-            class="pointer-events-auto w-full bg-white border border-slate-100 shadow-[0_20px_60px_-15px_rgba(28,45,91,0.18)] transition-all duration-300 ease-in-out rounded-t-3xl sm:rounded-2xl p-6 md:p-7 max-md:max-h-[88vh] max-md:overflow-y-auto"
+            class="pointer-events-auto w-full bg-white border border-slate-200 shadow-[0_20px_60px_-15px_rgba(28,45,91,0.28)] transition-all duration-300 ease-in-out rounded-t-3xl sm:rounded-2xl p-6 md:p-7 max-md:max-h-[88vh] max-md:overflow-y-auto"
           >
-            <!-- Header Section -->
-            <div class="flex items-center justify-between mb-4">
+            <!-- Header -->
+            <div class="flex items-start justify-between gap-3 mb-4">
               <div>
                 <span
-                  class="text-[10px] uppercase tracking-widest font-bold text-[#F49321]/90 block mb-1"
-                  >Privacy Control</span
+                  class="text-[10px] uppercase tracking-widest font-bold text-[#F49321] block mb-1"
                 >
+                  Privacy Control
+                </span>
                 <h2
                   id="cookie-title"
                   class="text-xl font-bold tracking-tight text-[#1C2D5B]"
@@ -34,37 +35,39 @@
               </div>
               <button
                 type="button"
-                class="text-xs font-semibold text-slate-400 hover:text-[#1C2D5B] transition-colors cursor-pointer underline underline-offset-4 decoration-slate-200 hover:decoration-[#1C2D5B]"
+                class="shrink-0 text-xs font-semibold text-slate-600 hover:text-[#1C2D5B] transition-colors cursor-pointer underline underline-offset-4 decoration-slate-300 hover:decoration-[#1C2D5B]"
                 @click="continueWithout"
               >
                 Continue without accepting
               </button>
             </div>
 
-            <!-- Intro Text -->
+            <!-- Intro -->
             <p
+              v-if="cookieIntro"
               v-text="cookieIntro"
-              class="text-xs md:text-[13px] leading-relaxed text-slate-500 mb-6 font-normal"
+              class="text-[13px] leading-relaxed text-slate-700 mb-6"
             />
 
-            <!-- 3 Sliders - Horizontal Row on Desktop -->
+            <!-- Toggles -->
             <div class="flex flex-col md:flex-row md:gap-3 gap-3 mb-6">
-              <!-- Marketing Slider -->
+              <!-- Marketing -->
               <div
-                class="flex-1 flex items-center justify-between p-3 rounded-xl bg-slate-50/60 border border-slate-100/80 transition-all hover:bg-slate-50 md:flex-col md:items-center md:gap-2"
+                class="flex-1 flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 md:flex-col md:items-center md:gap-2"
               >
                 <span
                   id="lbl-marketing"
                   class="text-sm font-semibold text-[#1C2D5B]"
-                  >Marketing</span
                 >
+                  Marketing
+                </span>
                 <button
                   type="button"
                   role="switch"
                   :aria-checked="prefs.marketing"
                   aria-labelledby="lbl-marketing"
                   class="relative h-5 w-9 shrink-0 cursor-pointer rounded-full p-0 transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[#1C2D5B] focus-visible:ring-offset-2"
-                  :class="prefs.marketing ? 'bg-[#1C2D5B]' : 'bg-slate-200'"
+                  :class="prefs.marketing ? 'bg-[#1C2D5B]' : 'bg-slate-300'"
                   @click="prefs.marketing = !prefs.marketing"
                 >
                   <span
@@ -74,22 +77,23 @@
                 </button>
               </div>
 
-              <!-- Functional Slider -->
+              <!-- Functional -->
               <div
-                class="flex-1 flex items-center justify-between p-3 rounded-xl bg-slate-50/60 border border-slate-100/80 transition-all hover:bg-slate-50 md:flex-col md:items-center md:gap-2"
+                class="flex-1 flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 md:flex-col md:items-center md:gap-2"
               >
                 <span
                   id="lbl-functional"
                   class="text-sm font-semibold text-[#1C2D5B]"
-                  >Functional</span
                 >
+                  Functional
+                </span>
                 <button
                   type="button"
                   role="switch"
                   :aria-checked="prefs.functional"
                   aria-labelledby="lbl-functional"
                   class="relative h-5 w-9 shrink-0 cursor-pointer rounded-full p-0 transition-colors duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[#1C2D5B] focus-visible:ring-offset-2"
-                  :class="prefs.functional ? 'bg-[#1C2D5B]' : 'bg-slate-200'"
+                  :class="prefs.functional ? 'bg-[#1C2D5B]' : 'bg-slate-300'"
                   @click="prefs.functional = !prefs.functional"
                 >
                   <span
@@ -101,15 +105,16 @@
                 </button>
               </div>
 
-              <!-- Essential Slider (Disabled) -->
+              <!-- Essential (locked) -->
               <div
-                class="flex-1 flex items-center justify-between p-3 rounded-xl bg-slate-50/40 border border-slate-100/50 opacity-70 md:flex-col md:items-center md:gap-2"
+                class="flex-1 flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200 opacity-80 md:flex-col md:items-center md:gap-2"
               >
                 <span
                   id="lbl-essential"
-                  class="text-sm font-semibold text-slate-500"
-                  >Essential</span
+                  class="text-sm font-semibold text-slate-600"
                 >
+                  Essential
+                </span>
                 <button
                   type="button"
                   role="switch"
@@ -125,46 +130,46 @@
               </div>
             </div>
 
-            <!-- Policy Hyperlinks -->
+            <!-- Policy links -->
             <div
-              class="flex items-center justify-between pt-2 border-t border-slate-100 mb-5"
+              class="flex items-center justify-between pt-3 border-t border-slate-200 mb-5"
             >
-              <div class="flex gap-3 text-[11px] font-medium text-slate-400">
+              <div class="flex gap-3 text-xs font-medium text-slate-600">
                 <NuxtLink
                   to="/privacy-policy"
-                  class="hover:text-[#1C2D5B] transition-colors"
-                  >Privacy Policy</NuxtLink
+                  class="hover:text-[#1C2D5B] hover:underline transition-colors"
                 >
-                <span>·</span>
+                  Privacy Policy
+                </NuxtLink>
+                <span class="text-slate-300">·</span>
                 <NuxtLink
                   to="/cookie-policy"
-                  class="hover:text-[#1C2D5B] transition-colors"
-                  >Cookie Policy</NuxtLink
+                  class="hover:text-[#1C2D5B] hover:underline transition-colors"
                 >
-                <span>·</span>
-                <span class="text-slate-300">Festive Express</span>
+                  Cookie Policy
+                </NuxtLink>
               </div>
             </div>
 
-            <!-- Button Layout -->
+            <!-- Actions -->
             <div class="grid grid-cols-3 gap-2 max-md:flex max-md:flex-col">
               <button
                 type="button"
-                class="order-3 md:order-1 cursor-pointer rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-bold text-[#1C2D5B] tracking-wide transition-all hover:bg-slate-50 hover:border-slate-300 active:scale-[0.98] max-md:py-3.5"
+                class="order-3 md:order-1 cursor-pointer rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-xs font-bold text-[#1C2D5B] tracking-wide transition-all hover:bg-slate-50 hover:border-slate-400 active:scale-[0.98] max-md:py-3.5"
                 @click="saveSettings"
               >
                 Save Settings
               </button>
               <button
                 type="button"
-                class="order-2 md:order-2 cursor-pointer rounded-xl border border-transparent bg-slate-100 px-3 py-2.5 text-xs font-bold text-slate-700 tracking-wide transition-all hover:bg-slate-200 hover:text-slate-900 active:scale-[0.98] max-md:py-3.5"
+                class="order-2 md:order-2 cursor-pointer rounded-xl border border-slate-300 bg-slate-100 px-3 py-2.5 text-xs font-bold text-slate-800 tracking-wide transition-all hover:bg-slate-200 hover:text-slate-900 active:scale-[0.98] max-md:py-3.5"
                 @click="denyAll"
               >
                 Deny
               </button>
               <button
                 type="button"
-                class="order-1 md:order-3 cursor-pointer rounded-xl border border-transparent bg-[#1C2D5B] px-3 py-2.5 text-xs font-bold text-white tracking-wide shadow-sm transition-all hover:bg-[#F49321] hover:shadow-md active:scale-[0.98] max-md:py-3.5"
+                class="order-1 md:order-3 cursor-pointer rounded-xl border border-transparent bg-[#1C2D5B] px-3 py-2.5 text-xs font-bold text-white tracking-wide shadow-sm transition-all hover:bg-[#F49321] hover:text-white hover:shadow-md active:scale-[0.98] max-md:py-3.5"
                 @click="acceptAll"
               >
                 Accept All
@@ -180,6 +185,20 @@
 <script setup lang="ts">
 const STORAGE_KEY = "flp_cookie_consent";
 
+type CookieResponse = {
+  success: boolean;
+  data: { short_description?: string } | null;
+};
+
+type ConsentStatus = "accepted" | "denied" | "custom" | "dismissed";
+
+type ConsentRecord = {
+  marketing: boolean;
+  functional: boolean;
+  essential: boolean;
+  status: ConsentStatus;
+};
+
 const visible = ref(false);
 const prefs = reactive({
   marketing: false,
@@ -187,44 +206,18 @@ const prefs = reactive({
   essential: true,
 });
 
-const cookieIntro = ref("");
-
-type CookieResponse = {
-  success: boolean;
-  data: { short_description?: string } | null;
-};
-
-const { data, error } = useLazyFetch<CookieResponse>("/api/cookie-policy", {
+const { data } = useLazyFetch<CookieResponse>("/api/cookie-policy", {
   key: "cookie-policy-data",
   server: true,
 });
 
-watch(
-  data,
-  (newData) => {
-    if (newData?.success && newData?.data) {
-      cookieIntro.value = newData.data.short_description || "";
-    }
-  },
-  { immediate: true },
-);
+const cookieIntro = computed(() => data.value?.data?.short_description ?? "");
 
-watch(error, (newError) => {
-  if (newError) {
-    console.error("Failed to load cookie policy:", newError);
-  }
-});
-
-const persist = (value: {
-  marketing: boolean;
-  functional: boolean;
-  essential: boolean;
-  status: "accepted" | "denied" | "custom" | "dismissed";
-}) => {
+const persist = (record: ConsentRecord) => {
   if (!import.meta.client) return;
   localStorage.setItem(
     STORAGE_KEY,
-    JSON.stringify({ ...value, updatedAt: new Date().toISOString() }),
+    JSON.stringify({ ...record, updatedAt: new Date().toISOString() }),
   );
   visible.value = false;
 };
@@ -275,7 +268,7 @@ onMounted(() => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
-      const saved = JSON.parse(raw);
+      const saved = JSON.parse(raw) as Partial<ConsentRecord>;
       prefs.marketing = !!saved.marketing;
       prefs.functional = !!saved.functional;
       if (
@@ -299,6 +292,3 @@ if (import.meta.client) {
   };
 }
 </script>
-<style scoped>
-/* empty or malformed */
-</style>

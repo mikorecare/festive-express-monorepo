@@ -113,8 +113,8 @@
               <li>
                 <NuxtLink
                   to="/"
-                  class="block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
-                  exact-active-class="text-[#ff7a00]"
+                  class="nav-link block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
+                  exact-active-class="nav-link-active"
                 >
                   Home
                 </NuxtLink>
@@ -122,8 +122,8 @@
               <li>
                 <NuxtLink
                   to="/packages"
-                  class="block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
-                  active-class="text-[#ff7a00]"
+                  class="nav-link block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
+                  active-class="nav-link-active"
                 >
                   Packages
                 </NuxtLink>
@@ -131,8 +131,8 @@
               <li>
                 <NuxtLink
                   to="/faq"
-                  class="block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
-                  active-class="text-[#ff7a00]"
+                  class="nav-link block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
+                  active-class="nav-link-active"
                 >
                   FAQ
                 </NuxtLink>
@@ -143,7 +143,7 @@
           <!-- Right actions -->
           <div class="flex items-center gap-3 shrink-0">
             <a
-              :href="`tel:${String(settings.contact_phone || '').replace(/[^\d+]/g, '')}`"
+              :href="telHref"
               class="contact-box btn-secondary-2 relative overflow-hidden"
               :aria-label="`Call ${settings.contact_phone_display || '(941) 239-4722'}`"
             >
@@ -181,11 +181,7 @@
 </template>
 
 <script setup lang="ts">
-const { settings, loadSettings } = useSettings();
-
-onMounted(() => {
-  loadSettings();
-});
+const { settings, telHref } = useSettings();
 </script>
 
 <style scoped>
@@ -203,7 +199,7 @@ onMounted(() => {
 
 .brand-text {
   display: inline-block;
-  animation: pulseText 2.8s infinite ease-in-out;
+  animation: pulseText 2.8s ease-in-out infinite;
 }
 
 .underline-svg {
@@ -256,7 +252,29 @@ onMounted(() => {
   }
 }
 
-/* Contact Box Styles */
+/* ---------- Nav link + active indicator ---------- */
+.nav-link {
+  position: relative;
+}
+
+/* Active route: text stays #1a2b4a (contrast-safe),
+   state is communicated by bold weight + orange underline. */
+.nav-link-active {
+  font-weight: 700;
+}
+
+.nav-link-active::after {
+  content: "";
+  position: absolute;
+  left: 0.5rem; /* matches px-2 */
+  right: 0.5rem;
+  bottom: 0;
+  height: 3px;
+  border-radius: 9999px;
+  background: #ff7a00;
+}
+
+/* ---------- Contact Box Styles ---------- */
 .contact-box {
   display: flex;
   align-items: center;
