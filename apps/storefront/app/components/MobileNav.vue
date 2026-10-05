@@ -7,7 +7,10 @@
     aria-label="Bottom navigation"
   >
     <ul
-      class="grid grid-cols-3 list-none m-0 p-0 max-w-[500px] mx-auto px-2 py-1.5"
+      class="grid list-none m-0 p-0 max-w-[500px] mx-auto px-2 py-1.5"
+      :style="{
+        gridTemplateColumns: `repeat(${navItems.length}, minmax(0, 1fr))`,
+      }"
     >
       <li v-for="item in navItems" :key="item.to">
         <NuxtLink
@@ -32,8 +35,30 @@
             aria-hidden="true"
           ></span>
 
-          <!-- Icon -->
+          <!-- Icon: Home -->
+          <IcNavHome
+            v-if="item.icon === 'home'"
+            class="w-[1.35rem] h-[1.35rem] transition-transform duration-200 ease-out"
+            :class="isActive(item.to) ? 'scale-110' : 'group-hover:scale-110'"
+          />
+
+          <!-- Icon: Bell (Packages) -->
+          <IcNavBell
+            v-else-if="item.icon === 'bell'"
+            class="w-[1.35rem] h-[1.35rem] transition-transform duration-200 ease-out"
+            :class="isActive(item.to) ? 'scale-110' : 'group-hover:scale-110'"
+          />
+
+          <!-- Icon: FAQ -->
+          <IcNavFaq
+            v-else-if="item.icon === 'faq'"
+            class="w-[1.35rem] h-[1.35rem] transition-transform duration-200 ease-out"
+            :class="isActive(item.to) ? 'scale-110' : 'group-hover:scale-110'"
+          />
+
+          <!-- Icon: FontAwesome fallback -->
           <i
+            v-else
             :class="[
               item.icon,
               'text-[1.35rem] transition-transform duration-200 ease-out',
@@ -51,18 +76,27 @@
 </template>
 
 <script setup lang="ts">
+import IcNavHome from "~/components/Icons/IcNavHome.vue";
+import IcNavBell from "~/components/Icons/IcNavBell.vue";
+import IcNavFaq from "~/components/Icons/IcNavFaq.vue";
+
 const route = useRoute();
 
 interface NavItem {
   to: string;
   label: string;
+  /**
+   * Either a sentinel for a built-in SVG icon:
+   *   "home" | "bell" | "faq"
+   * or a FontAwesome class string like "fas fa-home"
+   */
   icon: string;
 }
 
 const navItems: NavItem[] = [
-  { to: "/", label: "Home", icon: "fas fa-home" },
-  { to: "/packages", label: "Packages", icon: "fas fa-gifts" },
-  { to: "/faq", label: "FAQ", icon: "fas fa-question-circle" },
+  { to: "/", label: "Home", icon: "home" },
+  { to: "/packages", label: "Packages", icon: "bell" },
+  { to: "/faq", label: "FAQ", icon: "faq" },
 ];
 
 const isActive = (path: string) => {
@@ -77,7 +111,6 @@ nav {
   user-select: none;
 }
 
-/* Add bottom padding to page content so the nav doesn't cover it */
 :global(body) {
   padding-bottom: env(safe-area-inset-bottom, 0);
 }

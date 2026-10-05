@@ -4,39 +4,67 @@
     <section
       aria-label="Holiday lighting packages hero banner"
       role="region"
-      class="page-hero snow-bg relative bg-slate-900 py-16 text-white overflow-hidden"
+      class="page-hero snow-bg relative bg-slate-900 py-16 text-white overflow-hidden min-h-[400px] sm:min-h-[500px]"
     >
-      <div class="hero-overlay absolute inset-0 bg-black/40 z-10 min-h-[200px]">
-        <div
-          class="container mx-auto px-4 h-full flex items-center justify-center min-h-[200px]"
-        >
-          <div class="hero-content text-center max-w-2xl mx-auto">
-            <h1
-              v-fade
-              class="text-3xl md:text-5xl tracking-tight text-white mb-4"
-            >
-              <span class="text-brand-orange">Holiday Lighting</span> Packages
-            </h1>
+      <!-- LCP image -->
+      <NuxtImg
+        src="/New/Banner/hero-new.webp"
+        alt=""
+        role="none"
+        sizes="100vw"
+        format="webp"
+        quality="80"
+        :img-attrs="{
+          loading: 'eager',
+          fetchpriority: 'high',
+          decoding: 'async',
+        }"
+        preload
+        class="absolute inset-0 w-full h-full object-cover z-0"
+      />
 
-            <p
-              v-fade
-              class="text-base md:text-lg text-slate-200"
-              aria-label="Package description"
+      <!-- Dark overlay -->
+      <div class="absolute inset-0 bg-black/40 z-[1]" aria-hidden="true"></div>
+
+      <!-- Content -->
+      <div
+        class="relative z-10 container mx-auto px-4 flex items-center justify-center min-h-[400px] sm:min-h-[500px]"
+      >
+        <div class="hero-content text-center max-w-2xl mx-auto">
+          <h1
+            v-fade
+            class="text-3xl md:text-5xl font-extrabold tracking-tight mb-4"
+          >
+            <span
+              class="text-brand-orange [-webkit-text-stroke:0.04em_#fff] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
             >
-              <template v-if="subtitleParts.length > 1">
-                <span class="md:hidden" aria-hidden="true">
-                  {{ subtitleParts[0] }}<br />
-                  {{ subtitleParts[1] }}
-                </span>
-                <span class="hidden md:inline">
-                  {{ subtitleParts.join(" ") }}
-                </span>
-              </template>
-              <template v-else>
-                {{ subtitleParts[0] }}
-              </template>
-            </p>
-          </div>
+              Holiday Lighting
+            </span>
+            <span
+              class="text-white [-webkit-text-stroke:0.04em_#1C2D5B] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
+            >
+              Packages
+            </span>
+          </h1>
+
+          <p
+            v-fade
+            class="text-base md:text-lg text-slate-200"
+            aria-label="Package description"
+          >
+            <template v-if="subtitleParts.length > 1">
+              <span class="md:hidden" aria-hidden="true">
+                {{ subtitleParts[0] }}<br />
+                {{ subtitleParts[1] }}
+              </span>
+              <span class="hidden md:inline">
+                {{ subtitleParts.join(" ") }}
+              </span>
+            </template>
+            <template v-else>
+              {{ subtitleParts[0] }}
+            </template>
+          </p>
         </div>
       </div>
     </section>

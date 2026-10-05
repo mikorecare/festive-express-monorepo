@@ -3,21 +3,19 @@
     <!-- Floating trigger -->
     <button
       type="button"
-      class="fixed bottom-[100px] right-[20px] z-[999] flex items-center justify-center bg-[#172a50] border-[3px] border-[#F49321] rounded-full w-[64px] h-[64px] p-0 shadow-[0_8px_24px_rgba(0,0,0,0.35)] cursor-pointer max-lg:bottom-[160px] max-lg:right-[16px] max-sm:bottom-[130px] max-sm:right-[14px] max-sm:w-[45px] max-sm:h-[45px] max-sm:border-[2px]"
+      class="fixed bottom-[100px] right-[20px] z-[999] flex items-center justify-center bg-[#1C2D5B] rounded-full w-[64px] h-[64px] p-0 shadow-[0_8px_24px_rgba(0,0,0,0.35)] cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 max-lg:bottom-[160px] max-lg:right-[16px] max-sm:bottom-[130px] max-sm:right-[14px] max-sm:w-[48px] max-sm:h-[48px]"
       :class="{ 'cart-shake': cartBump > 0 }"
       :key="cartBump"
       aria-label="Open cart"
       @click="open = true"
     >
       <div
-        class="relative flex items-center justify-center bg-[#F49321] text-white w-[58px] h-[58px] rounded-full max-sm:w-[44px] max-sm:h-[44px]"
+        class="relative flex items-center justify-center bg-[#F49321] text-white w-[60px] h-[60px] rounded-full border-2 border-white max-sm:w-[44px] max-sm:h-[44px]"
       >
-        <ShoppingCartIcon
-          class="w-7 h-7 max-sm:w-5 max-sm:h-5"
-          aria-hidden="true"
-        />
+        <IcNavCart class="w-7 h-7 max-sm:w-5 max-sm:h-5" aria-hidden="true" />
+
         <span
-          class="absolute -top-1 -right-1 z-10 bg-white text-[#172a50] text-[0.8rem] font-extrabold w-[22px] h-[22px] rounded-full flex items-center justify-center border-2 border-[#F49321] max-sm:w-[18px] max-sm:h-[18px] max-sm:text-[0.6rem] max-sm:-top-0.5 max-sm:-right-0.5"
+          class="absolute -top-1 -right-1 z-10 bg-white text-[#1C2D5B] text-[0.7rem] font-extrabold min-w-[20px] h-[20px] px-1 rounded-full flex items-center justify-center border-2 border-[#1C2D5B] shadow-sm max-sm:min-w-[16px] max-sm:h-[16px] max-sm:text-[0.6rem]"
         >
           {{ displayCount }}
         </span>
@@ -166,7 +164,7 @@
 </template>
 
 <script setup lang="ts">
-import { ShoppingCartIcon } from "@heroicons/vue/24/outline";
+import IcNavCart from "~/components/Icons/IcNavCart.vue";
 
 const cart = useCart();
 const open = ref(false);
