@@ -4,23 +4,28 @@
   >
     <div class="absolute inset-0 z-[-1] pointer-events-none"></div>
     <div class="max-w-[1280px] mx-auto px-4 sm:px-5">
-      <h2
-        v-fade
-        class="flex flex-col items-center text-center font-black text-white tracking-wide sm:tracking-wider drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] uppercase whitespace-nowrap text-[1.05rem] sm:text-3xl lg:text-[60px] leading-tight"
-      >
-        <span class="block mb-2">CHOOSE YOUR</span>
-        <span
-          class="block mt-2 sm:mt-3 lg:mt-5 text-brand-orange [text-shadow:_-2px_-2px_0_#fff,_2px_-2px_0_#fff,_-2px_2px_0_#fff,_2px_2px_0_#fff]"
+      <div v-fade class="text-center mb-8 lg:mb-10">
+        <p
+          class="text-white font-extrabold text-[1.5rem] sm:text-4xl lg:text-[72px] tracking-wide uppercase sm:mb-1 md:mb-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)]"
+        >
+          CHOOSE YOUR
+        </p>
+        <h2
+          class="text-[#F49321] font-extrabold text-[1.5rem] sm:text-4xl lg:text-[72px] tracking-wide uppercase leading-[1.15] [-webkit-text-stroke:2px_#fff] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(28,45,91,0.45)]"
         >
           HOLIDAY PACKAGE
-        </span>
-      </h2>
+        </h2>
+      </div>
       <p
         v-fade
-        class="text-center text-white font-bold tracking-[0.4px] whitespace-nowrap text-[0.72rem] sm:text-[1.15rem] leading-tight my-8 drop-shadow-[0_1px_4px_rgba(0,0,0,0.4)]"
+        class="text-center text-white font-bold tracking-[0.4px] text-[0.72rem] sm:text-[1.15rem] leading-snug mt-6 mb-8 drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)] max-w-[90%] sm:max-w-none mx-auto"
       >
-        COMPARE WHAT’S INCLUDED IN EACH PLAN (Each package is a rental for one
-        season)
+        COMPARE WHAT'S INCLUDED IN EACH PLAN
+        <span
+          class="block text-[0.65rem] sm:text-[0.9rem] font-semibold text-white/90 mt-1"
+        >
+          (Each package is a rental for one season)
+        </span>
       </p>
 
       <div v-if="pending" class="text-center py-10 text-white font-semibold">
@@ -226,7 +231,7 @@
           >
             <button
               type="button"
-              class="pkg-select-btn group relative overflow-hidden w-[85%] bg-brand-orange border-2 border-white rounded-[50px] py-[12px] px-[16px] text-[0.95rem] font-black tracking-[0.5px] cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out hover:bg-[#1C2D5B] -mt-[30px] before:content-[''] before:absolute before:inset-0 before:z-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
+              class="pkg-select-btn group relative overflow-hidden w-[85%] bg-brand-orange border-2 border-white rounded-[50px] py-[12px] px-[16px] text-[0.95rem] font-bold tracking-[0.5px] cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out hover:bg-[#1C2D5B] -mt-[30px] before:content-[''] before:absolute before:inset-0 before:z-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full tracking-wider"
               @click="selectPackage(pkg)"
             >
               <span
@@ -335,9 +340,8 @@ const getPackageButtonPrefix = (pkg: { name: string }) => {
 
 const firstParagraph = (text?: string | null) => {
   if (!text) return "";
-  // Split on double-newline (real paragraph) OR single newline OR ". " boundary
   const parts = text
-    .split(/\n\s*\n|\n/) // paragraph breaks by blank line or single newline
+    .split(/\n\s*\n|\n/)
     .map((p) => p.trim())
     .filter(Boolean);
   return parts[0] || "";

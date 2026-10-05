@@ -40,7 +40,7 @@
       <!-- ============================== -->
       <!-- RIGHT: Contact form             -->
       <!-- ============================== -->
-      <div v-fade class="w-full flex justify-center lg:justify-end">
+      <div v-fade class="w-full flex justify-center lg:justify-end pb-2">
         <ContactUsContactForm />
       </div>
     </div>

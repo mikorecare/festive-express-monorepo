@@ -74,9 +74,11 @@
           <h1
             class="text-4xl text-start font-extrabold leading-[1.15] mb-4 tracking-wide text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] max-lg:text-[1.5rem] max-lg:mb-2 max-lg:leading-[1.2] max-lg:drop-shadow-[0_4px_14px_rgba(0,0,0,0.9)] max-lg:[text-shadow:0_2px_6px_rgba(0,0,0,0.95),0_4px_16px_rgba(0,0,0,0.75)]"
           >
-            <span class="highlight block text-[#F49321]">{{
-              heroH1White
-            }}</span>
+            <span
+              class="highlight block text-[#F49321] [-webkit-text-stroke:0.05em_#1C2D5B] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(28,45,91,0.45)] tracking-wider"
+            >
+              {{ heroH1White }}
+            </span>
             <span class="block text-white">{{ heroH1Orange }}</span>
           </h1>
 
@@ -108,15 +110,14 @@
           <!-- Button 1 -->
           <NuxtLink
             to="#preview"
-            class="relative uppercase inline-flex items-center justify-center bg-transparent text-[#F49321] font-extrabold text-lg rounded-full border-[3px] border-[#F49321] px-12 py-2 hover:bg-[#e0850a] transition-colors max-lg:text-base max-lg:px-6 max-lg:py-3 max-lg:border-2 max-lg:w-full"
+            class="relative uppercase inline-flex items-center justify-center bg-[#1C2D5B] text-white font-extrabold text-lg rounded-full border-[3px] border-[#1C2D5B] px-12 py-2 hover:bg-[#e0850a] transition-colors max-lg:font-semibold tracking-wider max-lg:text-base max-lg:px-6 max-lg:py-3 max-lg:border-2 max-lg:w-full"
           >
             <span>Preview your home</span>
           </NuxtLink>
 
-          <!-- Button 2 -->
           <NuxtLink
             to="/packages"
-            class="relative inline-flex items-center justify-center uppercase bg-[#F49321] text-white font-extrabold text-lg rounded-full border-[3px] border-[#F49321] shadow-[0_0_0_4px_#F49321] px-12 py-2 hover:bg-[#e0850a] transition-colors max-lg:text-base max-lg:px-6 max-lg:py-3 max-lg:border-2 max-lg:shadow-none max-lg:w-full"
+            class="relative inline-flex items-center justify-center uppercase bg-[#F49321] text-white font-extrabold text-lg rounded-full border-[3px] border-[#F49321] shadow-[0_0_0_4px_#F49321] px-12 py-2 hover:bg-[#e0850a] transition-colors max-lg:font-semibold tracking-wider max-lg:text-base max-lg:px-6 max-lg:py-3 max-lg:border-2 max-lg:shadow-none max-lg:w-full"
           >
             <span>{{ heroButtonLabel }}</span>
           </NuxtLink>
