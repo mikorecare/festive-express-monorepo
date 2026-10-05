@@ -1,5 +1,7 @@
 <template>
-  <div class="faq-page min-h-screen bg-[#f8fafc]">
+  <div
+    class="faq-page min-h-screen bg-[#f8fafc] bg-[url('/Images/LV.webp')] bg-no-repeat bg-cover bg-[position:50%] bg-fixed"
+  >
     <section
       aria-label="FAQ page header"
       role="region"
@@ -38,8 +40,26 @@
         {{ errorMessage }}
       </div>
 
-      <!-- FAQ List -->
-      <FaqList v-else :categories="categories" />
+      <!-- FAQ List + Contact Form -->
+      <div
+        class="w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:flex lg:gap-10 lg:items-start"
+      >
+        <!-- Left: FAQ list (60%) -->
+        <div class="w-full lg:w-[60%] lg:flex-shrink-0">
+          <FaqList v-if="categories" :categories="categories" />
+          <div v-else class="text-center py-10 text-gray-500">
+            Loading FAQs...
+          </div>
+        </div>
+
+        <!-- Right: Contact form (40%) -->
+        <div
+          v-fade
+          class="w-full lg:w-[40%] lg:flex-shrink-0 mt-10 lg:mt-0 lg:sticky lg:top-24"
+        >
+          <ContactUsContactForm />
+        </div>
+      </div>
 
       <!-- Contact -->
       <div

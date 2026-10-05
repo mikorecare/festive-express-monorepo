@@ -68,33 +68,10 @@
         <span class="truncate text-left">{{
           imagePreview ? "Change photo" : "Upload a photo (optional)"
         }}</span>
-        <svg
-          width="26"
-          height="26"
-          viewBox="0 0 34 34"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          class="flex-shrink-0"
-        >
-          <rect width="34" height="34" fill="url(#pattern0_367_3)" />
-          <defs>
-            <pattern
-              id="pattern0_367_3"
-              patternContentUnits="objectBoundingBox"
-              width="1"
-              height="1"
-            >
-              <use xlink:href="#image0_367_3" transform="scale(0.0111111)" />
-            </pattern>
-            <image
-              id="image0_367_3"
-              width="90"
-              height="90"
-              preserveAspectRatio="none"
-              xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAYAAAA4qEECAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFLUlEQVR4nO2cTWhdVRDHj4laxYX4rSimeTOJoQs3rhQhKIpxUazInfMSC0WQWkQ3oiaustJWQYqiRQRxoW6yEoRAKRKbO/NqbLRYqi3UhUhVqKLgd/3Ik7kvqWle3lfMu3PvzfnDQMgj4T+/N2/uuefMfc4FBQUFBQUFBQUFBQUFBQUFBQUFBQXlVX3R3LXg+T708hx4PoCej4LnU+j5NyD+E0l+QM8ngWQ/EL80EMmo/o2171yoFM1fCsQPA8ksel5AL9XOgz8C4seHts1dYZ1P5rQlqlwOJC9ota4Nbn0A8S/gee9AVLnebXQND8+cP+D5KfTy43oBXg04Ej99y875C9xG1OYx6UPP3C3AdcC9HOn3s4NuIwkp3trNKm4C+6dSuXK/2wgqkZSTVUPKkJfF3xjxLldkIclDSaJ2kJdX905XRJXKcid4+csa8PLKBpJtrmgXPvByOgNwV1b1z4OjMuQKoclqD3ies4baEDbxJ4VY+mHEu6xhtlHZT7qsSd99IL6jdicnMZB8kdyFJXdicgI8fwDEe8DLbaXtcjV4/t4aZDstZOjBg9e5LOjm7fsvAc9PoOdv20+Az1hDbDtIXrRm7KBcGekEMOYw9BNptxGlFzLi3WvfSZNcBfj4MQPK1fOAZJ918pgqaJ5LHTOSPGudOKYevKAX8PQgR5XhjdIusL6qfSqQb4gqF+sRkXXCaAd6byqgkeRR62TRMkimU7oA8ufmyXrL4JNdxwwR32qfqJiG3sl2HTR6GbdOFM1Byx/dB03yrlVy6GVc5zI09OfF31lU9Jnu0J2s9gxQ5S4gfs9iSQe6H0Lx1pW2gOQeJPndprL10LgSuWiqd10Y6w6bTgDZJCNJJZd8fG8jf/qaVWUvAj+q1601A94SHbsQiV9B4n+yCjkzsGuMXlZmrhPdOBZfhiQzdlUiDdtFI9m2kbPAZXB05sq2DOs2oPU6Gdqs5MxVdgJbjun4WsuTESR+P0+VnMXKTgYwR6Y3NTO5L4+VnMXKBs+vrm4uim+33I2D/1nJ2atsXtAVW93EpvaWvFdy5iqb+NNz1tlI/IDdOy8a462AreW1JDcvE5a5nTPpZL2U62vyuMNSC2j4eouW018+dI0paM8HEiM3+UObrU9KhhrMSyz/6Dep2KatR/+3ZW7KVsfdlqY3q8Yx0QxyK9DNYAPFz1jnV4riHfrRfNPaCNSGaCa0+hYrcGLlRawV6CXY9f/HfkAHPL+hRuetjWAb0Q7ozAbJYW0dX5kb8UUHzV+69XycLICWBsG/1pZH5kak0KCTo688jMxi/kGf1hOUI9ZGsOCgdcHhgPidDBipFhk0eHkrN1NHLsegB6jyiK46wPoWHAsNmhd0m2PJbMXekBQUtMTLzFbGMmCoWkTQEMX0n9toqleflrI2hQUDDV4+qxuwwXJ8t7UxLBhofeS6kenXrc1hQUDrQXfzSX6Sw9YmMeeggeTDvh0zFzUEnRiPZq/KYr92OQENxMfbnlZS2PpNWtamMWegtZKVnetE2kbA82vW5jEnoLUnt2wXzbQ4F33cOhGXUdC6hGu4uuhY0VSvfgtibfja5nbdZQp0wiBOnjecrPa4bmgwOtivmyTg5W30/LHuZ6dxeOCMQGtuQPKdbnVqzpr72b2LIgo7fAOC1qgAOiVhAJ2OMIBORxhApyMMoNMRBtDpCAPodIQBdDrCADodYQCdjjCATkdA8s0qGz6nrH0VTuDl+TrQxLutfRVOODK9SWEDyde14D0df22Dof4FIt3t8oYupXsAAAAASUVORK5CYII="
-            />
-          </defs>
-        </svg>
+        <i
+          class="fa-solid fa-upload flex-shrink-0 text-[26px] text-[#1C2D5B]"
+          aria-hidden="true"
+        ></i>
       </button>
       <img
         v-if="imagePreview"
