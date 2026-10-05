@@ -51,7 +51,7 @@
             v-for="(review, i) in reviews"
             :key="i"
             v-fade
-            class="snap-start shrink-0 w-[85vw] max-w-[460px] sm:w-[340px] lg:w-[calc((100%-2rem)/3)] bg-[#1C2D5B] rounded-xl shadow-[0_6px_24px_rgba(28,45,91,0.12)] overflow-hidden h-[300px] flex flex-row transition-shadow duration-200 hover:shadow-[0_12px_28px_rgba(28,45,91,0.18)]"
+            class="snap-start shrink-0 w-[85vw] max-w-[460px] sm:w-[340px] lg:w-[calc((100%-2rem)/3)] bg-[#1C2D5B] rounded-tl-xl rounded-br-xl rounded-tr-none rounded-bl-none shadow-[0_6px_24px_rgba(28,45,91,0.12)] overflow-hidden h-[300px] flex flex-row transition-shadow duration-200 hover:shadow-[0_12px_28px_rgba(28,45,91,0.18)]"
             :style="{ transitionDelay: `${i * 60}ms` }"
           >
             <!-- LEFT COLUMN — 45% -->

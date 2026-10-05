@@ -693,6 +693,14 @@ ctm-chat::part(engage-message-bubble) {
   display: none !important;
 }
 
+#engage-message,
+.engage.visible,
+[id^="engage-"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 @supports (padding: env(safe-area-inset-bottom)) {
   body {
     padding-bottom: env(safe-area-inset-bottom);
