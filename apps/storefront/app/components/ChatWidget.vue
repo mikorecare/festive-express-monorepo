@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 
 const chatContainer = ref<HTMLElement | null>(null);
 const widgetReady = ref(false);
@@ -23,6 +23,7 @@ const token =
   "eyJhbGciOiJub25lIn0.eyJyIjoicHJvZHVjdGlvbiIsImkiOjI2MDksImEiOjUxNTIxOCwiYCI6Imh0dHBzIiwiaCI6ImNoYXQuYWN0bS54eXoifQ.";
 
 let widgetInstance: any = null;
+let observer: MutationObserver | null = null;
 
 const loadScript = () => {
   return new Promise((resolve, reject) => {
@@ -40,7 +41,17 @@ const loadScript = () => {
   });
 };
 
-// -------- Core action helpers --------
+const killCtmBubble = () => {
+  document
+    .querySelectorAll('#engage-message, .engage.visible, [id^="engage-"]')
+    .forEach((el) => {
+      const htmlEl = el as HTMLElement;
+      htmlEl.style.display = "none";
+      htmlEl.style.visibility = "hidden";
+      htmlEl.style.opacity = "0";
+      htmlEl.style.pointerEvents = "none";
+    });
+};
 
 const moveBubbleOffScreen = () => {
   try {
@@ -68,7 +79,6 @@ const clickBubble = () => {
     const bubble = shadowRoot.querySelector(".bubble") as HTMLElement | null;
     if (!bubble) return false;
 
-    // Temporarily restore bubble so it's clickable
     bubble.style.position = "fixed";
     bubble.style.bottom = "20px";
     bubble.style.right = "20px";
@@ -79,11 +89,7 @@ const clickBubble = () => {
 
     bubble.click();
 
-    // Move back off-screen after the click
-    setTimeout(() => {
-      moveBubbleOffScreen();
-    }, 50);
-
+    setTimeout(() => moveBubbleOffScreen(), 50);
     return true;
   } catch (e) {
     console.error("Error clicking chat bubble:", e);
@@ -91,38 +97,28 @@ const clickBubble = () => {
   }
 };
 
-// -------- Public API (used by provide/inject) --------
-
 const open = () => {
   if (!widgetInstance) return;
-  // If bubble is currently off-screen (closed), click to open
-  const opened = clickBubble();
-  if (!opened) {
-    // Fallback to widget methods if available
-    if (typeof widgetInstance.open === "function") widgetInstance.open();
+  if (!clickBubble() && typeof widgetInstance.open === "function") {
+    widgetInstance.open();
   }
 };
 
 const close = () => {
   if (!widgetInstance) return;
-  // Same toggle pattern — clicking while open closes it
-  const closed = clickBubble();
-  if (!closed) {
-    if (typeof widgetInstance.close === "function") widgetInstance.close();
+  if (!clickBubble() && typeof widgetInstance.close === "function") {
+    widgetInstance.close();
   }
 };
 
 const toggle = () => {
   if (!widgetInstance) return;
-  const toggled = clickBubble();
-  if (!toggled) {
-    if (typeof widgetInstance.toggle === "function") widgetInstance.toggle();
+  if (!clickBubble() && typeof widgetInstance.toggle === "function") {
+    widgetInstance.toggle();
   }
 };
 
 defineExpose({ open, close, toggle });
-
-// -------- Init --------
 
 const initWidget = async () => {
   try {
@@ -144,8 +140,8 @@ const initWidget = async () => {
 
       await new Promise((resolve) => setTimeout(resolve, 500));
 
-      // Move the widget's own bubble off-screen — we use our own button
       moveBubbleOffScreen();
+      killCtmBubble();
 
       widgetReady.value = true;
     }
@@ -154,14 +150,25 @@ const initWidget = async () => {
   }
 };
 
-const toggleChat = () => {
-  toggle();
-};
+const toggleChat = () => toggle();
 
 onMounted(() => {
-  if (process.client) {
-    initWidget();
-  }
+  if (!process.client) return;
+
+  initWidget();
+
+  // Immediately start hiding CTM's default bubble
+  killCtmBubble();
+  observer = new MutationObserver(killCtmBubble);
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+  });
+});
+
+onBeforeUnmount(() => {
+  observer?.disconnect();
+  observer = null;
 });
 </script>
 
