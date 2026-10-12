@@ -340,6 +340,7 @@ export default defineNuxtConfig({
           "https://www.youtube-nocookie.com",
           "https://s.ytimg.com",
           "https://i.ytimg.com",
+          "https://motion-media-llc.aryeo.com",
         ],
 
         'style-src': [
@@ -375,6 +376,14 @@ export default defineNuxtConfig({
           "https://i.ytimg.com",
           "https://i9.ytimg.com",
           "https://*.ytimg.com",
+          "https://motion-media-llc.aryeo.com",
+        ],
+
+        'media-src': [
+          "'self'",
+          "blob:",
+          "data:",
+          "https://motion-media-llc.aryeo.com",
         ],
 
         'font-src': [
@@ -405,6 +414,7 @@ export default defineNuxtConfig({
           "https://www.youtube-nocookie.com",
           "https://s.ytimg.com",
           "https://i.ytimg.com",
+          "https://motion-media-llc.aryeo.com",
         ],
 
         'frame-src': [
@@ -421,6 +431,7 @@ export default defineNuxtConfig({
           "https://www.youtube-nocookie.com",
           "https://youtube.com",
           "https://youtu.be",
+          "https://motion-media-llc.aryeo.com",
         ],
 
         'frame-ancestors': ["'self'"],

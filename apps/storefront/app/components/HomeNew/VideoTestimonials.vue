@@ -69,11 +69,12 @@
             :aria-label="`Show video testimonial from ${video.name}`"
             @click="onCardClick(i)"
           >
-            <img
-              :src="video.thumbnail"
+            <NuxtImg
+              :src="cardImage(video, i)"
               :alt="`Video testimonial thumbnail — ${video.name}`"
               class="absolute inset-0 w-full h-full object-cover"
               loading="lazy"
+              format="webp"
             />
 
             <div
@@ -149,11 +150,12 @@
             :aria-label="`Show video testimonial from ${video.name}`"
             @click="onCardClick(i)"
           >
-            <img
-              :src="video.thumbnail"
+            <NuxtImg
+              :src="cardImage(video, i)"
               :alt="`Video testimonial thumbnail — ${video.name}`"
               class="absolute inset-0 w-full h-full object-cover"
               loading="lazy"
+              format="webp"
             />
 
             <div
@@ -322,65 +324,73 @@ interface VideoTestimonial {
   role?: string;
   youtubeUrl: string;
   thumbnail: string;
+  selected: string;
   embedUrl: string;
 }
 
 const videos: VideoTestimonial[] = [
   {
-    name: "Matt Nemeth",
-    role: "1842 Baywood Drive, Sarasota, FL 34231",
-    youtubeUrl: "https://youtu.be/TfgCQ-PUX9g",
-    thumbnail: "https://img.youtube.com/vi/TfgCQ-PUX9g/maxresdefault.jpg",
-    embedUrl: "https://www.youtube.com/embed/TfgCQ-PUX9g?autoplay=1",
+    name: "Brad Gucciardo",
+    role: "Bradenton, FL",
+    youtubeUrl: "",
+    thumbnail: "/New/Video-Testimonials/brand-thumbnail.webp",
+    selected: "/New/Video-Testimonials/brand-selected.webp",
+    embedUrl:
+      "https://motion-media-llc.aryeo.com/videos/3d6302ac-635a-4e84-aa60-483f5fc4a8af",
   },
   {
-    name: "Wendi Morisson",
-    role: "2715 Coconut Bay Lane, Sarasota, FL 34237",
-    youtubeUrl: "https://youtu.be/lkSDylU5ctk",
-    thumbnail: "https://img.youtube.com/vi/lkSDylU5ctk/maxresdefault.jpg",
-    embedUrl: "https://www.youtube.com/embed/lkSDylU5ctk?autoplay=1",
+    name: "Liz Hazeltine",
+    role: "Sarasota, FL",
+    youtubeUrl: "",
+    thumbnail: "/New/Video-Testimonials/liz-thumbnail.webp",
+    selected: "/New/Video-Testimonials/liz-selected.webp",
+    embedUrl:
+      "https://motion-media-llc.aryeo.com/videos/cd6ca120-6018-46b8-a80c-b94c4b41b1ff",
   },
   {
-    name: "Grant Gutierrez",
-    role: "4261 Hanging Moss Circle, Sarasota, FL 34238",
-    youtubeUrl: "https://youtu.be/spUcxajt87k",
-    thumbnail: "https://img.youtube.com/vi/spUcxajt87k/maxresdefault.jpg",
-    embedUrl: "https://www.youtube.com/embed/spUcxajt87k?autoplay=1",
+    name: "Tim and Jonnie Dwyer",
+    role: "Lakewood Ranch, FL",
+    youtubeUrl: "",
+    thumbnail: "/New/Video-Testimonials/tim-thumbnail.webp",
+    selected: "/New/Video-Testimonials/tim-selected.webp",
+    embedUrl:
+      "https://motion-media-llc.aryeo.com/videos/12e4f5c1-434d-4fcc-934a-603377c6bca9",
   },
   {
-    name: "Mica Siazon",
-    role: "1308 Pine Needle Road, Sarasota, FL 34242",
-    youtubeUrl: "https://youtu.be/9diDzfZQig0",
-    thumbnail: "https://img.youtube.com/vi/9diDzfZQig0/maxresdefault.jpg",
-    embedUrl: "https://www.youtube.com/embed/9diDzfZQig0?autoplay=1",
+    name: "The Lasotas",
+    role: "Bradenton, FL",
+    youtubeUrl: "",
+    thumbnail: "/New/Video-Testimonials/lasotas-thumbnail.webp",
+    selected: "/New/Video-Testimonials/lasotas-selected.webp",
+    embedUrl:
+      "https://motion-media-llc.aryeo.com/videos/baaf6341-ad2e-402d-9840-3fdc564368b6",
   },
   {
-    name: "Brian Tutil",
-    role: "3427 Siesta Drive, Sarasota, FL 34239",
-    youtubeUrl: "https://youtu.be/Tadf0TQJTvc",
-    thumbnail: "https://img.youtube.com/vi/Tadf0TQJTvc/maxresdefault.jpg",
-    embedUrl: "https://www.youtube.com/embed/Tadf0TQJTvc?autoplay=1",
+    name: "Neil and Lambi Newsham",
+    role: "Bradenton, FL",
+    youtubeUrl: "",
+    thumbnail: "/New/Video-Testimonials/newshan-thumbnail.webp",
+    selected: "/New/Video-Testimonials/newsham-selected.webp",
+    embedUrl:
+      "https://motion-media-llc.aryeo.com/videos/23ded663-b133-492c-954f-3e6cf0236308",
   },
   {
-    name: "Kelly Johnson",
-    role: "1509 Ringling Boulevard, Sarasota, FL 34236",
-    youtubeUrl: "https://youtu.be/oM9RpuFXP1k",
-    thumbnail: "https://img.youtube.com/vi/oM9RpuFXP1k/maxresdefault.jpg",
-    embedUrl: "https://www.youtube.com/embed/oM9RpuFXP1k?autoplay=1",
+    name: "The Johansen Family",
+    role: "Lakewood Ranch, FL",
+    youtubeUrl: "",
+    thumbnail: "/New/Video-Testimonials/johasen-thumbnail.webp",
+    selected: "/New/Video-Testimonials/johasen-selected.webp",
+    embedUrl:
+      "https://motion-media-llc.aryeo.com/videos/0190d40e-ba8c-732f-81c8-c9b87dd393e1",
   },
   {
-    name: "Angel Locsin",
-    role: "5620 Midnight Pass Road, Sarasota, FL 34242",
-    youtubeUrl: "https://youtu.be/J2bUoGeCBC0",
-    thumbnail: "https://img.youtube.com/vi/J2bUoGeCBC0/maxresdefault.jpg",
-    embedUrl: "https://www.youtube.com/embed/J2bUoGeCBC0?autoplay=1",
-  },
-  {
-    name: "Lisa Eilers",
-    role: "2745 Bee Ridge Road, Sarasota, FL 34239",
-    youtubeUrl: "https://youtu.be/8IW9MSVwTI4",
-    thumbnail: "https://img.youtube.com/vi/8IW9MSVwTI4/maxresdefault.jpg",
-    embedUrl: "https://www.youtube.com/embed/8IW9MSVwTI4?autoplay=1",
+    name: "The Volonino Family",
+    role: "Bradenton, FL",
+    youtubeUrl: "",
+    thumbnail: "/New/Video-Testimonials/volonino-thumbnail.webp",
+    selected: "/New/Video-Testimonials/volonino-selected.webp",
+    embedUrl:
+      "https://motion-media-llc.aryeo.com/videos/019149a7-c015-7036-ba78-9c2087814cb8",
   },
 ];
 
@@ -397,6 +407,11 @@ let bodyOverflowBefore: string | null = null;
 
 const visibleRadius = 2;
 const mobileVisibleCount = 4;
+
+/** Returns the image src for a card: selected when active, thumbnail otherwise */
+const cardImage = (video: VideoTestimonial, i: number): string => {
+  return activeIndex.value === i ? video.selected : video.thumbnail;
+};
 
 const isVisibleInStrip = (i: number): boolean => {
   return Math.abs(i - activeIndex.value) <= visibleRadius;
