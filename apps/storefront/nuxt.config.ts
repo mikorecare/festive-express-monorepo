@@ -8,6 +8,7 @@ export default defineNuxtConfig({
   site: {
     url: 'https://festive.express',
     name: 'Festive Express',
+    indexable: true
   },
 
   seo: {
@@ -314,6 +315,7 @@ export default defineNuxtConfig({
     nonce: true,
 
     headers: {
+
       contentSecurityPolicy: {
         'default-src': ["'self'"],
 
@@ -333,8 +335,12 @@ export default defineNuxtConfig({
           "https://checkout.demo.convergepay.com",
           "https://checkout.convergepay.com",
           "https://chat.actm.xyz",
-          "https://challenges.cloudflare.com",
           "https://*.cloudflare.com",
+          "https://www.youtube.com",
+          "https://www.youtube-nocookie.com",
+          "https://s.ytimg.com",
+          "https://i.ytimg.com",
+          "https://motion-media-llc.aryeo.com",
         ],
 
         'style-src': [
@@ -366,6 +372,18 @@ export default defineNuxtConfig({
           "https://checkout.demo.convergepay.com",
           "https://checkout.convergepay.com",
           "https://chat.actm.xyz",
+          "https://img.youtube.com",
+          "https://i.ytimg.com",
+          "https://i9.ytimg.com",
+          "https://*.ytimg.com",
+          "https://motion-media-llc.aryeo.com",
+        ],
+
+        'media-src': [
+          "'self'",
+          "blob:",
+          "data:",
+          "https://motion-media-llc.aryeo.com",
         ],
 
         'font-src': [
@@ -391,8 +409,12 @@ export default defineNuxtConfig({
           "https://brunhild.challenges.cloudflare.com",
           "https://chat.actm.xyz",
           "wss://chat.actm.xyz",
-          "https://brunhild.challenges.cloudflare.com",
           "wss://*.challenges.cloudflare.com",
+          "https://www.youtube.com",
+          "https://www.youtube-nocookie.com",
+          "https://s.ytimg.com",
+          "https://i.ytimg.com",
+          "https://motion-media-llc.aryeo.com",
         ],
 
         'frame-src': [
@@ -404,8 +426,12 @@ export default defineNuxtConfig({
           "https://checkout.demo.convergepay.com",
           "https://checkout.convergepay.com",
           "https://chat.actm.xyz",
-          "https://challenges.cloudflare.com",
           "https://*.challenges.cloudflare.com",
+          "https://www.youtube.com",
+          "https://www.youtube-nocookie.com",
+          "https://youtube.com",
+          "https://youtu.be",
+          "https://motion-media-llc.aryeo.com",
         ],
 
         'frame-ancestors': ["'self'"],
@@ -453,6 +479,7 @@ export default defineNuxtConfig({
     '/**': {
       headers: {
         'alt-svc': 'h3=":443"; ma=86400',
+        'x-robots-tag': 'index, follow',
       }
     }
   },

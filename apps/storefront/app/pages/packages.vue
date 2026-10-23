@@ -4,39 +4,67 @@
     <section
       aria-label="Holiday lighting packages hero banner"
       role="region"
-      class="page-hero snow-bg relative bg-slate-900 py-16 text-white overflow-hidden"
+      class="page-hero snow-bg relative bg-slate-900 py-16 text-white overflow-hidden min-h-[400px] sm:min-h-[500px]"
     >
-      <div class="hero-overlay absolute inset-0 bg-black/40 z-10 min-h-[200px]">
-        <div
-          class="container mx-auto px-4 h-full flex items-center justify-center min-h-[200px]"
-        >
-          <div class="hero-content text-center max-w-2xl mx-auto">
-            <h1
-              v-fade
-              class="text-3xl md:text-5xl tracking-tight text-white mb-4"
-            >
-              <span class="text-brand-orange">Holiday Lighting</span> Packages
-            </h1>
+      <!-- LCP image -->
+      <NuxtImg
+        src="/New/Banner/hero-new.webp"
+        alt=""
+        role="none"
+        sizes="100vw"
+        format="webp"
+        quality="80"
+        :img-attrs="{
+          loading: 'eager',
+          fetchpriority: 'high',
+          decoding: 'async',
+        }"
+        preload
+        class="absolute inset-0 w-full h-full object-cover z-0"
+      />
 
-            <p
-              v-fade
-              class="text-base md:text-lg text-slate-200"
-              aria-label="Package description"
+      <!-- Dark overlay -->
+      <div class="absolute inset-0 bg-black/40 z-[1]" aria-hidden="true"></div>
+
+      <!-- Content -->
+      <div
+        class="relative z-10 container mx-auto px-4 flex items-center justify-center min-h-[400px] sm:min-h-[500px]"
+      >
+        <div class="hero-content text-center max-w-2xl mx-auto">
+          <h1
+            v-fade
+            class="text-3xl md:text-5xl font-extrabold tracking-tight mb-4"
+          >
+            <span
+              class="text-brand-orange [-webkit-text-stroke:0.04em_#fff] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
             >
-              <template v-if="subtitleParts.length > 1">
-                <span class="md:hidden" aria-hidden="true">
-                  {{ subtitleParts[0] }}<br />
-                  {{ subtitleParts[1] }}
-                </span>
-                <span class="hidden md:inline">
-                  {{ subtitleParts.join(" ") }}
-                </span>
-              </template>
-              <template v-else>
-                {{ subtitleParts[0] }}
-              </template>
-            </p>
-          </div>
+              Holiday Lighting
+            </span>
+            <span
+              class="text-white [-webkit-text-stroke:0.04em_#1C2D5B] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
+            >
+              Packages
+            </span>
+          </h1>
+
+          <p
+            v-fade
+            class="text-base md:text-lg text-slate-200"
+            aria-label="Package description"
+          >
+            <template v-if="subtitleParts.length > 1">
+              <span class="md:hidden" aria-hidden="true">
+                {{ subtitleParts[0] }}<br />
+                {{ subtitleParts[1] }}
+              </span>
+              <span class="hidden md:inline">
+                {{ subtitleParts.join(" ") }}
+              </span>
+            </template>
+            <template v-else>
+              {{ subtitleParts[0] }}
+            </template>
+          </p>
         </div>
       </div>
     </section>
@@ -44,10 +72,8 @@
     <section
       aria-label="Our holiday lighting packages"
       role="region"
-      class="py-12 md:py-16 bg-white relative"
+      class="bg-white relative"
     >
-      <PreviewYourHomeButton />
-
       <div
         v-if="pending"
         role="status"
@@ -68,48 +94,48 @@
         v-for="pkg in packages"
         :id="`package-${pkg.slug}`"
         :key="pkg.id"
-        class="container mx-auto px-4 max-w-7xl mb-16 last:mb-0 scroll-mt-48 mt-5"
+        class="container mx-auto px-4 max-w-7xl mb-16 last:mb-0 scroll-mt-48 mt-5 sm:mt-2"
         :ref="(el) => setPackageRef(el, pkg.id)"
       >
         <!-- Header: title image + price (SKU) -->
         <div
-          class="section-header flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 pb-4 border-b-2 border-slate-200 gap-4"
+          class="section-header flex flex-row justify-between items-center sm:mb-2 pb-4 sm:pb-2 border-b-2 border-slate-200 gap-3 sm:gap-4"
         >
+          <!-- LEFT: title image + name -->
           <div
-            class="header-left relative flex items-center flex-1 min-w-0 gap-4"
+            class="header-left relative flex items-center flex-1 min-w-0 gap-3"
           >
             <NuxtImg
               v-if="pkg.title_image_url || pkg.icon_url"
               :src="pkg.title_image_url || pkg.icon_url || undefined"
               :alt="pkg.name"
               loading="lazy"
-              class="pkg-title-img h-16 md:h-24 w-auto object-contain drop-shadow-md"
+              class="pkg-title-img h-12 sm:h-16 md:h-24 w-auto object-contain drop-shadow-md shrink-0"
             />
             <h2
-              class="text-3xl font-bold text-[#1C2D5B]"
+              class="text-xl sm:text-2xl md:text-3xl font-bold text-[#1C2D5B] truncate"
               :class="pkg.title_image_url || pkg.icon_url ? 'sr-only' : ''"
             >
               {{ pkg.name }}
             </h2>
           </div>
 
+          <!-- RIGHT: sale price block -->
           <div
             v-if="showSale(selectedSku(pkg)?.sale_price)"
-            class="package-price flex flex-col items-center shrink-0"
+            class="package-price flex flex-col items-end shrink-0"
           >
-            <div class="relative mb-1">
-              <NuxtImg
-                :src="earlyBirdIconSecondaryUrl"
-                alt="Early Bird Special"
-                sizes="sm:120px md:150px"
-                loading="lazy"
-                class="relative z-[2] mb-2 h-8 md:h-10 lg:h-11 w-auto object-contain scale-100 origin-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
-              />
-            </div>
+            <NuxtImg
+              :src="earlyBirdIconSecondaryUrl"
+              alt="Early Bird Special"
+              sizes="sm:120px md:150px"
+              loading="lazy"
+              class="h-6 sm:h-8 md:h-10 lg:h-11 w-auto object-contain mb-1 drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
+            />
 
-            <div class="text-center leading-[1.35]">
+            <div class="text-right leading-tight">
               <span
-                class="block text-[0.9rem] max-sm:text-[0.75rem] font-bold text-[#1C2D5B] leading-[1.4]"
+                class="block text-[0.7rem] sm:text-[0.8rem] font-bold text-[#1C2D5B] leading-tight"
               >
                 was
                 <span class="line-through decoration-brand-orange decoration-2">
@@ -117,19 +143,19 @@
                 </span>
               </span>
 
-              <span class="block leading-[1.25]">
+              <span class="block leading-tight whitespace-nowrap">
                 <span
-                  class="text-[0.9rem] max-sm:text-[0.75rem] font-bold text-[#1C2D5B]"
+                  class="text-[0.7rem] sm:text-[0.8rem] font-bold text-[#1C2D5B]"
                 >
                   now
                 </span>
                 <span
-                  class="text-[1.15rem] md:text-[1.5rem] font-black text-[#F49321] ml-1"
+                  class="text-[1.1rem] sm:text-[1.25rem] md:text-[1.5rem] font-black text-[#F49321] ml-1"
                 >
                   ${{ Math.round(Number(selectedPrice(pkg)) || 0) }}
                 </span>
                 <span
-                  class="text-[0.7rem] md:text-[0.8rem] font-semibold text-slate-600 ml-1"
+                  class="text-[0.65rem] sm:text-[0.7rem] md:text-[0.8rem] font-semibold text-slate-600 ml-0.5"
                 >
                   / Season
                 </span>
@@ -137,15 +163,18 @@
             </div>
           </div>
 
+          <!-- RIGHT: regular price (no sale) -->
           <div
             v-else
-            class="package-price flex items-center justify-between gap-2 text-[#f59e0b]"
+            class="package-price flex items-baseline justify-end gap-1.5 shrink-0"
           >
-            <div class="text-3xl md:text-4xl font-extrabold leading-none">
+            <div
+              class="text-2xl sm:text-3xl md:text-4xl font-extrabold leading-none text-[#f59e0b]"
+            >
               ${{ Math.round(Number(selectedPrice(pkg)) || 0) }}
             </div>
             <div
-              class="text-sm md:text-base font-semibold text-slate-600 shrink-0 pb-1"
+              class="text-xs sm:text-sm md:text-base font-semibold text-slate-600 whitespace-nowrap"
             >
               / season
             </div>
@@ -164,23 +193,36 @@
               class="image-wrapper relative bg-slate-100 group"
               @click.stop="onPackageImageClick(pkg)"
             >
-              <NuxtImg
-                :ref="(el) => setImageRef(el, pkg.id)"
-                :src="
-                  selectedSku(pkg)?.image_url ||
-                  pkg.title_image_url ||
-                  undefined
-                "
-                :alt="`${pkg.name} holiday lighting package`"
-                format="webp"
-                quality="85"
-                width="800"
-                height="420"
-                fit="cover"
-                loading="lazy"
-                class="main-image w-full h-[320px] sm:h-[420px] object-cover block border-4 border-[#f59e0b] rounded-2xl"
-                @error="onImgError"
-              />
+              <!-- Crossfade image wrapper (fixed height, overflow hidden) -->
+              <div
+                class="main-image-wrap relative w-full h-[320px] sm:h-[420px] border-4 border-[#f59e0b] rounded-2xl overflow-hidden bg-slate-100"
+              >
+                <Transition name="img-fade">
+                  <NuxtImg
+                    :key="
+                      selectedSku(pkg)?.image_url ||
+                      pkg.title_image_url ||
+                      `pkg-${pkg.id}`
+                    "
+                    :ref="(el) => setImageRef(el, pkg.id)"
+                    :src="
+                      selectedSku(pkg)?.image_url ||
+                      pkg.title_image_url ||
+                      undefined
+                    "
+                    :alt="`${pkg.name} holiday lighting package`"
+                    format="webp"
+                    quality="85"
+                    width="800"
+                    height="420"
+                    fit="cover"
+                    loading="eager"
+                    fetchpriority="high"
+                    class="absolute inset-0 w-full h-full object-cover"
+                    @error="onImgError"
+                  />
+                </Transition>
+              </div>
 
               <!-- Package icon badge -->
               <div
@@ -249,7 +291,6 @@
                 aria-label="Package feature details"
                 @click.stop
               >
-                <!-- Glossy shine -->
                 <div
                   class="pointer-events-none absolute inset-0 overflow-hidden rounded-xl"
                   aria-hidden="true"
@@ -308,13 +349,11 @@
                   :key="sku.id"
                   type="button"
                   role="radio"
-                  :aria-checked="
-                    String(selectedSkuId[String(pkg.id)]) === String(sku.id)
-                  "
+                  :aria-checked="String(effectiveSkuId(pkg)) === String(sku.id)"
                   :aria-label="`${sku.color_label || byKey(sku.color_key)?.color_label || sku.color_key} color option`"
                   class="flex flex-col items-center gap-1.5 cursor-pointer px-3.5 py-2 rounded-xl border-2 transition-all"
                   :class="
-                    String(selectedSkuId[String(pkg.id)]) === String(sku.id)
+                    String(effectiveSkuId(pkg)) === String(sku.id)
                       ? 'border-[#f59e0b] bg-orange-50'
                       : 'border-transparent bg-slate-50 hover:bg-slate-100'
                   "
@@ -406,7 +445,7 @@
               aria-label="Package information"
             >
               <p
-                class="m-0 text-xs sm:text-smtext-navy flex items-start gap-2.5 leading-relaxed"
+                class="m-0 text-xs sm:text-sm text-navy flex items-start gap-2.5 leading-relaxed"
               >
                 <span class="flex-shrink-0" aria-hidden="true">ℹ</span>
                 Includes commercial-grade LEDs, custom fit sizing, professional
@@ -482,7 +521,6 @@
           </p>
         </div>
 
-        <!-- Loading State -->
         <div
           v-if="specsLoading"
           role="status"
@@ -492,7 +530,6 @@
           Loading specifications...
         </div>
 
-        <!-- Empty State -->
         <div
           v-else-if="!inclusionItems.length"
           role="alert"
@@ -501,7 +538,6 @@
           No product specifications available.
         </div>
 
-        <!-- Product Grid -->
         <div
           v-else
           class="product-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
@@ -710,6 +746,14 @@ const loading = computed(() => pending.value);
 const selectedSkuId = ref<Record<string, string | number>>({});
 const cartBump = useState("cart-bump", () => 0);
 const { colors, loadColors, swatchStyle, byKey } = useProductColors();
+
+const effectiveSkuId = (pkg: PackageRow): string | number | null => {
+  const userPick = selectedSkuId.value[String(pkg.id)];
+  if (userPick != null) return userPick;
+  const first = skusFor(pkg.id)[0];
+  return first?.id ?? null;
+};
+
 const skusFor = (packageId: string | number) => {
   const list = skus.value.filter(
     (s) => String(s.package_id) === String(packageId),
@@ -724,20 +768,29 @@ const skusFor = (packageId: string | number) => {
   });
 };
 
+/**
+ * Preload every SKU + package image so color changes are instant.
+ * Uses Image() so the browser caches them behind the scenes.
+ */
 watch(
   landingPayload,
   (newData) => {
-    if (!newData) return;
+    if (!newData || !import.meta.client) return;
 
-    const map: Record<string, string | number> = {};
-    for (const pkg of newData.packages) {
-      // Matches your helper method logic safely
-      const first = skusFor(pkg.id)[0];
-      if (first) {
-        map[String(pkg.id)] = first.id;
-      }
+    const urls = new Set<string>();
+    for (const sku of newData.skus) {
+      if (sku.image_url) urls.add(sku.image_url);
     }
-    selectedSkuId.value = map;
+    for (const pkg of newData.packages) {
+      if (pkg.title_image_url) urls.add(pkg.title_image_url);
+      if (pkg.icon_url) urls.add(pkg.icon_url);
+    }
+
+    urls.forEach((url) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = url;
+    });
   },
   { immediate: true },
 );
@@ -790,7 +843,7 @@ const HOTSPOT_LAYOUT: Record<
 };
 
 const selectedSku = (pkg: PackageRow): SkuRow | null => {
-  const id = selectedSkuId.value[String(pkg.id)];
+  const id = effectiveSkuId(pkg);
   if (id == null) return null;
   return skus.value.find((s) => String(s.id) === String(id)) || null;
 };
@@ -809,7 +862,6 @@ const selectedPrice = (pkg: PackageRow) => {
     }
     return Number(sku.price ?? 0);
   }
-  // fallback: package-level
   const sale = Number(pkg.sale_price);
   if (
     pkg.sale_price != null &&
@@ -827,7 +879,6 @@ const inclusionsFor = (pkg: PackageRow) =>
     (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0),
   );
 
-/** Build hotspots from inclusions + position layout */
 const getHotspots = (pkg: PackageRow): Hotspot[] => {
   const layout = HOTSPOT_LAYOUT[pkg.slug] || HOTSPOT_LAYOUT.joy || [];
   const included = inclusionsFor(pkg).filter((r) => r.is_included);
@@ -932,7 +983,6 @@ const openCartModal = (
   cartModal.open = true;
 };
 
-/** Add selected package color/SKU to cart — no redirect */
 const addPackageSku = async (pkg: PackageRow) => {
   const sku = selectedSku(pkg);
   if (!sku?.id) {
@@ -991,12 +1041,10 @@ const closeLightbox = () => {
 };
 
 const onPackageImageClick = (pkg: PackageRow) => {
-  // Hotspot open → close it, do NOT open lightbox
   if (getActiveSpot(pkg)) {
     activeHotspot.value[String(pkg.id)] = null;
     return;
   }
-  // No hotspot → open lightbox
   openLightbox(pkg);
 };
 
@@ -1015,7 +1063,6 @@ const scrollToPackage = async () => {
   });
 };
 
-// Specs
 const asArray = (val: unknown): string[] => {
   if (Array.isArray(val)) return val.map(String);
   if (typeof val === "string") {
@@ -1068,3 +1115,21 @@ onMounted(async () => {
   onUnmounted(() => window.removeEventListener("keydown", onKey));
 });
 </script>
+
+<style scoped>
+/* Crossfade for main package image when switching colors */
+.img-fade-enter-active,
+.img-fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+.img-fade-enter-from,
+.img-fade-leave-to {
+  opacity: 0;
+}
+
+/* Ensure leaving image doesn't push layout */
+.img-fade-leave-active {
+  position: absolute;
+  inset: 0;
+}
+</style>

@@ -150,7 +150,7 @@
           </nav> -->
           <nav class="hidden lg:block flex-1 min-w-0" role="navigation">
             <ul
-              class="flex justify-center items-center gap-1 xl:gap-6 list-none p-0 m-0"
+              class="flex justify-end items-center gap-4 xl:gap-8 list-none p-0 m-0"
             >
               <li>
                 <NuxtLink
@@ -170,7 +170,7 @@
                   Packages
                 </NuxtLink>
               </li>
-              <li>
+              <!-- <li>
                 <NuxtLink
                   to="/preview-your-home"
                   class="block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
@@ -195,6 +195,15 @@
                   active-class="text-[#ff7a00]"
                 >
                   Contact Us
+                </NuxtLink>
+              </li> -->
+              <li>
+                <NuxtLink
+                  to="/faq"
+                  class="block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
+                  active-class="text-[#ff7a00]"
+                >
+                  FAQ
                 </NuxtLink>
               </li>
             </ul>
