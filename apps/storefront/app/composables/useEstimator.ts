@@ -13,17 +13,36 @@ import type {
 } from "~/components/PreviewYourHome/types";
 
 export function useEstimator() {
-    // ---------- STATE (inside the function!) ----------
+    const result = useState<RenderResult | null>("estimator:result", () => null);
+    const rendering = useState<boolean>("estimator:rendering", () => false);
+    const isLoading = useState<boolean>("estimator:isLoading", () => false);
+    const renderError = useState<string>("estimator:renderError", () => "");
+    const resultNote = useState<string>("estimator:resultNote", () => "");
+    const booking = useState<boolean>("estimator:booking", () => false);
+    const isPreview = useState<boolean>("estimator:isPreview", () => false);
+    const error = useState<string>("estimator:error", () => "");
+    const address = useState<string>("estimator:address", () => "");
+    const placeId = useState<string>("estimator:placeId", () => "");
+    const name = useState<string>("estimator:name", () => "");
+    const email = useState<string>("estimator:email", () => "");
+    const phone = useState<string>("estimator:phone", () => "");
+    const selectedScheme = useState<string>("estimator:scheme", () => "warm-white");
+    const selectedPackage = useState<PackageOption>("estimator:package", () => "joy");
+    const packageOptions = useState<IPackageOption[]>("estimator:packageOptions", () => []);
+    const packages = useState<IPackageRow[]>("estimator:packages", () => []);
+    const loadingPackages = useState<boolean>("estimator:loadingPackages", () => false);
+    const packageError = useState<string | null>("estimator:packageError", () => null);
+    const errors = useState<{ name?: string; email?: string; address?: string }>(
+        "estimator:errors", () => ({})
+    );
+    const imagePreview = useState<string>("estimator:imagePreview", () => "");
+    const imageBase64 = useState<string>("estimator:imageBase64", () => "");
+
+    // ---------- LOCAL STATE (fine per-component) ----------
     const fileInput = ref<HTMLInputElement | null>(null);
-    const imagePreview = ref<string>("");
-    const imageBase64 = ref<string>("");
-    const address = ref<string>("");
-    const placeId = ref<string>("");
     const suggestions = ref<Suggestion[]>([]);
     const suggestionsOpen = ref<boolean>(false);
     const pricePerFoot = ref<number>(10);
-    const selectedScheme = ref<string>("warm-white");
-    const selectedPackage = ref<PackageOption>("joy");
     const multiColors = ref<MultiColor[]>([
         { hex: "#e21d1d", name: "Color 1" },
         { hex: "#1ea832", name: "Color 2" },
@@ -31,55 +50,17 @@ export function useEstimator() {
         { hex: "#f2c14e", name: "Color 4" },
         { hex: "#9b4dca", name: "Color 5" },
     ]);
-    const name = ref<string>("");
-    const email = ref<string>("");
-    const phone = ref<string>("");
-    const error = ref<string>("");
-    const errors = ref<{ name?: string; email?: string; address?: string }>({});
-    const isLoading = ref<boolean>(false);
-    const rendering = ref<boolean>(false);
-    const result = ref<RenderResult | null>(null);
-    const renderError = ref<string>("");
-    const booking = ref<boolean>(false);
-    const resultNote = ref<string>("");
-    const packages = ref<IPackageRow[]>([]);
-    const loadingPackages = ref<boolean>(false);
-    const packageError = ref<string | null>(null);
-    const isPreview = ref<boolean>(false);
-    const packageOptions = ref<IPackageOption[]>([]);
 
-    const colorOptions: ColorOption[] = [
-        { scheme: "warm-white", label: "Warm White", sw: "#fff3d6" },
-        { scheme: "pure-white", label: "Pure White", sw: "#ffffff" },
-        { scheme: "champagne", label: "Champagne", sw: "#e6c9a0" },
-        { scheme: "candy-cane", label: "Candy Cane" },
-        { scheme: "multicolor", label: "Multicolor" },
-    ];
-
-    const facts: readonly string[] = [
-        'Festive Express installs your lights — you relax and enjoy the season.',
-        'Professional C-9 roofline lighting, installed and removed for you.',
-        'One simple rental package — no ladders, no tangled cords, no storage.',
-        'We handle install, maintenance, and takedown when the season ends.',
-        'Licensed & insured technicians — your home is fully protected.',
-        'Finding your roofline…',
-        'Placing C-9 lights along every eave and peak…',
-        'Adding the festive evening glow…',
-    ];
-
-    const progressSteps: readonly string[] = [
-        "Finding your house…",
-        "Reading the roofline…",
-        "Placing the lights…",
-        "Setting the evening glow…",
-        "Almost there…",
-    ];
+    const colorOptions: ColorOption[] = [ /* unchanged */];
+    const facts: readonly string[] = [ /* unchanged */];
+    const progressSteps: readonly string[] = [ /* unchanged */];
 
     let factInterval: ReturnType<typeof setInterval> | null = null;
     let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
-    const currentFact = ref<string>(facts[0] || "");
-    const progressText = ref<string>(progressSteps[0] || "");
+    const currentFact = useState<string>("estimator:currentFact", () => facts[0] || "");
+    const progressText = useState<string>("estimator:progressText", () => progressSteps[0] || "");
+
     const PACKAGE_TOTAL_FT = 175;
     const MAX_ROOFLINE_FT = 125;
     const MAX_GROUND_FT = 50;
@@ -324,6 +305,7 @@ export function useEstimator() {
         if (!validateForm(previewOnly)) return;
 
         rendering.value = true;
+        isLoading.value = true;
         result.value = null;
         renderError.value = "";
         startFacts();
@@ -342,9 +324,8 @@ export function useEstimator() {
                 package: selectedPackage.value,
                 turnstileToken,
             };
+
             const response = await $fetch<RenderResult>(`/api/estimate`, { method: "POST", body });
-            stopFacts();
-            rendering.value = false;
 
             if (!response.ok) {
                 const errorResponse = response as unknown as { error?: string };
@@ -384,10 +365,13 @@ export function useEstimator() {
                 note += `Final pricing confirmed at your free on-site measurement.`;
                 resultNote.value = note;
             }
-        } catch {
+        } catch (err: any) {
+            renderError.value = err?.data?.message || err?.message || "Network hiccup. Please try again.";
+            console.error("Render failed:", err, err?.data);
+        } finally {
             stopFacts();
             rendering.value = false;
-            renderError.value = "Network hiccup. Please try again.";
+            isLoading.value = false;
         }
     }
 

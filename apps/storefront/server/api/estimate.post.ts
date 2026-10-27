@@ -75,22 +75,32 @@ export default defineEventHandler(async (event) => {
     const shouldBook = action === 'book' || (action === 'both' && !previewOnly);
 
     if (shouldSubmitLead) {
+        const payload = {
+            name: name,
+            email: email,
+            phone: phone,
+            address: address,
+            source: "render_widget",
+        };
+
+        console.log("Submitting lead with payload:", payload);
+
         try {
             leadResponse = await $fetch<any>(
                 `${config.estimatorApiUrl}/api/lead`,
                 {
                     method: "POST",
-                    body: {
-                        name: name,
-                        email: email,
-                        phone: phone,
-                        address: address,
-                        source: "render_widget",
-                    },
+                    body: payload,
                 }
             );
-        } catch (err) {
-            console.error("Lead submission failed:", err);
+        } catch (err: any) {
+            console.error("Lead submission failed:", {
+                status: err.status,
+                message: err.message,
+                data: err.data,
+                response: err.response?._data,
+                payload,
+            });
         }
     }
 
