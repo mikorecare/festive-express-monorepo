@@ -30,8 +30,6 @@ export default defineEventHandler(async (event) => {
 
     try {
         const cacheStorage = useStorage('cache')
-
-        // Match any key that starts with `nitro:handlers:${cacheKey}`
         const prefix = `nitro:handlers:${cacheKey}`
         const allKeys = await cacheStorage.getKeys()
         const matching = allKeys.filter((key) => key.startsWith(prefix))

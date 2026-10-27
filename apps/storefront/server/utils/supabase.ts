@@ -5,6 +5,6 @@ export const getSupabase = () => {
 
     return createClient(
         config.public.supabaseUrl,
-        config.supabase.secretKey
+        config.supabase.serviceKey
     )
 }
