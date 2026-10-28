@@ -97,13 +97,13 @@
               :src="getPackageTitle()"
               class="absolute bottom-1 left-1 max-h-[20px] md:max-h-[85px] w-auto object-contain"
             />
-            <NuxtImg
+            <!-- <NuxtImg
               v-if="earlyBirdIconUrl && isEarlyBirdLive"
               :src="earlyBirdIconUrl"
               alt="Early Bird Special"
               class="h-[12px] md:h-[28px] w-auto absolute bottom-2 right-1 md:bottom-4 md:right-2"
               loading="lazy"
-            />
+            /> -->
           </div>
 
           <div class="md:w-1/5 space-y-1">

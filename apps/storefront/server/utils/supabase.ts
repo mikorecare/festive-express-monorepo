@@ -8,3 +8,12 @@ export const getSupabase = () => {
         config.supabase.serviceKey
     )
 }
+
+export const getUserSupabase = () => {
+    const config = useRuntimeConfig()
+
+    return createClient(
+        config.public.supabaseUrl,
+        config.supabase.secretKey
+    )
+}
