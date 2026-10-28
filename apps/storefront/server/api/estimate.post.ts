@@ -113,25 +113,40 @@ export default defineEventHandler(async (event) => {
                     method: "POST",
                     body: {
                         previewOnly: previewOnly || action === 'book',
-                        address,
-                        placeId: placeId || undefined,
-                        email: email || undefined,
-                        scheme,
-                        serviceType,
-                        package: packageType,
+                        address, placeId: placeId || undefined, email: email || undefined,
+                        scheme, serviceType, package: packageType,
                     },
                     timeout: 120_000,
+                    retry: 0,
                 }
             );
 
-            if (renderResponse?.imageUrl) {
-                renderResponse.imageUrl = new URL(
-                    renderResponse.imageUrl,
-                    config.estimatorAssetUrl
-                ).toString();
+            if (!renderResponse || renderResponse.ok === false) {
+                throw createError({
+                    statusCode: 502,
+                    statusMessage: "Render failed",
+                    data: {
+                        error: renderResponse?.error || "render_failed",
+                        message: "We couldn't render that one. Please try another address or photo."
+                    },
+                });
+            }
+
+            if (renderResponse.imageUrl) {
+                renderResponse.imageUrl = new URL(renderResponse.imageUrl, config.estimatorAssetUrl).toString();
             }
         } catch (err: any) {
-            throw err;
+            const isTimeout = err?.statusCode === 504 || /timeout|504/i.test(err?.message || "");
+            throw createError({
+                statusCode: isTimeout ? 504 : (err?.statusCode || 502),
+                statusMessage: isTimeout ? "Render timed out" : "Render failed",
+                data: {
+                    error: isTimeout ? "render_timeout" : (err?.data?.error || "render_failed"),
+                    message: isTimeout
+                        ? "The render service took too long. Please try again."
+                        : (err?.data?.message || "We couldn't render that one. Please try another address or photo."),
+                },
+            });
         }
     }
 

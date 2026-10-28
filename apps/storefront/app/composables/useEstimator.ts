@@ -51,9 +51,32 @@ export function useEstimator() {
         { hex: "#9b4dca", name: "Color 5" },
     ]);
 
-    const colorOptions: ColorOption[] = [ /* unchanged */];
-    const facts: readonly string[] = [ /* unchanged */];
-    const progressSteps: readonly string[] = [ /* unchanged */];
+    const colorOptions: ColorOption[] = [
+        { scheme: "warm-white", label: "Warm White", sw: "#fff3d6" },
+        { scheme: "pure-white", label: "Pure White", sw: "#ffffff" },
+        { scheme: "champagne", label: "Champagne", sw: "#e6c9a0" },
+        { scheme: "candy-cane", label: "Candy Cane" },
+        { scheme: "multicolor", label: "Multicolor" },
+    ];
+
+    const facts: readonly string[] = [
+        'Festive Express installs your lights — you relax and enjoy the season.',
+        'Professional C-9 roofline lighting, installed and removed for you.',
+        'One simple rental package — no ladders, no tangled cords, no storage.',
+        'We handle install, maintenance, and takedown when the season ends.',
+        'Licensed & insured technicians — your home is fully protected.',
+        'Finding your roofline…',
+        'Placing C-9 lights along every eave and peak…',
+        'Adding the festive evening glow…',
+    ];
+
+    const progressSteps: readonly string[] = [
+        "Finding your house…",
+        "Reading the roofline…",
+        "Placing the lights…",
+        "Setting the evening glow…",
+        "Almost there…",
+    ];
 
     let factInterval: ReturnType<typeof setInterval> | null = null;
     let searchTimeout: ReturnType<typeof setTimeout> | null = null;
