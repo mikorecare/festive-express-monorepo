@@ -9,7 +9,7 @@
       <!-- LCP image -->
       <NuxtImg
         src="/New/Banner/hero-new.webp"
-        alt=""
+        alt="Express Banner"
         role="none"
         sizes="100vw"
         format="webp"

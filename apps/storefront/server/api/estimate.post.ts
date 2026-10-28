@@ -91,6 +91,7 @@ export default defineEventHandler(async (event) => {
                 {
                     method: "POST",
                     body: payload,
+                    timeout: 15_000,
                 }
             );
         } catch (err: any) {
@@ -119,6 +120,7 @@ export default defineEventHandler(async (event) => {
                         serviceType,
                         package: packageType,
                     },
+                    timeout: 120_000,
                 }
             );
 
