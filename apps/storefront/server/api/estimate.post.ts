@@ -1,4 +1,4 @@
-import { defineEventHandler, readBody } from "h3";
+import { createError, defineEventHandler, readBody } from "h3";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
@@ -136,6 +136,15 @@ export default defineEventHandler(async (event) => {
                 renderResponse.imageUrl = new URL(renderResponse.imageUrl, config.estimatorAssetUrl).toString();
             }
         } catch (err: any) {
+            console.error("Render call failed:", {
+                statusCode: err?.statusCode,
+                statusMessage: err?.statusMessage,
+                message: err?.message,
+                name: err?.name,
+                cause: err?.cause,
+                data: err?.data,
+            });
+
             const isTimeout = err?.statusCode === 504 || /timeout|504/i.test(err?.message || "");
             throw createError({
                 statusCode: isTimeout ? 504 : (err?.statusCode || 502),
