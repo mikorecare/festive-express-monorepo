@@ -4,26 +4,24 @@
     <section
       aria-label="Holiday lighting packages hero banner"
       role="region"
-      class="page-hero snow-bg relative bg-slate-900 py-16 text-white overflow-hidden min-h-[400px] sm:min-h-[500px]"
+      class="snow-bg relative bg-slate-900 py-16 text-white overflow-hidden min-h-[400px] sm:min-h-[500px]"
     >
       <!-- LCP image -->
-      <div class="relative w-full h-screen min-h-[600px]">
-        <NuxtImg
-          src="/New/Banner/hero-new.webp"
-          alt="Express Banner"
-          role="none"
-          sizes="100vw"
-          format="webp"
-          quality="80"
-          :img-attrs="{
-            loading: 'eager',
-            fetchpriority: 'high',
-            decoding: 'async',
-          }"
-          preload
-          class="absolute inset-0 w-full h-full object-cover"
-        />
-      </div>
+      <NuxtImg
+        src="/New/Banner/hero-new.webp"
+        alt="Express Banner"
+        role="none"
+        sizes="100vw"
+        format="webp"
+        quality="80"
+        :img-attrs="{
+          loading: 'eager',
+          fetchpriority: 'high',
+          decoding: 'async',
+        }"
+        preload
+        class="absolute inset-0 w-full h-full object-cover z-0"
+      />
 
       <!-- Dark overlay -->
       <div class="absolute inset-0 bg-black/40 z-[1]" aria-hidden="true"></div>
