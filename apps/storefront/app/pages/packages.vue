@@ -4,7 +4,7 @@
     <section
       aria-label="Holiday lighting packages hero banner"
       role="region"
-      class="snow-bg relative bg-slate-900 py-16 text-white overflow-hidden min-h-[400px] sm:min-h-[500px]"
+      class="relative bg-slate-900 py-16 text-white overflow-hidden min-h-[400px] sm:min-h-[500px]"
     >
       <!-- LCP image -->
       <NuxtImg
@@ -20,7 +20,7 @@
           decoding: 'async',
         }"
         preload
-        class="absolute inset-0 w-full h-full object-cover z-0"
+        class="absolute inset-0 w-full h-full object-cover z-10"
       />
 
       <!-- Dark overlay -->
