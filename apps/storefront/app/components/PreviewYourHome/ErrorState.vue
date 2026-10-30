@@ -8,7 +8,10 @@
       </div>
       <h3 class="text-lg font-bold text-navy mb-2">Hmm.</h3>
       <p class="text-sm text-gray-600 mb-4">
-        {{ renderError || "Something went wrong. Please try again." }}
+        {{
+          renderError ||
+          "We couldn't render that one. Please try another address or photo."
+        }}
       </p>
       <button
         class="border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-2 px-6 rounded-lg transition-colors"

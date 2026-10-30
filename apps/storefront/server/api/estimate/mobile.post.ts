@@ -1,4 +1,3 @@
-
 import { createError, defineEventHandler, getHeader, readBody } from "h3";
 import { getUserSupabase } from "~~/server/utils/supabase";
 
@@ -95,34 +94,32 @@ export default defineEventHandler(async (event) => {
                 timeout: 120_000,
                 retry: 0,
             });
-
-            if (!renderResponse || renderResponse.ok === false) {
-                throw createError({
-                    statusCode: 502,
-                    data: {
-                        error: renderResponse?.error || "render_failed",
-                        message: "We couldn't render that one. Please try another address or photo.",
-                    },
-                });
-            }
-
-            // normalize image URL
-            if (renderResponse.imageUrl) {
-                renderResponse.imageUrl = new URL(renderResponse.imageUrl, config.estimatorAssetUrl).toString();
-            }
         } catch (err: any) {
             console.error("[mobile-estimate] render failed:", err?.message);
 
+            const upstream = err?.data ?? err?.response?._data ?? {};
             const isTimeout = err?.statusCode === 504 || /timeout|504/i.test(err?.message || "");
-            throw createError({
-                statusCode: isTimeout ? 504 : err?.statusCode || 502,
-                data: {
-                    error: isTimeout ? "render_timeout" : err?.data?.error || "render_failed",
-                    message: isTimeout
-                        ? "The render service took too long. Please try again."
-                        : err?.data?.message || "We couldn't render that one. Please try another address or photo.",
-                },
-            });
+
+            return {
+                ok: false,
+                error: isTimeout ? "render_timeout" : (upstream.error || "render_failed"),
+                message: isTimeout
+                    ? "The render service took too long. Please try again."
+                    : (upstream.detail || "We couldn't render that one. Please try another address or photo."),
+            };
+        }
+
+        if (!renderResponse || renderResponse.ok === false || renderResponse.error) {
+            return {
+                ok: false,
+                error: renderResponse?.error || "render_failed",
+                message: renderResponse?.detail
+                    || "We couldn't render that one. Please try another address or photo.",
+            };
+        }
+
+        if (renderResponse.imageUrl) {
+            renderResponse.imageUrl = new URL(renderResponse.imageUrl, config.estimatorAssetUrl).toString();
         }
     }
 

@@ -120,42 +120,33 @@ export default defineEventHandler(async (event) => {
                     retry: 0,
                 }
             );
-
-            if (!renderResponse || renderResponse.ok === false) {
-                throw createError({
-                    statusCode: 502,
-                    statusMessage: "Render failed",
-                    data: {
-                        error: renderResponse?.error || "render_failed",
-                        message: "We couldn't render that one. Please try another address or photo."
-                    },
-                });
-            }
-
-            if (renderResponse.imageUrl) {
-                renderResponse.imageUrl = new URL(renderResponse.imageUrl, config.estimatorAssetUrl).toString();
-            }
         } catch (err: any) {
-            console.error("Render call failed:", {
-                statusCode: err?.statusCode,
-                statusMessage: err?.statusMessage,
-                message: err?.message,
-                name: err?.name,
-                cause: err?.cause,
-                data: err?.data,
-            });
+            console.error("Render call failed:", err?.data || err);
 
+            const upstream = err?.data ?? err?.response?._data ?? {};
             const isTimeout = err?.statusCode === 504 || /timeout|504/i.test(err?.message || "");
-            throw createError({
-                statusCode: isTimeout ? 504 : (err?.statusCode || 502),
-                statusMessage: isTimeout ? "Render timed out" : "Render failed",
-                data: {
-                    error: isTimeout ? "render_timeout" : (err?.data?.error || "render_failed"),
-                    message: isTimeout
-                        ? "The render service took too long. Please try again."
-                        : (err?.data?.message || "We couldn't render that one. Please try another address or photo."),
-                },
-            });
+
+            // RETURN the error instead of throwing it so Nuxt doesn't hijack the UI
+            return {
+                ok: false,
+                error: isTimeout ? "render_timeout" : (upstream.error || "render_failed"),
+                message: isTimeout
+                    ? "The render service took too long. Please try again."
+                    : (upstream.detail || "We couldn't render that one. Please try another address or photo."),
+            };
+        }
+
+        if (!renderResponse || renderResponse.ok === false || renderResponse.error) {
+            return {
+                ok: false,
+                error: renderResponse?.error || "render_failed",
+                message: renderResponse?.detail
+                    || "We couldn't render that one. Please try another address or photo.",
+            };
+        }
+
+        if (renderResponse.imageUrl) {
+            renderResponse.imageUrl = new URL(renderResponse.imageUrl, config.estimatorAssetUrl).toString();
         }
     }
 

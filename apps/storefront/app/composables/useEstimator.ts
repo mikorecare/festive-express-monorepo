@@ -12,6 +12,11 @@ import type {
     RenderStats
 } from "~/components/PreviewYourHome/types";
 
+// ---------- MODULE-SCOPED TIMER STATE (shared across all useEstimator() calls) ----------
+let factInterval: ReturnType<typeof setInterval> | null = null;
+let factIndex = 0;
+let progressIndex = 0;
+
 export function useEstimator() {
     const result = useState<RenderResult | null>("estimator:result", () => null);
     const rendering = useState<boolean>("estimator:rendering", () => false);
@@ -78,7 +83,6 @@ export function useEstimator() {
         "Almost there…",
     ];
 
-    let factInterval: ReturnType<typeof setInterval> | null = null;
     let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
     const currentFact = useState<string>("estimator:currentFact", () => facts[0] || "");
@@ -257,21 +261,24 @@ export function useEstimator() {
     }
 
     function startFacts(): void {
-        let factIndex = 0;
-        let progressIndex = 0;
+        if (factInterval) return;
+        factIndex = 0;
+        progressIndex = 0;
         currentFact.value = facts[0] || "Finding your roofline…";
         progressText.value = progressSteps[0] || "Finding your house…";
-        if (factInterval) clearInterval(factInterval);
-        factInterval = setInterval((): void => {
+        factInterval = setInterval(() => {
             factIndex = (factIndex + 1) % facts.length;
             currentFact.value = facts[factIndex] || "Lighting up…";
             progressIndex = Math.min(progressIndex + 1, progressSteps.length - 1);
             progressText.value = progressSteps[progressIndex] || "Almost there…";
-        }, 2600);
+        }, 1500);
     }
 
     function stopFacts(): void {
-        if (factInterval) { clearInterval(factInterval); factInterval = null; }
+        if (factInterval) {
+            clearInterval(factInterval);
+            factInterval = null;
+        }
     }
 
     const fetchPackages = async () => {
@@ -348,16 +355,23 @@ export function useEstimator() {
                 turnstileToken,
             };
 
-            const response = await $fetch<RenderResult>(`/api/estimate`, { method: "POST", body });
+            const response = await $fetch<RenderResult>(`/api/estimate`, { method: "POST", body }).catch(e => e);
 
-            if (!response.ok) {
-                const errorResponse = response as unknown as { error?: string };
+            if (!response.ok || (response as any).error) {
+                const errorResponse = response as unknown as { error?: string; message?: string; detail?: string };
                 const code = errorResponse.error;
-                let msg = "We couldn't render that one. Please try another photo or address.";
-                if (code === "bad_image" || code === "no_photo") msg = "That photo didn't come through. Try uploading a different one.";
-                else if (code === "no_house_found") msg = "No house found at this location. Try a different address or upload a photo.";
-                else if (code === "address_not_found" || code === "no_streetview") msg = "We couldn't find a street view for that address. Try a different address or upload a photo.";
-                else if (code === "server_not_configured") msg = "The render service isn't configured yet. Please add your API keys.";
+                let msg =
+                    code === "bad_image" || code === "no_photo"
+                        ? "That photo didn't come through. Try uploading a different one."
+                        : code === "no_house_found"
+                            ? "No house found at this location. Try a different address or upload a photo."
+                            : code === "address_not_found" || code === "no_streetview"
+                                ? "We couldn't find a street view for that address. Try a different address or upload a photo."
+                                : code === "server_not_configured"
+                                    ? "The render service isn't configured yet. Please add your API keys."
+                                    : code === "render_timeout"
+                                        ? "The render service took too long. Please try again."
+                                        : (errorResponse.detail || errorResponse.message || "We couldn't render that one. Please try another address or photo.");
                 renderError.value = msg;
                 return;
             }
@@ -389,12 +403,29 @@ export function useEstimator() {
                 resultNote.value = note;
             }
         } catch (err: any) {
-            renderError.value = err?.data?.message || err?.message || "Network hiccup. Please try again.";
-            console.error("Render failed:", err, err?.data);
+            const data = err?.data ?? err?.response?._data ?? {};
+            const code = data.error;
+            let msg =
+                code === "bad_image" || code === "no_photo"
+                    ? "That photo didn't come through. Try uploading a different one."
+                    : code === "no_house_found"
+                        ? "No house found at this location. Try a different address or upload a photo."
+                        : code === "address_not_found" || code === "no_streetview"
+                            ? "We couldn't find a street view for that address. Try a different address or upload a photo."
+                            : code === "server_not_configured"
+                                ? "The render service isn't configured yet. Please add your API keys."
+                                : code === "render_timeout"
+                                    ? "The render service took too long. Please try again."
+                                    : (data.detail
+                                        || data.message
+                                        || "We couldn't render that one. Please try another address or photo.");
+            renderError.value = msg;
         } finally {
-            stopFacts();
-            rendering.value = false;
-            isLoading.value = false;
+            setTimeout(() => {
+                stopFacts();
+                rendering.value = false;
+                isLoading.value = false;
+            }, 300);
         }
     }
 
@@ -471,5 +502,6 @@ export function useEstimator() {
         formatMoney, handleFileUpload, debouncedSearch, selectAddress,
         updateMultiColor, submitRender, reset, bookConsultation, fetchPackages,
         getTotalFeet, getRooflineFeet, getGroundFeet,
+        startFacts, stopFacts,
     };
 }

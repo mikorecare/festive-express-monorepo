@@ -5,23 +5,18 @@
     class="pointer-events-none select-none relative w-screen left-1/2 -translate-x-1/2 max-w-[640px]"
   >
     <div class="space-y-4 lg:space-y-5 animate-pulse max-w-4xl mx-auto px-6">
-      <!-- Address -->
       <div>
         <div class="h-5 w-32 bg-gray-200 rounded mb-1.5"></div>
         <div
           class="h-[48px] lg:h-[52px] w-full bg-gray-200 rounded-[14px]"
         ></div>
       </div>
-
-      <!-- Photo Upload -->
       <div>
         <div class="h-5 w-40 bg-gray-200 rounded mb-1.5"></div>
         <div
           class="h-[48px] lg:h-[52px] w-full bg-gray-200 rounded-[14px]"
         ></div>
       </div>
-
-      <!-- Package + Color -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <div class="h-5 w-28 bg-gray-200 rounded mb-1.5"></div>
@@ -36,8 +31,6 @@
           ></div>
         </div>
       </div>
-
-      <!-- Contact Info -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <div class="h-5 w-24 bg-gray-200 rounded mb-1.5"></div>
@@ -52,19 +45,13 @@
           ></div>
         </div>
       </div>
-
-      <!-- Mobile -->
       <div>
         <div class="h-5 w-20 bg-gray-200 rounded mb-1.5"></div>
         <div
           class="h-[48px] lg:h-[52px] w-full bg-gray-200 rounded-[14px]"
         ></div>
       </div>
-
-      <!-- Turnstile -->
       <div class="h-[65px] w-full bg-gray-200 rounded-[14px]"></div>
-
-      <!-- Buttons -->
       <div class="space-y-2">
         <div
           class="h-[52px] lg:h-[56px] w-full bg-gray-200 rounded-[14px]"
@@ -73,13 +60,10 @@
           class="h-[46px] lg:h-[50px] w-full bg-gray-200 rounded-[14px]"
         ></div>
       </div>
-
-      <!-- Footer -->
       <div class="h-3 w-56 bg-gray-200 rounded mx-auto"></div>
     </div>
   </div>
 
-  <!-- Loading modal — no dark overlay -->
   <div
     v-if="rendering"
     class="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
@@ -112,9 +96,9 @@
         </template>
 
         <template v-else>
-          <p class="text-base text-gray-600 mb-3">{{ currentFact }}</p>
+          <p class="text-base text-gray-600 mb-3">{{ localFact }}</p>
           <h3 class="text-2xl font-bold text-navy">Lighting up your home…</h3>
-          <p class="text-base text-gray-500 mt-3">{{ progressText }}</p>
+          <p class="text-base text-gray-500 mt-3">{{ localProgress }}</p>
         </template>
       </div>
     </div>
@@ -122,8 +106,59 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch, onUnmounted } from "vue";
 import { useEstimator } from "~/composables/useEstimator";
 import FLpLoadingLogo from "../Icons/FLpLoadingLogo.vue";
 
-const { rendering, currentFact, progressText, isPreview } = useEstimator();
+const { rendering, isPreview } = useEstimator();
+
+const localFact = ref("");
+const localProgress = ref("");
+
+const facts = [
+  "Festive Express installs your lights — you relax and enjoy the season.",
+  "Professional C-9 roofline lighting, installed and removed for you.",
+  "One simple rental package — no ladders, no tangled cords, no storage.",
+  "We handle install, maintenance, and takedown when the season ends.",
+  "Licensed & insured technicians — your home is fully protected.",
+  "Finding your roofline…",
+  "Placing C-9 lights along every eave and peak…",
+  "Adding the festive evening glow…",
+];
+
+const progressSteps = [
+  "Finding your house…",
+  "Reading the roofline…",
+  "Placing the lights…",
+  "Setting the evening glow…",
+  "Almost there…",
+];
+
+let timer: ReturnType<typeof setInterval> | null = null;
+let i = 0;
+
+watch(
+  rendering,
+  (on) => {
+    if (on) {
+      i = 0;
+      localFact.value = facts[0]!;
+      localProgress.value = progressSteps[0]!;
+      timer = setInterval(() => {
+        i = (i + 1) % facts.length;
+        localFact.value = facts[i]!;
+        localProgress.value =
+          progressSteps[Math.min(i, progressSteps.length - 1)]!;
+      }, 1500);
+    } else {
+      if (timer) clearInterval(timer);
+      timer = null;
+    }
+  },
+  { immediate: true },
+);
+
+onUnmounted(() => {
+  if (timer) clearInterval(timer);
+});
 </script>
