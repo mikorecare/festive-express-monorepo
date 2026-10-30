@@ -218,7 +218,7 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/turnstile", "nuxt-security", '@nuxtjs/sitemap', '@nuxt/image', "@nuxtjs/seo",],
+  modules: ["@nuxtjs/tailwindcss", "@nuxtjs/turnstile", "nuxt-security", '@nuxtjs/sitemap', '@nuxt/image', "@nuxtjs/seo", "nuxt-meta-pixel"],
 
   image: {
     provider: process.env.NODE_ENV === 'development'
@@ -307,7 +307,13 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || "https://festive.express/api",
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || "https://festive.express",
-      supabaseUrl: process.env.SUPABASE_URL
+      supabaseUrl: process.env.SUPABASE_URL,
+
+      metapixel: {
+        pixels: {
+          default: { id: '1090986810044871' },
+        },
+      },
     },
   },
 
