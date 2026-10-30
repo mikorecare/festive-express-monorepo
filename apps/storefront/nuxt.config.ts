@@ -347,6 +347,7 @@ export default defineNuxtConfig({
           "https://s.ytimg.com",
           "https://i.ytimg.com",
           "https://motion-media-llc.aryeo.com",
+          "https://connect.facebook.net",
         ],
 
         'style-src': [
@@ -383,6 +384,8 @@ export default defineNuxtConfig({
           "https://i9.ytimg.com",
           "https://*.ytimg.com",
           "https://motion-media-llc.aryeo.com",
+          "https://www.facebook.com",
+          "https://facebook.com",
         ],
 
         'media-src': [
@@ -421,6 +424,9 @@ export default defineNuxtConfig({
           "https://s.ytimg.com",
           "https://i.ytimg.com",
           "https://motion-media-llc.aryeo.com",
+          "https://connect.facebook.net",
+          "https://www.facebook.com",
+          "https://facebook.com",
         ],
 
         'frame-src': [
