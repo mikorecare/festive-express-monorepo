@@ -88,7 +88,7 @@
           >
             <div class="w-full" style="padding-bottom: 96.5%">
               <img
-                class="absolute top-0 left-0 w-full h-full rounded-lg object-cover object-top"
+                class="absolute top-0 left-0 w-full h-full rounded-lg object-contain object-top"
                 :src="result.imageUrl"
                 alt="Your home with holiday lighting"
               />
