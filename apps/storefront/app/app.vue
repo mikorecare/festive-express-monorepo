@@ -11,6 +11,7 @@
 
     <!-- Mobile-only bottom nav -->
     <MobileNav class="lg:hidden" />
+    <VoucherModal />
   </div>
 </template>
 

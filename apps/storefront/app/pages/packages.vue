@@ -4,7 +4,7 @@
     <section
       aria-label="Holiday lighting packages hero banner"
       role="region"
-      class="relative bg-slate-900 py-16 text-white overflow-hidden min-h-[400px] sm:min-h-[500px]"
+      class="relative py-16 text-white overflow-hidden min-h-[400px] sm:min-h-[500px]"
     >
       <!-- LCP image -->
       <NuxtImg
@@ -13,7 +13,7 @@
         role="none"
         sizes="100vw"
         format="webp"
-        quality="80"
+        quality="100"
         :img-attrs="{
           loading: 'eager',
           fetchpriority: 'high',
@@ -122,7 +122,7 @@
 
           <!-- RIGHT: sale price block -->
           <div
-            v-if="showSale(selectedSku(pkg)?.sale_price)"
+            v-if="showSale(selectedSku(pkg)?.price)"
             class="package-price flex flex-col items-end shrink-0"
           >
             <NuxtImg
@@ -157,7 +157,7 @@
                 <span
                   class="text-[0.65rem] sm:text-[0.7rem] md:text-[0.8rem] font-semibold text-slate-600 ml-0.5"
                 >
-                  / Season
+                  per Season
                 </span>
               </span>
             </div>
@@ -176,7 +176,7 @@
             <div
               class="text-xs sm:text-sm md:text-base font-semibold text-slate-600 whitespace-nowrap"
             >
-              / season
+              per Season
             </div>
           </div>
         </div>
@@ -851,10 +851,10 @@ const selectedSku = (pkg: PackageRow): SkuRow | null => {
 const selectedPrice = (pkg: PackageRow) => {
   const sku = selectedSku(pkg);
   if (sku) {
-    const sale = Number(sku.sale_price);
+    const sale = Number(sku.price);
     if (
-      sku.sale_price != null &&
-      sku.sale_price !== "" &&
+      sku.price != null &&
+      sku.price !== "" &&
       !Number.isNaN(sale) &&
       sale > 0
     ) {
@@ -862,10 +862,10 @@ const selectedPrice = (pkg: PackageRow) => {
     }
     return Number(sku.price ?? 0);
   }
-  const sale = Number(pkg.sale_price);
+  const sale = Number(pkg.price);
   if (
-    pkg.sale_price != null &&
-    pkg.sale_price !== "" &&
+    pkg.price != null &&
+    pkg.price !== "" &&
     !Number.isNaN(sale) &&
     sale > 0
   ) {

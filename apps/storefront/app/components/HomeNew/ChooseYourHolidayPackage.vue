@@ -139,7 +139,7 @@
               <h3 class="sr-only">{{ pkg.name }}</h3>
             </div>
 
-            <!-- RIGHT: was / now / price / season -->
+            <!-- RIGHT: was / now / price per Season -->
             <div
               class="flex flex-col items-end shrink-0 text-right leading-tight -mt-4"
             >
@@ -158,7 +158,7 @@
                 </span>
                 <span
                   class="text-[0.7rem] md:text-[0.8rem] font-semibold text-white/90"
-                  >/ Season</span
+                  >per Season</span
                 >
               </template>
               <template v-else>
@@ -169,7 +169,7 @@
                 </span>
                 <span
                   class="text-[0.7rem] md:text-[0.8rem] font-semibold text-white/90"
-                  >/ Season</span
+                  >per Season</span
                 >
               </template>
             </div>

@@ -1,13 +1,6 @@
 
 import { getSupabase } from '~~/server/utils/supabase'
 
-// Helper function to check if early bird is active (duplicated from composable for server use)
-const isEarlyBirdActive = (enabled?: boolean, expiresAt?: string | null) => {
-    if (!enabled) return false;
-    if (!expiresAt) return true;
-    return new Date(expiresAt).getTime() > Date.now();
-};
-
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)
     const { cartId, productId, quantity } = body
@@ -24,7 +17,7 @@ export default defineEventHandler(async (event) => {
     try {
         const { data: productData, error: productError } = await supabase
             .from("products")
-            .select("id, price, sale_price")
+            .select("id, price")
             .eq("id", productId)
             .maybeSingle()
 
@@ -63,10 +56,7 @@ export default defineEventHandler(async (event) => {
             }
         }
 
-        const isEarlyBird = isEarlyBirdActive(earlyBirdEnabled, earlyBirdExpiresAt)
-        const unitPrice = isEarlyBird && productData.sale_price != null && Number(productData.sale_price) > 0
-            ? Number(productData.sale_price)
-            : Number(productData.price ?? 0)
+        const unitPrice = Number(productData.price ?? 0)
 
         const { data: existing } = await supabase
             .from("cart_items")
