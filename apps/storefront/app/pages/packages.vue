@@ -7,19 +7,14 @@
       class="relative py-16 text-white overflow-hidden min-h-[400px] sm:min-h-[500px]"
     >
       <!-- LCP image -->
-      <NuxtImg
+      <img
         src="/New/Banner/hero-new.webp"
         alt="Express Banner"
-        role="none"
-        sizes="100vw"
-        format="webp"
-        quality="100"
-        :img-attrs="{
-          loading: 'eager',
-          fetchpriority: 'high',
-          decoding: 'async',
-        }"
-        preload
+        width="1920"
+        height="800"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
         class="absolute inset-0 w-full h-full object-cover z-10"
       />
 
