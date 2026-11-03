@@ -457,7 +457,7 @@ const submitForm = async () => {
 
   try {
     // --- REAL API SUBMIT (COMMENTED OUT) ---
-    /*
+
     const response = await $fetch<{ success: boolean; error?: string }>(
       props.apiEndpoint,
       {
@@ -488,15 +488,15 @@ const submitForm = async () => {
         turnstileToken.value = "";
       }
     }
-    */
+  
 
-    // --- FAKE SUCCESS FOR TESTING (ACTIVE) ---
-    sentEmail.value = form.value.email;
-    isSuccess.value = true;
-    form.value = { name: "", email: "" };
-    turnstileRef.value?.reset();
-    turnstileVerified.value = false;
-    turnstileToken.value = "";
+    // // --- FAKE SUCCESS FOR TESTING (ACTIVE) ---
+    // sentEmail.value = form.value.email;
+    // isSuccess.value = true;
+    // form.value = { name: "", email: "" };
+    // turnstileRef.value?.reset();
+    // turnstileVerified.value = false;
+    // turnstileToken.value = "";
   } catch (err: any) {
     console.error("Voucher submit error:", err);
     error.value = err?.data?.message || "Network error. Please try again.";
