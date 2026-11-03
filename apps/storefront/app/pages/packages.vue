@@ -4,9 +4,8 @@
     <section
       aria-label="Holiday lighting packages hero banner"
       role="region"
-      class="relative py-16 text-white overflow-hidden min-h-[400px] sm:min-h-[500px]"
+      class="relative py-10 sm:py-16 text-white overflow-hidden min-h-[320px] sm:min-h-[500px]"
     >
-      <!-- LCP image -->
       <img
         src="/New/Banner/hero-new.webp"
         alt="Express Banner"
@@ -18,17 +17,15 @@
         class="absolute inset-0 w-full h-full object-cover z-10"
       />
 
-      <!-- Dark overlay -->
       <div class="absolute inset-0 bg-black/40 z-[1]" aria-hidden="true"></div>
 
-      <!-- Content -->
       <div
-        class="relative z-10 container mx-auto px-4 flex items-center justify-center min-h-[400px] sm:min-h-[500px]"
+        class="relative z-10 container mx-auto px-3 sm:px-4 flex items-center justify-center min-h-[320px] sm:min-h-[500px]"
       >
         <div class="hero-content text-center max-w-2xl mx-auto">
           <h1
             v-fade
-            class="text-3xl md:text-5xl font-extrabold tracking-tight mb-4"
+            class="text-[1.75rem] sm:text-3xl md:text-5xl font-extrabold tracking-tight mb-2 sm:mb-4"
           >
             <span
               class="text-brand-orange [-webkit-text-stroke:0.04em_#fff] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
@@ -44,7 +41,7 @@
 
           <p
             v-fade
-            class="text-base md:text-lg text-slate-200"
+            class="text-base sm:text-xl tracking-wide md:text-2xl font-bold text-[#1c2d5b] [-webkit-text-stroke:0.06em_#fff] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
             aria-label="Package description"
           >
             <template v-if="subtitleParts.length > 1">
@@ -73,14 +70,14 @@
         v-if="pending"
         role="status"
         aria-live="polite"
-        class="text-center py-20 text-slate-500"
+        class="text-center py-12 sm:py-20 text-slate-500"
       >
         Loading packages...
       </div>
       <div
         v-else-if="!packages.length"
         role="alert"
-        class="text-center py-20 text-slate-500"
+        class="text-center py-12 sm:py-20 text-slate-500"
       >
         No packages available.
       </div>
@@ -89,33 +86,31 @@
         v-for="pkg in packages"
         :id="`package-${pkg.slug}`"
         :key="pkg.id"
-        class="container mx-auto px-4 max-w-7xl mb-16 last:mb-0 scroll-mt-48 mt-5 sm:mt-2"
+        class="container mx-auto px-3 sm:px-4 max-w-7xl mb-10 sm:mb-16 last:mb-0 scroll-mt-32 sm:scroll-mt-48 mt-3 sm:mt-2"
         :ref="(el) => setPackageRef(el, pkg.id)"
       >
-        <!-- Header: title image + price (SKU) -->
+        <!-- Header -->
         <div
-          class="section-header flex flex-row justify-between items-center sm:mb-2 pb-4 sm:pb-2 border-b-2 border-slate-200 gap-3 sm:gap-4"
+          class="section-header flex flex-row justify-between items-center mb-2 sm:mb-2 pb-3 sm:pb-2 border-b-2 border-slate-200 gap-2 sm:gap-4"
         >
-          <!-- LEFT: title image + name -->
           <div
-            class="header-left relative flex items-center flex-1 min-w-0 gap-3"
+            class="header-left relative flex items-center flex-1 min-w-0 gap-2 sm:gap-3"
           >
             <NuxtImg
               v-if="pkg.title_image_url || pkg.icon_url"
               :src="pkg.title_image_url || pkg.icon_url || undefined"
               :alt="pkg.name"
               loading="lazy"
-              class="pkg-title-img h-12 sm:h-16 md:h-24 w-auto object-contain drop-shadow-md shrink-0"
+              class="pkg-title-img h-10 sm:h-16 md:h-24 w-auto object-contain drop-shadow-md shrink-0"
             />
             <h2
-              class="text-xl sm:text-2xl md:text-3xl font-bold text-[#1C2D5B] truncate"
+              class="text-lg sm:text-2xl md:text-3xl font-bold text-[#1C2D5B] truncate"
               :class="pkg.title_image_url || pkg.icon_url ? 'sr-only' : ''"
             >
               {{ pkg.name }}
             </h2>
           </div>
 
-          <!-- RIGHT: sale price block -->
           <div
             v-if="showSale(selectedSku(pkg)?.price)"
             class="package-price flex flex-col items-end shrink-0"
@@ -125,62 +120,58 @@
               alt="Early Bird Special"
               sizes="sm:120px md:150px"
               loading="lazy"
-              class="h-6 sm:h-8 md:h-10 lg:h-11 w-auto object-contain mb-1 drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
+              class="h-5 sm:h-8 md:h-10 lg:h-11 w-auto object-contain mb-0.5 sm:mb-1 drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
             />
-
             <div class="text-right leading-tight">
               <span
-                class="block text-[0.7rem] sm:text-[0.8rem] font-bold text-[#1C2D5B] leading-tight"
+                class="block text-[0.65rem] sm:text-[0.8rem] font-bold text-[#1C2D5B] leading-tight"
               >
                 was
                 <span class="line-through decoration-brand-orange decoration-2">
                   ${{ Math.round(Number(selectedSku(pkg)?.price) || 0) }}
                 </span>
               </span>
-
               <span class="block leading-tight whitespace-nowrap">
                 <span
-                  class="text-[0.7rem] sm:text-[0.8rem] font-bold text-[#1C2D5B]"
+                  class="text-[0.65rem] sm:text-[0.8rem] font-bold text-[#1C2D5B]"
                 >
                   now
                 </span>
                 <span
-                  class="text-[1.1rem] sm:text-[1.25rem] md:text-[1.5rem] font-black text-[#F49321] ml-1"
+                  class="text-base sm:text-[1.25rem] md:text-[1.5rem] font-black text-[#F49321] ml-1"
                 >
                   ${{ Math.round(Number(selectedPrice(pkg)) || 0) }}
                 </span>
                 <span
-                  class="text-[0.65rem] sm:text-[0.7rem] md:text-[0.8rem] font-semibold text-slate-600 ml-0.5"
+                  class="text-[0.6rem] sm:text-[0.7rem] md:text-[0.8rem] font-semibold text-slate-600 ml-0.5"
                 >
-                  per Season
+                   Per Season
                 </span>
               </span>
             </div>
           </div>
 
-          <!-- RIGHT: regular price (no sale) -->
           <div
             v-else
-            class="package-price flex items-baseline justify-end gap-1.5 shrink-0"
+            class="package-price flex items-baseline justify-end gap-1 sm:gap-1.5 shrink-0"
           >
             <div
-              class="text-2xl sm:text-3xl md:text-4xl font-extrabold leading-none text-[#f59e0b]"
+              class="text-xl sm:text-3xl md:text-4xl font-extrabold leading-none text-[#f59e0b]"
             >
               ${{ Math.round(Number(selectedPrice(pkg)) || 0) }}
             </div>
             <div
-              class="text-xs sm:text-sm md:text-base font-semibold text-slate-600 whitespace-nowrap"
+              class="text-[0.65rem] sm:text-sm md:text-base font-semibold text-slate-600 whitespace-nowrap"
             >
-              per Season
+               Per Season
             </div>
           </div>
         </div>
 
         <!-- Horizontal layout -->
         <div
-          class="horizontal-layout grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+          class="horizontal-layout grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8 items-start"
         >
-          <!-- Left: image + hotspots + colors -->
           <div
             class="media-column lg:col-span-7 flex flex-col bg-white rounded-xl shadow-sm border border-slate-100"
           >
@@ -188,9 +179,8 @@
               class="image-wrapper relative bg-slate-100 group"
               @click.stop="onPackageImageClick(pkg)"
             >
-              <!-- Crossfade image wrapper (fixed height, overflow hidden) -->
               <div
-                class="main-image-wrap relative w-full h-[320px] sm:h-[420px] border-4 border-[#f59e0b] rounded-2xl overflow-hidden bg-slate-100"
+                class="main-image-wrap relative w-full h-[240px] sm:h-[320px] md:h-[420px] border-4 border-[#f59e0b] rounded-2xl overflow-hidden bg-slate-100"
               >
                 <Transition name="img-fade">
                   <NuxtImg
@@ -219,9 +209,8 @@
                 </Transition>
               </div>
 
-              <!-- Package icon badge -->
               <div
-                class="lights-badge absolute right-0 -bottom-[30px] z-[3] w-[76px] h-[76px] rounded-full flex items-center justify-center shadow-lg"
+                class="lights-badge absolute right-2 sm:right-0 -bottom-[22px] sm:-bottom-[30px] z-[3] w-[56px] h-[56px] sm:w-[76px] sm:h-[76px] rounded-full flex items-center justify-center shadow-lg"
                 aria-hidden="true"
               >
                 <NuxtImg
@@ -236,23 +225,22 @@
                   loading="lazy"
                   class="lights-icon-img w-100 h-100 object-contain"
                 />
-                <span v-else class="text-white text-xs font-bold">{{
+                <span v-else class="text-white text-[0.6rem] font-bold">{{
                   pkg.name
                 }}</span>
               </div>
 
-              <!-- Hotspots -->
               <button
                 v-for="spot in getHotspots(pkg)"
                 :key="spot.key"
                 type="button"
-                class="hotspot group/spot absolute z-30 w-7 h-7 -translate-x-1/2 -translate-y-1/2 cursor-pointer focus:outline-none"
+                class="hotspot group/spot absolute z-30 w-6 h-6 sm:w-7 sm:h-7 -translate-x-1/2 -translate-y-1/2 cursor-pointer focus:outline-none"
                 :style="{ top: spot.top, left: spot.left }"
                 :aria-label="`View ${spot.label} details`"
                 @click.stop="activateHotspot(pkg.id, spot.key)"
               >
                 <span
-                  class="hotspot-dot block w-4 h-4 mx-auto mt-1 rounded-full border-2 border-white shadow-md transition-all duration-200"
+                  class="hotspot-dot block w-3.5 h-3.5 sm:w-4 sm:h-4 mx-auto mt-1 rounded-full border-2 border-white shadow-md transition-all duration-200"
                   :class="
                     activeHotspot[String(pkg.id)] === spot.key
                       ? 'bg-[#f59e0b] scale-125'
@@ -266,7 +254,6 @@
                 />
               </button>
 
-              <!-- Click outside to close -->
               <div
                 v-if="getActiveSpot(pkg)"
                 class="fixed inset-0 z-30"
@@ -274,10 +261,9 @@
                 @click.stop="activeHotspot[String(pkg.id)] = null"
               />
 
-              <!-- Hotspot popup -->
               <div
                 v-if="getActiveSpot(pkg)"
-                class="hotspot-popup absolute z-40 w-44 rounded-xl shadow-2xl border border-slate-100 overflow-hidden -translate-x-1/2 -translate-y-[110%]"
+                class="hotspot-popup absolute z-40 w-36 sm:w-44 rounded-xl shadow-2xl border border-slate-100 overflow-hidden -translate-x-1/2 -translate-y-[110%]"
                 :style="{
                   top: getActiveSpot(pkg)?.top,
                   left: getActiveSpot(pkg)?.left,
@@ -294,10 +280,9 @@
                     class="absolute -top-1/2 -left-[150%] w-[200%] h-[200%] bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.45)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] rotate-[25deg] animate-[glossyShineContinuous_3s_linear_infinite]"
                   />
                 </div>
-
                 <button
                   type="button"
-                  class="absolute top-1.5 right-1.5 z-10 w-5 h-5 rounded-full bg-slate-900 text-white text-xs flex items-center justify-center opacity-80 hover:bg-[#f59e0b]"
+                  class="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 z-10 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-slate-900 text-white text-[0.65rem] sm:text-xs flex items-center justify-center opacity-80 hover:bg-[#f59e0b]"
                   aria-label="Close details"
                   @click.stop="activeHotspot[String(pkg.id)] = null"
                 >
@@ -305,7 +290,7 @@
                 </button>
                 <div
                   v-if="getActiveSpot(pkg)?.thumb"
-                  class="w-full h-24 p-2 flex items-center justify-center"
+                  class="w-full h-16 sm:h-24 p-1.5 sm:p-2 flex items-center justify-center"
                 >
                   <NuxtImg
                     :src="getActiveSpot(pkg)?.thumb"
@@ -319,23 +304,26 @@
                     class="max-w-full max-h-full object-contain"
                   />
                 </div>
-                <div class="p-2.5 text-center">
-                  <p class="text-xs font-bold text-white-900 leading-tight">
+                <div class="p-2 sm:p-2.5 text-center">
+                  <p
+                    class="text-[0.65rem] sm:text-xs font-bold text-white-900 leading-tight"
+                  >
                     {{ getActiveSpot(pkg)?.label }}
                   </p>
                 </div>
               </div>
             </div>
 
-            <!-- C-9 colors from SKUs -->
             <div
-              class="color-overlay p-5 bg-white border-t border-slate-200 text-center"
+              class="color-overlay p-3 sm:p-5 bg-white border-t border-slate-200 text-center"
             >
-              <p class="text-sm font-bold text-slate-900 mb-3">
+              <p
+                class="text-xs sm:text-sm font-bold text-slate-900 mb-2 sm:mb-3"
+              >
                 Select C-9 Light Color
               </p>
               <div
-                class="flex justify-center flex-wrap gap-3"
+                class="flex justify-center flex-wrap gap-2 sm:gap-3"
                 role="radiogroup"
                 aria-label="Light color options"
               >
@@ -346,7 +334,7 @@
                   role="radio"
                   :aria-checked="String(effectiveSkuId(pkg)) === String(sku.id)"
                   :aria-label="`${sku.color_label || byKey(sku.color_key)?.color_label || sku.color_key} color option`"
-                  class="flex flex-col items-center gap-1.5 cursor-pointer px-3.5 py-2 rounded-xl border-2 transition-all"
+                  class="flex flex-col items-center gap-1 sm:gap-1.5 cursor-pointer px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border-2 transition-all"
                   :class="
                     String(effectiveSkuId(pkg)) === String(sku.id)
                       ? 'border-[#f59e0b] bg-orange-50'
@@ -355,10 +343,12 @@
                   @click="selectSku(pkg.id, sku.id)"
                 >
                   <div
-                    class="w-8 h-8 rounded-full border-2 border-slate-300 shadow-inner"
+                    class="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-slate-300 shadow-inner"
                     :style="swatchStyle(sku.color_key)"
                   />
-                  <span class="text-xs font-semibold text-slate-700">
+                  <span
+                    class="text-[0.65rem] sm:text-xs font-semibold text-slate-700"
+                  >
                     {{
                       sku.color_label ||
                       byKey(sku.color_key)?.color_label ||
@@ -369,7 +359,7 @@
               </div>
               <p
                 v-if="!skusFor(pkg.id).length"
-                class="text-sm text-slate-400 mt-2"
+                class="text-xs sm:text-sm text-slate-400 mt-2"
               >
                 No color options yet.
               </p>
@@ -377,24 +367,31 @@
           </div>
 
           <!-- Right: details -->
-          <div class="details-column lg:col-span-5 flex flex-col gap-6">
+          <div
+            class="details-column lg:col-span-5 flex flex-col gap-4 sm:gap-6"
+          >
             <div
               v-if="pkg.description"
-              class="text-base text-navy leading-relaxed whitespace-pre-line"
+              class="text-sm sm:text-base text-navy leading-relaxed whitespace-pre-line"
               v-html="pkg.description"
             />
 
             <div class="inclusions-block">
-              <h3 class="text-lg font-bold text-slate-900 mb-3">
+              <h3
+                class="text-base sm:text-lg font-bold text-slate-900 mb-2 sm:mb-3"
+              >
                 Package Inclusions:
               </h3>
-              <ul class="space-y-2 list-none p-0 m-0" role="list">
+              <ul
+                class="space-y-1.5 sm:space-y-2 list-none p-0 m-0"
+                role="list"
+              >
                 <li
                   v-for="(row, i) in inclusionsFor(pkg).filter(
                     (r) => r.is_included,
                   )"
                   :key="i"
-                  class="flex items-center gap-2.5 p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-[#f59e0b] hover:bg-[#fff7ed] transition-colors"
+                  class="flex items-center gap-2 sm:gap-2.5 p-2 sm:p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-[#f59e0b] hover:bg-[#fff7ed] transition-colors"
                   role="listitem"
                   @click="highlightInclusion(pkg, row)"
                 >
@@ -408,7 +405,7 @@
                     height="32"
                     fit="contain"
                     loading="lazy"
-                    class="w-8 h-8 object-contain flex-shrink-0"
+                    class="w-7 h-7 sm:w-8 sm:h-8 object-contain flex-shrink-0"
                     aria-hidden="true"
                   />
                   <span
@@ -417,7 +414,9 @@
                     aria-hidden="true"
                     >✔</span
                   >
-                  <span class="text-xs font-semibold leading-snug text-navy">
+                  <span
+                    class="text-[0.7rem] sm:text-xs font-semibold leading-snug text-navy"
+                  >
                     {{ row.label_override || row.inclusion_items?.name }}
                   </span>
                 </li>
@@ -426,7 +425,7 @@
 
             <button
               type="button"
-              class="inline-flex items-center justify-center gap-2 bg-transparent text-navy border-2 border-slate-900 px-6 py-3 text-sm font-semibold rounded-lg hover:bg-slate-900 hover:text-white transition-all"
+              class="inline-flex items-center justify-center gap-2 bg-transparent text-navy border-2 border-slate-900 px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold rounded-lg hover:bg-slate-900 hover:text-white transition-all"
               aria-label="Scroll to product specifications"
               @click="scrollToSpecs"
             >
@@ -435,12 +434,12 @@
             </button>
 
             <div
-              class="p-4 bg-blue-50 border border-dashed border-blue-200 rounded-xl"
+              class="p-3 sm:p-4 bg-blue-50 border border-dashed border-blue-200 rounded-xl"
               role="note"
               aria-label="Package information"
             >
               <p
-                class="m-0 text-xs sm:text-sm text-navy flex items-start gap-2.5 leading-relaxed"
+                class="m-0 text-[0.7rem] sm:text-sm text-navy flex items-start gap-2 sm:gap-2.5 leading-relaxed"
               >
                 <span class="flex-shrink-0" aria-hidden="true">ℹ</span>
                 Includes commercial-grade LEDs, custom fit sizing, professional
@@ -450,7 +449,7 @@
 
             <button
               type="button"
-              class="group relative overflow-hidden w-full bg-[#f59e0b] hover:bg-[#1C2D5B] text-white font-bold py-4 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
+              class="group relative overflow-hidden w-full bg-[#f59e0b] hover:bg-[#1C2D5B] text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
               :disabled="
                 !selectedSku(pkg)?.id || addingId === selectedSku(pkg)?.id
               "
@@ -462,7 +461,7 @@
                 class="inline-flex items-center justify-center gap-2"
               >
                 <svg
-                  class="animate-spin h-5 w-5"
+                  class="animate-spin h-4 w-4 sm:h-5 sm:w-5"
                   viewBox="0 0 24 24"
                   fill="none"
                   aria-hidden="true"
@@ -483,7 +482,7 @@
                 </svg>
                 Adding...
               </span>
-              <span v-else>
+              <span v-else class="text-sm sm:text-base">
                 Add
                 <span
                   class="text-navy font-bold uppercase group-hover:text-white transition-colors"
@@ -503,14 +502,18 @@
       aria-label="Product specifications"
       role="region"
       id="package-specs"
-      class="product-info-section py-20 bg-slate-50"
+      class="product-info-section py-10 sm:py-20 bg-slate-50"
     >
-      <div class="container mx-auto px-4 max-w-7xl">
-        <div class="section-header2 text-center mb-12">
-          <h2 class="text-3xl font-extrabold text-navy mb-3">
+      <div class="container mx-auto px-3 sm:px-4 max-w-7xl">
+        <div class="section-header2 text-center mb-6 sm:mb-12">
+          <h2
+            class="text-2xl sm:text-3xl font-extrabold text-navy mb-2 sm:mb-3"
+          >
             Product Specifications
           </h2>
-          <p class="section-subtitle text-navy text-base max-w-2xl mx-auto">
+          <p
+            class="section-subtitle text-navy text-sm sm:text-base max-w-2xl mx-auto"
+          >
             Discover the professional-grade materials and engineering behind
             every installation.
           </p>
@@ -520,7 +523,7 @@
           v-if="specsLoading"
           role="status"
           aria-live="polite"
-          class="text-center text-navy py-10"
+          class="text-center text-navy py-8 sm:py-10"
         >
           Loading specifications...
         </div>
@@ -528,14 +531,14 @@
         <div
           v-else-if="!inclusionItems.length"
           role="alert"
-          class="text-center text-navy py-10"
+          class="text-center text-navy py-8 sm:py-10"
         >
           No product specifications available.
         </div>
 
         <div
           v-else
-          class="product-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          class="product-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
           role="list"
         >
           <div
@@ -545,37 +548,40 @@
             role="listitem"
           >
             <div
-              class="product-header bg-[#1C2D5B] text-white p-5 flex justify-between items-center gap-3"
+              class="product-header bg-[#1C2D5B] text-white p-3 sm:p-5 flex justify-between items-center gap-2 sm:gap-3"
             >
-              <h3 class="text-lg font-bold text-white m-0">
+              <h3 class="text-base sm:text-lg font-bold text-white m-0">
                 {{ item.name }}
               </h3>
             </div>
 
-            <div class="product-body p-6 flex flex-col flex-grow">
+            <div class="product-body p-4 sm:p-6 flex flex-col flex-grow">
               <p
                 v-if="item.description"
-                class="description text-navy text-sm leading-relaxed mb-4"
+                class="description text-navy text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4"
               >
                 {{ item.description }}
               </p>
 
               <div
                 v-if="colorList(item).length"
-                class="options-tag bg-[#f0f4f8] text-[#1C2D5B] px-3 py-2 rounded-[6px] text-[0.88rem] mb-5"
+                class="options-tag bg-[#f0f4f8] text-[#1C2D5B] px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-[6px] text-[0.8rem] sm:text-[0.88rem] mb-3 sm:mb-5"
               >
                 <strong>Color Options:</strong>
                 {{ colorList(item).join(", ") }}
               </div>
 
-              <div v-if="featureList(item).length" class="spec-block mb-4">
+              <div
+                v-if="featureList(item).length"
+                class="spec-block mb-3 sm:mb-4"
+              >
                 <h4
-                  class="text-base font-bold text-[#1C2D5B] mb-2.5 pb-0.75 border-b-2 border-[#f59e0b] inline-block"
+                  class="text-sm sm:text-base font-bold text-[#1C2D5B] mb-2 sm:mb-2.5 pb-0.75 border-b-2 border-[#f59e0b] inline-block"
                 >
                   Features
                 </h4>
                 <ul
-                  class="list-disc list-inside text-sm text-navy space-y-1.5 p-0 m-0"
+                  class="list-disc list-inside text-xs sm:text-sm text-navy space-y-1 sm:space-y-1.5 p-0 m-0"
                   role="list"
                 >
                   <li
@@ -593,12 +599,12 @@
                 class="spec-block mt-auto"
               >
                 <h4
-                  class="text-base font-bold text-[#1C2D5B] mb-2.5 pb-0.75 border-b-2 border-[#f59e0b] inline-block"
+                  class="text-sm sm:text-base font-bold text-[#1C2D5B] mb-2 sm:mb-2.5 pb-0.75 border-b-2 border-[#f59e0b] inline-block"
                 >
                   Specifications
                 </h4>
                 <div
-                  class="spec-grid grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-lg text-sm text-slate-600"
+                  class="spec-grid grid grid-cols-2 gap-1.5 sm:gap-2 bg-slate-50 p-2.5 sm:p-3 rounded-lg text-xs sm:text-sm text-slate-600"
                   role="list"
                 >
                   <div
@@ -620,11 +626,11 @@
     <!-- Lightbox Modal -->
     <div
       v-if="activeLightboxImage"
-      class="lightbox fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center p-6 cursor-zoom-out"
+      class="lightbox fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center p-4 sm:p-6 cursor-zoom-out"
       @click.self="closeLightbox"
     >
       <button
-        class="lightbox-close absolute top-5 right-6 text-white text-4xl bg-transparent border-none cursor-pointer hover:text-amber-500 transition-colors"
+        class="lightbox-close absolute top-3 right-4 sm:top-5 sm:right-6 text-white text-3xl sm:text-4xl bg-transparent border-none cursor-pointer hover:text-amber-500 transition-colors"
         @click="closeLightbox"
       >
         ×
@@ -635,14 +641,24 @@
         format="webp"
         quality="90"
         fit="contain"
-        class="lightbox-image max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl"
+        class="lightbox-image max-w-[92vw] sm:max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-useHead({ title: "Packages" });
+useHead({
+  title: "Packages",
+  link: [
+    {
+      rel: "preload",
+      as: "image",
+      href: "/New/Banner/hero-new.webp",
+      fetchpriority: "high",
+    },
+  ],
+});
 
 type InclusionItem = {
   id: string;

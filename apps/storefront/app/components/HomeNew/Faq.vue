@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative min-h-screen bg-transparent py-8 sm:py-12 lg:py-20 px-4 sm:px-6 overflow-hidden border-b-[27px] border-[#F49321]"
+    class="relative min-h-screen bg-transparent py-8 sm:py-12 lg:py-20 px-3 sm:px-6 overflow-hidden border-b-[18px] sm:border-b-[27px] border-[#F49321]"
   >
     <!-- Background image -->
     <div
@@ -13,7 +13,7 @@
     <!-- Content needs relative z-10 to sit above bg -->
     <div class="relative z-10">
       <h1
-        class="font-poppins text-center font-extrabold text-[#F49321] text-2xl sm:text-4xl lg:text-[60px] leading-[1.1] sm:leading-[0.9] lg:leading-[0.77] tracking-tight [text-shadow:_-2px_-2px_0_#fff,_2px_-2px_0_#fff,_-2px_2px_0_#fff,_2px_2px_0_#fff,_0_4px_10px_rgba(28,45,91,0.45)] mb-6 sm:mb-10 lg:mb-12"
+        class="font-poppins text-center font-extrabold text-[#F49321] text-2xl sm:text-4xl lg:text-[60px] leading-[1.1] sm:leading-[0.9] lg:leading-[0.77] tracking-tight [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff,_0_2px_4px_rgba(28,45,91,0.35)] lg:[text-shadow:_-2px_-2px_0_#fff,_2px_-2px_0_#fff,_-2px_2px_0_#fff,_2px_2px_0_#fff,_0_4px_10px_rgba(28,45,91,0.45)] mb-6 sm:mb-10 lg:mb-12 px-2"
       >
         Holiday Lighting Questions
       </h1>

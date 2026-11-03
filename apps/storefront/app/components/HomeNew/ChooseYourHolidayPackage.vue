@@ -1,28 +1,28 @@
 <template>
   <section
-    class="relative bg-[url('/Images/Choose-Your-Package.webp')] bg-cover bg-center bg-no-repeat bg-scroll md:bg-fixed py-16 z-[1] border-b-[27px] border-[#F49321]"
+    class="relative bg-[url('/Images/Choose-Your-Package.webp')] bg-cover bg-center bg-no-repeat bg-scroll md:bg-fixed py-12 md:py-16 z-[1] border-b-[18px] md:border-b-[27px] border-[#F49321]"
   >
     <div class="absolute inset-0 z-[-1] pointer-events-none"></div>
-    <div class="max-w-[1280px] mx-auto px-4 sm:px-5">
-      <div v-fade class="text-center mb-8 lg:mb-10">
+    <div class="max-w-[1280px] mx-auto px-3 sm:px-5">
+      <div v-fade class="text-center mb-6 md:mb-10">
         <p
-          class="text-white font-extrabold text-[1.5rem] sm:text-4xl lg:text-[72px] tracking-wide uppercase sm:mb-1 md:mb-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)]"
+          class="text-white font-extrabold text-[1.8rem] sm:text-4xl lg:text-[72px] tracking-wide uppercase sm:mb-1 md:mb-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)]"
         >
           CHOOSE YOUR
         </p>
         <h2
-          class="text-[#F49321] font-extrabold text-[1.5rem] sm:text-4xl lg:text-[72px] tracking-wide uppercase leading-[1.15] [-webkit-text-stroke:2px_#fff] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(28,45,91,0.45)]"
+          class="text-[#F49321] font-extrabold text-[1.8rem] sm:text-4xl lg:text-[72px] tracking-wide uppercase leading-[1.15] [-webkit-text-stroke:1.5px_#fff] md:[-webkit-text-stroke:2px_#fff] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(28,45,91,0.45)]"
         >
           HOLIDAY PACKAGE
         </h2>
       </div>
       <p
         v-fade
-        class="text-center text-white font-bold tracking-[0.4px] text-[0.72rem] sm:text-[1.15rem] leading-snug mt-6 mb-8 drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)] max-w-[90%] sm:max-w-none mx-auto"
+        class="text-center text-white font-bold tracking-[0.4px] text-[0.8rem] sm:text-[1.15rem] leading-snug mt-4 mb-6 sm:mt-6 sm:mb-8 drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)] max-w-[95%] sm:max-w-none mx-auto"
       >
         COMPARE WHAT'S INCLUDED IN EACH PLAN
         <span
-          class="block text-[0.65rem] sm:text-[0.9rem] font-semibold text-white/90 mt-1"
+          class="block text-[0.7rem] sm:text-[0.9rem] font-semibold text-white/90 mt-1"
         >
           (Each package is a rental for one season)
         </span>
@@ -40,7 +40,7 @@
 
       <div
         v-else
-        class="grid grid-cols-1 lg:grid-cols-3 gap-[30px] items-stretch max-lg:max-w-[420px] max-lg:mx-auto"
+        class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-[30px] items-stretch max-w-[380px] sm:max-w-[420px] lg:max-w-none mx-auto"
       >
         <div
           v-for="(pkg, index) in packageProducts"
@@ -51,11 +51,11 @@
           <!-- ============================== -->
           <!-- Card Top: hero image (z-20)   -->
           <!-- ============================== -->
-          <div class="relative p-3 pb-0 z-20 px-2 pt-2">
+          <div class="relative p-2.5 sm:p-3 pb-0 z-20">
             <h3 class="sr-only">{{ pkg.name }}</h3>
 
             <NuxtImg
-              class="absolute z-[3] pointer-events-none w-auto drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)] -bottom-[28px] h-[60px] md:-bottom-[34px] md:h-[68px] lg:-bottom-[38px] lg:h-[72px] left-[85px] md:left-[58px] lg:left-[85px]"
+              class="absolute z-[3] pointer-events-none w-auto drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)] -bottom-[24px] h-[52px] md:-bottom-[34px] md:h-[68px] lg:-bottom-[38px] lg:h-[72px] left-[75px] sm:left-[85px] md:left-[58px] lg:left-[85px]"
               :src="pkg.title_image_url || '/Images/placeholder.png'"
               :alt="pkg.name"
               sizes="60px md:68px lg:72px"
@@ -76,7 +76,7 @@
                     v-bind="imgAttrs"
                     :src="src"
                     :alt="pkg.name"
-                    class="w-full h-[200px] object-cover block"
+                    class="w-full h-[180px] sm:h-[200px] object-cover block"
                     loading="lazy"
                   />
                 </template>
@@ -87,11 +87,11 @@
             </div>
 
             <div
-              class="absolute z-[3] rounded-full bg-brand-orange flex items-center justify-center shadow-[0_6px_16px_rgba(244,147,33,0.45)] left-[20px] max-sm:right-3 -bottom-[30px] max-sm:-bottom-[24px] w-[64px] h-[64px]"
+              class="absolute z-[3] rounded-full bg-brand-orange flex items-center justify-center shadow-[0_6px_16px_rgba(244,147,33,0.45)] left-[16px] sm:left-[20px] -bottom-[26px] sm:-bottom-[30px] w-[56px] h-[56px] sm:w-[64px] sm:h-[64px]"
               aria-hidden="true"
             >
               <NuxtImg
-                class="object-contain w-[64px] h-[64px]"
+                class="object-contain w-[56px] h-[56px] sm:w-[64px] sm:h-[64px]"
                 :src="pkg.icon_url || '/Images/placeholder.png'"
                 alt=""
                 loading="lazy"
@@ -103,27 +103,24 @@
 
           <!-- ============================== -->
           <!-- Navy header (z-10)             -->
-          <!-- Early Bird LEFT, price RIGHT   -->
           <!-- ============================== -->
           <div
-            class="relative -mt-[20px] px-4 pt-[50px] pb-3 flex items-center justify-between gap-3 bg-[#1C2D5B] z-10"
+            class="relative -mt-[18px] sm:-mt-[20px] px-3.5 sm:px-4 pt-[44px] sm:pt-[50px] pb-3 flex items-center justify-between gap-2 sm:gap-3 bg-[#1C2D5B] z-10"
           >
-            <!-- LEFT: Early Bird badge only -->
+            <!-- LEFT: Early Bird badge -->
             <div
               v-if="showSale(pkg.sale_price)"
               class="flex flex-col items-center shrink-0"
             >
-              <!-- Lock the parent's height so top-% resolves consistently -->
-              <div class="relative h-8 md:h-9">
+              <div class="relative h-7 sm:h-8 md:h-9">
                 <NuxtImg
                   :src="earlyBirdIconUrl"
                   alt="Early Bird Special"
                   loading="eager"
                   decoding="sync"
-                  class="relative z-0 h-8 md:h-9 w-auto origin-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
+                  class="relative z-0 h-7 sm:h-8 md:h-9 w-auto origin-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
                 />
 
-                <!-- width/height reserve the box before the image loads -->
                 <img
                   :src="starburstSrc"
                   alt=""
@@ -131,7 +128,7 @@
                   height="56"
                   loading="eager"
                   decoding="sync"
-                  class="absolute z-[1] top-[-52%] right-[-19px] md:top-[-44%] md:right-[-23px] lg:top-[-58%] lg:right-[-28px] h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 object-contain pointer-events-none"
+                  class="absolute z-[1] top-[-52%] right-[-19px] md:top-[-44%] md:right-[-23px] lg:top-[-58%] lg:right-[-28px] h-9 w-9 sm:h-10 sm:w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 object-contain pointer-events-none"
                 />
               </div>
             </div>
@@ -139,37 +136,40 @@
               <h3 class="sr-only">{{ pkg.name }}</h3>
             </div>
 
-            <!-- RIGHT: was / now / price per Season -->
+            <!-- RIGHT: Pricing details -->
             <div
-              class="flex flex-col items-end shrink-0 text-right leading-tight -mt-4"
+              class="flex flex-col items-end shrink-0 text-right leading-tight -mt-2 sm:-mt-4"
             >
               <template v-if="showSale(pkg.sale_price)">
-                <span class="text-[1rem] font-bold text-white">
+                <span class="text-[0.9rem] sm:text-[1rem] font-bold text-white">
                   was
                   <span class="line-through decoration-[#EC008C] decoration-2">
                     ${{ Math.round(Number(pkg.price) || 0) }}
                   </span>
                 </span>
-                <span class="text-[0.75rem] font-bold text-white">now</span>
                 <span
-                  class="text-[1.5rem] md:text-[1.8rem] font-black text-[#F49321] leading-none"
+                  class="text-[0.7rem] sm:text-[0.75rem] font-bold text-white"
+                  >now</span
+                >
+                <span
+                  class="text-[1.3rem] sm:text-[1.5rem] md:text-[1.8rem] font-black text-[#F49321] leading-none"
                 >
                   ${{ Math.round(effectivePrice(pkg.price, pkg.sale_price)) }}
                 </span>
                 <span
-                  class="text-[0.7rem] md:text-[0.8rem] font-semibold text-white/90"
-                  >per Season</span
+                  class="text-[0.65rem] sm:text-[0.7rem] md:text-[0.8rem] font-semibold text-white/90"
+                  > Per Season</span
                 >
               </template>
               <template v-else>
                 <span
-                  class="text-[1.5rem] md:text-[1.8rem] font-black text-brand-orange leading-none"
+                  class="text-[1.3rem] sm:text-[1.5rem] md:text-[1.8rem] font-black text-brand-orange leading-none"
                 >
                   ${{ Math.round(Number(pkg.price) || 0) }}
                 </span>
                 <span
-                  class="text-[0.7rem] md:text-[0.8rem] font-semibold text-white/90"
-                  >per Season</span
+                  class="text-[0.65rem] sm:text-[0.7rem] md:text-[0.8rem] font-semibold text-white/90"
+                  > Per Season</span
                 >
               </template>
             </div>
@@ -179,11 +179,11 @@
           <!-- White body: inclusions         -->
           <!-- ============================== -->
           <div
-            class="bg-white rounded-b-[70px] pt-[18px] px-[14px] pb-[50px] flex-1 bg-[url('/Images/LV.webp')] bg-no-repeat bg-[position:50%] bg-cover relative z-10"
+            class="bg-white rounded-b-[50px] sm:rounded-b-[70px] pt-[16px] sm:pt-[18px] px-3 sm:px-[14px] pb-[44px] sm:pb-[50px] flex-1 bg-[url('/Images/LV.webp')] bg-no-repeat bg-[position:50%] bg-cover relative z-10"
           >
             <div
               v-if="firstParagraph(pkg.description)"
-              class="text-[0.78rem] md:text-[0.82rem] text-[#1C2D5B] text-start font-medium leading-snug mb-3 line-clamp-3 [&_p]:m-0 [&_strong]:font-bold [&_p]:line-clamp-3"
+              class="text-[0.75rem] sm:text-[0.78rem] md:text-[0.82rem] text-[#1C2D5B] text-start font-medium leading-snug mb-3 line-clamp-3 [&_p]:m-0 [&_strong]:font-bold [&_p]:line-clamp-3"
               v-html="firstParagraph(pkg.description)"
             ></div>
             <div
@@ -193,10 +193,10 @@
               <div
                 v-for="(row, i) in includedRows(pkg)"
                 :key="i"
-                class="flex items-center gap-[10px] w-full min-w-0"
+                class="flex items-center gap-2 sm:gap-[10px] w-full min-w-0"
               >
                 <div
-                  class="w-[42px] h-[42px] md:w-[48px] md:h-[48px] rounded-full border-2 border-brand-orange overflow-hidden shrink-0 bg-white flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.1)]"
+                  class="w-[38px] h-[38px] sm:w-[42px] sm:h-[42px] md:w-[48px] md:h-[48px] rounded-full border-2 border-brand-orange overflow-hidden shrink-0 bg-white flex items-center justify-center shadow-[0_4px_8px_rgba(0,0,0,0.1)]"
                 >
                   <NuxtImg
                     v-if="row.image_url"
@@ -211,7 +211,7 @@
                 </div>
                 <div class="min-w-0">
                   <strong
-                    class="text-[0.72rem] md:text-[0.78rem] text-[#1C2D5B] font-extrabold leading-[1.2] block"
+                    class="text-[0.7rem] sm:text-[0.72rem] md:text-[0.78rem] text-[#1C2D5B] font-extrabold leading-[1.2] block"
                   >
                     {{ row.name }}
                   </strong>
@@ -231,7 +231,7 @@
           >
             <button
               type="button"
-              class="pkg-select-btn group relative overflow-hidden w-[85%] bg-brand-orange border-2 border-white rounded-[50px] py-[12px] px-[16px] text-[0.95rem] font-bold tracking-[0.5px] cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out hover:bg-[#1C2D5B] -mt-[30px] before:content-[''] before:absolute before:inset-0 before:z-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full tracking-wider"
+              class="pkg-select-btn group relative overflow-hidden w-[85%] bg-brand-orange border-2 border-white rounded-[50px] py-[10px] sm:py-[12px] px-[16px] text-[0.9rem] sm:text-[0.95rem] font-bold tracking-[0.5px] cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out hover:bg-[#1C2D5B] -mt-[26px] sm:-mt-[30px] before:content-[''] before:absolute before:inset-0 before:z-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full tracking-wider"
               @click="selectPackage(pkg)"
             >
               <span

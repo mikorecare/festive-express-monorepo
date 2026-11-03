@@ -3,7 +3,7 @@
     <Transition name="modal-fade">
       <div
         v-if="isOpen"
-        class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto"
+        class="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm overflow-y-auto"
         role="dialog"
         aria-modal="true"
         aria-labelledby="voucher-modal-title"
@@ -11,12 +11,12 @@
       >
         <Transition name="modal-pop" appear>
           <div
-            class="relative w-full max-w-[600px] mx-auto my-auto bg-white rounded-xl shadow-lg border-4 border-[#1C2D5B] overflow-hidden"
+            class="relative w-full max-w-[600px] mx-auto my-auto bg-[#1C2D5B] rounded-3xl shadow-2xl overflow-hidden font-poppins"
           >
             <!-- Close button -->
             <button
               type="button"
-              class="absolute top-2.5 right-2.5 z-10 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
+              class="absolute top-3 right-3 z-30 w-8 h-8 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition-colors backdrop-blur-sm border border-white/20"
               aria-label="Close"
               @click="close"
             >
@@ -32,198 +32,217 @@
               </svg>
             </button>
 
-            <!-- Success state -->
-            <Transition name="fade">
-              <div v-if="isSuccess">
-                <div class="bg-[#1C2D5B] py-5 px-4 text-center">
-                  <div
-                    class="mx-auto w-12 h-12 rounded-full bg-brand-orange flex items-center justify-center mb-3 shadow-[0_4px_10px_rgba(244,147,33,0.4)]"
-                  >
-                    <svg
-                      class="w-6 h-6 text-white"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="3"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  </div>
-                  <h3
-                    id="voucher-modal-title"
-                    class="text-lg sm:text-xl font-bold text-white mb-1"
-                  >
-                    Voucher Sent!
-                  </h3>
-                  <p class="text-white/90 text-sm">
-                    Your voucher is on its way to
-                    <span class="text-brand-orange font-bold">{{
-                      sentEmail
-                    }}</span>
-                  </p>
-                </div>
-                <div class="p-3.5 sm:p-4 text-center">
-                  <button
-                    type="button"
-                    class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg border-2 border-[#1C2D5B] text-[#1C2D5B] font-semibold text-sm hover:bg-[#1C2D5B] hover:text-white transition-colors"
-                    @click="close"
-                  >
-                    Close
-                  </button>
-                </div>
-              </div>
-            </Transition>
-
-            <!-- Form -->
-            <form
-              v-if="!isSuccess"
-              aria-label="Voucher form"
-              @submit.prevent="submitForm"
+            <!-- ================= HEADER IMAGE ================= -->
+            <div
+              class="relative w-full h-[180px] sm:h-[240px] bg-[#1C2D5B] overflow-hidden flex flex-col justify-center"
             >
-              <!-- Header -->
-              <div class="bg-[#1C2D5B] py-4 px-4 text-center">
+              <!-- Background Image (Right Half Only) -->
+              <div class="absolute top-0 right-0 w-[55%] sm:w-1/2 h-full">
+                <img
+                  src="/New/Voucher/voucher-image.webp"
+                  alt="Voucher background"
+                  class="w-full h-full object-contain object-right"
+                />
                 <div
-                  class="mx-auto w-11 h-11 rounded-full bg-brand-orange flex items-center justify-center mb-2 shadow-[0_4px_10px_rgba(244,147,33,0.4)]"
-                >
-                  <svg
-                    class="w-5 h-5 text-white"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <polyline points="20 12 20 22 4 22 4 12" />
-                    <rect x="2" y="7" width="20" height="5" />
-                    <line x1="12" y1="22" x2="12" y2="7" />
-                    <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
-                    <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
-                  </svg>
-                </div>
+                  class="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-[#1C2D5B] to-transparent"
+                ></div>
+              </div>
+
+              <!-- Gradient for bottom text readability -->
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-[#1C2D5B] via-transparent to-transparent opacity-80"
+              ></div>
+
+              <!-- Overlaid Title & Info -->
+              <div
+                class="absolute inset-y-0 left-0 flex flex-col justify-center pl-3 sm:pl-8 pr-4 z-10 w-full pointer-events-none pb-2"
+              >
                 <h3
                   id="voucher-modal-title"
-                  class="text-lg sm:text-xl font-bold text-white mb-0.5 leading-tight"
+                  class="font-black italic uppercase leading-[1.05] origin-left mb-1"
+                  style="transform: skewX(-6deg) rotate(-3deg)"
                 >
-                  You've Got a Voucher!
+                  <span
+                    class="outlined outlined-line1 block text-2xl sm:text-4xl text-white tracking-wide"
+                    data-text="You've got a"
+                  >
+                    You've got a
+                  </span>
+
+                  <span
+                    class="outlined outlined-line2 block text-4xl sm:text-6xl text-[#F49321] mt-1 tracking-tight"
+                    data-text="Voucher!"
+                  >
+                    Voucher!
+                  </span>
                 </h3>
-                <p class="text-brand-orange text-xs sm:text-sm font-medium">
-                  Enter your details to receive it by email
+
+                <!-- Small Info Text (Full Width & Centered) -->
+                <p
+                  class="text-white text-[10px] sm:text-xs font-semibold leading-snug drop-shadow-md z-20 w-full text-center mt-2"
+                  style="transform: skewX(-6deg)"
+                >
+                  Enter your detail to claim your exclusive
+                  <span class="text-[#F49321] font-bold">$500</span> discount
+                  and bring the magic of
+                  <span class="text-[#F49321] font-bold">holiday lighting</span>
+                  to your home!
                 </p>
               </div>
+            </div>
 
-              <!-- Fields -->
-              <div class="p-3.5 sm:p-4 space-y-3">
-                <label for="voucher-name" class="block">
-                  <span
-                    class="block text-xs font-semibold text-[#1C2D5B] uppercase tracking-wide mb-1"
-                  >
-                    Full Name <span class="text-brand-orange">*</span>
-                  </span>
-                  <input
-                    id="voucher-name"
-                    v-model="form.name"
-                    type="text"
-                    autocomplete="name"
-                    placeholder="Jane Doe"
-                    required
-                    class="form-input"
-                    :disabled="isSubmitting"
-                  />
-                </label>
+            <!-- ================= BODY ================= -->
+            <div class="px-3 sm:px-5 pb-3 sm:pb-5">
+              <!-- The White Container -->
+              <div
+                class="bg-white rounded-[20px] p-4 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)]"
+              >
+                <!-- SUCCESS STATE -->
+                <div v-if="isSuccess" class="space-y-3">
+                  <ApplicationSuccessScratch />
 
-                <label for="voucher-email" class="block">
-                  <span
-                    class="block text-xs font-semibold text-[#1C2D5B] uppercase tracking-wide mb-1"
-                  >
-                    Email <span class="text-brand-orange">*</span>
-                  </span>
-                  <input
-                    id="voucher-email"
-                    v-model="form.email"
-                    type="email"
-                    autocomplete="email"
-                    inputmode="email"
-                    placeholder="jane@example.com"
-                    required
-                    class="form-input"
-                    :disabled="isSubmitting"
-                  />
-                </label>
+                  <div class="text-center space-y-2">
+                    <p class="text-[#1C2D5B] text-sm font-bold leading-relaxed">
+                      Your voucher is on its way to
+                      <br />
+                      <span
+                        class="text-[#F49321] font-black break-all text-base"
+                        >{{ sentEmail }}</span
+                      >
+                    </p>
+                    <button
+                      type="button"
+                      class="w-full min-h-[46px] inline-flex items-center justify-center bg-[#1C2D5B] hover:bg-[#F49321] text-white py-2.5 rounded-xl text-base font-extrabold uppercase transition-all duration-200"
+                      @click="close"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
 
-                <!-- Turnstile -->
-                <TurnstileWidget
-                  ref="turnstileRef"
-                  :site-key="siteKey"
-                  :errors="turnstileErrors"
-                  :status="turnstileStatus"
-                  :status-type="turnstileStatusType"
-                  :status-class="turnstileStatusClass"
-                  :status-icon="turnstileStatusIcon"
-                  @success="onTurnstileSuccess"
-                  @error="onTurnstileError"
-                  @expired="onTurnstileExpired"
-                />
-
-                <p
-                  v-if="error"
-                  class="text-sm text-red-600 flex items-center gap-1"
+                <!-- FORM STATE -->
+                <form
+                  v-else
+                  aria-label="Voucher form"
+                  @submit.prevent="submitForm"
+                  class="space-y-3"
                 >
-                  <svg
-                    class="w-4 h-4 shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  <label for="voucher-name" class="block">
+                    <span
+                      class="block text-[11px] font-extrabold text-[#1C2D5B] uppercase tracking-wide mb-1"
+                    >
+                      Full Name <span class="text-[#F49321]">*</span>
+                    </span>
+                    <input
+                      id="voucher-name"
+                      v-model="form.name"
+                      type="text"
+                      autocomplete="name"
+                      placeholder="Jane Doe"
+                      required
+                      class="form-input"
+                      :disabled="isSubmitting"
                     />
-                  </svg>
-                  {{ error }}
-                </p>
+                  </label>
 
-                <button
-                  type="submit"
-                  class="w-full min-h-[46px] inline-flex items-center justify-center gap-2 bg-[#1C2D5B] hover:bg-brand-orange active:scale-[0.99] text-white py-2.5 px-5 rounded-lg text-sm sm:text-base font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_3px_8px_rgba(28,45,91,0.2)] hover:shadow-[0_5px_12px_rgba(244,147,33,0.3)]"
-                  :disabled="isSubmitting || !turnstileVerified"
-                >
-                  <span v-if="!isSubmitting">Send My Voucher</span>
-                  <span v-else class="flex items-center justify-center gap-2">
+                  <label for="voucher-email" class="block">
+                    <span
+                      class="block text-[11px] font-extrabold text-[#1C2D5B] uppercase tracking-wide mb-1"
+                    >
+                      Email <span class="text-[#F49321]">*</span>
+                    </span>
+                    <input
+                      id="voucher-email"
+                      v-model="form.email"
+                      type="email"
+                      autocomplete="email"
+                      inputmode="email"
+                      placeholder="jane@example.com"
+                      required
+                      class="form-input"
+                      :disabled="isSubmitting"
+                    />
+                  </label>
+
+                  <!-- Turnstile -->
+                  <div>
+                    <TurnstileWidget
+                      ref="turnstileRef"
+                      :site-key="siteKey"
+                      :errors="turnstileErrors"
+                      :status="turnstileStatus"
+                      :status-type="turnstileStatusType"
+                      :status-class="turnstileStatusClass"
+                      :status-icon="turnstileStatusIcon"
+                      @success="onTurnstileSuccess"
+                      @error="onTurnstileError"
+                      @expired="onTurnstileExpired"
+                    />
+                  </div>
+
+                  <p
+                    v-if="error"
+                    class="text-xs sm:text-sm font-bold text-red-600 flex items-center gap-1"
+                  >
                     <svg
-                      class="animate-spin h-4 w-4 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-4 h-4 shrink-0"
                       fill="none"
+                      stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"
-                      />
                       <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-                    Sending...
-                  </span>
-                </button>
+                    {{ error }}
+                  </p>
 
-                <p class="text-[11px] text-gray-500 text-center leading-snug">
-                  By submitting, you agree to receive marketing emails from
-                  Festive Express.
-                </p>
+                  <button
+                    type="submit"
+                    class="w-full min-h-[50px] inline-flex items-center justify-center bg-[#1C2D5B] hover:bg-[#F49321] text-white py-3 px-5 rounded-full text-base font-extrabold uppercase tracking-wide transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_0_#0f1c3f] hover:shadow-[0_4px_0_#c77415] hover:-translate-y-0.5"
+                    :disabled="isSubmitting || !turnstileVerified"
+                  >
+                    <span v-if="!isSubmitting">Send My Voucher</span>
+                    <span v-else class="flex items-center justify-center gap-2">
+                      <svg
+                        class="animate-spin h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          class="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          stroke-width="4"
+                        />
+                        <path
+                          class="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      Sending...
+                    </span>
+                  </button>
+
+                  <p
+                    class="text-[10px] font-bold text-slate-400 text-center leading-snug"
+                  >
+                    By submitting your email, you agree to receive emails from
+                    Festive Express about our services, scheduling, and
+                    appointment reminders. You may receive about 2-4 emails per
+                    month. You can unsubscribe at any time using the link in any
+                    email. Consent is not a condition of purchase.
+                  </p>
+                </form>
               </div>
-            </form>
+            </div>
           </div>
         </Transition>
       </div>
@@ -231,17 +250,126 @@
   </Teleport>
 </template>
 
+<style scoped>
+.form-input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.95rem;
+  font-family: "Poppins", "Arial", sans-serif;
+  color: #1c2d5b;
+  background-color: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  outline: none;
+  appearance: none;
+  line-height: 1.4;
+}
+
+.form-input::placeholder {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.form-input:hover {
+  border-color: #cbd5e1;
+}
+
+.form-input:focus {
+  background-color: #ffffff;
+  border-color: #f49321;
+  box-shadow: 0 0 0 3px rgba(244, 147, 33, 0.2);
+}
+
+.form-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-pop-enter-active {
+  transition:
+    opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-pop-enter-from {
+  opacity: 0;
+  transform: scale(0.95) translateY(15px);
+}
+
+.outlined {
+  position: relative;
+  isolation: isolate;
+  paint-order: stroke fill;
+  -webkit-text-stroke-linejoin: round;
+  stroke-linejoin: round;
+}
+
+.outlined::before {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  paint-order: stroke fill;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+/* ---------- Mobile (default) ---------- */
+
+/* Line 1: white text, navy inner outline, orange outer outline */
+.outlined-line1 {
+  -webkit-text-stroke: 2px #1c2d5b;
+}
+.outlined-line1::before {
+  color: #f49321;
+  -webkit-text-stroke: 4px #f49321;
+}
+
+/* Line 2: orange text, navy inner outline, white outer outline + drop shadow */
+.outlined-line2 {
+  -webkit-text-stroke: 3.5px #1c2d5b;
+}
+.outlined-line2::before {
+  color: #fff;
+  -webkit-text-stroke: 8px #fff;
+  text-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* ---------- sm and up (640px+) ---------- */
+@media (min-width: 640px) {
+  .outlined-line1 {
+    -webkit-text-stroke: 3px #1c2d5b;
+  }
+  .outlined-line1::before {
+    -webkit-text-stroke: 6px #f49321;
+  }
+
+  .outlined-line2 {
+    -webkit-text-stroke: 5px #1c2d5b;
+  }
+  .outlined-line2::before {
+    -webkit-text-stroke: 12px #fff;
+    text-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+  }
+}
+</style>
+
 <script setup lang="ts">
 import TurnstileWidget from "~/components/Checkout/TurnstileWidget.vue";
+import ApplicationSuccessScratch from "~/components/ApplicationSuccessScratch.vue";
 
-const props = withDefaults(
-  defineProps<{
-    apiEndpoint?: string;
-  }>(),
-  {
-    apiEndpoint: "/api/voucher",
-  },
-);
+const props = withDefaults(defineProps<{ apiEndpoint?: string }>(), {
+  apiEndpoint: "/api/voucher",
+});
 
 const route = useRoute();
 const router = useRouter();
@@ -254,10 +382,7 @@ const isSuccess = ref(false);
 const error = ref("");
 const sentEmail = ref("");
 
-const form = ref({
-  name: "",
-  email: "",
-});
+const form = ref({ name: "", email: "" });
 
 const turnstileRef = ref<InstanceType<typeof TurnstileWidget> | null>(null);
 const turnstileToken = ref("");
@@ -265,8 +390,6 @@ const turnstileVerified = ref(false);
 const turnstileStatus = ref("");
 const turnstileStatusType = ref("");
 const turnstileErrors = ref({ turnstile: "" });
-
-let closeTimer: ReturnType<typeof setTimeout> | null = null;
 
 const turnstileStatusClass = computed(() => {
   switch (turnstileStatusType.value) {
@@ -280,7 +403,6 @@ const turnstileStatusClass = computed(() => {
       return "text-gray-500";
   }
 });
-
 const turnstileStatusIcon = computed(() => {
   switch (turnstileStatusType.value) {
     case "success":
@@ -293,7 +415,6 @@ const turnstileStatusIcon = computed(() => {
       return "fas fa-info-circle";
   }
 });
-
 const onTurnstileSuccess = (token: string) => {
   turnstileToken.value = token;
   turnstileVerified.value = true;
@@ -301,7 +422,6 @@ const onTurnstileSuccess = (token: string) => {
   turnstileStatusType.value = "success";
   turnstileErrors.value.turnstile = "";
 };
-
 const onTurnstileError = () => {
   turnstileVerified.value = false;
   turnstileToken.value = "";
@@ -309,7 +429,6 @@ const onTurnstileError = () => {
   turnstileStatusType.value = "error";
   turnstileErrors.value.turnstile = "Please complete the security verification";
 };
-
 const onTurnstileExpired = () => {
   turnstileVerified.value = false;
   turnstileToken.value = "";
@@ -337,6 +456,8 @@ const submitForm = async () => {
   isSubmitting.value = true;
 
   try {
+    // --- REAL API SUBMIT (COMMENTED OUT) ---
+    /*
     const response = await $fetch<{ success: boolean; error?: string }>(
       props.apiEndpoint,
       {
@@ -356,14 +477,8 @@ const submitForm = async () => {
       turnstileRef.value?.reset();
       turnstileVerified.value = false;
       turnstileToken.value = "";
-
-      if (closeTimer) clearTimeout(closeTimer);
-      closeTimer = setTimeout(() => close(), 4000);
     } else {
       error.value = response.error || "Something went wrong. Please try again.";
-
-      // If the server rejected due to Turnstile, reset the widget so the user
-      // isn't stuck with a "verified" UI + a dead submit button.
       if (
         typeof response.error === "string" &&
         response.error.toLowerCase().includes("verification")
@@ -373,6 +488,15 @@ const submitForm = async () => {
         turnstileToken.value = "";
       }
     }
+    */
+
+    // --- FAKE SUCCESS FOR TESTING (ACTIVE) ---
+    sentEmail.value = form.value.email;
+    isSuccess.value = true;
+    form.value = { name: "", email: "" };
+    turnstileRef.value?.reset();
+    turnstileVerified.value = false;
+    turnstileToken.value = "";
   } catch (err: any) {
     console.error("Voucher submit error:", err);
     error.value = err?.data?.message || "Network error. Please try again.";
@@ -385,12 +509,6 @@ const close = () => {
   isOpen.value = false;
   isSuccess.value = false;
 
-  if (closeTimer) {
-    clearTimeout(closeTimer);
-    closeTimer = null;
-  }
-
-  // remove ?q=voucher&d=true from URL so refresh won't retrigger
   if (route.query.q || route.query.d) {
     const query = { ...route.query };
     delete query.q;
@@ -401,10 +519,6 @@ const close = () => {
 
 watch(() => route.query, checkVoucherParams, { immediate: true });
 
-onBeforeUnmount(() => {
-  if (closeTimer) clearTimeout(closeTimer);
-});
-
 defineExpose({
   open: () => {
     isOpen.value = true;
@@ -412,103 +526,3 @@ defineExpose({
   close,
 });
 </script>
-
-<style scoped>
-/* ---------- Inputs (matches your theme) ---------- */
-.form-input {
-  width: 100%;
-  padding: 0.6rem 0.8rem;
-  font-size: 0.95rem;
-  font-family: "Poppins", "Arial", sans-serif;
-  color: #1c2d5b;
-  background-color: #f8fafc;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 0.5rem;
-  transition:
-    border-color 0.2s ease,
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
-  outline: none;
-  appearance: none;
-  line-height: 1.4;
-}
-
-.form-input::placeholder {
-  color: #94a3b8;
-  font-weight: 500;
-}
-
-.form-input:hover {
-  border-color: #cbd5e1;
-}
-
-.form-input:focus {
-  background-color: #ffffff;
-  border-color: #f49321;
-  box-shadow: 0 0 0 3px rgba(244, 147, 33, 0.15);
-}
-
-.form-input:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.form-input[type="text"],
-.form-input[type="email"] {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  height: 44px;
-}
-
-.form-input:-webkit-autofill,
-.form-input:-webkit-autofill:hover,
-.form-input:-webkit-autofill:focus {
-  -webkit-text-fill-color: #1c2d5b;
-  -webkit-box-shadow: 0 0 0 1000px #f8fafc inset;
-  transition: background-color 5000s ease-in-out 0s;
-}
-
-/* ---------- Transitions ---------- */
-.fade-enter-active,
-.fade-leave-active {
-  transition:
-    opacity 0.25s ease,
-    transform 0.25s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: translateY(-6px);
-}
-
-.modal-fade-enter-active,
-.modal-fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-.modal-fade-enter-from,
-.modal-fade-leave-to {
-  opacity: 0;
-}
-
-.modal-pop-enter-active {
-  transition:
-    opacity 0.25s ease,
-    transform 0.25s ease;
-}
-.modal-pop-enter-from {
-  opacity: 0;
-  transform: scale(0.96) translateY(8px);
-}
-
-/* ---------- Mobile ---------- */
-@media (max-width: 640px) {
-  .form-input {
-    font-size: 1rem;
-    padding: 0.7rem 0.85rem;
-  }
-  .form-input[type="text"],
-  .form-input[type="email"] {
-    height: 46px;
-  }
-}
-</style>

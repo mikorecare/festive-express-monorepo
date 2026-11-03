@@ -6,7 +6,7 @@
         v-if="stage >= 4"
         class="bg-white rounded-xl shadow-lg border-4 border-[#1C2D5B] overflow-hidden"
       >
-        <div class="bg-[#1C2D5B] py-5 px-4 text-center">
+        <div class="bg-[#1C2D5B] py-4 sm:py-5 px-4 text-center">
           <div
             class="mx-auto w-12 h-12 rounded-full bg-brand-orange flex items-center justify-center mb-3 shadow-[0_4px_10px_rgba(244,147,33,0.4)]"
           >
@@ -25,7 +25,7 @@
           <h3 class="text-lg sm:text-xl font-bold text-white mb-1">
             Message Sent!
           </h3>
-          <p class="text-white/90 text-sm">
+          <p class="text-white/90 text-xs sm:text-sm">
             Thank you! We'll get back to you in a
             <span class="text-brand-orange font-bold">FLASH</span>.
           </p>
@@ -90,7 +90,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <label for="firstName" class="block">
             <span
-              class="block text-xs font-semibold text-[#1C2D5B] uppercase tracking-wide mb-1"
+              class="block text-[11px] sm:text-xs font-semibold text-[#1C2D5B] uppercase tracking-wide mb-1"
             >
               First Name <span class="text-brand-orange">*</span>
             </span>
@@ -101,13 +101,13 @@
               autocomplete="given-name"
               placeholder="Jane"
               required
-              class="form-input"
+              class="form-input text-sm sm:text-base py-2.5"
             />
           </label>
 
           <label for="lastName" class="block">
             <span
-              class="block text-xs font-semibold text-[#1C2D5B] uppercase tracking-wide mb-1"
+              class="block text-[11px] sm:text-xs font-semibold text-[#1C2D5B] uppercase tracking-wide mb-1"
             >
               Last Name <span class="text-brand-orange">*</span>
             </span>
@@ -118,14 +118,14 @@
               autocomplete="family-name"
               placeholder="Doe"
               required
-              class="form-input"
+              class="form-input text-sm sm:text-base py-2.5"
             />
           </label>
         </div>
 
         <label for="phone" class="block">
           <span
-            class="block text-xs font-semibold text-[#1C2D5B] uppercase tracking-wide mb-1"
+            class="block text-[11px] sm:text-xs font-semibold text-[#1C2D5B] uppercase tracking-wide mb-1"
           >
             Phone <span class="text-brand-orange">*</span>
           </span>
@@ -137,13 +137,13 @@
             inputmode="tel"
             placeholder="(555) 123-4567"
             required
-            class="form-input"
+            class="form-input text-sm sm:text-base py-2.5"
           />
         </label>
 
         <label for="email" class="block">
           <span
-            class="block text-xs font-semibold text-[#1C2D5B] uppercase tracking-wide mb-1"
+            class="block text-[11px] sm:text-xs font-semibold text-[#1C2D5B] uppercase tracking-wide mb-1"
           >
             Email <span class="text-brand-orange">*</span>
           </span>
@@ -155,13 +155,13 @@
             inputmode="email"
             placeholder="jane@example.com"
             required
-            class="form-input"
+            class="form-input text-sm sm:text-base py-2.5"
           />
         </label>
 
         <label for="message" class="block">
           <span
-            class="block text-xs font-semibold text-[#1C2D5B] uppercase tracking-wide mb-1"
+            class="block text-[11px] sm:text-xs font-semibold text-[#1C2D5B] uppercase tracking-wide mb-1"
           >
             Message <span class="text-brand-orange">*</span>
           </span>
@@ -174,12 +174,11 @@
             data-gramm="false"
             data-gramm-false="true"
             spellcheck="false"
-            class="form-input resize-y"
+            class="form-input text-sm sm:text-base py-2.5 resize-y"
           ></textarea>
         </label>
 
         <!-- Turnstile -->
-
         <TurnstileWidget
           ref="turnstileRef"
           :site-key="siteKey"

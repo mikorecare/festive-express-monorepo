@@ -1,11 +1,11 @@
 <!-- components/EstimatorForm.vue -->
 <template>
-  <div class="space-y-4 lg:space-y-5">
+  <div class="space-y-3.5 lg:space-y-5">
     <!-- Address -->
     <div>
       <label
         for="estimator-address"
-        class="block text-[15px] lg:text-[16px] font-semibold text-gray-700 mb-1.5"
+        class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-gray-700 mb-1.5"
       >
         Property address *
       </label>
@@ -27,10 +27,10 @@
           <div
             v-for="s in suggestions"
             :key="s.placeId"
-            class="px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0"
+            class="px-3.5 sm:px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0"
             @click="selectAddress(s)"
           >
-            <div class="text-[15px] font-medium text-gray-800">
+            <div class="text-[14px] sm:text-[15px] font-medium text-gray-800">
               {{ s.main }}
             </div>
             <div class="text-xs text-gray-500">{{ s.secondary }}</div>
@@ -46,7 +46,7 @@
     <div>
       <label
         for="estimator-photo"
-        class="block text-[15px] lg:text-[16px] font-semibold text-gray-700 mb-1.5"
+        class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-gray-700 mb-1.5"
       >
         Photo of your home
         <span class="text-xs font-normal text-gray-400">(optional)</span>
@@ -62,14 +62,14 @@
       <button
         type="button"
         aria-controls="estimator-photo"
-        class="w-full px-3 py-2.5 lg:px-4 lg:py-3 border-2 border-dashed border-gray-300 rounded-[14px] hover:border-brand-orange hover:bg-orange-50 transition-colors text-[15px] lg:text-[16px] text-gray-600 flex items-center justify-between gap-2"
+        class="w-full px-3 py-2.5 lg:px-4 lg:py-3 border-2 border-dashed border-gray-300 rounded-[14px] hover:border-brand-orange hover:bg-orange-50 transition-colors text-[14px] sm:text-[15px] lg:text-[16px] text-gray-600 flex items-center justify-between gap-2"
         @click="fileInput?.click()"
       >
         <span class="truncate text-left">{{
           imagePreview ? "Change photo" : "Upload a photo (optional)"
         }}</span>
         <i
-          class="fa-solid fa-upload flex-shrink-0 text-[26px] text-[#1C2D5B]"
+          class="fa-solid fa-upload flex-shrink-0 text-[22px] sm:text-[26px] text-[#1C2D5B]"
           aria-hidden="true"
         ></i>
       </button>
@@ -77,8 +77,7 @@
         v-if="imagePreview"
         :src="imagePreview"
         alt="Your uploaded home"
-        class="w-max mx-auto rounded-[14px] mt-2 max-h-40 object-contain"
-        style="border: 1px solid #b2b2b2"
+        class="w-max mx-auto rounded-[14px] mt-2 max-h-40 object-contain border border-gray-300"
       />
     </div>
 
@@ -88,14 +87,14 @@
       <div class="min-w-0">
         <span
           id="estimator-package-label"
-          class="block text-[15px] lg:text-[16px] font-semibold text-gray-700 mb-1.5"
+          class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-gray-700 mb-1.5"
         >
           Your package
         </span>
         <button
           type="button"
           aria-labelledby="estimator-package-label"
-          class="w-full min-w-0 px-3 py-2.5 lg:px-4 lg:py-3 border border-gray-300 rounded-[14px] bg-[#f8f9fa] hover:border-brand-orange transition-colors text-[15px] lg:text-[16px] flex items-center justify-between gap-2 text-left"
+          class="w-full min-w-0 px-3 py-2.5 lg:px-4 lg:py-3 border border-gray-300 rounded-[14px] bg-[#f8f9fa] hover:border-brand-orange transition-colors text-[14px] sm:text-[15px] lg:text-[16px] flex items-center justify-between gap-2 text-left"
           @click="showPackageModal = true"
         >
           <span class="flex items-baseline gap-2 min-w-0 flex-1">
@@ -104,9 +103,9 @@
             </span>
             <span
               v-if="selectedPackageData"
-              class="text-[13px] text-gray-500 truncate shrink-0"
+              class="text-xs sm:text-[13px] text-gray-500 truncate shrink-0"
             >
-              ${{ selectedPackageData.price.toLocaleString() }}
+              ${{ selectedPackageData.previousPrice.toLocaleString() }}
             </span>
           </span>
           <i class="fas fa-chevron-down text-gray-400 shrink-0 text-xs"></i>
@@ -117,19 +116,19 @@
       <div class="min-w-0">
         <span
           id="estimator-color-label"
-          class="block text-[15px] lg:text-[16px] font-semibold text-gray-700 mb-1.5"
+          class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-gray-700 mb-1.5"
         >
           Light color
         </span>
         <button
           type="button"
           aria-labelledby="estimator-color-label"
-          class="w-full min-w-0 px-3 py-2.5 lg:px-4 lg:py-3 border border-gray-300 rounded-[14px] bg-[#f8f9fa] hover:border-brand-orange transition-colors text-[15px] lg:text-[16px] flex items-center justify-between gap-2 text-left"
+          class="w-full min-w-0 px-3 py-2.5 lg:px-4 lg:py-3 border border-gray-300 rounded-[14px] bg-[#f8f9fa] hover:border-brand-orange transition-colors text-[14px] sm:text-[15px] lg:text-[16px] flex items-center justify-between gap-2 text-left"
           @click="showColorModal = true"
         >
           <span class="flex items-center gap-2 min-w-0 flex-1">
             <span
-              class="color-dot w-5 h-5 rounded-full shrink-0"
+              class="color-dot w-4 h-4 sm:w-5 sm:h-5 rounded-full shrink-0"
               :class="{
                 'border-2 border-gray-300':
                   selectedColorData?.scheme !== 'candy-cane' &&
@@ -157,7 +156,7 @@
       <div>
         <label
           for="estimator-name"
-          class="block text-[15px] lg:text-[16px] font-semibold !text-[#1C2F5B] mb-1.5"
+          class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold !text-[#1C2F5B] mb-1.5"
         >
           Your name *
         </label>
@@ -175,7 +174,7 @@
       <div>
         <label
           for="estimator-email"
-          class="block text-[15px] lg:text-[16px] font-semibold !text-[#1C2F5B] mb-1.5"
+          class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold !text-[#1C2F5B] mb-1.5"
         >
           Email *
         </label>
@@ -197,7 +196,7 @@
     <div>
       <label
         for="estimator-phone"
-        class="block text-[15px] lg:text-[16px] font-semibold !text-[#1C2F5B] mb-1.5"
+        class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold !text-[#1C2F5B] mb-1.5"
       >
         Mobile
         <span class="text-xs font-normal text-gray-400">(optional)</span>
@@ -229,7 +228,7 @@
     <!-- Error -->
     <div
       v-if="error"
-      class="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-[14px] text-[14px]"
+      class="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-[14px] text-[13px] sm:text-[14px]"
       role="alert"
       aria-live="polite"
     >
@@ -238,9 +237,9 @@
     </div>
 
     <!-- Submit Buttons -->
-    <div class="space-y-2">
+    <div class="space-y-2 pt-1">
       <button
-        class="w-full bg-brand-orange text-[16px] lg:text-[18px] tracking-wide text-white font-semibold py-3 px-4 rounded-[14px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
+        class="w-full bg-brand-orange text-[15px] sm:text-[16px] lg:text-[18px] tracking-wide text-white font-semibold py-3 px-4 rounded-[14px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
         @click="submitRender(false)"
         :disabled="isLoading || !turnstileVerified"
       >
@@ -254,7 +253,7 @@
         </span>
       </button>
       <button
-        class="w-full border border-gray-300 hover:bg-gray-50 text-[15px] lg:text-[16px] text-gray-700 font-semibold py-2.5 px-4 rounded-[14px] transition-colors"
+        class="w-full border border-gray-300 hover:bg-gray-50 text-[14px] sm:text-[15px] lg:text-[16px] text-gray-700 font-semibold py-2.5 px-4 rounded-[14px] transition-colors"
         @click="submitRender(true)"
         :disabled="isLoading || !turnstileVerified"
       >
@@ -275,7 +274,7 @@
       <Transition name="fade">
         <div
           v-if="showPackageModal"
-          class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50"
+          class="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-black/50"
           role="dialog"
           aria-modal="true"
           aria-labelledby="package-modal-heading"
@@ -289,7 +288,7 @@
             >
               <h3
                 id="package-modal-heading"
-                class="text-[16px] lg:text-[17px] font-bold text-[#1C2F5B]"
+                class="text-[15px] sm:text-[16px] lg:text-[17px] font-bold text-[#1C2F5B]"
               >
                 Select your package
               </h3>
@@ -303,14 +302,14 @@
               </button>
             </div>
 
-            <div class="p-4">
+            <div class="p-3.5 sm:p-4">
               <div
                 v-if="loadingPackages"
                 class="text-center py-6 text-gray-500 text-sm"
               >
                 Loading packages...
               </div>
-              <div v-else class="grid grid-cols-3 gap-2.5">
+              <div v-else class="grid grid-cols-3 gap-2 sm:gap-2.5">
                 <button
                   v-for="pkg in packageOptions"
                   :key="pkg.id"
@@ -331,7 +330,7 @@
                     v-if="pkg.title"
                     :src="pkg.title"
                     :alt="pkg.name"
-                    class="h-auto max-h-[42px] w-auto object-contain"
+                    class="h-auto max-h-[38px] sm:max-h-[42px] w-auto object-contain"
                     @error="
                       (e) => {
                         const img = e.target as HTMLImageElement;
@@ -341,49 +340,31 @@
                   />
                   <span
                     v-else
-                    class="font-bold text-[16px] font-poppins leading-none text-white truncate max-w-full"
+                    class="font-bold text-[14px] sm:text-[16px] font-poppins leading-none text-white truncate max-w-full"
                   >
                     {{ pkg.name }}
-                  </span>
-
-                  <span
-                    v-if="pkg.previousPrice && pkg.previousPrice !== pkg.price"
-                    class="text-[9px] font-poppins font-semibold text-white mt-1.5 leading-none"
-                  >
-                    was
-                    <span class="line-through decoration-[#F39124]"
-                      >${{ pkg.previousPrice.toLocaleString() }}</span
-                    >
                   </span>
 
                   <div
                     class="flex items-end mt-0.5 gap-0.5 font-semibold justify-center"
                   >
                     <span
-                      v-if="
-                        pkg.previousPrice && pkg.previousPrice !== pkg.price
-                      "
-                      class="text-[9px] font-poppins text-white self-start leading-none"
+                      class="text-[#F7931E] font-bold text-lg sm:text-xl leading-none"
                     >
-                      now
-                    </span>
-                    <span
-                      class="text-[#F7931E] font-bold text-[16px] leading-none"
-                    >
-                      ${{ pkg.price.toLocaleString() }}
+                      ${{ pkg.previousPrice.toLocaleString() }}
                     </span>
                   </div>
                   <span
-                    class="text-white font-normal text-[8px] leading-none mt-0.5"
+                    class="text-white font-normal text-[11px] sm:text-sm leading-none mt-0.5"
                   >
-                    /season
+                     Per Season
                   </span>
 
                   <NuxtImg
                     v-if="earlyBirdIconUrl && isEarlyBirdLive"
                     :src="earlyBirdIconUrl"
                     alt="Early Bird Special"
-                    class="h-[18px] w-auto mt-1"
+                    class="h-[16px] sm:h-[18px] w-auto mt-1"
                     loading="lazy"
                   />
                 </button>
@@ -401,7 +382,7 @@
       <Transition name="fade">
         <div
           v-if="showColorModal"
-          class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50"
+          class="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-black/50"
           role="dialog"
           aria-modal="true"
           aria-labelledby="color-modal-heading"
@@ -415,7 +396,7 @@
             >
               <h3
                 id="color-modal-heading"
-                class="text-[16px] lg:text-[17px] font-bold text-[#1C2F5B]"
+                class="text-[15px] sm:text-[16px] lg:text-[17px] font-bold text-[#1C2F5B]"
               >
                 Select C-9 Light Color
               </h3>
@@ -429,8 +410,8 @@
               </button>
             </div>
 
-            <div class="p-4">
-              <div class="grid grid-cols-3 gap-2.5">
+            <div class="p-3.5 sm:p-4">
+              <div class="grid grid-cols-3 gap-2 sm:gap-2.5">
                 <button
                   v-for="color in colorOptions"
                   :key="color.scheme"
@@ -449,7 +430,7 @@
                   "
                 >
                   <span
-                    class="color-dot w-9 h-9 rounded-full inline-block flex-shrink-0"
+                    class="color-dot w-8 h-8 sm:w-9 sm:h-9 rounded-full inline-block flex-shrink-0"
                     :class="{
                       'border-2 border-gray-300':
                         color.scheme !== 'candy-cane' &&
@@ -460,7 +441,7 @@
                     :style="color.sw ? `background:${color.sw}` : ''"
                   ></span>
                   <span
-                    class="text-[11px] text-[#1C2F5B] leading-tight text-center truncate max-w-full"
+                    class="text-[10px] sm:text-[11px] text-[#1C2F5B] leading-tight text-center truncate max-w-full"
                     :class="
                       selectedScheme === color.scheme ? 'font-semibold' : ''
                     "

@@ -273,7 +273,7 @@
                       }}
                     </span>
                     <span class="text-[0.85rem] font-semibold text-white/90"
-                      >per Season</span
+                      > Per Season</span
                     >
                   </span>
                 </div>
@@ -288,7 +288,7 @@
                     ${{ Math.round(Number(pkg.price) || 0) }}
                   </span>
                   <span class="text-[0.85rem] font-semibold text-white/90"
-                    >per Season</span
+                    > Per Season</span
                   >
                 </div>
               </template>
