@@ -83,7 +83,7 @@
     </div>
 
     <!-- Main Header -->
-    <div class="bg-white py-3 md:py-4 transition-all duration-300 w-full">
+    <div class="bg-white py-2 md:py-3 transition-all duration-300 w-full">
       <div class="w-full px-4 mx-auto max-w-7xl">
         <div
           class="flex items-center justify-between gap-2.5 md:gap-8 flex-nowrap"
@@ -93,16 +93,9 @@
             to="/"
             class="flex flex-col items-center gap-1 text-transparent shrink-0"
           >
-            <img
-              src="/Images/FE-Logo.png"
-              alt="FLP Express"
-              class="max-h-[42px] sm:max-h-[48px] lg:max-h-[70px]"
-            />
-            <p
-              class="m-0 text-[0.75rem] md:text-base text-[#1d3156] font-semibold text-center"
-            >
-              Rent • Relax • Celebrate
-            </p>
+            <div class="h-[100px] w-auto flex items-center overflow-hidden">
+              <MainLogo class="h-full w-auto" />
+            </div>
           </NuxtLink>
 
           <!-- Desktop nav -->
@@ -191,6 +184,9 @@
 </template>
 
 <script setup lang="ts">
+import MainLogo from "./Logos/MainLogo.vue";
+import MainLogoForDark from "./Logos/MainLogoForDark.vue";
+
 const { settings, telHref } = useSettings();
 </script>
 

@@ -1,5 +1,7 @@
 <template>
-  <div class="min-h-screen bg-[#F8F9FA] pb-16 font-sans text-gray-900">
+  <div
+    class="min-h-full bg-[#F8F9FA] pb-16 font-sans text-gray-900 bg-[url('/Images/LV.webp')] bg-no-repeat bg-[position:50%] bg-cover"
+  >
     <!-- Loading State -->
     <div v-if="pending" class="flex justify-center items-center min-h-[60vh]">
       <div
@@ -22,7 +24,7 @@
     </div>
 
     <!-- Article Content -->
-    <article v-else class="max-w-[1440px] mx-auto px-4 mt-8">
+    <article v-else class="max-w-[1440px] mx-auto px-4 pt-8">
       <!-- Breadcrumbs / Back Link -->
       <div class="mb-6">
         <NuxtLink
@@ -64,7 +66,7 @@
           <div class="flex flex-wrap items-center gap-3 mb-6">
             <span
               v-if="post.category"
-              class="bg-[#1C2D5B] text-white px-3 py-1 text-[10px] md:text-xs font-bold uppercase tracking-wider rounded-sm"
+              class="inline-block bg-[#F49321] text-white px-3 py-1 text-[10px] md:text-xs font-extrabold uppercase tracking-wider rounded-t-md border-b-4 border-[#1C2D5B] shadow-sm"
             >
               {{ post.category.name }}
             </span>
@@ -81,9 +83,10 @@
             </span>
           </div>
 
-          <!-- Title -->
+          <!-- Title (Outlined) -->
           <h1
-            class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-[#1C2D5B] leading-tight mb-6"
+            class="outlined outlined-line1 block text-3xl md:text-5xl lg:text-6xl font-extrabold text-[#1C2D5B] leading-tight mb-6 tracking-wide"
+            :data-text="post.title"
           >
             {{ post.title }}
           </h1>
@@ -91,7 +94,7 @@
           <!-- Summary -->
           <p
             v-if="post.summary"
-            class="text-lg md:text-xl text-gray-600 leading-relaxed italic border-l-4 border-[#F49321] pl-4"
+            class="text-lg md:text-xl text-gray-600 leading-relaxed tracking-wide italic border-l-4 border-[#F49321] pl-4"
           >
             {{ post.summary }}
           </p>
@@ -104,14 +107,17 @@
         <div
           class="bg-white rounded-2xl p-6 md:p-10 lg:p-12 shadow-sm border border-gray-100"
         >
-          <!-- 
-            Note: Ensure your RichTextEditor output is sanitized. 
-            The 'prose' class requires @tailwindcss/typography plugin. 
-          -->
-          <div
-            class="prose prose-lg md:prose-xl max-w-none text-gray-700 prose-headings:text-[#1C2D5B] prose-a:text-[#F49321] prose-img:rounded-xl"
-            v-html="post.content"
-          />
+          <ClientOnly>
+            <div
+              class="prose prose-lg md:prose-xl max-w-none text-gray-700 prose-headings:text-[#1C2D5B] prose-a:text-[#F49321] prose-img:rounded-xl"
+              v-html="post.content"
+            />
+            <template #fallback>
+              <div class="prose ...">
+                <p>Loading content...</p>
+              </div>
+            </template>
+          </ClientOnly>
 
           <!-- Tags Footer -->
           <div
@@ -148,7 +154,7 @@
               <NuxtLink
                 v-for="recent in recentPosts"
                 :key="recent.id"
-                :to="`/blog/${recent.slug}`"
+                :to="`/blogs/${recent.slug}`"
                 class="flex gap-3 group"
               >
                 <div
@@ -215,6 +221,61 @@
               </button>
             </form>
           </div>
+
+          <!-- Related Articles Widget -->
+          <div
+            v-if="relatedPosts.length > 0"
+            class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm"
+          >
+            <h3
+              class="text-lg font-bold text-[#1C2D5B] uppercase tracking-wide mb-4"
+            >
+              Related Articles
+            </h3>
+            <div class="space-y-4">
+              <NuxtLink
+                v-for="related in relatedPosts"
+                :key="related.id"
+                :to="`/blogs/${related.slug}`"
+                class="flex gap-3 group"
+              >
+                <div
+                  class="w-20 h-16 shrink-0 rounded overflow-hidden bg-gray-100"
+                >
+                  <NuxtImg
+                    v-if="related.featured_image"
+                    :src="related.featured_image"
+                    :alt="related.title"
+                    class="w-full h-full object-cover group-hover:opacity-80 transition-opacity"
+                    format="webp"
+                    quality="75"
+                    loading="lazy"
+                    width="160"
+                    height="128"
+                    fit="cover"
+                  />
+                  <div
+                    v-else
+                    class="w-full h-full flex items-center justify-center text-gray-300"
+                  >
+                    <i class="fas fa-image text-xl"></i>
+                  </div>
+                </div>
+                <div class="flex flex-col justify-center">
+                  <span
+                    class="text-[10px] text-gray-500 uppercase tracking-wider mb-1"
+                  >
+                    {{ formatDate(related.published_at) }}
+                  </span>
+                  <h4
+                    class="text-xs font-bold text-[#1C2D5B] leading-tight group-hover:text-[#F49321] transition-colors line-clamp-2"
+                  >
+                    {{ related.title }}
+                  </h4>
+                </div>
+              </NuxtLink>
+            </div>
+          </div>
         </aside>
       </div>
     </article>
@@ -234,6 +295,15 @@ interface Post {
   author?: { full_name?: string } | null;
   category?: { id: number; name: string; slug: string } | null;
   tags?: { id: number; name: string; slug: string }[];
+}
+
+interface RelatedPost {
+  id: string;
+  title: string;
+  slug: string;
+  summary: string | null;
+  featured_image: string | null;
+  published_at: string | null;
 }
 
 // --- Fetch Data (SSR for SEO) ---
@@ -257,11 +327,21 @@ const { data: blogList } = await useFetch<{ posts: Post[] }>(
 
 const recentPosts = computed(() => {
   if (!blogList.value?.posts || !post.value) return [];
-  // Exclude the current post from the recent list
   return blogList.value.posts
     .filter((p) => p.id !== post.value?.id)
     .slice(0, 4);
 });
+
+// --- Related Posts (server-side, tag-matched) ---
+const { data: relatedData } = await useFetch<{ posts: RelatedPost[] }>(
+  () => `/api/blogs/${route.params.slug}/related`,
+  {
+    key: `related-${route.params.slug}`,
+    lazy: true,
+  },
+);
+
+const relatedPosts = computed(() => relatedData.value?.posts ?? []);
 
 // --- SEO & Social Sharing Meta ---
 const siteUrl = "https://festive.express";
@@ -337,3 +417,45 @@ const subscribe = () => {
   alert("Subscription feature coming soon!");
 };
 </script>
+
+<style scoped>
+.outlined {
+  position: relative;
+  isolation: isolate;
+  paint-order: stroke fill;
+  -webkit-text-stroke-linejoin: round;
+  stroke-linejoin: round;
+}
+
+.outlined::before {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  paint-order: stroke fill;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+/* --- Mobile (Default) --- */
+/* Navy text, white inner outline, orange outer outline */
+.outlined-line1 {
+  -webkit-text-stroke: 1.5px #ffffff;
+}
+
+.outlined-line1::before {
+  color: #f49321;
+  -webkit-text-stroke: 4px #f49321;
+}
+
+/* --- Desktop (md breakpoint and up) --- */
+@media (min-width: 768px) {
+  .outlined-line1 {
+    -webkit-text-stroke: 3px #ffffff;
+  }
+
+  .outlined-line1::before {
+    -webkit-text-stroke: 8px #f49321;
+  }
+}
+</style>

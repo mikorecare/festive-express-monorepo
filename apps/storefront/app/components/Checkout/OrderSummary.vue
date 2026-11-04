@@ -91,12 +91,6 @@
       >
     </div>
 
-    <p class="text-[10px] text-gray-400 mt-2 leading-relaxed">
-      Promotional discounts are applied before taxes and fees. Offer valid on
-      new installations only. Cannot be combined with other offers. Terms and
-      conditions apply.
-    </p>
-
     <div class="mt-4">
       <label
         class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-orange-400 transition"
@@ -107,7 +101,7 @@
           @change="$emit('update:paymentMethod', 'converge')"
           class="mr-2"
         />
-        Credit / Debit Card (Converge Pay)
+        Credit / Debit Card
       </label>
     </div>
 
@@ -145,18 +139,20 @@
       </li>
     </ul>
 
-    <!-- <div
-      class="bg-navy text-white rounded-xl p-4 mt-4 flex justify-between items-center"
-    >
-      <div>
-        <strong class="block">Early Bird Special</strong>
-        <p class="text-sm opacity-100">
-          Schedule an installation before deadline October 31, 2026, get 15%
-          off.
-        </p>
-      </div> -->
-    <!-- <i class="fas fa-home text-2xl opacity-80"></i> -->
-    <!-- </div> -->
+    <!-- Legal Disclaimer & Terms Trigger -->
+    <p class="text-[10px] text-gray-400 mt-4 leading-relaxed text-center">
+      By submitting this order, you agree to our
+      <button
+        type="button"
+        @click="showTerms = true"
+        class="text-[#F49321] hover:text-[#e07e0e] underline font-semibold transition-colors"
+      >
+        Terms and Conditions
+      </button>
+      and consent to be contacted. Promotional discounts are applied before
+      taxes and fees. Offer valid on new installations only. Cannot be combined
+      with other offers.
+    </p>
 
     <div v-if="isEarlyBirdLive" class="bg-navy text-white rounded-xl p-4 mt-4">
       <strong class="block">{{ earlyBirdTitle }}</strong>
@@ -172,6 +168,86 @@
       </p>
     </div>
   </div>
+
+  <!-- Terms & Conditions Modal -->
+  <Teleport to="body">
+    <Transition name="fade">
+      <div
+        v-if="showTerms"
+        class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="terms-modal-title"
+        @click.self="showTerms = false"
+      >
+        <div
+          class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden"
+        >
+          <!-- Header -->
+          <div
+            class="flex items-center justify-between px-6 py-4 border-b border-gray-200 shrink-0"
+          >
+            <h2 id="terms-modal-title" class="text-xl font-bold text-[#1C2D5B]">
+              {{ termsData?.title || "Terms and Conditions" }}
+            </h2>
+            <button
+              type="button"
+              @click="showTerms = false"
+              class="text-gray-400 hover:text-gray-700 transition-colors p-1"
+              aria-label="Close"
+            >
+              <i class="fas fa-times text-lg"></i>
+            </button>
+          </div>
+
+          <!-- Scrollable Content -->
+          <div
+            class="overflow-y-auto px-6 py-5 text-sm text-gray-600 leading-relaxed space-y-4"
+          >
+            <!-- Loading State -->
+            <div v-if="termsPending" class="text-center py-10">
+              <div
+                class="w-8 h-8 border-4 border-[#F49321] border-t-transparent rounded-full animate-spin mx-auto mb-3"
+              ></div>
+              <p>Loading terms...</p>
+            </div>
+
+            <!-- Error State -->
+            <div v-else-if="termsError" class="text-center text-red-500 py-10">
+              Failed to load terms. Please try again later.
+            </div>
+
+            <!-- Dynamic Content -->
+            <div
+              v-else
+              class="prose prose-sm max-w-none prose-headings:text-[#1C2D5B] prose-headings:font-bold prose-h2:border-b-2 prose-h2:border-[#F49321] prose-h2:pb-2 prose-h2:mt-6 prose-h2:mb-3 prose-p:text-slate-600 prose-p:leading-relaxed prose-a:text-[#F49321] prose-a:no-underline hover:prose-a:text-[#1C2D5B] prose-strong:text-[#1C2D5B] prose-li:text-slate-600 prose-blockquote:border-l-4 prose-blockquote:border-[#F49321] prose-blockquote:pl-4 prose-blockquote:my-4 prose-blockquote:text-slate-600 prose-blockquote:italic"
+              v-html="termsData?.description"
+            />
+
+            <p
+              v-if="!termsPending && !termsError && !termsData?.description"
+              class="text-center text-gray-500 py-10"
+            >
+              Terms and conditions content is currently unavailable.
+            </p>
+          </div>
+
+          <!-- Footer -->
+          <div
+            class="px-6 py-4 border-t border-gray-200 shrink-0 flex justify-end"
+          >
+            <button
+              type="button"
+              @click="showTerms = false"
+              class="px-6 py-2 bg-[#F49321] hover:bg-[#e07e0e] text-white text-sm font-bold rounded-lg transition-colors"
+            >
+              I Understand
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -270,6 +346,32 @@ const tickCountdown = () => {
 
 let timer: ReturnType<typeof setInterval> | null = null;
 
+// --- Terms & Conditions Modal Logic ---
+const showTerms = ref(false);
+
+type TermsContent = {
+  id?: string;
+  title?: string | null;
+  subtitle?: string | null;
+  description?: string | null;
+};
+
+type TermsApiResponse = {
+  success: boolean;
+  data: TermsContent | null;
+};
+
+const {
+  data: termsResponse,
+  pending: termsPending,
+  error: termsError,
+} = await useFetch<TermsApiResponse>("/api/terms-of-use", {
+  lazy: true,
+  server: false,
+});
+
+const termsData = computed(() => termsResponse.value?.data || null);
+
 onMounted(() => {
   loadSettings();
   loadPromo();
@@ -282,3 +384,15 @@ onBeforeUnmount(() => {
   if (timer) clearInterval(timer);
 });
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

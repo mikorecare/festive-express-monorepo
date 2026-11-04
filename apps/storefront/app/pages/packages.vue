@@ -17,23 +17,23 @@
         class="absolute inset-0 w-full h-full object-cover z-10"
       />
 
-      <div class="absolute inset-0 bg-black/40 z-[1]" aria-hidden="true"></div>
+      <div class="absolute inset-0 bg-black/40 z-[11]" aria-hidden="true"></div>
 
       <div
-        class="relative z-10 container mx-auto px-3 sm:px-4 flex items-center justify-center min-h-[320px] sm:min-h-[500px]"
+        class="relative z-[12] container mx-auto px-3 sm:px-4 flex items-center justify-center min-h-[320px] sm:min-h-[500px]"
       >
         <div class="hero-content text-center max-w-2xl mx-auto">
           <h1
             v-fade
-            class="text-[1.75rem] sm:text-3xl md:text-5xl font-extrabold tracking-tight mb-2 sm:mb-4"
+            class="text-[1.75rem] leading-tight sm:text-3xl md:text-5xl font-extrabold tracking-wider mb-3 sm:mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] sm:drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
           >
             <span
-              class="text-brand-orange [-webkit-text-stroke:0.04em_#fff] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
+              class="text-outline text-brand-orange [--o:#fff] [--w:2px] md:[--w:3px]"
             >
               Holiday Lighting
             </span>
             <span
-              class="text-white [-webkit-text-stroke:0.04em_#1C2D5B] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
+              class="text-outline text-[#1C2D5B] [--o:#1C2D5B] [--w:2px] md:[--w:3px]"
             >
               Packages
             </span>
@@ -41,7 +41,7 @@
 
           <p
             v-fade
-            class="text-base sm:text-xl tracking-wide md:text-2xl font-bold text-[#1c2d5b] [-webkit-text-stroke:0.06em_#fff] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
+            class="text-outline text-base sm:text-xl md:text-2xl tracking-wide font-bold text-[#1c2d5b] [--o:#fff] [--w:1.5px] md:[--w:2px] [text-wrap:balance] drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] sm:drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
             aria-label="Package description"
           >
             <template v-if="subtitleParts.length > 1">
@@ -145,7 +145,7 @@
                 <span
                   class="text-[0.6rem] sm:text-[0.7rem] md:text-[0.8rem] font-semibold text-slate-600 ml-0.5"
                 >
-                   Per Season
+                  Per Season
                 </span>
               </span>
             </div>
@@ -163,7 +163,7 @@
             <div
               class="text-[0.65rem] sm:text-sm md:text-base font-semibold text-slate-600 whitespace-nowrap"
             >
-               Per Season
+              Per Season
             </div>
           </div>
         </div>
@@ -1142,5 +1142,31 @@ onMounted(async () => {
 .img-fade-leave-active {
   position: absolute;
   inset: 0;
+}
+
+.text-outline {
+  --w: 2px; /* outline thickness, overridden per breakpoint */
+  --o: #fff; /* outline color */
+  --d: calc(var(--w) * 0.707);
+  --a: calc(var(--w) * 0.924);
+  --b: calc(var(--w) * 0.383);
+  text-shadow:
+    var(--w) 0 var(--o),
+    calc(var(--w) * -1) 0 var(--o),
+    0 var(--w) var(--o),
+    0 calc(var(--w) * -1) var(--o),
+    var(--d) var(--d) var(--o),
+    calc(var(--d) * -1) var(--d) var(--o),
+    var(--d) calc(var(--d) * -1) var(--o),
+    calc(var(--d) * -1) calc(var(--d) * -1) var(--o),
+    var(--a) var(--b) var(--o),
+    calc(var(--a) * -1) var(--b) var(--o),
+    var(--a) calc(var(--b) * -1) var(--o),
+    calc(var(--a) * -1) calc(var(--b) * -1) var(--o),
+    var(--b) var(--a) var(--o),
+    calc(var(--b) * -1) var(--a) var(--o),
+    var(--b) calc(var(--a) * -1) var(--o),
+    calc(var(--b) * -1) calc(var(--a) * -1) var(--o);
+  -webkit-font-smoothing: antialiased;
 }
 </style>

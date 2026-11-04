@@ -1,17 +1,56 @@
 <template>
-  <div class="min-h-screen bg-[#F8F9FA] pb-12 md:pb-16 font-sans text-gray-900">
+  <div
+    class="min-h-screen bg-[#F8F9FA] pb-12 md:pb-16 font-sans text-gray-900 bg-[url('/Images/LV.webp')] bg-no-repeat bg-[position:50%] bg-cover"
+  >
     <!-- Hero Banner / Top Spacing -->
-    <div class="w-full bg-white border-b border-gray-200">
-      <div class="max-w-[1440px] mx-auto px-4 py-6 md:py-12">
-        <h1 class="text-2xl md:text-5xl font-bold text-[#1C2D5B] mb-2 md:mb-4">
-          Latest Insights
-        </h1>
-        <p class="text-gray-600 text-sm md:text-lg max-w-2xl">
-          Explore expert advice, seasonal inspiration, and the latest news from
-          Festive Express.
-        </p>
+    <!-- Hero Banner -->
+    <section
+      aria-label="Blog hero banner"
+      role="region"
+      class="relative py-10 sm:py-16 text-white overflow-hidden min-h-[320px] sm:min-h-[500px]"
+    >
+      <img
+        src="/New/Banner/blogs-hero.webp"
+        alt="Festive Express Blog Banner"
+        width="1920"
+        height="800"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        class="absolute inset-0 w-full h-full object-cover z-10"
+      />
+
+      <div class="absolute inset-0 bg-black/40 z-[11]" aria-hidden="true"></div>
+
+      <div
+        class="relative z-[12] container mx-auto px-3 sm:px-4 flex items-center justify-center min-h-[320px] sm:min-h-[500px]"
+      >
+        <div class="hero-content text-center max-w-2xl mx-auto">
+          <h1
+            v-fade
+            class="text-[1.75rem] leading-tight sm:text-3xl md:text-5xl font-extrabold tracking-widest mb-3 sm:mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] sm:drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
+          >
+            <span
+              class="text-outline text-brand-orange [--o:#fff] [--w:2px] md:[--w:3px]"
+              >Latest</span
+            >&nbsp;
+            <span
+              class="text-outline text-[#1C2D5B] [--o:#1C2D5B] [--w:2px] md:[--w:3px]"
+              >Insights</span
+            >
+          </h1>
+
+          <p
+            v-fade
+            class="text-outline text-base sm:text-xl md:text-2xl tracking-wide font-bold text-[#1c2d5b] [--o:#fff] [--w:1.5px] md:[--w:2px] [text-wrap:balance] drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] sm:drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
+            aria-label="Blog description"
+          >
+            Explore expert advice, seasonal inspiration, and the latest news
+            from Festive Express.
+          </p>
+        </div>
       </div>
-    </div>
+    </section>
 
     <div class="max-w-[1440px] mx-auto px-4 mt-6 md:mt-8">
       <!-- Loading State -->
@@ -80,7 +119,7 @@
                 >
                   <span
                     v-if="featuredPost.category"
-                    class="bg-[#1C2D5B] text-white px-2 py-0.5 md:px-3 md:py-1 text-[9px] md:text-xs font-bold uppercase tracking-wider rounded-sm"
+                    class="inline-block bg-[#F49321] text-white px-3 py-1 text-[8px] md:text-[9px] font-extrabold uppercase tracking-widest rounded-full border-2 border-[#1C2D5B] shadow-sm"
                   >
                     {{ featuredPost.category.name }}
                   </span>
@@ -98,7 +137,8 @@
                 </div>
 
                 <h2
-                  class="text-xl md:text-3xl lg:text-4xl font-extrabold text-[#1C2D5B] leading-tight mb-2 md:mb-3 group-hover:text-[#F49321] transition-colors"
+                  class="outlined outlined-line1 block text-xl md:text-3xl lg:text-4xl font-extrabold text-[#1c2d5b] leading-tight mb-2 md:mb-3 tracking-wide line-clamp-2"
+                  :data-text="featuredPost.title"
                 >
                   {{ featuredPost.title }}
                 </h2>
@@ -202,7 +242,7 @@
                   </div>
 
                   <h4
-                    class="text-base md:text-lg font-bold text-[#1C2D5B] leading-snug mb-1.5 group-hover:text-[#F49321] transition-colors line-clamp-2"
+                    class="blog-card-title text-[#1C2D5B] font-extrabold text-base tracking-wide mb-1.5 text-left sm:text-lg line-clamp-2"
                   >
                     {{ post.title }}
                   </h4>
@@ -329,7 +369,7 @@
                     {{ formatDate(post.published_at) }}
                   </span>
                   <h4
-                    class="text-[11px] font-bold text-[#1C2D5B] leading-tight group-hover:text-[#F49321] transition-colors line-clamp-2"
+                    class="blog-card-title text-[#1C2D5B] font-extrabold text-base tracking-wide mb-1.5 text-left sm:text-lg line-clamp-2"
                   >
                     {{ post.title }}
                   </h4>
@@ -447,3 +487,78 @@ const subscribe = () => {
   alert("Subscription feature coming soon!");
 };
 </script>
+
+<style scoped>
+.blog-card-title {
+  text-shadow:
+    -1px -1px 0 #fff,
+    1px -1px 0 #fff,
+    -1px 1px 0 #fff,
+    1px 1px 0 #fff,
+    0 2px 6px rgba(28, 45, 91, 0.35);
+}
+
+.outlined {
+  position: relative;
+  isolation: isolate;
+  paint-order: stroke fill;
+  -webkit-text-stroke-linejoin: round;
+  stroke-linejoin: round;
+}
+
+.outlined::before {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  paint-order: stroke fill;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+/* --- Mobile (Default) --- */
+.outlined-line1 {
+  -webkit-text-stroke: 1.5px #ffffff;
+}
+
+.outlined-line1::before {
+  color: #f49321;
+  -webkit-text-stroke: 4px #f49321;
+}
+
+@media (min-width: 768px) {
+  .outlined-line1 {
+    -webkit-text-stroke: 3px #ffffff;
+  }
+
+  .outlined-line1::before {
+    -webkit-text-stroke: 8px #f49321;
+  }
+}
+
+.text-outline {
+  --w: 2px; /* outline thickness, overridden per breakpoint */
+  --o: #fff; /* outline color */
+  --d: calc(var(--w) * 0.707);
+  --a: calc(var(--w) * 0.924);
+  --b: calc(var(--w) * 0.383);
+  text-shadow:
+    var(--w) 0 var(--o),
+    calc(var(--w) * -1) 0 var(--o),
+    0 var(--w) var(--o),
+    0 calc(var(--w) * -1) var(--o),
+    var(--d) var(--d) var(--o),
+    calc(var(--d) * -1) var(--d) var(--o),
+    var(--d) calc(var(--d) * -1) var(--o),
+    calc(var(--d) * -1) calc(var(--d) * -1) var(--o),
+    var(--a) var(--b) var(--o),
+    calc(var(--a) * -1) var(--b) var(--o),
+    var(--a) calc(var(--b) * -1) var(--o),
+    calc(var(--a) * -1) calc(var(--b) * -1) var(--o),
+    var(--b) var(--a) var(--o),
+    calc(var(--b) * -1) var(--a) var(--o),
+    var(--b) calc(var(--a) * -1) var(--o),
+    calc(var(--b) * -1) calc(var(--a) * -1) var(--o);
+  -webkit-font-smoothing: antialiased;
+}
+</style>

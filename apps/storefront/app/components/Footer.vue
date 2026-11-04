@@ -11,11 +11,7 @@
         <div
           class="col-span-2 sm:col-span-1 flex justify-center sm:justify-start"
         >
-          <NuxtImg
-            src="/Images/FE-Logo.png"
-            alt="Festive Express"
-            class="h-[55px] w-3/4 max-w-auto sm:max-w-none"
-          />
+          <MainLogoForDark />
         </div>
 
         <div>
@@ -146,6 +142,8 @@
 </template>
 
 <script setup lang="ts">
+import MainLogoForDark from './Logos/MainLogoForDark.vue';
+
 const { settings, telHref } = useSettings();
 const currentYear = useState("current-year", () => new Date().getFullYear());
 </script>

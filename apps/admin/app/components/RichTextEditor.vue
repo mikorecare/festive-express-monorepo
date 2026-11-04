@@ -1,6 +1,6 @@
 <template>
   <div
-    class="rich-editor  border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm"
+    class="rich-editor border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm relative"
   >
     <!-- Toolbar -->
     <div
@@ -97,6 +97,7 @@
 
       <span class="rte-sep" />
 
+      <!-- MEDIA GROUP -->
       <button
         type="button"
         class="rte-btn"
@@ -116,6 +117,39 @@
       >
         Unlink
       </button>
+
+      <!-- Image Upload Button -->
+      <button
+        type="button"
+        class="rte-btn"
+        title="Insert Image"
+        :disabled="isUploading"
+        @mousedown.prevent
+        @click="triggerImageUpload"
+      >
+        {{ isUploading ? "Uploading..." : "Image" }}
+      </button>
+      <input
+        ref="fileInputRef"
+        type="file"
+        accept="image/*"
+        class="hidden"
+        @change="handleImageUpload"
+      />
+
+      <button
+        type="button"
+        class="rte-btn"
+        title="Insert Video"
+        @mousedown.prevent
+        @click="insertVideo"
+      >
+        Video
+      </button>
+      <!-- END MEDIA GROUP -->
+
+      <span class="rte-sep" />
+
       <button
         type="button"
         class="rte-btn"
@@ -138,15 +172,6 @@
       <button
         type="button"
         class="rte-btn"
-        title="Insert Video"
-        @mousedown.prevent
-        @click="insertVideo"
-      >
-        Video
-      </button>
-      <button
-        type="button"
-        class="rte-btn"
         :class="{ 'rte-active': state.list }"
         title="Bullet list"
         @mousedown.prevent
@@ -165,21 +190,70 @@
       </button>
     </div>
 
-    <!-- Editor -->
+    <!-- Uploading Overlay -->
     <div
-      ref="editorEl"
-      class="rte-content min-h-[180px] max-h-[680px] overflow-y-auto px-4 py-3 text-sm text-slate-700 focus:outline-none"
-      contenteditable="true"
-      :data-placeholder="placeholder"
-      @input="onInput"
-      @keyup="syncToolbar"
-      @mouseup="syncToolbar"
-      @focus="syncToolbar"
-    />
+      v-if="isUploading"
+      class="absolute inset-0 bg-white/60 backdrop-blur-sm z-10 flex items-center justify-center"
+    >
+      <div class="flex flex-col items-center gap-2">
+        <div
+          class="w-8 h-8 border-4 border-[#f49321] border-t-transparent rounded-full animate-spin"
+        ></div>
+        <span class="text-sm font-semibold text-[#1c2d5b]"
+          >Processing & Uploading...</span
+        >
+      </div>
+    </div>
+
+    <!-- Editor Wrapper -->
+    <div class="relative" @mouseleave="hoveredImage = null">
+      <!-- Editor -->
+      <div
+        ref="editorEl"
+        class="rte-content min-h-[180px] max-h-[680px] overflow-y-auto px-4 py-3 text-sm text-slate-700 focus:outline-none relative"
+        contenteditable="true"
+        :data-placeholder="placeholder"
+        @input="onInput"
+        @keyup="syncToolbar"
+        @mouseup="syncToolbar"
+        @focus="syncToolbar"
+        @mouseover="handleMouseOver"
+      />
+
+      <!-- Floating Delete Button -->
+      <button
+        v-if="hoveredImage"
+        type="button"
+        class="absolute z-30 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg transition-transform hover:scale-105 delete-image-btn"
+        :style="{
+          top: `${hoveredImage.top}px`,
+          left: `${hoveredImage.left}px`,
+          padding: '6px',
+        }"
+        title="Remove image"
+        @mousedown.prevent
+        @click.stop="deleteImage(hoveredImage.el)"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-4 w-4 pointer-events-none"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, reactive, watch, onMounted, onUnmounted } from "vue";
+
 const props = withDefaults(
   defineProps<{
     modelValue?: string | null;
@@ -196,7 +270,16 @@ const emit = defineEmits<{
 }>();
 
 const editorEl = ref<HTMLElement | null>(null);
+const fileInputRef = ref<HTMLInputElement | null>(null);
+const isUploading = ref(false);
 let syncing = false;
+let savedSelection: Range | null = null;
+
+const hoveredImage = ref<{
+  el: HTMLImageElement;
+  top: number;
+  left: number;
+} | null>(null);
 
 const state = reactive({
   bold: false,
@@ -209,6 +292,7 @@ const state = reactive({
   list: false,
 });
 
+// --- Core Commands ---
 const cmd = (command: string, value?: string) => {
   editorEl.value?.focus();
   document.execCommand(command, false, value);
@@ -280,6 +364,230 @@ const applyQuote = () => {
   syncToolbar();
 };
 
+const insertVideo = () => {
+  editorEl.value?.focus();
+
+  const url = window.prompt("Paste Aryeo video link:");
+  if (!url || !url.trim()) return;
+  if (!/^https?:\/\//i.test(url.trim())) {
+    alert("Please enter a valid video link.");
+    return;
+  }
+
+  const html = `
+    <div style="position: relative; padding-bottom: 56.25%; height: 0; margin: 1rem 0;">
+      <iframe
+        data-src="${url.trim()}"
+        src="about:blank"
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+        frameborder="0"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <p><br></p>
+  `;
+
+  document.execCommand("insertHTML", false, html);
+  onInput();
+
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      if (!editorEl.value) return;
+      const pending = editorEl.value.querySelectorAll(
+        "iframe[data-src]",
+      ) as NodeListOf<HTMLIFrameElement>;
+      pending.forEach((iframe) => {
+        const realSrc = iframe.getAttribute("data-src");
+        if (realSrc) {
+          iframe.setAttribute("src", realSrc);
+          iframe.removeAttribute("data-src");
+        }
+      });
+    }, 100);
+  });
+};
+
+// --- Image Upload & Conversion Logic ---
+const triggerImageUpload = () => {
+  const sel = window.getSelection();
+  if (sel && sel.rangeCount > 0) {
+    savedSelection = sel.getRangeAt(0);
+  }
+  fileInputRef.value?.click();
+};
+
+const convertToWebP = (file: File): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    if (
+      file.type === "image/webp" ||
+      file.type === "image/gif" ||
+      file.type === "image/svg+xml"
+    ) {
+      return resolve(file);
+    }
+
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const canvas = document.createElement("canvas");
+
+      const MAX_WIDTH = 1200;
+      let width = img.width;
+      let height = img.height;
+
+      if (width > MAX_WIDTH) {
+        height = Math.round((height * MAX_WIDTH) / width);
+        width = MAX_WIDTH;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) return reject(new Error("Canvas context not available"));
+
+      ctx.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) return reject(new Error("WebP conversion failed"));
+
+          const newName = file.name.replace(/\.[^/.]+$/, "") + ".webp";
+          const webpFile = new File([blob], newName, { type: "image/webp" });
+          resolve(webpFile);
+        },
+        "image/webp",
+        0.85,
+      );
+    };
+
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("Failed to load image for conversion"));
+    };
+
+    img.src = url;
+  });
+};
+
+const handleImageUpload = async (e: Event) => {
+  const input = e.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+
+  input.value = "";
+  isUploading.value = true;
+
+  try {
+    const processedFile = await convertToWebP(file);
+
+    const formData = new FormData();
+    formData.append("file", processedFile);
+    formData.append("folder", "blog/inline");
+
+    const response = await $fetch<{
+      success: boolean;
+      url?: string;
+      error?: string;
+    }>("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.success || !response.url) {
+      throw new Error(response.error || "Upload failed");
+    }
+
+    editorEl.value?.focus();
+    if (savedSelection) {
+      const sel = window.getSelection();
+      sel?.removeAllRanges();
+      sel?.addRange(savedSelection);
+    }
+
+    // WRAPPER for Centering (using inline-block and margin auto)
+    const html = `
+      <div style="text-align: center; margin: 1.5rem 0;">
+        <img 
+          src="${response.url}" 
+          style="display: inline-block; max-width: 100%; max-height: 450px; width: auto; height: auto; border-radius: 0.5rem; object-fit: contain;" 
+          alt="Inserted Image" 
+        />
+      </div>
+      <p><br></p>
+    `;
+
+    document.execCommand("insertHTML", false, html);
+    onInput();
+  } catch (err: any) {
+    alert(err?.message || "Failed to upload image. Please try again.");
+  } finally {
+    isUploading.value = false;
+    savedSelection = null;
+  }
+};
+
+// --- Image Hover & Delete Logic ---
+const handleMouseOver = (e: MouseEvent) => {
+  const target = e.target as HTMLElement;
+
+  if (target.closest(".delete-image-btn")) return;
+
+  if (target.tagName === "IMG") {
+    const img = target as HTMLImageElement;
+    const rect = img.getBoundingClientRect();
+    const editorRect = editorEl.value?.getBoundingClientRect();
+
+    if (editorRect) {
+      hoveredImage.value = {
+        el: img,
+        top: rect.top - editorRect.top + (editorEl.value?.scrollTop || 0) + 8,
+        // Align X to the top-right corner of the visible image
+        left: rect.right - editorRect.left - 32,
+      };
+    }
+  } else {
+    hoveredImage.value = null;
+  }
+};
+
+const deleteImage = async (imgElement: HTMLImageElement) => {
+  const src = imgElement.getAttribute("src");
+  if (!src) return;
+
+  // 1. Remove from DOM
+  const parent = imgElement.parentElement;
+  if (parent && parent.tagName === "DIV" && parent.children.length === 1) {
+    parent.remove();
+  } else {
+    imgElement.remove();
+  }
+
+  hoveredImage.value = null;
+  onInput();
+
+  // 2. Delete from Supabase Storage
+  const bucket = "about-us";
+  const marker = `/storage/v1/object/public/${bucket}/`;
+  const index = src.indexOf(marker);
+
+  if (index !== -1) {
+    const filePath = src.substring(index + marker.length);
+    try {
+      await $fetch("/api/upload", {
+        method: "DELETE",
+        body: { path: filePath, bucket },
+      });
+    } catch (error) {
+      console.error("Failed to delete image from storage:", error);
+    }
+  }
+};
+
+// --- State & Lifecycle ---
 const syncToolbar = () => {
   try {
     state.bold = document.queryCommandState("bold");
@@ -292,7 +600,6 @@ const syncToolbar = () => {
     else if (document.queryCommandState("justifyLeft")) state.align = "left";
     else state.align = "left";
 
-    // fontSize returns "1"–"7" when using execCommand fontSize
     const fs = document.queryCommandValue("fontSize");
     state.fontSize = fs && fs !== "0" ? fs : "";
 
@@ -307,48 +614,6 @@ const syncToolbar = () => {
   }
 };
 
-const insertVideo = () => {
-  editorEl.value?.focus();
-
-  const url = window.prompt("Paste Aryeo video link:");
-  if (!url || !url.trim()) return;
-
-  // Basic check: must start with http
-  if (!/^https?:\/\//i.test(url.trim())) {
-    alert("Please enter a valid video link.");
-    return;
-  }
-
-  // Use Aryeo official iframe format (responsive wrapper)
-  const html = `
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; margin: 1rem 0;">
-      <iframe
-        src="${url.trim()}"
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-        frameborder="0"
-        allow="autoplay; fullscreen; picture-in-picture"
-        allowfullscreen>
-      </iframe>
-    </div>
-    <p><br></p>
-  `;
-  document.execCommand("insertHTML", false, html);
-  onInput();
-};
-
-// Helper function: convert regular link to embed link
-const getEmbedUrl = (url: string): string | null => {
-  const ytMatch = url.match(
-    /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-  );
-  if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
-
-  const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-  if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
-
-  return null;
-};
-
 const onInput = () => {
   if (!editorEl.value || syncing) return;
   emit("update:modelValue", editorEl.value.innerHTML);
@@ -358,8 +623,33 @@ const onInput = () => {
 const setHtml = (html: string) => {
   if (!editorEl.value) return;
   syncing = true;
-  editorEl.value.innerHTML = html || "";
+
+  // Strip iframes so the browser doesn't fire the request mid-mount
+  const temp = document.createElement("div");
+  temp.innerHTML = html || "";
+
+  const iframes: { src: string }[] = [];
+  temp.querySelectorAll("iframe").forEach((iframe) => {
+    const src = iframe.getAttribute("src");
+    if (src) iframes.push({ src });
+    iframe.setAttribute("src", "about:blank"); // placeholder
+  });
+
+  editorEl.value.innerHTML = temp.innerHTML;
   syncing = false;
+
+  if (iframes.length) {
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        if (!editorEl.value) return;
+        const placed = editorEl.value.querySelectorAll("iframe");
+        placed.forEach((iframe, i) => {
+          const real = iframes[i];
+          if (real) iframe.setAttribute("src", real.src);
+        });
+      }, 100);
+    });
+  }
 };
 
 watch(
@@ -408,6 +698,10 @@ const onSelectionChange = () => {
 .rte-btn:hover {
   background: #f1f5f9;
 }
+.rte-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .rte-active {
   background: #f49321 !important;
   color: #fff !important;
@@ -446,41 +740,32 @@ const onSelectionChange = () => {
   color: #1c2d5b;
   font-weight: 600;
 }
-
 .rte-content :deep(ul) {
   list-style-type: disc;
   padding-left: 1.5rem;
   margin: 0.5rem 0;
 }
-
 .rte-content :deep(ol) {
   list-style-type: decimal;
   padding-left: 1.5rem;
   margin: 0.5rem 0;
 }
-
 .rte-content :deep(li) {
   display: list-item;
   margin: 0.25rem 0;
 }
-
-/* Nested lists */
 .rte-content :deep(ul ul) {
   list-style-type: circle;
 }
-
 .rte-content :deep(ul ul ul) {
   list-style-type: square;
 }
-
 .rte-content :deep(ol ol) {
   list-style-type: lower-alpha;
 }
-
 .rte-content :deep(ol ol ol) {
   list-style-type: lower-roman;
 }
-
 .rte-content :deep(iframe) {
   max-width: 100%;
   border-radius: 0.5rem;

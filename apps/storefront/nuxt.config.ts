@@ -111,11 +111,11 @@ export default defineNuxtConfig({
             name: "Festive Express",
             description:
               "Professional holiday lighting installation and removal services in Sarasota, Bradenton, and Lakewood Ranch. Premium Christmas light installation for homes and businesses.",
-            image: "https://festive.express/Images/logo.png",
+            image: "https://festive.express/Images/FE-Logo-2.png",
             "@id": "https://festive.express",
             url: "https://festive.express",
             telephone: "+19412394722",
-            email: "info@festive.express",
+            email: "hello@festive.express",
             priceRange: "$$",
 
             address: {

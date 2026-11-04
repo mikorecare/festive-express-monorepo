@@ -5,12 +5,7 @@
   >
     <!-- Logo -->
     <div class="p-6 flex items-center justify-center flex-shrink-0">
-      <img
-        loading="lazy"
-        src="/Images/FE-Logo.png"
-        alt="FLP Admin"
-        class="max-h-20 w-auto my-4 block"
-      />
+      <MainLogoForDark />
     </div>
 
     <!-- Navigation - Scrollable with custom scrollbar -->
@@ -501,6 +496,8 @@ import {
   NewspaperIcon,
   WrenchScrewdriverIcon,
 } from "@heroicons/vue/24/outline";
+import MainLogo from "./Logos/MainLogo.vue";
+import MainLogoForDark from "./Logos/MainLogoForDark.vue";
 
 const route = useRoute();
 
