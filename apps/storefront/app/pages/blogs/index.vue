@@ -2,36 +2,14 @@
   <div class="min-h-screen bg-[#F8F9FA] pb-12 md:pb-16 font-sans text-gray-900">
     <!-- Hero Banner / Top Spacing -->
     <div class="w-full bg-white border-b border-gray-200">
-      <div
-        class="max-w-[1440px] mx-auto px-4 py-6 md:py-12 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8"
-      >
-        <!-- Text Content -->
-        <div class="flex-1 text-center md:text-left">
-          <h1
-            class="text-2xl md:text-5xl font-bold text-[#1C2D5B] mb-2 md:mb-4"
-          >
-            Lighting Insights & Ideas
-          </h1>
-          <p class="text-gray-600 text-center text-sm md:text-lg max-w-full">
-            Explore expert advice, seasonal inspiration, and the latest news
-            from Festive Express.
-          </p>
-        </div>
-
-        <!-- Mascot Image -->
-        <div class="flex-shrink-0">
-          <NuxtImg
-            src="/New/mascot.png"
-            alt="Festive Express Mascot"
-            format="webp"
-            quality="85"
-            width="200"
-            height="200"
-            fit="contain"
-            loading="eager"
-            class="h-24 md:h-40 w-auto object-contain drop-shadow-md"
-          />
-        </div>
+      <div class="max-w-[1440px] mx-auto px-4 py-6 md:py-12">
+        <h1 class="text-2xl md:text-5xl font-bold text-[#1C2D5B] mb-2 md:mb-4">
+          Latest Insights
+        </h1>
+        <p class="text-gray-600 text-sm md:text-lg max-w-2xl">
+          Explore expert advice, seasonal inspiration, and the latest news from
+          Festive Express.
+        </p>
       </div>
     </div>
 
