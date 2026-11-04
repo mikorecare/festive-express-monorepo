@@ -137,6 +137,16 @@
                   FAQ
                 </NuxtLink>
               </li>
+              <!-- ADDED BLOG LINK -->
+              <li>
+                <NuxtLink
+                  to="/blogs"
+                  class="nav-link block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
+                  active-class="nav-link-active"
+                >
+                  Blog
+                </NuxtLink>
+              </li>
             </ul>
           </nav>
 

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="rich-editor border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm"
+    class="rich-editor  border border-slate-200 rounded-xl overflow-hidden bg-white shadow-sm"
   >
     <!-- Toolbar -->
     <div
@@ -138,6 +138,15 @@
       <button
         type="button"
         class="rte-btn"
+        title="Insert Video"
+        @mousedown.prevent
+        @click="insertVideo"
+      >
+        Video
+      </button>
+      <button
+        type="button"
+        class="rte-btn"
         :class="{ 'rte-active': state.list }"
         title="Bullet list"
         @mousedown.prevent
@@ -159,7 +168,7 @@
     <!-- Editor -->
     <div
       ref="editorEl"
-      class="rte-content min-h-[180px] max-h-[420px] overflow-y-auto px-4 py-3 text-sm text-slate-700 focus:outline-none"
+      class="rte-content min-h-[180px] max-h-[680px] overflow-y-auto px-4 py-3 text-sm text-slate-700 focus:outline-none"
       contenteditable="true"
       :data-placeholder="placeholder"
       @input="onInput"
@@ -298,6 +307,48 @@ const syncToolbar = () => {
   }
 };
 
+const insertVideo = () => {
+  editorEl.value?.focus();
+
+  const url = window.prompt("Paste Aryeo video link:");
+  if (!url || !url.trim()) return;
+
+  // Basic check: must start with http
+  if (!/^https?:\/\//i.test(url.trim())) {
+    alert("Please enter a valid video link.");
+    return;
+  }
+
+  // Use Aryeo official iframe format (responsive wrapper)
+  const html = `
+    <div style="position: relative; padding-bottom: 56.25%; height: 0; margin: 1rem 0;">
+      <iframe
+        src="${url.trim()}"
+        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+        frameborder="0"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen>
+      </iframe>
+    </div>
+    <p><br></p>
+  `;
+  document.execCommand("insertHTML", false, html);
+  onInput();
+};
+
+// Helper function: convert regular link to embed link
+const getEmbedUrl = (url: string): string | null => {
+  const ytMatch = url.match(
+    /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+  );
+  if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
+
+  const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+
+  return null;
+};
+
 const onInput = () => {
   if (!editorEl.value || syncing) return;
   emit("update:modelValue", editorEl.value.innerHTML);
@@ -394,5 +445,45 @@ const onSelectionChange = () => {
   margin: 0.75rem 0;
   color: #1c2d5b;
   font-weight: 600;
+}
+
+.rte-content :deep(ul) {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.rte-content :deep(ol) {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.rte-content :deep(li) {
+  display: list-item;
+  margin: 0.25rem 0;
+}
+
+/* Nested lists */
+.rte-content :deep(ul ul) {
+  list-style-type: circle;
+}
+
+.rte-content :deep(ul ul ul) {
+  list-style-type: square;
+}
+
+.rte-content :deep(ol ol) {
+  list-style-type: lower-alpha;
+}
+
+.rte-content :deep(ol ol ol) {
+  list-style-type: lower-roman;
+}
+
+.rte-content :deep(iframe) {
+  max-width: 100%;
+  border-radius: 0.5rem;
+  overflow: hidden;
 }
 </style>

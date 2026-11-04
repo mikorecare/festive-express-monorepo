@@ -11,7 +11,9 @@ export const CACHE_MAP = {
     GLOBAL_SETTINGS: 'global_settings_cache',
     HERO_SUBTITLE: 'hero_subtitle_cache',
     ABOUT_US: 'about_us_cache',
-    INCLUSION_ITEMS: 'inclusion_items_cache'
+    INCLUSION_ITEMS: 'inclusion_items_cache',
+    POSTS_PUBLIC: 'posts_list_cache',
+    POSTS_ADMIN: 'admin_posts_list_cache'
 } as const
 
 export type CacheKey = typeof CACHE_MAP[keyof typeof CACHE_MAP]

@@ -204,6 +204,77 @@
         <span v-if="!isCollapsed">Users</span>
       </NuxtLink>
 
+      <!-- Blog with Submenu -->
+      <div class="relative">
+        <div
+          @click="toggleBlog"
+          class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg cursor-pointer select-none"
+          :class="{ 'bg-brand-orange text-navy': isBlogSection }"
+        >
+          <NewspaperIcon class="h-5 w-5" />
+          <span v-if="!isCollapsed" class="flex-1">Blog</span>
+          <span
+            v-if="!isCollapsed"
+            class="text-xs transition-transform duration-300"
+            :class="{ 'rotate-180': isBlogOpen }"
+          >
+            ▼
+          </span>
+        </div>
+
+        <!-- Blog Submenu -->
+        <div
+          v-if="!isCollapsed"
+          class="ml-4 mt-1 space-y-1 border-l-2 border-brand-orange/30 pl-3 overflow-hidden transition-all duration-300 ease-in-out"
+          :class="isBlogOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'"
+        >
+          <NuxtLink
+            to="/admin/blog"
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path === '/admin/blog'
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
+          >
+            All Posts
+          </NuxtLink>
+          <NuxtLink
+            to="/admin/blog/create"
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path === '/admin/blog/create'
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
+          >
+            Add New Post
+          </NuxtLink>
+          <NuxtLink
+            to="/admin/blog/categories"
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path.startsWith('/admin/blog/categories')
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
+          >
+            Categories
+          </NuxtLink>
+          <NuxtLink
+            to="/admin/blog/tags"
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path.startsWith('/admin/blog/tags')
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
+          >
+            Tags
+          </NuxtLink>
+        </div>
+      </div>
+
       <!-- Configuration with Submenu -->
       <div class="relative">
         <div
@@ -427,6 +498,8 @@ import {
   UserIcon,
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
+  NewspaperIcon,
+  WrenchScrewdriverIcon,
 } from "@heroicons/vue/24/outline";
 
 const route = useRoute();
@@ -435,6 +508,7 @@ const isCollapsed = ref(false);
 const showLogoutModal = ref(false);
 const isProductsOpen = ref(true);
 const isCustomersOpen = ref(true);
+const isBlogOpen = ref(true);
 const isConfigurationOpen = ref(true);
 const pendingReviewsCount = ref(0);
 const currentUser = ref<any>(null);
@@ -492,6 +566,10 @@ const toggleCustomers = () => {
   isCustomersOpen.value = !isCustomersOpen.value;
 };
 
+const toggleBlog = () => {
+  isBlogOpen.value = !isBlogOpen.value;
+};
+
 const toggleConfiguration = () => {
   isConfigurationOpen.value = !isConfigurationOpen.value;
 };
@@ -536,6 +614,8 @@ const isCustomersSection = computed(() =>
     route.path.startsWith(p),
   ),
 );
+
+const isBlogSection = computed(() => route.path.startsWith("/admin/blog"));
 
 const isConfigurationSection = computed(() =>
   route.path.startsWith("/admin/configuration"),

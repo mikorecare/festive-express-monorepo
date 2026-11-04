@@ -154,6 +154,7 @@ const login = async () => {
 
   try {
     const response = await $fetch<LoginResponse>("/api/auth/login", {
+      credentials: "include",
       method: "POST",
       body: {
         email: form.value.email,

@@ -510,6 +510,15 @@ export default defineNuxtConfig({
         isr: 60 * 60 * 24,
         headers: { 'Cache-Control': 'public, max-age=3600, stale-while-revalidate' }
       },
+      '/blogs/**': {
+        isr: 60 * 60 * 24,
+        headers: { 'Cache-Control': 'public, max-age=3600, stale-while-revalidate' },
+        security: {
+          headers: {
+            crossOriginEmbedderPolicy: false,
+          },
+        },
+      },
       '/about-us': {
         isr: 60 * 60 * 24,
         headers: { 'Cache-Control': 'public, max-age=3600, stale-while-revalidate' }

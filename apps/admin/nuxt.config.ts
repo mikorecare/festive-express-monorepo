@@ -72,49 +72,79 @@ export default defineNuxtConfig({
 
   security: {
     nonce: true,
-
+    requestSizeLimiter: {
+      maxRequestSizeInBytes: 2000000,
+      maxUploadFileRequestInBytes: 25 * 1024 * 1024,
+    },
     headers: {
       contentSecurityPolicy: {
         'default-src': ["'self'"],
+
         'script-src': [
           "'strict-dynamic'",
           "'nonce-{{nonce}}'",
           "'self'",
           "https://cdnjs.cloudflare.com",
           "https://cdn.jsdelivr.net",
-          "https://challenges.cloudflare.com"
+          "https://challenges.cloudflare.com",
+          "https://www.youtube.com",
+          "https://s.ytimg.com",
         ],
+
         'style-src': [
           "'self'",
           "'unsafe-inline'",
           "https://fonts.googleapis.com",
           "https://cdnjs.cloudflare.com",
-          "https://challenges.cloudflare.com"
+          "https://challenges.cloudflare.com",
         ],
+
         'img-src': [
           "'self'",
           "data:",
           "https:",
           "blob:",
           "https://*.supabase.co",
-          "https://*.cloudflare.com"
+          "https://*.cloudflare.com",
+          "https://img.youtube.com",
+          "https://i.ytimg.com",
+          "https://i9.ytimg.com",
+          "https://*.ytimg.com",
+          "https://motion-media-llc.aryeo.com",
         ],
+
         'font-src': [
           "'self'",
           "https://fonts.gstatic.com",
-          "https://cdnjs.cloudflare.com"
+          "https://cdnjs.cloudflare.com",
         ],
+
         'connect-src': [
           "'self'",
           "https:",
           "wss:",
           "https://*.supabase.co",
-          "https://challenges.cloudflare.com"
+          "https://challenges.cloudflare.com",
+          "https://www.youtube.com",
+          "https://motion-media-llc.aryeo.com",
         ],
+
         'frame-src': [
           "'self'",
-          "https://challenges.cloudflare.com"
+          "https://challenges.cloudflare.com",
+          "https://www.youtube.com",
+          "https://www.youtube-nocookie.com",
+          "https://player.vimeo.com",
+          "https://motion-media-llc.aryeo.com",
         ],
+
+        'media-src': [
+          "'self'",
+          "https:",
+          "blob:",
+          "https://motion-media-llc.aryeo.com",
+        ],
+
         'frame-ancestors': ["'self'"],
         'object-src': ["'none'"],
         'base-uri': ["'self'"],
@@ -157,6 +187,23 @@ export default defineNuxtConfig({
         headers: {
           "Cache-Control": "no-store, must-revalidate",
         },
+      },
+      "/api/blog/posts": {
+        security: {
+          xssValidator: false,
+        },
+      },
+      "/api/blog/posts/**": {
+        security: {
+          xssValidator: false,
+        },
+      },
+      '/admin/blog/**': {
+        security: {
+          headers: {
+            crossOriginEmbedderPolicy: false,
+          },
+        }
       },
       "/_nuxt/**": {
         headers: {

@@ -57,15 +57,11 @@
           />
 
           <!-- Icon: FontAwesome fallback -->
-          <i
-            v-else
-            :class="[
-              item.icon,
-              'text-[1.35rem] transition-transform duration-200 ease-out',
-              isActive(item.to) ? 'scale-110' : 'group-hover:scale-110',
-            ]"
-            aria-hidden="true"
-          ></i>
+          <IcNavBlog
+            v-else-if="item.icon === 'blog'"
+            class="w-[1.35rem] h-[1.35rem] transition-transform duration-200 ease-out"
+            :class="isActive(item.to) ? 'scale-110' : 'group-hover:scale-110'"
+          />
 
           <!-- Label -->
           <span class="leading-none">{{ item.label }}</span>
@@ -79,6 +75,7 @@
 import IcNavHome from "~/components/Icons/IcNavHome.vue";
 import IcNavBell from "~/components/Icons/IcNavBell.vue";
 import IcNavFaq from "~/components/Icons/IcNavFaq.vue";
+import IcNavBlog from "~/components/Icons/IcnNavBlog.vue";
 
 const route = useRoute();
 
@@ -97,6 +94,7 @@ const navItems: NavItem[] = [
   { to: "/", label: "Home", icon: "home" },
   { to: "/packages", label: "Packages", icon: "bell" },
   { to: "/faq", label: "FAQ", icon: "faq" },
+  { to: "/blogs", label: "Blog", icon: "blog" },
 ];
 
 const isActive = (path: string) => {

@@ -3,9 +3,7 @@
     ref="heroRef"
     class="hero-banner relative min-h-[88dvh] overflow-hidden flex items-center max-lg:min-h-auto max-lg:py-10 border-b-[27px] border-[#F49321]"
   >
-    <!-- ========================================== -->
-    <!-- 📱 MOBILE ONLY HERO LAYER (High Performance) -->
-    <!-- ========================================== -->
+    <!-- MOBILE -->
     <div class="lg:hidden absolute inset-0 z-0">
       <NuxtImg
         src="/New/Banner/bg-family-mobile.webp"
@@ -14,47 +12,78 @@
         sizes="xs:100vw sm:100vw md:100vw"
         format="webp"
         quality="75"
-        :img-attrs="{
-          loading: 'eager',
-          fetchpriority: 'high',
-        }"
+        :img-attrs="{ loading: 'eager', fetchpriority: 'high' }"
         preload
         class="w-full h-full object-cover"
       />
     </div>
 
-    <!-- ========================================== -->
-    <!-- 💻 DESKTOP ONLY HERO LAYER (Static)        -->
-    <!-- ========================================== -->
-    <NuxtImg
-      v-if="!isMobile"
-      src="/Images/Banner/hero-image.webp"
-      alt=""
-      role="none"
-      sizes="xs:100vw sm:100vw md:100vw lg:100vw xl:100vw"
-      format="webp"
-      quality="100"
-      :img-attrs="{
-        loading: 'eager',
-        fetchpriority: 'high',
-        decoding: 'async',
-      }"
-      preload
-      class="hero-layer absolute inset-0 w-full h-full object-cover z-0 max-lg:hidden"
-    />
+    <!-- ==================================================== -->
+    <!-- 💻 DESKTOP HERO LAYER (z-0)                           -->
+    <!-- All slides are stacked; only the active one is on top.-->
+    <!-- No src swapping = no flicker when a card finishes.    -->
+    <!-- ==================================================== -->
+    <div v-if="!isMobile" class="hero-carousel absolute inset-0 max-lg:hidden">
+      <div
+        v-for="(src, i) in desktopSlides"
+        :key="src"
+        class="hero-slide"
+        :class="{ 'is-hero': i === activeIndex }"
+      >
+        <NuxtImg
+          :src="src"
+          alt=""
+          role="none"
+          sizes="lg:100vw xl:100vw"
+          format="webp"
+          quality="100"
+          :img-attrs="{
+            loading: 'eager',
+            fetchpriority: i === 0 ? 'high' : 'auto',
+            decoding: 'async',
+          }"
+          class="w-full h-full object-cover"
+        />
+      </div>
+    </div>
 
-    <!-- ========================================== -->
-    <!-- 🛠️ COMMON OVERLAYS & STRUCTURAL CONTENT     -->
-    <!-- ========================================== -->
-    <div class="overlay absolute inset-0 z-[2] max-lg:bg-black/25"></div>
+    <!-- ==================================================== -->
+    <!-- 🌱 GROWING CARD (z-5)                                 -->
+    <!-- Above the hero layer, below overlay + content.        -->
+    <!-- Starts exactly on the first queue slot, grows to full.-->
+    <!-- ==================================================== -->
+    <div
+      v-if="!isMobile && growIndex !== null"
+      class="hero-grow max-lg:hidden"
+      :class="{ 'is-expanded': expanding }"
+      :style="growStyle"
+    >
+      <NuxtImg
+        :src="slideAt(growIndex)"
+        alt=""
+        role="none"
+        sizes="lg:100vw xl:100vw"
+        format="webp"
+        quality="100"
+        :img-attrs="{
+          loading: 'eager',
+          fetchpriority: 'high',
+          decoding: 'async',
+        }"
+        class="w-full h-full object-cover"
+      />
+    </div>
 
+    <!-- OVERLAY z-10 -->
+    <div class="overlay absolute inset-0 z-10 max-lg:bg-black/25"></div>
+
+    <!-- COUNTDOWNS z-20 -->
     <CountdownWidget
       v-if="heroCountdownEnabled"
       class="desktop-widget max-lg:hidden"
       :time-left="timeLeft"
       :format-number="formatNumber"
     />
-
     <CountdownWidget
       v-if="heroCountdownEnabled"
       class="mobile-widget lg:hidden"
@@ -62,36 +91,32 @@
       :format-number="formatNumber"
     />
 
+    <!-- CONTENT z-20 -->
     <div
-      class="hero-content-container relative z-[3] w-full max-w-[1200px] px-[5%] lg:pl-[15%] flex justify-start items-center gap-5 max-lg:flex-col max-lg:items-start max-lg:gap-8 max-lg:px-[6%] max-lg:py-6"
+      class="hero-content-container relative z-20 w-full max-w-[1200px] px-[5%] lg:pl-[15%] flex justify-start items-center gap-5 max-lg:flex-col max-lg:items-start max-lg:gap-8 max-lg:px-[6%] max-lg:py-6"
     >
       <div
         class="hero-card relative w-full max-w-[460px] bg-[#161c30]/50 backdrop-blur-sm rounded-2xl p-11 px-8 shadow-[0_10px_30px_rgba(0,0,0,0.4)] text-white text-center border border-white/12 overflow-hidden before:content-[''] before:absolute before:-top-1/2 before:-left-[150%] before:w-[200%] before:h-[200%] before:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] before:rotate-[25deg] before:pointer-events-none before:animate-[glossyShineContinuous_3s_linear_infinite] max-lg:max-w-full max-lg:p-0 max-lg:text-left max-lg:!bg-transparent max-lg:!backdrop-blur-none max-lg:!border-none max-lg:!shadow-none max-lg:!rounded-none max-lg:before:!hidden max-lg:after:!hidden max-lg:flex max-lg:flex-col max-lg:gap-8"
         :class="{ 'hero-card-focused': isHeroVisible }"
       >
-        <!-- Top Section: Title and Tagline -->
         <div>
           <h1
             class="text-4xl text-start font-extrabold leading-[1.15] mb-4 tracking-wide text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] max-lg:text-[1.5rem] max-lg:mb-2 max-lg:leading-[1.2] max-lg:drop-shadow-[0_4px_14px_rgba(0,0,0,0.9)] max-lg:[text-shadow:0_2px_6px_rgba(0,0,0,0.95),0_4px_16px_rgba(0,0,0,0.75)]"
           >
             <span
               class="highlight block text-[#F49321] [-webkit-text-stroke:0.05em_#1C2D5B] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(28,45,91,0.45)] tracking-wider"
+              >{{ heroH1White }}</span
             >
-              {{ heroH1White }}
-            </span>
             <span class="block text-white">{{ heroH1Orange }}</span>
           </h1>
-
           <p
             class="tagline text-start text-[1.1rem] font-bold leading-[1.35] tracking-wide mb-8 text-slate-200 max-lg:text-[0.9rem] max-lg:mb-0 max-lg:leading-[1.4] max-lg:[text-shadow:0_2px_4px_rgba(0,0,0,0.7)]"
           >
             <template v-for="(part, i) in heroDescription1.split('|')" :key="i">
-              <br v-if="i > 0" class="mobile-only" />
-              {{ part }}
+              <br v-if="i > 0" class="mobile-only" />{{ part }}
             </template>
             <br />
           </p>
-
           <p
             class="subtext block text-start text-[0.88rem] tracking-widest font-semibold my-4 opacity-90 max-lg:text-[0.78rem] max-lg:mt-2"
           >
@@ -99,22 +124,18 @@
               v-for="(part2, i) in heroDescription2.split('|')"
               :key="i"
             >
-              <br v-if="i > 0" class="mobile-only" />
-              {{ part2 }}<span v-if="i === 0">.</span>
+              <br v-if="i > 0" class="mobile-only" />{{ part2
+              }}<span v-if="i === 0">.</span>
             </template>
           </p>
         </div>
-
-        <!-- Bottom Section: Buttons -->
         <div class="flex flex-col gap-3 w-full">
-          <!-- Button 1 -->
           <NuxtLink
             to="#preview"
             class="relative uppercase inline-flex items-center justify-center bg-[#1C2D5B] text-white font-extrabold text-lg rounded-full border-[3px] border-[#1C2D5B] px-12 py-2 hover:bg-[#e0850a] transition-colors max-lg:font-semibold tracking-wider max-lg:text-base max-lg:px-6 max-lg:py-3 max-lg:border-2 max-lg:w-full"
           >
             <span>Preview your home</span>
           </NuxtLink>
-
           <NuxtLink
             to="/packages"
             class="relative inline-flex items-center justify-center uppercase bg-[#F49321] text-white font-extrabold text-lg rounded-full border-[3px] border-[#F49321] shadow-[0_0_0_4px_#F49321] px-12 py-2 hover:bg-[#e0850a] transition-colors max-lg:font-semibold tracking-wider max-lg:text-base max-lg:px-6 max-lg:py-3 max-lg:border-2 max-lg:shadow-none max-lg:w-full"
@@ -124,6 +145,37 @@
         </div>
       </div>
     </div>
+
+    <!-- ==================================================== -->
+    <!-- 🃏 QUEUE (z-30) — ONLY upcoming slides.               -->
+    <!-- Slot 0 (left) = next hero. Previous hero re-enters    -->
+    <!-- from the right and pushes everything to the left.     -->
+    <!-- ==================================================== -->
+    <TransitionGroup
+      v-if="!isMobile"
+      tag="div"
+      name="q"
+      class="hero-queue max-lg:hidden"
+      :style="{ '--queue-w': queueWidth + 'px' }"
+    >
+      <div
+        v-for="(idx, slot) in queue"
+        :key="'q-' + idx"
+        class="hero-card-slide is-queued"
+        :style="{ '--x': slot * SLOT_STEP + 'px' }"
+      >
+        <NuxtImg
+          :src="slideAt(idx)"
+          alt=""
+          role="none"
+          sizes="120px"
+          format="webp"
+          quality="75"
+          :img-attrs="{ loading: 'eager', decoding: 'async' }"
+          class="w-full h-full object-cover"
+        />
+      </div>
+    </TransitionGroup>
   </div>
 </template>
 
@@ -136,6 +188,9 @@ const isHeroVisible = ref(false);
 const isMobile = ref(false);
 const FL_TZ = "America/New_York";
 
+const heroWidth = ref(1200);
+const heroHeight = ref(700);
+
 const flParts = (date: Date) => {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: FL_TZ,
@@ -147,10 +202,8 @@ const flParts = (date: Date) => {
     second: "2-digit",
     hourCycle: "h23",
   }).formatToParts(date);
-
-  const get = (type: Intl.DateTimeFormatPartTypes) =>
-    Number(parts.find((p) => p.type === type)?.value || 0);
-
+  const get = (t: Intl.DateTimeFormatPartTypes) =>
+    Number(parts.find((p) => p.type === t)?.value || 0);
   return {
     year: get("year"),
     month: get("month"),
@@ -185,15 +238,11 @@ const floridaWallTimeToUtc = (
 const calculateTimeLeft = () => {
   const now = Date.now();
   const year = flParts(new Date()).year;
-
   let christmas = floridaWallTimeToUtc(year, 12, 25, 0, 0, 0);
-  if (now >= christmas) {
+  if (now >= christmas)
     christmas = floridaWallTimeToUtc(year + 1, 12, 25, 0, 0, 0);
-  }
-
   const diff = christmas - now;
   if (diff <= 0) return;
-
   timeLeft.value = {
     days: Math.floor(diff / 86_400_000),
     hours: Math.floor((diff / 3_600_000) % 24),
@@ -204,24 +253,112 @@ const calculateTimeLeft = () => {
 
 const formatNumber = (num: number) => String(num).padStart(2, "0");
 
-const bgStyle = computed(() => {
-  if (isMobile.value) {
+// ============================================
+// 🎠 CAROUSEL
+// ============================================
+const desktopSlides = [
+  "/New/Banner/bg-family.webp",
+  "/New/Banner/bg-family-3.webp",
+  "/New/Banner/bg-family-2.webp",
+] as const;
+
+const TOTAL = desktopSlides.length;
+
+const slideAt = (i: number): string => {
+  return desktopSlides[((i % TOTAL) + TOTAL) % TOTAL]!;
+};
+
+const SLIDE_MS = 6000;
+const GROW_MS = 900;
+
+// card geometry (keep in sync with the CSS below)
+const CARD_W = 120;
+const CARD_H = 180;
+const CARD_GAP = 20;
+const SLOT_STEP = CARD_W + CARD_GAP;
+const QUEUE_RIGHT = 40;
+const QUEUE_BOTTOM = 40;
+
+// the queue holds every slide EXCEPT the current hero
+const queueWidth = (TOTAL - 1) * SLOT_STEP - CARD_GAP;
+
+const buildQueue = (active: number) =>
+  Array.from({ length: TOTAL - 1 }, (_, i) => (active + 1 + i) % TOTAL);
+
+const activeIndex = ref(0); // current hero (never in the queue)
+const queue = ref<number[]>(buildQueue(0)); // upcoming slides, slot 0 = next
+const growIndex = ref<number | null>(null); // card currently growing
+const expanding = ref(false);
+const prefersReducedMotion = ref(false);
+
+let carouselInterval: ReturnType<typeof setInterval> | null = null;
+let commitTimeout: ReturnType<typeof setTimeout> | null = null;
+let rafId: number | null = null;
+
+// grow card: starts exactly on queue slot 0, ends full-bleed
+const growStyle = computed(() => {
+  if (expanding.value) {
     return {
-      backgroundImage: "url('/New/Banner/bg-family-mobile.webp')",
-      backgroundPosition: "center center",
-      backgroundSize: "100% 100%",
-      backgroundRepeat: "no-repeat",
+      left: "0px",
+      top: "0px",
+      width: heroWidth.value + "px",
+      height: heroHeight.value + "px",
+      borderRadius: "0px",
     };
   }
   return {
-    backgroundImage: "url('/New/Banner/bg-family.webp')",
-    backgroundPosition: "center center",
-    backgroundSize: "100% 100%",
-    backgroundRepeat: "no-repeat",
+    left: heroWidth.value - QUEUE_RIGHT - queueWidth + "px",
+    top: heroHeight.value - QUEUE_BOTTOM - CARD_H + "px",
+    width: CARD_W + "px",
+    height: CARD_H + "px",
+    borderRadius: "12px",
   };
 });
 
+const advanceCarousel = () => {
+  if (growIndex.value !== null) return; // already animating
+
+  const outgoing = activeIndex.value;
+  const incoming = queue.value[0]!;
+
+  // 1. mount the grow card on top of slot 0 (small, not expanded yet)
+  expanding.value = false;
+  growIndex.value = incoming;
+
+  // 2. wait two frames so the small state is painted, then:
+  //    - grow the card to full-bleed
+  //    - remove it from the queue (it fades out under the grow card)
+  //    - remaining cards slide LEFT
+  //    - the previous hero enters from the RIGHT as the last card
+  rafId = requestAnimationFrame(() => {
+    rafId = requestAnimationFrame(() => {
+      expanding.value = true;
+      queue.value = [...queue.value.slice(1), outgoing];
+
+      // 3. when the growth is done, the stacked hero layer switches to the
+      //    new slide (same image, same size → seamless) and the grow card goes.
+      commitTimeout = setTimeout(() => {
+        activeIndex.value = incoming;
+        growIndex.value = null;
+        expanding.value = false;
+      }, GROW_MS + 60);
+    });
+  });
+};
+
+const startCarousel = () => {
+  if (carouselInterval) return;
+  carouselInterval = setInterval(advanceCarousel, SLIDE_MS);
+};
+const stopCarousel = () => {
+  if (carouselInterval) {
+    clearInterval(carouselInterval);
+    carouselInterval = null;
+  }
+};
+
 let intersectionObserver: IntersectionObserver | null = null;
+let resizeObserver: ResizeObserver | null = null;
 
 const {
   isEarlyBirdActive,
@@ -242,39 +379,69 @@ const {
   loadHeroSettings,
 } = useHeroSettings();
 
+const handleVisibilityChange = () => {
+  if (document.hidden) stopCarousel();
+  else if (!isMobile.value && !prefersReducedMotion.value) startCarousel();
+};
+const handleResize = () => {
+  isMobile.value = window.innerWidth <= 992;
+  if (isMobile.value) stopCarousel();
+  else if (!prefersReducedMotion.value) startCarousel();
+};
+
 onMounted(() => {
   loadEarlyBird();
   loadHeroSettings();
   isMobile.value = window.innerWidth <= 992;
+
+  if (heroRef.value) {
+    heroWidth.value = heroRef.value.clientWidth;
+    heroHeight.value = heroRef.value.clientHeight;
+    resizeObserver = new ResizeObserver(() => {
+      if (!heroRef.value) return;
+      heroWidth.value = heroRef.value.clientWidth;
+      heroHeight.value = heroRef.value.clientHeight;
+    });
+    resizeObserver.observe(heroRef.value);
+  }
 
   calculateTimeLeft();
   timerInterval = setInterval(calculateTimeLeft, 1000);
 
   intersectionObserver = new IntersectionObserver(
     (entries) => {
-      entries.forEach((entry) => {
-        isHeroVisible.value = entry.isIntersecting;
+      entries.forEach((e) => {
+        isHeroVisible.value = e.isIntersecting;
       });
     },
     { threshold: 0.1 },
   );
+  if (heroRef.value) intersectionObserver.observe(heroRef.value);
 
-  if (heroRef.value) {
-    intersectionObserver.observe(heroRef.value);
-  }
+  const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+  prefersReducedMotion.value = mq.matches;
 
-  window.addEventListener("resize", () => {
-    isMobile.value = window.innerWidth <= 992;
-  });
+  if (!isMobile.value && !prefersReducedMotion.value) startCarousel();
+
+  document.addEventListener("visibilitychange", handleVisibilityChange);
+  window.addEventListener("resize", handleResize);
 });
 
 onUnmounted(() => {
   if (timerInterval) clearInterval(timerInterval);
-
+  if (commitTimeout) clearTimeout(commitTimeout);
+  if (rafId) cancelAnimationFrame(rafId);
   if (intersectionObserver) {
     intersectionObserver.disconnect();
     intersectionObserver = null;
   }
+  if (resizeObserver) {
+    resizeObserver.disconnect();
+    resizeObserver = null;
+  }
+  stopCarousel();
+  document.removeEventListener("visibilitychange", handleVisibilityChange);
+  window.removeEventListener("resize", handleResize);
 });
 </script>
 
@@ -282,47 +449,34 @@ onUnmounted(() => {
 .hero-layer {
   background-attachment: scroll !important;
 }
-
 .hero-card {
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .hero-card-focused .hero-card {
   transform: scale(1.02);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
-
 .hero-card .highlight {
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .hero-card-focused .highlight {
   text-shadow: 0 0 30px rgba(247, 148, 29, 0.6);
 }
-
-.hero-card .btn-primary-card {
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 .hero-card-focused .btn-primary-card {
   transform: scale(1.05);
   box-shadow: 0 8px 30px rgba(247, 148, 29, 0.5);
 }
-
 .hero-card .tagline {
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .hero-card-focused .tagline {
   transform: translateY(-2px);
 }
-
 @supports (-webkit-touch-callout: none) {
   .hero-layer {
     background-attachment: scroll;
   }
 }
-
 @keyframes glossyShineContinuous {
   0% {
     transform: rotate(25deg) translateX(-100%);
@@ -331,7 +485,6 @@ onUnmounted(() => {
     transform: rotate(25deg) translateX(100%);
   }
 }
-
 @media (max-width: 992px) {
   .hero-card::before,
   .hero-card::after {
@@ -340,26 +493,143 @@ onUnmounted(() => {
     animation: none !important;
   }
 }
-
 @media (min-width: 993px) {
   .hero-card::before {
     display: block !important;
     content: "" !important;
   }
 }
-
 @media (min-width: 993px) {
   .mobile-widget {
     display: none !important;
   }
 }
-
 @media (max-width: 992px) {
   .desktop-widget {
     display: none !important;
   }
   .mobile-widget {
     display: block !important;
+  }
+}
+
+/* ============================================ */
+/* 🎬 HERO LAYER — z-0                           */
+/* ============================================ */
+.hero-carousel {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #0b1020;
+  z-index: 0;
+}
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+.hero-slide.is-hero {
+  z-index: 1;
+}
+.hero-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+/* ============================================ */
+/* 🌱 GROWING CARD — z-5 (under overlay/content) */
+/* ============================================ */
+.hero-grow {
+  position: absolute;
+  z-index: 5;
+  overflow: hidden;
+  background: #0b1020;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+  transition:
+    left 900ms cubic-bezier(0.65, 0, 0.35, 1),
+    top 900ms cubic-bezier(0.65, 0, 0.35, 1),
+    width 900ms cubic-bezier(0.65, 0, 0.35, 1),
+    height 900ms cubic-bezier(0.65, 0, 0.35, 1),
+    border-radius 900ms cubic-bezier(0.65, 0, 0.35, 1),
+    box-shadow 900ms cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: left, top, width, height;
+}
+.hero-grow.is-expanded {
+  box-shadow: none;
+}
+.hero-grow img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+/* ============================================ */
+/* 🃏 QUEUE STRIP — z-30                          */
+/* ============================================ */
+.hero-queue {
+  position: absolute;
+  right: 40px; /* keep in sync with QUEUE_RIGHT */
+  bottom: 40px; /* keep in sync with QUEUE_BOTTOM */
+  width: var(--queue-w, 260px);
+  height: 180px;
+  z-index: 30;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.hero-card-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 120px;
+  height: 180px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+  background: #0b1020;
+  transform: translateX(var(--x, 0px));
+}
+.hero-card-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+.hero-card-slide.is-queued {
+  transition:
+    transform 900ms cubic-bezier(0.65, 0, 0.35, 1),
+    opacity 500ms ease;
+  will-change: transform, opacity;
+}
+
+/* previous hero enters from the RIGHT, pushing the others left */
+.hero-card-slide.is-queued.q-enter-from {
+  opacity: 0;
+  transform: translateX(calc(var(--x, 0px) + 240px));
+}
+
+/* the card that became the hero fades out while the grow card takes over */
+.hero-card-slide.is-queued.q-leave-active {
+  transition: opacity 250ms ease;
+}
+.hero-card-slide.is-queued.q-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-grow,
+  .hero-card-slide.is-queued {
+    transition: opacity 300ms ease;
   }
 }
 </style>
