@@ -513,22 +513,23 @@ const openVideoPicker = async () => {
 
 const pickVideo = (video: Video) => {
   showVideoModal.value = false;
-
   editorEl.value?.focus();
-  // Restore cursor position
+
   if (savedSelection) {
     const sel = window.getSelection();
     sel?.removeAllRanges();
     sel?.addRange(savedSelection);
   }
 
+  // Insert a real video tag, but keep the data attributes so the public page can swap it.
+  // contenteditable="false" prevents the cursor from going inside the video tags.
   const html = `
-    <div style="margin: 1.5rem 0;">
-      <video
-        src="${video.public_url}"
-        controls
-        preload="metadata"
-        playsinline
+    <div class="post-video" data-video-id="${video.id}" data-video-url="${video.public_url}" contenteditable="false" style="margin: 1.5rem 0; position: relative;">
+      <video 
+        src="${video.public_url}" 
+        controls 
+        preload="metadata" 
+        playsinline 
         style="width: 100%; max-width: 720px; border-radius: 0.5rem; display: block; margin: 0 auto; background: #000;"
       ></video>
     </div>
@@ -539,7 +540,6 @@ const pickVideo = (video: Video) => {
   onInput();
   savedSelection = null;
 };
-
 // --- Image Upload & Conversion Logic ---
 const triggerImageUpload = () => {
   const sel = window.getSelection();

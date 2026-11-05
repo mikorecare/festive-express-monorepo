@@ -392,6 +392,7 @@ export default defineNuxtConfig({
           "'self'",
           "blob:",
           "data:",
+          "https://phwcfiukyiexdvtccopt.supabase.co",
           "https://motion-media-llc.aryeo.com",
         ],
 

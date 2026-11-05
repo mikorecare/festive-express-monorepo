@@ -107,9 +107,10 @@
         <div
           class="bg-white rounded-2xl p-6 md:p-10 lg:p-12 shadow-sm border border-gray-100"
         >
+          <!-- Changed from v-html to ref="contentRef" -->
           <div
-            class="prose prose-lg md:prose-xl max-w-none text-gray-700 prose-headings:text-[#1C2D5B] prose-a:text-[#F49321] prose-img:rounded-xl prose-video:rounded-xl"
-            v-html="post.content"
+            ref="contentRef"
+            class="prose prose-lg md:prose-xl max-w-none text-gray-700 prose-headings:text-[#1C2D5B] prose-a:text-[#F49321] prose-img:rounded-xl"
           />
 
           <!-- Tags Footer -->
@@ -276,6 +277,9 @@
 </template>
 
 <script setup lang="ts">
+import { h, ref, onMounted, nextTick, render } from "vue";
+import BrandedVideoPlayer from "../../components/Blogs/BrandVideoPlayer.vue";
+
 // --- Types ---
 interface Post {
   id: string;
@@ -299,7 +303,7 @@ interface RelatedPost {
   published_at: string | null;
 }
 
-// --- Fetch Data (SSR for SEO) ---
+// --- Fetch Data ---
 const route = useRoute();
 const {
   data: post,
@@ -309,7 +313,6 @@ const {
   key: `post-${route.params.slug}`,
 });
 
-// --- Fetch Recent Posts for Sidebar ---
 const { data: blogList } = await useFetch<{ posts: Post[] }>(
   "/api/blogs/posts",
   {
@@ -325,7 +328,6 @@ const recentPosts = computed(() => {
     .slice(0, 4);
 });
 
-// --- Related Posts (server-side, tag-matched) ---
 const { data: relatedData } = await useFetch<{ posts: RelatedPost[] }>(
   () => `/api/blogs/${route.params.slug}/related`,
   {
@@ -336,7 +338,7 @@ const { data: relatedData } = await useFetch<{ posts: RelatedPost[] }>(
 
 const relatedPosts = computed(() => relatedData.value?.posts ?? []);
 
-// --- SEO & Social Sharing Meta ---
+// --- SEO ---
 const siteUrl = "https://festive.express";
 const currentUrl = computed(() => `${siteUrl}/blogs/${route.params.slug}`);
 
@@ -360,7 +362,6 @@ useSeoMeta({
     post.value?.featured_image || `${siteUrl}/Images/festive-express.png`,
 });
 
-// --- JSON-LD Structured Data for Google ---
 useHead({
   script: [
     {
@@ -387,13 +388,49 @@ useHead({
           },
         },
         description: post.value?.summary,
-        mainEntityOfPage: {
-          "@type": "WebPage",
-          "@id": currentUrl.value,
-        },
+        mainEntityOfPage: { "@type": "WebPage", "@id": currentUrl.value },
       }),
     },
   ],
+});
+
+// --- The Fix: Video Mounting ---
+const contentRef = ref<HTMLElement | null>(null);
+
+onMounted(async () => {
+  if (!post.value?.content || !contentRef.value) return;
+
+  // 1. Parse HTML
+  const temp = document.createElement("div");
+  temp.innerHTML = post.value.content;
+
+  // 2. Find placeholders and replace with empty divs
+  const placeholders = temp.querySelectorAll(".post-video");
+  placeholders.forEach((el) => {
+    const url = el.getAttribute("data-video-url");
+    if (!url) return;
+
+    const mountPoint = document.createElement("div");
+    mountPoint.className = "vue-video-mount";
+    mountPoint.setAttribute("data-src", url);
+    el.replaceWith(mountPoint);
+  });
+
+  // 3. Inject into DOM
+  contentRef.value.innerHTML = temp.innerHTML;
+  await nextTick();
+
+  // 4. Mount components natively
+  if (!contentRef.value) return;
+
+  const mountPoints = contentRef.value.querySelectorAll(".vue-video-mount");
+  mountPoints.forEach((mountPoint) => {
+    const url = mountPoint.getAttribute("data-src");
+    if (url) {
+      // Use `render` instead of `createApp`
+      render(h(BrandedVideoPlayer, { src: url }), mountPoint as HTMLElement);
+    }
+  });
 });
 
 // --- Helpers ---

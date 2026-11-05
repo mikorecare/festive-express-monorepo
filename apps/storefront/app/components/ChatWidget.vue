@@ -212,7 +212,7 @@ onBeforeUnmount(() => {
     right: 16px;
     width: 56px;
     height: 56px;
-    z-index: 10000;
+    z-index: 10;
   }
 }
 
