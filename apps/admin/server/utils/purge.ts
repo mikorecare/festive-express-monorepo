@@ -6,6 +6,7 @@ const LANDING_DOMAINS = [
 ]
 
 export const purgeLandingCache = async (cacheKey: CacheKey) => {
+    console.log(process.env.INTERNAL_CACHE_PURGE_SECRET)
     const results = await Promise.all(
         LANDING_DOMAINS.map(async (domain) => {
             try {

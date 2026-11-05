@@ -267,6 +267,17 @@
           >
             Tags
           </NuxtLink>
+          <NuxtLink
+            to="/admin/blog/videos"
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            :class="
+              route.path.startsWith('/admin/blog/videos')
+                ? 'bg-brand-orange/20 text-white font-semibold'
+                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
+            "
+          >
+            Videos
+          </NuxtLink>
         </div>
       </div>
 

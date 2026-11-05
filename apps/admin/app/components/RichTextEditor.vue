@@ -118,7 +118,6 @@
         Unlink
       </button>
 
-      <!-- Image Upload Button -->
       <button
         type="button"
         class="rte-btn"
@@ -142,7 +141,7 @@
         class="rte-btn"
         title="Insert Video"
         @mousedown.prevent
-        @click="insertVideo"
+        @click="openVideoPicker"
       >
         Video
       </button>
@@ -249,10 +248,123 @@
       </button>
     </div>
   </div>
+
+  <!-- ==================== VIDEO PICKER MODAL ==================== -->
+  <Teleport to="body">
+    <Transition name="fade">
+      <div
+        v-if="showVideoModal"
+        class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+        role="dialog"
+        aria-modal="true"
+        @click.self="showVideoModal = false"
+      >
+        <div
+          class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col overflow-hidden"
+        >
+          <!-- Header -->
+          <div
+            class="flex items-center justify-between px-6 py-4 border-b border-gray-200 shrink-0"
+          >
+            <h2 class="text-xl font-bold text-[#1C2D5B]">Pick a Video</h2>
+            <button
+              type="button"
+              class="text-gray-400 hover:text-gray-700 transition-colors p-1"
+              aria-label="Close"
+              @click="showVideoModal = false"
+            >
+              <i class="fas fa-times text-lg"></i>
+            </button>
+          </div>
+
+          <!-- Body -->
+          <div class="overflow-y-auto px-6 py-5">
+            <!-- Loading -->
+            <div v-if="videoLoading" class="flex justify-center py-16">
+              <div
+                class="w-10 h-10 border-4 border-[#F49321] border-t-transparent rounded-full animate-spin"
+              ></div>
+            </div>
+
+            <!-- Error -->
+            <div
+              v-else-if="videoError"
+              class="text-center py-12 text-rose-500 text-sm"
+            >
+              {{ videoError }}
+            </div>
+
+            <!-- Empty -->
+            <div v-else-if="videoList.length === 0" class="text-center py-12">
+              <p class="text-sm text-slate-500 mb-4">No videos uploaded yet.</p>
+              <a
+                href="/admin/blog/videos"
+                target="_blank"
+                class="text-[#F49321] font-semibold hover:underline text-sm"
+              >
+                Upload one first →
+              </a>
+            </div>
+
+            <!-- Grid -->
+            <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button
+                v-for="video in videoList"
+                :key="video.id"
+                type="button"
+                class="group text-left rounded-xl overflow-hidden border border-slate-200 hover:border-[#F49321] hover:shadow-md transition-all bg-white"
+                @click="pickVideo(video)"
+              >
+                <div class="relative aspect-video bg-black">
+                  <video
+                    :src="video.public_url"
+                    class="w-full h-full object-cover"
+                    preload="metadata"
+                    muted
+                  />
+                  <div
+                    class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <div
+                      class="w-10 h-10 rounded-full bg-white/90 flex items-center justify-center"
+                    >
+                      <i class="fas fa-check text-[#F49321]"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="p-3">
+                  <p class="text-sm font-bold text-[#1C2D5B] truncate">
+                    {{ video.title || "(Untitled)" }}
+                  </p>
+                  <p class="text-[10px] text-slate-500 truncate font-mono">
+                    {{ video.storage_path }}
+                  </p>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div
+            class="px-6 py-3 border-t border-gray-200 flex justify-end shrink-0"
+          >
+            <button
+              type="button"
+              class="px-4 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              @click="showVideoModal = false"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, watch, onMounted, onUnmounted } from "vue";
+import type { Video } from "~/types/video";
 
 const props = withDefaults(
   defineProps<{
@@ -280,6 +392,12 @@ const hoveredImage = ref<{
   top: number;
   left: number;
 } | null>(null);
+
+// Video picker state
+const showVideoModal = ref(false);
+const videoList = ref<Video[]>([]);
+const videoLoading = ref(false);
+const videoError = ref<string | null>(null);
 
 const state = reactive({
   bold: false,
@@ -364,48 +482,62 @@ const applyQuote = () => {
   syncToolbar();
 };
 
-const insertVideo = () => {
-  editorEl.value?.focus();
+// --- Video Picker ---
+const openVideoPicker = async () => {
+  // Save cursor position before modal opens
+  const sel = window.getSelection();
+  if (sel && sel.rangeCount > 0) {
+    savedSelection = sel.getRangeAt(0);
+  }
 
-  const url = window.prompt("Paste Aryeo video link:");
-  if (!url || !url.trim()) return;
-  if (!/^https?:\/\//i.test(url.trim())) {
-    alert("Please enter a valid video link.");
-    return;
+  showVideoModal.value = true;
+
+  if (videoList.value.length === 0) {
+    videoLoading.value = true;
+    videoError.value = null;
+    try {
+      const res = await $fetch<{
+        success: boolean;
+        data?: Video[];
+        error?: string;
+      }>("/api/blog/videos");
+      if (!res.success) throw new Error(res.error || "Failed to load videos");
+      videoList.value = res.data || [];
+    } catch (e: any) {
+      videoError.value = e?.message || "Failed to load videos";
+    } finally {
+      videoLoading.value = false;
+    }
+  }
+};
+
+const pickVideo = (video: Video) => {
+  showVideoModal.value = false;
+
+  editorEl.value?.focus();
+  // Restore cursor position
+  if (savedSelection) {
+    const sel = window.getSelection();
+    sel?.removeAllRanges();
+    sel?.addRange(savedSelection);
   }
 
   const html = `
-    <div style="position: relative; padding-bottom: 56.25%; height: 0; margin: 1rem 0;">
-      <iframe
-        data-src="${url.trim()}"
-        src="about:blank"
-        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-        frameborder="0"
-        allow="autoplay; fullscreen; picture-in-picture"
-        allowfullscreen>
-      </iframe>
+    <div style="margin: 1.5rem 0;">
+      <video
+        src="${video.public_url}"
+        controls
+        preload="metadata"
+        playsinline
+        style="width: 100%; max-width: 720px; border-radius: 0.5rem; display: block; margin: 0 auto; background: #000;"
+      ></video>
     </div>
     <p><br></p>
   `;
 
   document.execCommand("insertHTML", false, html);
   onInput();
-
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      if (!editorEl.value) return;
-      const pending = editorEl.value.querySelectorAll(
-        "iframe[data-src]",
-      ) as NodeListOf<HTMLIFrameElement>;
-      pending.forEach((iframe) => {
-        const realSrc = iframe.getAttribute("data-src");
-        if (realSrc) {
-          iframe.setAttribute("src", realSrc);
-          iframe.removeAttribute("data-src");
-        }
-      });
-    }, 100);
-  });
+  savedSelection = null;
 };
 
 // --- Image Upload & Conversion Logic ---
@@ -508,7 +640,6 @@ const handleImageUpload = async (e: Event) => {
       sel?.addRange(savedSelection);
     }
 
-    // WRAPPER for Centering (using inline-block and margin auto)
     const html = `
       <div style="text-align: center; margin: 1.5rem 0;">
         <img 
@@ -545,7 +676,6 @@ const handleMouseOver = (e: MouseEvent) => {
       hoveredImage.value = {
         el: img,
         top: rect.top - editorRect.top + (editorEl.value?.scrollTop || 0) + 8,
-        // Align X to the top-right corner of the visible image
         left: rect.right - editorRect.left - 32,
       };
     }
@@ -558,7 +688,6 @@ const deleteImage = async (imgElement: HTMLImageElement) => {
   const src = imgElement.getAttribute("src");
   if (!src) return;
 
-  // 1. Remove from DOM
   const parent = imgElement.parentElement;
   if (parent && parent.tagName === "DIV" && parent.children.length === 1) {
     parent.remove();
@@ -569,7 +698,6 @@ const deleteImage = async (imgElement: HTMLImageElement) => {
   hoveredImage.value = null;
   onInput();
 
-  // 2. Delete from Supabase Storage
   const bucket = "about-us";
   const marker = `/storage/v1/object/public/${bucket}/`;
   const index = src.indexOf(marker);
@@ -623,33 +751,8 @@ const onInput = () => {
 const setHtml = (html: string) => {
   if (!editorEl.value) return;
   syncing = true;
-
-  // Strip iframes so the browser doesn't fire the request mid-mount
-  const temp = document.createElement("div");
-  temp.innerHTML = html || "";
-
-  const iframes: { src: string }[] = [];
-  temp.querySelectorAll("iframe").forEach((iframe) => {
-    const src = iframe.getAttribute("src");
-    if (src) iframes.push({ src });
-    iframe.setAttribute("src", "about:blank"); // placeholder
-  });
-
-  editorEl.value.innerHTML = temp.innerHTML;
+  editorEl.value.innerHTML = html || "";
   syncing = false;
-
-  if (iframes.length) {
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        if (!editorEl.value) return;
-        const placed = editorEl.value.querySelectorAll("iframe");
-        placed.forEach((iframe, i) => {
-          const real = iframes[i];
-          if (real) iframe.setAttribute("src", real.src);
-        });
-      }, 100);
-    });
-  }
 };
 
 watch(
@@ -770,5 +873,17 @@ const onSelectionChange = () => {
   max-width: 100%;
   border-radius: 0.5rem;
   overflow: hidden;
+}
+.rte-content :deep(video) {
+  max-width: 100%;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 1;
 }
 </style>

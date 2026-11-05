@@ -7,139 +7,89 @@
     <div class="space-y-4">
       <!-- Installation Dates -->
       <div>
-        <label
-          class="block text-sm font-semibold text-gray-700 mb-2 "
-        >
+        <label class="block text-sm font-semibold text-gray-700 mb-2">
           Preferred Installation Dates (Select up to 3) *
         </label>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div v-for="i in 3" :key="'install-' + i" class="relative">
-            <label class=" block text-xs text-gray-500 mb-1">
-              Option {{ i }}
-              <span v-if="i === 1" class="text-red-500">*</span>
-            </label>
-            <input
-              :value="modelValue.install_dates[i - 1]"
-              @input="
-                updateInstallDate(
-                  i - 1,
-                  ($event.target as HTMLInputElement).value,
-                )
-              "
-              @blur="$emit('validate', 'install_dates')"
-              type="date"
-              class="w-full  px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
-              :class="{ 'border-red-500': errors.install_dates }"
-              :min="minDate"
-            />
-            <button
-              v-if="modelValue.install_dates[i - 1]"
-              type="button"
-              class="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors"
-              @click="clearInstallDate(i - 1)"
-            >
-              ×
-            </button>
-          </div>
-        </div>
-        <p
-          v-if="errors.install_dates"
-          class=" text-red-500 text-sm mt-1"
-        >
+
+        <InlineCalendar
+          :selected="modelValue.install_dates.filter(Boolean)"
+          :min-date="minDate"
+          :max-select="3"
+          @update:selected="onInstallDatesChange"
+          @blur="$emit('validate', 'install_dates')"
+          :class="{ 'ring-1 ring-red-500 rounded-lg': errors.install_dates }"
+        />
+
+        <p v-if="errors.install_dates" class="text-red-500 text-sm mt-1">
           {{ errors.install_dates }}
         </p>
-        <p class="text-xs  text-gray-400 mt-1">
+        <p class="text-xs text-gray-400 mt-1">
           <i class="fas fa-info-circle mr-1"></i>
-          Earliest date is 3 days from today. Select 1-3 preferred dates.
+          Earliest date is 3 days from today. Select 1–3 preferred dates.
         </p>
       </div>
 
       <!-- Removal Dates -->
       <div class="pt-4 border-t border-gray-200">
-        <label
-          class="block text-sm font-semibold text-gray-700 mb-2 "
-        >
+        <label class="block text-sm font-semibold text-gray-700 mb-2">
           Preferred Removal Dates (Select up to 3)
           <span class="text-xs font-normal text-gray-400">(Optional)</span>
         </label>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div v-for="i in 3" :key="'removal-' + i" class="relative">
-            <label class=" block text-xs text-gray-500 mb-1">
-              Option {{ i }}
-            </label>
-            <input
-              :value="modelValue.removal_dates[i - 1]"
-              @input="
-                updateRemovalDate(
-                  i - 1,
-                  ($event.target as HTMLInputElement).value,
-                )
-              "
-              type="date"
-              class="w-full  px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
-              :min="minDate"
-            />
-            <button
-              v-if="modelValue.removal_dates[i - 1]"
-              type="button"
-              class="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-gray-200 text-gray-600 text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors"
-              @click="clearRemovalDate(i - 1)"
-            >
-              ×
-            </button>
-          </div>
-        </div>
-        <p class="text-xs  text-gray-400 mt-1">
+
+        <InlineCalendar
+          :selected="modelValue.removal_dates.filter(Boolean)"
+          :min-date="minDate"
+          :max-select="3"
+          @update:selected="onRemovalDatesChange"
+        />
+
+        <p class="text-xs text-gray-400 mt-1">
           <i class="fas fa-info-circle mr-1"></i>
-          Select 1-3 preferred removal dates
+          Select 1–3 preferred removal dates
         </p>
       </div>
 
       <!-- Selected Dates Summary -->
       <div v-if="hasSelectedDates" class="pt-4 border-t border-gray-200">
-        <h4 class="text-sm font-semibold text-navy mb-2 ">
+        <h4 class="text-sm font-semibold text-navy mb-2">
           Selected Dates Summary
         </h4>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <p class="text-xs font-semibold text-gray-500 mb-1 ">
+            <p class="text-xs font-semibold text-gray-500 mb-1">
               Installation Dates
             </p>
             <div class="flex flex-wrap gap-1">
               <span
-                v-for="(date, index) in modelValue.install_dates.filter(
-                  (d) => d,
-                )"
+                v-for="(date, index) in sortedInstallDates"
                 :key="'install-summary-' + index"
-                class="text-xs  bg-brand-orange/10 text-brand-orange px-2 py-1 rounded-full"
+                class="text-xs bg-brand-orange/10 text-brand-orange px-2 py-1 rounded-full"
               >
                 {{ formatDate(date) }}
               </span>
               <span
-                v-if="!modelValue.install_dates.filter((d) => d).length"
-                class="text-xs  text-gray-400"
+                v-if="!sortedInstallDates.length"
+                class="text-xs text-gray-400"
               >
                 No dates selected
               </span>
             </div>
           </div>
           <div>
-            <p class="text-xs font-semibold text-gray-500 mb-1 ">
+            <p class="text-xs font-semibold text-gray-500 mb-1">
               Removal Dates
             </p>
             <div class="flex flex-wrap gap-1">
               <span
-                v-for="(date, index) in modelValue.removal_dates.filter(
-                  (d) => d,
-                )"
+                v-for="(date, index) in sortedRemovalDates"
                 :key="'removal-summary-' + index"
-                class="text-xs  bg-gray-100 text-gray-600 px-2 py-1 rounded-full"
+                class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full"
               >
                 {{ formatDate(date) }}
               </span>
               <span
-                v-if="!modelValue.removal_dates.filter((d) => d).length"
-                class="text-xs  text-gray-400"
+                v-if="!sortedRemovalDates.length"
+                class="text-xs text-gray-400"
               >
                 No dates selected
               </span>
@@ -153,6 +103,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import InlineCalendar from "./InlineCalendar.vue";
 
 interface FormData {
   install_dates: string[];
@@ -174,7 +125,6 @@ const emit = defineEmits<{
   (e: "validate", field: string): void;
 }>();
 
-// Format date for display
 const formatDate = (dateString: string) => {
   if (!dateString) return "";
   const date = new Date(dateString + "T00:00:00");
@@ -185,69 +135,43 @@ const formatDate = (dateString: string) => {
   });
 };
 
-// Check if any dates are selected
-const hasSelectedDates = computed(() => {
-  return (
-    props.modelValue.install_dates.some((d) => d) ||
-    props.modelValue.removal_dates.some((d) => d)
-  );
-});
-
-// Update installation date at specific index
-const updateInstallDate = (index: number, value: string) => {
-  const newDates = [...props.modelValue.install_dates];
-  newDates[index] = value;
-
-  emit("update:modelValue", {
-    ...props.modelValue,
-    install_dates: newDates,
-  });
+// Always keep the arrays length 3 (matches parent contract)
+const toFixedArray = (arr: string[]) => {
+  const cleaned = arr.filter(Boolean);
+  const out = cleaned.slice(0, 3);
+  while (out.length < 3) out.push("");
+  return out;
 };
 
-// Update removal date at specific index
-const updateRemovalDate = (index: number, value: string) => {
-  const newDates = [...props.modelValue.removal_dates];
-  newDates[index] = value;
+const sortedInstallDates = computed(() =>
+  props.modelValue.install_dates.filter(Boolean).slice().sort(),
+);
+const sortedRemovalDates = computed(() =>
+  props.modelValue.removal_dates.filter(Boolean).slice().sort(),
+);
 
+const hasSelectedDates = computed(
+  () =>
+    sortedInstallDates.value.length > 0 || sortedRemovalDates.value.length > 0,
+);
+
+const onInstallDatesChange = (dates: string[]) => {
   emit("update:modelValue", {
     ...props.modelValue,
-    removal_dates: newDates,
+    install_dates: toFixedArray(dates),
   });
+  emit("validate", "install_dates");
 };
 
-// Clear installation date at specific index
-const clearInstallDate = (index: number) => {
-  const newDates = [...props.modelValue.install_dates];
-  newDates[index] = "";
-
+const onRemovalDatesChange = (dates: string[]) => {
   emit("update:modelValue", {
     ...props.modelValue,
-    install_dates: newDates,
-  });
-};
-
-// Clear removal date at specific index
-const clearRemovalDate = (index: number) => {
-  const newDates = [...props.modelValue.removal_dates];
-  newDates[index] = "";
-
-  emit("update:modelValue", {
-    ...props.modelValue,
-    removal_dates: newDates,
+    removal_dates: toFixedArray(dates),
   });
 };
 </script>
 
 <style scoped>
-input[type="date"]::-webkit-calendar-picker-indicator {
-  opacity: 0.5;
-  padding: 4px;
-}
-
-input[type="date"]:hover::-webkit-calendar-picker-indicator {
-  opacity: 1;
-}
-
 button {
   transition: all 0.2s ease;
 }

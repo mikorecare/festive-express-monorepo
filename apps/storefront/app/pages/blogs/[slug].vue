@@ -107,17 +107,10 @@
         <div
           class="bg-white rounded-2xl p-6 md:p-10 lg:p-12 shadow-sm border border-gray-100"
         >
-          <ClientOnly>
-            <div
-              class="prose prose-lg md:prose-xl max-w-none text-gray-700 prose-headings:text-[#1C2D5B] prose-a:text-[#F49321] prose-img:rounded-xl"
-              v-html="post.content"
-            />
-            <template #fallback>
-              <div class="prose ...">
-                <p>Loading content...</p>
-              </div>
-            </template>
-          </ClientOnly>
+          <div
+            class="prose prose-lg md:prose-xl max-w-none text-gray-700 prose-headings:text-[#1C2D5B] prose-a:text-[#F49321] prose-img:rounded-xl prose-video:rounded-xl"
+            v-html="post.content"
+          />
 
           <!-- Tags Footer -->
           <div

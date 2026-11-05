@@ -35,7 +35,8 @@ export default defineNuxtConfig({
       turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY,
       apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api',
       azureClientId: process.env.AZURE_CLIENT_ID,
-      supabaseUrl: process.env.SUPABASE_URL
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseAnonKey: process.env.SUPABASE_KEY
     },
   },
 
