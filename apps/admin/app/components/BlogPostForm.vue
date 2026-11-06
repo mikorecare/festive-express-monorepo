@@ -175,53 +175,56 @@
         <div
           class="bg-white rounded-xl border border-slate-100 shadow-sm p-6 space-y-4"
         >
-          <h2 class="text-lg font-bold text-navy">Featured Image</h2>
+          <!-- Header with Actions -->
+          <div class="flex items-center justify-between">
+            <h2 class="text-lg font-bold text-navy">Featured Image</h2>
 
-          <!-- Image preview with overlay actions -->
+            <!-- Actions (Only show if an image exists) -->
+            <div v-if="form.featured_image" class="flex items-center gap-2">
+              <label
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 border border-slate-200 text-slate-700 rounded-lg text-xs font-medium cursor-pointer hover:bg-slate-200 transition-colors"
+                :class="{ 'opacity-60 pointer-events-none': uploading }"
+              >
+                <ArrowPathIcon
+                  class="h-3.5 w-3.5"
+                  :class="{ 'animate-spin': uploading }"
+                />
+                Replace
+                <input
+                  type="file"
+                  accept="image/*"
+                  class="hidden"
+                  :disabled="uploading"
+                  @change="onUploadFeatured"
+                />
+              </label>
+              <button
+                type="button"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 border border-rose-200 text-rose-600 rounded-lg text-xs font-medium hover:bg-rose-100 transition-colors disabled:opacity-60"
+                :disabled="uploading"
+                @click="removeFeaturedImage"
+              >
+                <TrashIcon class="h-3.5 w-3.5" />
+                Remove
+              </button>
+            </div>
+          </div>
+
+          <!-- Image preview -->
           <div v-if="form.featured_image" class="space-y-2">
             <div
-              class="relative rounded-lg overflow-hidden border border-slate-200 bg-slate-100 group"
+              class="relative rounded-lg overflow-hidden border border-slate-200 bg-slate-100"
             >
               <img
                 :src="form.featured_image"
                 alt="Featured"
                 class="w-full h-56 object-cover"
               />
-              <div
-                class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2"
-              >
-                <label
-                  class="inline-flex items-center gap-2 px-4 py-2 bg-white text-slate-700 rounded-lg text-sm font-medium cursor-pointer hover:bg-slate-100"
-                  :class="{ 'opacity-60 pointer-events-none': uploading }"
-                >
-                  <ArrowPathIcon
-                    class="h-4 w-4"
-                    :class="{ 'animate-spin': uploading }"
-                  />
-                  Replace
-                  <input
-                    type="file"
-                    accept="image/*"
-                    class="hidden"
-                    :disabled="uploading"
-                    @change="onUploadFeatured"
-                  />
-                </label>
-                <button
-                  type="button"
-                  class="inline-flex items-center gap-2 px-4 py-2 bg-rose-500 text-white rounded-lg text-sm font-medium hover:bg-rose-600 disabled:opacity-60"
-                  :disabled="uploading"
-                  @click="removeFeaturedImage"
-                >
-                  <TrashIcon class="h-4 w-4" />
-                  Remove
-                </button>
-              </div>
 
-              <!-- Uploading overlay -->
+              <!-- Uploading overlay (only shows while uploading) -->
               <div
                 v-if="uploading"
-                class="absolute inset-0 bg-white/80 flex flex-col items-center justify-center gap-2"
+                class="absolute inset-0 bg-white/80 flex flex-col items-center justify-center gap-2 z-10"
               >
                 <ArrowPathIcon class="h-8 w-8 text-brand-orange animate-spin" />
                 <p class="text-sm font-medium text-slate-700">Uploading…</p>
@@ -462,22 +465,44 @@ const onUploadFeatured = async (e: Event) => {
   const file = input.files?.[0];
   if (!file) return;
 
-  // Reset input so the same file can be re-selected later
   input.value = "";
 
   uploading.value = true;
+
+  const oldImageUrl = form.value.featured_image;
+
   try {
-    form.value.featured_image = await uploadImage(file);
-    showToast("Featured image uploaded", "success");
+    // 1. Upload the new image
+    const newUrl = await uploadImage(file);
+
+    // 2. Update the form with the new URL
+    form.value.featured_image = newUrl;
+    showToast("Featured image updated", "success");
+
+    // 3. Clean up the OLD image from Supabase in the background
+    if (oldImageUrl) {
+      const bucket = "about-us";
+      const marker = `/storage/v1/object/public/${bucket}/`;
+      const index = oldImageUrl.indexOf(marker);
+
+      if (index !== -1) {
+        const oldFilePath = oldImageUrl.substring(index + marker.length);
+        try {
+          await $fetch("/api/upload", {
+            method: "DELETE",
+            body: { path: oldFilePath, bucket },
+          });
+        } catch (deleteError) {
+          // Don't block the user if deletion fails, just log it
+          console.error("Failed to delete old featured image:", deleteError);
+        }
+      }
+    }
   } catch (err: any) {
     showToast(err?.message || "Upload failed", "error");
   } finally {
     uploading.value = false;
   }
-};
-
-const removeFeatured = () => {
-  form.value.featured_image = "";
 };
 
 // --- Navigation ---
