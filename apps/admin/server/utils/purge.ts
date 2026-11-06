@@ -6,9 +6,10 @@ const LANDING_DOMAINS = [
 ]
 
 export const purgeLandingCache = async (cacheKey: CacheKey) => {
-    const secret = process.env.INTERNAL_CACHE_PURGE_SECRET
+    const secret = process.env.INTERNAL_CACHE_PURGE_SECRET ||
+        useRuntimeConfig().internalCachePurgeSecret
     if (!secret) {
-        throw new Error('INTERNAL_CACHE_PURGE_SECRET is not set')
+        throw new Error('[admin] INTERNAL_CACHE_PURGE_SECRET is not set')
     }
 
     const results = await Promise.all(
