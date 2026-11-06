@@ -15,7 +15,7 @@ export function useNewsletter() {
                         email,
                         firstName,
                         lastName,
-                        turnstile_token: turnstileToken,
+                        turnstileToken: turnstileToken,
                     },
                 }
             );
