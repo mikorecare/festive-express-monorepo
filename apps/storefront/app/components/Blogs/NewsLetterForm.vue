@@ -8,7 +8,7 @@
     <h3 class="text-2xl font-bold leading-wide mb-3">
       New Lighting Ideas, By Email
     </h3>
-    <p class="text-sm text-gray-300 leading-relaxed mb-2">
+    <p class="text-sm text-gray-300 leading-relaxed mb-4">
       Get an email when we publish a new article.
     </p>
 
@@ -16,10 +16,10 @@
     <form
       v-if="!isSubscribed"
       @submit.prevent="handleSubscribe"
-      class="space-y-3"
+      class="space-y-4"
     >
       <!-- Name Fields -->
-      <div class="flex gap-2">
+      <div class="flex gap-3">
         <div class="flex-1">
           <label for="nl-first-name" class="sr-only">First Name</label>
           <input
@@ -29,7 +29,7 @@
             placeholder="First Name"
             required
             :disabled="subscribing"
-            class="w-full px-2 py-2 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321] disabled:opacity-60"
+            class="w-full px-3.5 py-3 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321] disabled:opacity-60"
           />
         </div>
         <div class="flex-1">
@@ -41,7 +41,7 @@
             placeholder="Last Name"
             required
             :disabled="subscribing"
-            class="w-full px-2 py-2 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321] disabled:opacity-60"
+            class="w-full px-3.5 py-3 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321] disabled:opacity-60"
           />
         </div>
       </div>
@@ -56,24 +56,33 @@
           placeholder="Email address"
           required
           :disabled="subscribing"
-          class="w-full px-2 py-2 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321] disabled:opacity-60"
+          class="w-full px-3.5 py-3 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321] disabled:opacity-60"
         />
       </div>
 
       <!-- Turnstile -->
-      <div class="my-2 flex justify-center">
-        <TurnstileWidget
-          ref="turnstileRef"
-          :site-key="siteKey"
-          :errors="turnstileErrors"
-          :status="turnstileStatus"
-          :status-type="turnstileStatusType"
-          :status-class="turnstileStatusClass"
-          :status-icon="turnstileStatusIcon"
-          @success="onTurnstileSuccess"
-          @error="onTurnstileError"
-          @expired="onTurnstileExpired"
-        />
+      <div class="scale-[0.80]">
+        <ClientOnly>
+          <TurnstileWidget
+            v-if="isMounted"
+            ref="turnstileRef"
+            :id="`newsletter-turnstile-${uniqueId}`"
+            :site-key="siteKey"
+            :errors="turnstileErrors"
+            :status="turnstileStatus"
+            :status-type="turnstileStatusType"
+            :status-class="turnstileStatusClass"
+            :status-icon="turnstileStatusIcon"
+            @success="onTurnstileSuccess"
+            @error="onTurnstileError"
+            @expired="onTurnstileExpired"
+          />
+          <template #fallback>
+            <div
+              class="h-[65px] w-full animate-pulse bg-white/10 rounded-lg"
+            ></div>
+          </template>
+        </ClientOnly>
       </div>
 
       <button
@@ -100,7 +109,7 @@
     </div>
 
     <p
-      class="text-[10px] font-bold text-slate-400 text-center leading-snug mt-3"
+      class="text-[10px] font-bold text-slate-400 text-center leading-snug mt-4"
     >
       By subscribing, you agree that Festive Express may send you our latest
       stories, blog posts, and occasional updates.
@@ -113,6 +122,11 @@ import { ref, computed } from "vue";
 import { useNewsletter } from "#imports";
 import TurnstileWidget from "../Checkout/TurnstileWidget.vue";
 
+const isMounted = ref(false);
+onMounted(() => {
+  isMounted.value = true;
+});
+
 const { subscribe: subscribeApi, subscribing, isSubscribed } = useNewsletter();
 const { showToast } = useToast();
 
@@ -121,7 +135,8 @@ const lastName = ref("");
 const email = ref("");
 
 const config = useRuntimeConfig();
-const siteKey = config.public.turnstileSiteKey as string;
+const siteKey = config.public.turnstile.siteKey as string;
+const uniqueId = useId();
 
 const turnstileRef = ref<any>(null);
 const isTurnstileVerified = ref(false);
@@ -184,6 +199,17 @@ const turnstileStatusIcon = computed(() => {
 const handleSubscribe = async () => {
   if (!email.value || !firstName.value || !lastName.value) return;
 
+  // 1. Check if the widget has fired success
+  if (!isTurnstileVerified.value) {
+    showToast("Please wait for the security check to complete.", "error");
+    return;
+  }
+
+  if (!turnstileToken.value) {
+    showToast("Security token missing. Please refresh the page.", "error");
+    return;
+  }
+
   try {
     await subscribeApi(
       email.value,
@@ -195,7 +221,6 @@ const handleSubscribe = async () => {
   } catch (error: any) {
     showToast(error.message || "Failed to subscribe", "error");
 
-    // Reset Turnstile on failure
     isTurnstileVerified.value = false;
     turnstileToken.value = "";
     if (turnstileRef.value) turnstileRef.value.reset();

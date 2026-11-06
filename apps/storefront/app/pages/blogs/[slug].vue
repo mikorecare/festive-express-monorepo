@@ -329,6 +329,7 @@
 <script setup lang="ts">
 import { h, ref, onMounted, nextTick, render } from "vue";
 import BrandedVideoPlayer from "../../components/Blogs/BrandVideoPlayer.vue";
+import NewsLetterForm from "~/components/Blogs/NewsLetterForm.vue";
 
 // --- Types ---
 interface Post {
