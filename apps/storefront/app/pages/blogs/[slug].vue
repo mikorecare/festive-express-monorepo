@@ -187,7 +187,9 @@
           <!-- Changed from v-html to ref="contentRef" -->
           <div
             ref="contentRef"
-            class="prose prose-lg md:prose-xl max-w-none text-gray-700 prose-headings:text-[#1C2D5B] prose-a:text-[#F49321] prose-img:rounded-xl"
+            spellcheck="false"
+            contenteditable="false"
+            class="prose prose-lg md:prose-xl max-w-none text-gray-700 prose-headings:text-[#1C2D5B] prose-h2:text-2xl prose-h2:font-bold prose-h2:mt-8 prose-h2:mb-4 prose-h2:border-b prose-h2:border-gray-200 prose-h2:pb-2 prose-h3:text-xl prose-h3:font-bold prose-h3:mt-6 prose-h3:mb-3 prose-h4:text-lg prose-h4:font-bold prose-h4:mt-4 prose-h4:mb-2 prose-p:leading-relaxed prose-p:mb-4 prose-a:text-[#F49321] prose-a:no-underline hover:prose-a:underline prose-strong:text-[#1C2D5B] prose-strong:font-bold prose-img:rounded-xl prose-img:shadow-sm prose-ul:list-disc prose-ul:pl-6 prose-ul:my-4 prose-ol:list-decimal prose-ol:pl-6 prose-ol:my-4 prose-li:my-1 prose-li:marker:text-[#F49321] prose-blockquote:border-l-4 prose-blockquote:border-[#F49321] prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600 prose-blockquote:bg-slate-50 prose-blockquote:py-2 prose-blockquote:pr-4 prose-blockquote:rounded-r-lg"
           />
 
           <!-- Tags Footer -->
@@ -500,14 +502,26 @@ onMounted(async () => {
   contentRef.value.innerHTML = temp.innerHTML;
   await nextTick();
 
-  // 4. Mount components natively
+  // 4. THE FIX: Force disable spellcheck on EVERY element inside the content
+  if (contentRef.value) {
+    const allElements = contentRef.value.querySelectorAll("*");
+    allElements.forEach((el) => {
+      el.setAttribute("spellcheck", "false");
+      el.setAttribute("autocorrect", "off");
+      el.setAttribute("autocapitalize", "off");
+    });
+
+    // Also set it on the container itself
+    contentRef.value.setAttribute("spellcheck", "false");
+  }
+
+  // 5. Mount components natively
   if (!contentRef.value) return;
 
   const mountPoints = contentRef.value.querySelectorAll(".vue-video-mount");
   mountPoints.forEach((mountPoint) => {
     const url = mountPoint.getAttribute("data-src");
     if (url) {
-      // Use `render` instead of `createApp`
       render(h(BrandedVideoPlayer, { src: url }), mountPoint as HTMLElement);
     }
   });
@@ -551,6 +565,65 @@ const subscribe = () => {
 </script>
 
 <style scoped>
+.prose :deep(.SpellingErrorV2Themed),
+.prose :deep(.SpellingError) {
+  background-image: none !important;
+  border-bottom: none !important;
+}
+
+.prose :deep([class*="SpellingError"]),
+.prose :deep([class*="GrammarError"]),
+.prose :deep([class*="ContextualSpelling"]),
+.prose :deep(.NormalTextRun) {
+  background-image: none !important;
+  background: none !important;
+  border-bottom: none !important;
+  text-decoration: none !important;
+}
+
+.prose :deep(.TextRun) {
+  background: none !important;
+  border: none !important;
+}
+
+/* If the mark is a font-character, this will hide it */
+.prose :deep(br[type="page"]),
+.prose :deep(span[style*="cursor"]) {
+  display: none !important;
+}
+
+.prose :deep(ul),
+.rte-content :deep(ul) {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.prose :deep(ol),
+.rte-content :deep(ol) {
+  list-style-type: decimal !important;
+  padding-left: 1.5rem !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.prose :deep(li),
+.rte-content :deep(li) {
+  display: list-item !important;
+  margin-bottom: 0.25rem !important;
+}
+
+/* Nested lists */
+.prose :deep(ul ul),
+.rte-content :deep(ul ul) {
+  list-style-type: circle !important;
+}
+.prose :deep(ol ol),
+.rte-content :deep(ol ol) {
+  list-style-type: lower-alpha !important;
+}
+
 .outlined {
   position: relative;
   isolation: isolate;
