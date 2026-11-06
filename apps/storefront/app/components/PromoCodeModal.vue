@@ -488,7 +488,6 @@ const submitForm = async () => {
         turnstileToken.value = "";
       }
     }
-  
 
     // // --- FAKE SUCCESS FOR TESTING (ACTIVE) ---
     // sentEmail.value = form.value.email;
@@ -513,7 +512,11 @@ const close = () => {
     const query = { ...route.query };
     delete query.q;
     delete query.d;
-    router.replace({ query });
+
+    router.replace({
+      query,
+      hash: route.hash,
+    });
   }
 };
 
