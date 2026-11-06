@@ -7,10 +7,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 422, statusMessage: 'Invalid amount' })
   }
 
-  const demo = config.convergeDemo !== false
-  const url = demo
-    ? 'https://api.demo.convergepay.com/hosted-payments/transaction_token'
-    : 'https://api.convergepay.com/hosted-payments/transaction_token'
+  const url = 'https://api.convergepay.com/hosted-payments/transaction_token'
 
   const form = new URLSearchParams()
   form.set('ssl_merchant_id', config.convergeMerchantId)
