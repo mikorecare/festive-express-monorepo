@@ -18,6 +18,7 @@ export default defineNuxtConfig({
     azureTenantId: process.env.AZURE_TENANT_ID,
     azureClientSecret: process.env.AZURE_CLIENT_SECRET,
     azureRedirectUri: process.env.AZURE_REDIRECT_URI,
+    internalCachePurgeSecret: process.env.INTERNAL_CACHE_PURGE_SECRET,
     supabase: {
       serviceKey: process.env.SUPABASE_SERVICE_KEY,
       secretKey: process.env.SUPABASE_KEY,

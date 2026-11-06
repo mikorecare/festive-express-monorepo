@@ -62,25 +62,102 @@
         </div>
 
         <div class="p-6 md:p-10 lg:p-16">
-          <!-- Meta -->
-          <div class="flex flex-wrap items-center gap-3 mb-6">
-            <span
-              v-if="post.category"
-              class="inline-block bg-[#1C2D5B] text-white px-1.5 py-0.5 text-[12px] font-bold uppercase tracking-wider rounded-sm shadow-sm"
-            >
-              {{ post.category.name }}
-            </span>
-            <span
-              class="text-gray-500 text-xs md:text-sm uppercase tracking-wider"
-            >
-              {{ formatDate(post.published_at) }}
-            </span>
-            <span class="text-gray-300">|</span>
-            <span
-              class="text-gray-500 text-xs md:text-sm uppercase tracking-wider"
-            >
-              By {{ post.author?.full_name || "Festive Express Team" }}
-            </span>
+          <!-- Meta Row -->
+          <div
+            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6"
+          >
+            <!-- LEFT: Category, Date, Author -->
+            <div class="flex flex-wrap items-center gap-3">
+              <span
+                v-if="post.category"
+                class="inline-block bg-[#1C2D5B] text-white px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-sm shadow-sm"
+              >
+                {{ post.category.name }}
+              </span>
+              <span
+                class="text-gray-500 text-xs md:text-sm uppercase tracking-wider"
+              >
+                {{ formatDate(post.published_at) }}
+              </span>
+              <span class="text-gray-300">|</span>
+              <span
+                class="text-gray-500 text-xs md:text-sm uppercase tracking-wider"
+              >
+                By {{ post.author?.full_name || "Festive Express Team" }}
+              </span>
+            </div>
+
+            <!-- RIGHT: Share Buttons -->
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[10px] text-gray-400 uppercase tracking-wider font-semibold mr-1 hidden sm:inline"
+              >
+                Share:
+              </span>
+
+              <!-- Facebook -->
+              <a
+                :href="`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Share on Facebook"
+                class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-slate-600 hover:bg-[#1877F2] hover:text-white transition-colors"
+              >
+                <i class="fab fa-facebook-f text-sm"></i>
+              </a>
+
+              <!-- X / Twitter -->
+              <a
+                :href="`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(post.title)}`"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Share on X"
+                class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-slate-600 hover:bg-black hover:text-white transition-colors"
+              >
+                <i class="fab fa-x-twitter text-sm"></i>
+              </a>
+
+              <!-- LinkedIn -->
+              <a
+                :href="`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Share on LinkedIn"
+                class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-slate-600 hover:bg-[#0A66C2] hover:text-white transition-colors"
+              >
+                <i class="fab fa-linkedin-in text-sm"></i>
+              </a>
+
+              <!-- WhatsApp -->
+              <a
+                :href="`https://wa.me/?text=${encodeURIComponent(post.title + ' ' + shareUrl)}`"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Share on WhatsApp"
+                class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 text-slate-600 hover:bg-[#25D366] hover:text-white transition-colors"
+              >
+                <i class="fab fa-whatsapp text-sm"></i>
+              </a>
+
+              <!-- Copy Link -->
+              <button
+                type="button"
+                :title="copied ? 'Copied!' : 'Copy Link'"
+                class="flex items-center justify-center w-8 h-8 rounded-full transition-colors"
+                :class="
+                  copied
+                    ? 'bg-emerald-500 text-white'
+                    : 'bg-slate-100 text-slate-600 hover:bg-[#F49321] hover:text-white'
+                "
+                @click="copyShareLink"
+              >
+                <i
+                  :class="
+                    copied ? 'fas fa-check text-sm' : 'fas fa-link text-sm'
+                  "
+                ></i>
+              </button>
+            </div>
           </div>
 
           <!-- Title (Outlined) -->
@@ -115,7 +192,7 @@
 
           <!-- Tags Footer -->
           <div
-            v-if="post.tags?.length"
+            v-if="post?.tags?.length"
             class="mt-12 pt-8 border-t border-gray-200"
           >
             <h3
@@ -124,13 +201,14 @@
               Related Topics
             </h3>
             <div class="flex flex-wrap gap-2">
-              <span
+              <NuxtLink
                 v-for="tag in post.tags"
                 :key="tag.id"
-                class="bg-gray-100 text-gray-700 hover:bg-[#F49321] hover:text-white transition-colors px-3 py-1.5 text-xs font-semibold rounded-full cursor-pointer"
+                :to="`/blogs/tag/${tag.slug}`"
+                class="bg-gray-100 text-gray-700 hover:bg-[#F49321] hover:text-white transition-colors px-3 py-1.5 text-xs font-semibold rounded-full"
               >
                 #{{ tag.name }}
-              </span>
+              </NuxtLink>
             </div>
           </div>
         </div>
@@ -289,6 +367,7 @@ interface Post {
   content: string;
   featured_image: string | null;
   published_at: string | null;
+  updated_at: string | null;
   author?: { full_name?: string } | null;
   category?: { id: number; name: string; slug: string } | null;
   tags?: { id: number; name: string; slug: string }[];
@@ -374,6 +453,7 @@ useHead({
           ? [post.value.featured_image]
           : undefined,
         datePublished: post.value?.published_at,
+        dateModified: post.value?.updated_at || post.value?.published_at,
         author: {
           "@type": "Organization",
           name: "Festive Express",
@@ -388,12 +468,12 @@ useHead({
           },
         },
         description: post.value?.summary,
+        keywords: post.value?.tags?.map((t) => t.name).join(", ") || undefined,
         mainEntityOfPage: { "@type": "WebPage", "@id": currentUrl.value },
       }),
     },
   ],
 });
-
 // --- The Fix: Video Mounting ---
 const contentRef = ref<HTMLElement | null>(null);
 
@@ -432,6 +512,28 @@ onMounted(async () => {
     }
   });
 });
+
+const config = useRuntimeConfig();
+const shareUrl = computed(() => {
+  // For the public page, use the actual site URL.
+  // For the admin preview, we can still generate the live URL so sharing works.
+  const base = "https://festive.express";
+  return `${base}/blogs/${post.value?.slug || ""}`;
+});
+
+const copied = ref(false);
+
+const copyShareLink = async () => {
+  try {
+    await navigator.clipboard.writeText(shareUrl.value);
+    copied.value = true;
+    setTimeout(() => {
+      copied.value = false;
+    }, 2000);
+  } catch (err) {
+    console.error("Failed to copy link:", err);
+  }
+};
 
 // --- Helpers ---
 const formatDate = (isoString: string | null) => {

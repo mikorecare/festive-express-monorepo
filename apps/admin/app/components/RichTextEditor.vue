@@ -6,7 +6,53 @@
     <div
       class="flex flex-wrap items-center gap-1.5 p-2 border-b border-slate-200 bg-slate-50"
     >
-      <!-- FORMATS DROPDOWN (NEW) -->
+      <!-- NEW: Undo / Redo -->
+      <button
+        type="button"
+        class="rte-btn px-1.5"
+        title="Undo (Ctrl+Z)"
+        @mousedown.prevent
+        @click="undo"
+      >
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+          />
+        </svg>
+      </button>
+      <button
+        type="button"
+        class="rte-btn px-1.5"
+        title="Redo (Ctrl+Y)"
+        @mousedown.prevent
+        @click="redo"
+      >
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6"
+          />
+        </svg>
+      </button>
+
+      <span class="rte-sep" />
+
+      <!-- FORMATS DROPDOWN -->
       <select
         class="rte-select w-auto shrink-0"
         title="Text Style"
@@ -100,14 +146,60 @@
         <option value="5">XL</option>
       </select>
 
-      <label class="rte-btn p-0 overflow-hidden relative" title="Text color">
-        <span class="px-2 text-xs font-semibold">A</span>
-        <input
-          type="color"
-          class="absolute inset-0 opacity-0 cursor-pointer"
-          @input="setColor(($event.target as HTMLInputElement).value)"
-        />
-      </label>
+      <!-- BRAND COLOR PICKER -->
+      <div class="relative" ref="colorPickerRef">
+        <button
+          type="button"
+          class="rte-btn px-2"
+          title="Text Color"
+          @mousedown.prevent
+          @click="toggleColorMenu"
+        >
+          <span class="font-semibold" :style="{ color: currentColor }">A</span>
+          <svg
+            class="w-3 h-3 ml-1"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            ></path>
+          </svg>
+        </button>
+
+        <!-- Dropdown Menu -->
+        <div
+          v-if="showColorMenu"
+          class="absolute top-full left-0 mt-1 z-50 bg-white border border-slate-200 rounded-lg shadow-xl p-2 flex gap-2"
+        >
+          <button
+            v-for="color in brandColors"
+            :key="color.hex"
+            type="button"
+            class="w-6 h-6 rounded-full border border-slate-200 hover:scale-110 transition-transform"
+            :style="{ backgroundColor: color.hex }"
+            :title="color.name"
+            @mousedown.prevent
+            @click="setBrandColor(color.hex)"
+          ></button>
+
+          <label
+            class="w-6 h-6 rounded-full border border-slate-200 cursor-pointer flex items-center justify-center bg-gradient-to-br from-pink-500 via-yellow-500 to-blue-500 text-white text-[10px] font-bold hover:scale-110 transition-transform"
+            title="Custom Color"
+          >
+            +
+            <input
+              type="color"
+              class="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+              @input="setColor(($event.target as HTMLInputElement).value)"
+            />
+          </label>
+        </div>
+      </div>
 
       <span class="rte-sep" />
 
@@ -231,6 +323,7 @@
         @mouseup="syncToolbar"
         @focus="syncToolbar"
         @mouseover="handleMouseOver"
+        @keydown="onKeyDown"
       />
 
       <!-- Floating Delete Button -->
@@ -273,10 +366,10 @@
         aria-modal="true"
         @click.self="showVideoModal = false"
       >
+        <!-- ... Video Modal Content (unchanged) ... -->
         <div
           class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col overflow-hidden"
         >
-          <!-- Header -->
           <div
             class="flex items-center justify-between px-6 py-4 border-b border-gray-200 shrink-0"
           >
@@ -291,16 +384,13 @@
             </button>
           </div>
 
-          <!-- Body -->
           <div class="overflow-y-auto px-6 py-5">
-            <!-- Loading -->
             <div v-if="videoLoading" class="flex justify-center py-16">
               <div
                 class="w-10 h-10 border-4 border-[#F49321] border-t-transparent rounded-full animate-spin"
               ></div>
             </div>
 
-            <!-- Error -->
             <div
               v-else-if="videoError"
               class="text-center py-12 text-rose-500 text-sm"
@@ -308,7 +398,6 @@
               {{ videoError }}
             </div>
 
-            <!-- Empty -->
             <div v-else-if="videoList.length === 0" class="text-center py-12">
               <p class="text-sm text-slate-500 mb-4">No videos uploaded yet.</p>
               <a
@@ -320,7 +409,6 @@
               </a>
             </div>
 
-            <!-- Grid -->
             <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <button
                 v-for="video in videoList"
@@ -358,7 +446,6 @@
             </div>
           </div>
 
-          <!-- Footer -->
           <div
             class="px-6 py-3 border-t border-gray-200 flex justify-end shrink-0"
           >
@@ -413,6 +500,20 @@ const videoList = ref<Video[]>([]);
 const videoLoading = ref(false);
 const videoError = ref<string | null>(null);
 
+// Color Picker State
+const showColorMenu = ref(false);
+const colorPickerRef = ref<HTMLElement | null>(null);
+const currentColor = ref("#1a2a4d"); // Default to navy
+
+// The 4 Brand Colors
+const brandColors = [
+  { name: "Primary Navy", hex: "#1a2a4d" },
+  { name: "Secondary Orange", hex: "#d4851e" },
+  { name: "Pink Banner", hex: "#d4007a" },
+  { name: "Light Blue", hex: "#90d3eb" },
+  { name: "Black", hex: "#000000" },
+];
+
 const state = reactive({
   bold: false,
   italic: false,
@@ -423,6 +524,95 @@ const state = reactive({
   quote: false,
   list: false,
 });
+
+// --- Undo / Redo ---
+const undo = () => {
+  editorEl.value?.focus();
+  document.execCommand("undo", false);
+  onInput();
+  syncToolbar();
+};
+
+const redo = () => {
+  editorEl.value?.focus();
+  document.execCommand("redo", false);
+  onInput();
+  syncToolbar();
+};
+
+const onKeyDown = (e: KeyboardEvent) => {
+  // Check for Ctrl+Z or Cmd+Z
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+    e.preventDefault();
+    if (e.shiftKey) {
+      redo();
+    } else {
+      undo();
+    }
+  }
+  // Check for Ctrl+Y or Cmd+Y
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "y") {
+    e.preventDefault();
+    redo();
+  }
+};
+
+// --- Color Picker Logic ---
+const toggleColorMenu = () => {
+  showColorMenu.value = !showColorMenu.value;
+};
+
+const setBrandColor = (color: string) => {
+  currentColor.value = color;
+  applyColor(color);
+  showColorMenu.value = false;
+};
+
+const setColor = (color: string) => {
+  currentColor.value = color;
+  applyColor(color);
+};
+
+// Custom Color Applier (Wraps selection in a span)
+const applyColor = (color: string) => {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return;
+
+  // If user didn't highlight anything, show alert
+  if (sel.isCollapsed) {
+    alert("Please highlight the text you want to color.");
+    return;
+  }
+
+  editorEl.value?.focus();
+
+  // 1. Create the span element
+  const span = document.createElement("span");
+  span.style.color = color;
+
+  try {
+    // 2. Surround the selection with the span
+    sel.getRangeAt(0).surroundContents(span);
+  } catch (e) {
+    // If the selection spans across multiple block elements (like two paragraphs),
+    // surroundContents fails. Fallback to execCommand.
+    document.execCommand("foreColor", false, color);
+  }
+
+  // 3. Update the model
+  onInput();
+  syncToolbar();
+};
+
+// Close color menu when clicking outside
+const handleClickOutside = (event: MouseEvent) => {
+  if (
+    colorPickerRef.value &&
+    !colorPickerRef.value.contains(event.target as Node)
+  ) {
+    showColorMenu.value = false;
+  }
+};
 
 // --- Core Commands ---
 const cmd = (command: string, value?: string) => {
@@ -435,14 +625,9 @@ const cmd = (command: string, value?: string) => {
 // --- Formatting (Headings) ---
 const applyFormat = (tag: string) => {
   editorEl.value?.focus();
-  // formatBlock wraps the current line in the specified tag
   document.execCommand("formatBlock", false, `<${tag}>`);
   onInput();
   syncToolbar();
-};
-
-const setColor = (color: string) => {
-  cmd("foreColor", color);
 };
 
 const onSizeChange = (size: string) => {
@@ -451,8 +636,8 @@ const onSizeChange = (size: string) => {
 };
 
 const applyOrange = () => {
-  editorEl.value?.focus();
-  document.execCommand("foreColor", false, "#F49321");
+  applyColor("#F49321");
+  // Optional: Also make it bold
   document.execCommand("bold", false);
   onInput();
   syncToolbar();
@@ -507,7 +692,6 @@ const applyQuote = () => {
 
 // --- Video Picker ---
 const openVideoPicker = async () => {
-  // Save cursor position before modal opens
   const sel = window.getSelection();
   if (sel && sel.rangeCount > 0) {
     savedSelection = sel.getRangeAt(0);
@@ -544,7 +728,6 @@ const pickVideo = (video: Video) => {
     sel?.addRange(savedSelection);
   }
 
-  // Insert a real video tag, but keep the data attributes so the public page can swap it.
   const html = `
     <div class="post-video" data-video-id="${video.id}" data-video-url="${video.public_url}" contenteditable="false" style="margin: 1.5rem 0; position: relative;">
       <video 
@@ -790,10 +973,12 @@ watch(
 onMounted(() => {
   setHtml(props.modelValue || "");
   document.addEventListener("selectionchange", onSelectionChange);
+  document.addEventListener("click", handleClickOutside);
 });
 
 onUnmounted(() => {
   document.removeEventListener("selectionchange", onSelectionChange);
+  document.removeEventListener("click", handleClickOutside);
 });
 
 const onSelectionChange = () => {
@@ -805,6 +990,7 @@ const onSelectionChange = () => {
 </script>
 
 <style scoped>
+/* ... keep your same style ... */
 .rte-btn {
   display: inline-flex;
   align-items: center;
@@ -858,8 +1044,6 @@ const onSelectionChange = () => {
   color: #f49321;
   text-decoration: underline;
 }
-
-/* --- NEW: Heading styles inside the editor --- */
 .rte-content :deep(h2) {
   font-size: 1.5rem;
   font-weight: 700;
@@ -881,7 +1065,6 @@ const onSelectionChange = () => {
   margin: 0.75rem 0 0.5rem;
   line-height: 1.4;
 }
-
 .rte-content :deep(blockquote),
 .rte-content :deep(.about-quote) {
   border-left: 4px solid #f49321;

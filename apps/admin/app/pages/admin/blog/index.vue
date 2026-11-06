@@ -212,16 +212,16 @@
               <span>Draft</span>
             </button>
 
-            <!-- Delete -->
+            <!-- Archive (formerly Delete) -->
             <button
               type="button"
-              title="Delete Post"
+              title="Archive Post"
               class="flex items-center justify-center gap-1.5 px-2 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 disabled:opacity-60 transition-colors text-xs font-medium"
-              :disabled="actingId === post.id"
-              @click="confirmDelete(post)"
+              :disabled="actingId === post.id || post.status === 'archived'"
+              @click="archivePost(post)"
             >
-              <TrashIcon class="w-3.5 h-3.5 shrink-0" />
-              <span>Delete</span>
+              <ArchiveBoxIcon class="w-3.5 h-3.5 shrink-0" />
+              <span>Archive</span>
             </button>
           </div>
         </div>
@@ -265,45 +265,6 @@
         </button>
       </div>
     </div>
-
-    <!-- Delete confirm modal -->
-    <div
-      v-if="deleteTarget"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-      @click.self="deleteTarget = null"
-    >
-      <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-        <div class="flex items-center gap-3 mb-4">
-          <div
-            class="w-10 h-10 bg-rose-100 rounded-full flex items-center justify-center"
-          >
-            <TrashIcon class="h-5 w-5 text-rose-600" />
-          </div>
-          <h3 class="text-lg font-bold text-navy">Delete Post</h3>
-        </div>
-        <p class="text-slate-600 text-sm mb-6">
-          Delete <span class="font-semibold">"{{ deleteTarget.title }}"</span>?
-          This cannot be undone.
-        </p>
-        <div class="flex justify-end gap-2">
-          <button
-            type="button"
-            class="px-4 py-2 rounded-lg border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-            @click="deleteTarget = null"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            class="px-4 py-2 rounded-lg bg-rose-500 text-white text-sm font-semibold hover:bg-rose-600 disabled:opacity-60"
-            :disabled="actingId === deleteTarget.id"
-            @click="doDelete"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -312,10 +273,11 @@ import {
   PlusIcon,
   PhotoIcon,
   DocumentTextIcon,
-  TrashIcon,
   CheckCircleIcon,
   EyeIcon,
   PencilSquareIcon,
+  PauseCircleIcon,
+  ArchiveBoxIcon,
 } from "@heroicons/vue/24/outline";
 
 type Category = { id: number; name: string; slug: string };
@@ -347,7 +309,6 @@ const posts = ref<PostCard[]>([]);
 const categories = ref<Category[]>([]);
 const loading = ref(false);
 const actingId = ref<string | null>(null);
-const deleteTarget = ref<PostCard | null>(null);
 
 const search = ref("");
 const statusFilter = ref("");
@@ -419,7 +380,7 @@ const changeStatus = async (post: PostCard, status: PostCard["status"]) => {
     post.status = status;
     if (res.published_at) post.published_at = res.published_at;
     showToast(
-      status === "published" ? "Post published" : "Post unpublished",
+      status === "published" ? "Post published" : "Post moved to draft",
       "success",
     );
   } catch (e: any) {
@@ -429,25 +390,18 @@ const changeStatus = async (post: PostCard, status: PostCard["status"]) => {
   }
 };
 
-const confirmDelete = (post: PostCard) => {
-  deleteTarget.value = post;
-};
-
-const doDelete = async () => {
-  if (!deleteTarget.value) return;
-  const id = deleteTarget.value.id;
-  actingId.value = id;
+const archivePost = async (post: PostCard) => {
+  actingId.value = post.id;
   try {
-    const res = await $fetch<{ success: boolean }>(`/api/blog/posts/${id}`, {
-      method: "DELETE",
-    });
-    if (!res.success) throw new Error("Delete failed");
-    posts.value = posts.value.filter((p) => p.id !== id);
-    pagination.totalItems = Math.max(0, pagination.totalItems - 1);
-    deleteTarget.value = null;
-    showToast("Post deleted", "success");
+    const res = await $fetch<{ success: boolean }>(
+      `/api/blog/posts/${post.id}/status`,
+      { method: "PUT", body: { status: "archived" } },
+    );
+    if (!res.success) throw new Error("Archive failed");
+    post.status = "archived";
+    showToast("Post archived", "success");
   } catch (e: any) {
-    showToast(e?.message || "Delete failed", "error");
+    showToast(e?.message || "Archive failed", "error");
   } finally {
     actingId.value = null;
   }
@@ -470,7 +424,7 @@ const statusBadgeClass = (status: PostCard["status"]) => {
     case "draft":
       return "bg-amber-400 text-white";
     case "archived":
-      return "bg-slate-400 text-white";
+      return "bg-rose-500 text-white";
     default:
       return "bg-slate-400 text-white";
   }
