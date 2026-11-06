@@ -53,6 +53,7 @@ export default defineEventHandler(async (event) => {
         await Promise.all([
             purgeLandingCache(CACHE_MAP.POSTS_PUBLIC),
             purgeLandingCache(CACHE_MAP.POSTS_ADMIN),
+            purgeLandingCache(CACHE_MAP.POST_DETAIL),
         ])
 
         return { success: true, id: post.id }

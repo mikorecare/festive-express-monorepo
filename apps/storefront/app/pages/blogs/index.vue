@@ -238,7 +238,12 @@
                   >
                     <span>{{ formatDate(post.published_at) }}</span>
                     <span class="text-gray-300">•</span>
-                    <span>By {{ post.author?.full_name || "Festive Express Team" }}</span>
+                    <span
+                      >By
+                      {{
+                        post.author?.full_name || "Festive Express Team"
+                      }}</span
+                    >
                   </div>
 
                   <h4
@@ -379,42 +384,7 @@
           </div>
 
           <!-- Newsletter Widget -->
-          <div class="bg-[#1C2D5B] p-5 rounded-lg shadow-sm text-white">
-            <span
-              class="text-[#F49321] text-[10px] font-bold uppercase tracking-wider block mb-1"
-            >
-              Stay Inspired
-            </span>
-            <h3 class="text-lg font-bold leading-tight mb-2">
-              New Lighting Ideas, By Email
-            </h3>
-            <p class="text-xs text-gray-300 mb-3 leading-snug">
-              Get an email when we publish a new article. Confirm through the
-              link we send, then you're in.
-            </p>
-            <form @submit.prevent="subscribe" class="space-y-2">
-              <label for="newsletter-email" class="sr-only"
-                >Email address</label
-              >
-              <input
-                id="newsletter-email"
-                type="email"
-                placeholder="Email address"
-                required
-                class="w-full px-3 py-2 rounded-md text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]"
-              />
-              <button
-                type="submit"
-                class="w-full bg-[#F49321] hover:bg-[#e07e0e] text-white font-bold py-2 px-3 rounded-md transition-colors text-[11px] uppercase tracking-wide"
-              >
-                Subscribe To The Blog
-              </button>
-            </form>
-            <p class="text-[9px] text-gray-400 mt-2 leading-tight">
-              Unsubscribe anytime. We'll only use your email for new blog
-              notifications.
-            </p>
-          </div>
+          <NewsLetterForm />
         </aside>
       </div>
     </div>
@@ -423,6 +393,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import NewsLetterForm from "~/components/Blogs/NewsLetterForm.vue";
 import type { PostListItem } from "~~/server/api/blogs/index.get";
 
 // --- Fetching Data ---
@@ -469,9 +440,6 @@ const retry = () => {
   refresh();
 };
 
-const subscribe = () => {
-  alert("Subscription feature coming soon!");
-};
 </script>
 
 <style scoped>

@@ -1,6 +1,7 @@
 <template>
   <section
     class="relative w-full overflow-hidden bg-white border-b-[18px] sm:border-b-[27px] border-[#F49321] pt-8 sm:pt-12"
+    id="contact"
   >
     <!-- Decorative pattern background -->
     <div

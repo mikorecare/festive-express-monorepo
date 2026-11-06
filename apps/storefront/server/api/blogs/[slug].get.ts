@@ -1,8 +1,9 @@
 import { getSupabase } from '~~/server/utils/supabase'
+import { CACHE_MAP } from '~~/server/utils/cache-map'
 
 const STORAGE_BUCKET = 'about-us'
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
     const supabase = getSupabase()
     const slug = getRouterParam(event, 'slug')
 
@@ -37,4 +38,12 @@ export default defineEventHandler(async (event) => {
         featured_image: featuredImage,
         tags: (data.post_tags || []).map((pt: any) => pt.tag).filter(Boolean),
     }
+}, {
+    name: CACHE_MAP.POST_DETAIL,
+    maxAge: 60 * 60 * 24 * 7,       // Cache for 7 days
+    staleMaxAge: 60 * 60 * 24 * 30, // Serve stale for 30 days while revalidating
+    swr: true,                      // Stale-While-Revalidate
+
+    // Cache each post separately based on its URL
+    getKey: (event) => event.path,
 })

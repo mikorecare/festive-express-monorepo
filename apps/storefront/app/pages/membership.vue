@@ -108,11 +108,13 @@
       </div>
     </div>
 
-    <Newsletter />
+    <NewsLetterForm />
   </div>
 </template>
 
 <script setup lang="ts">
+import NewsLetterForm from '~/components/Blogs/NewsLetterForm.vue';
+
 useHead({
   title: "Membership",
 });
