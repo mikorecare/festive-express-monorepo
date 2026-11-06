@@ -238,7 +238,7 @@
                   >
                     <span>{{ formatDate(post.published_at) }}</span>
                     <span class="text-gray-300">•</span>
-                    <span>By Admin</span>
+                    <span>By {{ post.author?.full_name || "Festive Express Team" }}</span>
                   </div>
 
                   <h4
@@ -423,25 +423,11 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-
-// --- Types ---
-type Category = { id: number; name: string; slug: string };
-type Tag = { id: number; name: string; slug: string };
-type Post = {
-  id: string;
-  title: string;
-  slug: string;
-  summary: string | null;
-  featured_image: string | null;
-  published_at: string | null;
-  created_at: string;
-  category: Category | null;
-  tags: Tag[];
-};
+import type { PostListItem } from "~~/server/api/blogs/index.get";
 
 // --- Fetching Data ---
 const { data, pending, error, refresh } = await useFetch<{
-  posts: Post[];
+  posts: PostListItem[];
 }>("/api/blogs", {
   key: "blog-list",
 });

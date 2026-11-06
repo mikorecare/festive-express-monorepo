@@ -12,6 +12,14 @@
         </p>
       </div>
       <div class="flex gap-2">
+        <NuxtLink
+          v-if="isEditing && postId"
+          :to="`/admin/blog/${postId}/view`"
+          class="px-4 py-2 bg-slate-100 border border-slate-200 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-200 flex items-center gap-2"
+        >
+          <i class="fas fa-eye text-[10px]"></i>
+          View Post
+        </NuxtLink>
         <button
           type="button"
           class="px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-100"

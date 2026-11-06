@@ -1,10 +1,10 @@
 import { getSupabase } from '~~/server/utils/supabase'
 import { CACHE_MAP } from '~~/server/utils/cache-map'
 
-type PostCategory = { id: number; name: string; slug: string }
-type Tag = { id: number; name: string; slug: string }
+export type PostCategory = { id: number; name: string; slug: string }
+export type Tag = { id: number; name: string; slug: string }
 
-type PostListItem = {
+export type PostListItem = {
     id: string
     title: string
     slug: string
@@ -14,9 +14,10 @@ type PostListItem = {
     created_at: string
     category: PostCategory | null
     tags: Tag[]
+    author: { full_name: string | null } | null
 }
 
-type BlogListResponse = {
+export type BlogListResponse = {
     posts: PostListItem[]
 }
 
@@ -36,7 +37,8 @@ export default defineCachedEventHandler(async (event) => {
             published_at,
             created_at,
             category:post_categories ( id, name, slug ),
-            post_tags ( tag:tags ( id, name, slug ) )
+            post_tags ( tag:tags ( id, name, slug ) ),
+            author:users!posts_author_id_fkey ( full_name )
         `)
         .eq('status', 'published')
         .order('published_at', { ascending: false })
@@ -66,6 +68,7 @@ export default defineCachedEventHandler(async (event) => {
             created_at: post.created_at,
             category: post.category ?? null,
             tags: (post.post_tags || []).map((pt: any) => pt.tag).filter(Boolean),
+            author: post.author ?? null,
         } as PostListItem
     })
 

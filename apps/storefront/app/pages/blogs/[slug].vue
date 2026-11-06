@@ -66,7 +66,7 @@
           <div class="flex flex-wrap items-center gap-3 mb-6">
             <span
               v-if="post.category"
-              class="inline-block bg-[#F49321] text-white px-3 py-1 text-[10px] md:text-xs font-extrabold uppercase tracking-wider rounded-t-md border-b-4 border-[#1C2D5B] shadow-sm"
+              class="inline-block bg-[#1C2D5B] text-white px-1.5 py-0.5 text-[12px] font-bold uppercase tracking-wider rounded-sm shadow-sm"
             >
               {{ post.category.name }}
             </span>

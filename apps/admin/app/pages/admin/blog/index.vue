@@ -165,39 +165,63 @@
             <span>{{ post.published_at ? "Published" : "Created" }}</span>
           </div>
 
-          <!-- Actions -->
-          <div class="flex gap-2 mt-3">
+          <!-- Actions (2-column grid) -->
+          <div class="grid grid-cols-2 gap-1.5 mt-3">
+            <!-- Edit -->
             <NuxtLink
               :to="`/admin/blog/${post.id}`"
-              class="flex-1 text-center px-3 py-1.5 bg-navy text-white rounded-lg text-xs font-medium hover:bg-slate-800"
+              title="Edit Post"
+              class="flex items-center justify-center gap-1.5 px-2 py-2 bg-navy text-white rounded-lg hover:bg-slate-800 transition-colors text-xs font-medium"
             >
-              Edit
+              <PencilSquareIcon class="w-3.5 h-3.5 shrink-0" />
+              <span>Edit</span>
             </NuxtLink>
+
+            <!-- Preview -->
+            <NuxtLink
+              :to="`/admin/blog/${post.id}/view`"
+              target="_blank"
+              title="Preview Post"
+              class="flex items-center justify-center gap-1.5 px-2 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors text-xs font-medium"
+            >
+              <EyeIcon class="w-3.5 h-3.5 shrink-0" />
+              <span>Preview</span>
+            </NuxtLink>
+
+            <!-- Publish / Unpublish -->
             <button
               v-if="post.status !== 'published'"
               type="button"
-              class="px-3 py-1.5 bg-emerald-500 text-white rounded-lg text-xs font-medium hover:bg-emerald-600 disabled:opacity-60"
+              title="Publish Post"
+              class="flex items-center justify-center gap-1.5 px-2 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 disabled:opacity-60 transition-colors text-xs font-medium"
               :disabled="actingId === post.id"
               @click="changeStatus(post, 'published')"
             >
-              Publish
+              <CheckCircleIcon class="w-3.5 h-3.5 shrink-0" />
+              <span>Publish</span>
             </button>
             <button
               v-else
               type="button"
-              class="px-3 py-1.5 bg-slate-200 text-slate-700 rounded-lg text-xs font-medium hover:bg-slate-300 disabled:opacity-60"
+              title="Unpublish Post"
+              class="flex items-center justify-center gap-1.5 px-2 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 disabled:opacity-60 transition-colors text-xs font-medium"
               :disabled="actingId === post.id"
               @click="changeStatus(post, 'draft')"
             >
-              Unpublish
+              <PauseCircleIcon class="w-3.5 h-3.5 shrink-0" />
+              <span>Draft</span>
             </button>
+
+            <!-- Delete -->
             <button
               type="button"
-              class="px-3 py-1.5 bg-rose-500 text-white rounded-lg text-xs font-medium hover:bg-rose-600 disabled:opacity-60"
+              title="Delete Post"
+              class="flex items-center justify-center gap-1.5 px-2 py-2 bg-rose-500 text-white rounded-lg hover:bg-rose-600 disabled:opacity-60 transition-colors text-xs font-medium"
               :disabled="actingId === post.id"
               @click="confirmDelete(post)"
             >
-              Delete
+              <TrashIcon class="w-3.5 h-3.5 shrink-0" />
+              <span>Delete</span>
             </button>
           </div>
         </div>
@@ -289,6 +313,9 @@ import {
   PhotoIcon,
   DocumentTextIcon,
   TrashIcon,
+  CheckCircleIcon,
+  EyeIcon,
+  PencilSquareIcon,
 } from "@heroicons/vue/24/outline";
 
 type Category = { id: number; name: string; slug: string };
