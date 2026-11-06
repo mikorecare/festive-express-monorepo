@@ -264,37 +264,7 @@
           </div>
 
           <!-- Newsletter Widget -->
-          <div class="bg-[#1C2D5B] p-8 rounded-xl shadow-sm text-white">
-            <span
-              class="text-[#F49321] text-xs font-bold uppercase tracking-wider block mb-2"
-            >
-              Stay Inspired
-            </span>
-            <h3 class="text-2xl font-bold leading-tight mb-3">
-              New Lighting Ideas, By Email
-            </h3>
-            <p class="text-sm text-gray-300 mb-5 leading-relaxed">
-              Get an email when we publish a new article.
-            </p>
-            <form @submit.prevent="subscribe" class="space-y-3">
-              <label for="newsletter-email" class="sr-only"
-                >Email address</label
-              >
-              <input
-                id="newsletter-email"
-                type="email"
-                placeholder="Email address"
-                required
-                class="w-full px-4 py-3 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321]"
-              />
-              <button
-                type="submit"
-                class="w-full bg-[#F49321] hover:bg-[#e07e0e] text-white font-bold py-3 px-4 rounded-lg transition-colors text-sm uppercase tracking-wide"
-              >
-                Subscribe
-              </button>
-            </form>
-          </div>
+          <NewsLetterForm />
 
           <!-- Related Articles Widget -->
           <div
@@ -559,9 +529,6 @@ const formatDate = (isoString: string | null) => {
   });
 };
 
-const subscribe = () => {
-  alert("Subscription feature coming soon!");
-};
 </script>
 
 <style scoped>

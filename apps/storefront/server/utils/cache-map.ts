@@ -13,7 +13,8 @@ export const CACHE_MAP = {
     ABOUT_US: 'about_us_cache',
     INCLUSION_ITEMS: 'inclusion_items_cache',
     POSTS_PUBLIC: 'posts_list_cache',
-    POSTS_ADMIN: 'admin_posts_list_cache'
+    POSTS_ADMIN: 'admin_posts_list_cache',
+    POST_DETAIL: 'post_detail_cache', 
 } as const
 
 export type CacheKey = typeof CACHE_MAP[keyof typeof CACHE_MAP]

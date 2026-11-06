@@ -1,6 +1,7 @@
 <template>
   <section
     class="relative bg-[url('/Images/Choose-Your-Package.webp')] bg-cover bg-center bg-no-repeat bg-scroll md:bg-fixed py-12 md:py-16 z-[1] border-b-[18px] md:border-b-[27px] border-[#F49321]"
+    id="holiday-packages"
   >
     <div class="absolute inset-0 z-[-1] pointer-events-none"></div>
     <div class="max-w-[1280px] mx-auto px-3 sm:px-5">
