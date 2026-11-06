@@ -6,6 +6,20 @@
     <div
       class="flex flex-wrap items-center gap-1.5 p-2 border-b border-slate-200 bg-slate-50"
     >
+      <!-- FORMATS DROPDOWN (NEW) -->
+      <select
+        class="rte-select w-auto shrink-0"
+        title="Text Style"
+        @change="applyFormat(($event.target as HTMLSelectElement).value)"
+      >
+        <option value="p">Normal Text</option>
+        <option value="h2">Heading 2</option>
+        <option value="h3">Heading 3</option>
+        <option value="h4">Heading 4</option>
+      </select>
+
+      <span class="rte-sep" />
+
       <button
         type="button"
         class="rte-btn"
@@ -418,6 +432,15 @@ const cmd = (command: string, value?: string) => {
   syncToolbar();
 };
 
+// --- Formatting (Headings) ---
+const applyFormat = (tag: string) => {
+  editorEl.value?.focus();
+  // formatBlock wraps the current line in the specified tag
+  document.execCommand("formatBlock", false, `<${tag}>`);
+  onInput();
+  syncToolbar();
+};
+
 const setColor = (color: string) => {
   cmd("foreColor", color);
 };
@@ -522,7 +545,6 @@ const pickVideo = (video: Video) => {
   }
 
   // Insert a real video tag, but keep the data attributes so the public page can swap it.
-  // contenteditable="false" prevents the cursor from going inside the video tags.
   const html = `
     <div class="post-video" data-video-id="${video.id}" data-video-url="${video.public_url}" contenteditable="false" style="margin: 1.5rem 0; position: relative;">
       <video 
@@ -540,6 +562,7 @@ const pickVideo = (video: Video) => {
   onInput();
   savedSelection = null;
 };
+
 // --- Image Upload & Conversion Logic ---
 const triggerImageUpload = () => {
   const sel = window.getSelection();
@@ -835,6 +858,30 @@ const onSelectionChange = () => {
   color: #f49321;
   text-decoration: underline;
 }
+
+/* --- NEW: Heading styles inside the editor --- */
+.rte-content :deep(h2) {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1c2d5b;
+  margin: 1rem 0 0.5rem;
+  line-height: 1.2;
+}
+.rte-content :deep(h3) {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1c2d5b;
+  margin: 0.75rem 0 0.5rem;
+  line-height: 1.3;
+}
+.rte-content :deep(h4) {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1c2d5b;
+  margin: 0.75rem 0 0.5rem;
+  line-height: 1.4;
+}
+
 .rte-content :deep(blockquote),
 .rte-content :deep(.about-quote) {
   border-left: 4px solid #f49321;
