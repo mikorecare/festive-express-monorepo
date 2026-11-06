@@ -6,7 +6,7 @@
         class="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm overflow-y-auto"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="voucher-modal-title"
+        aria-labelledby="promo-code-modal-title"
         @click.self="close"
       >
         <Transition name="modal-pop" appear>
@@ -39,8 +39,8 @@
               <!-- Background Image (Right Half Only) -->
               <div class="absolute top-0 right-0 w-[55%] sm:w-1/2 h-full">
                 <img
-                  src="/New/Voucher/voucher-image.webp"
-                  alt="Voucher background"
+                  src="/New/PromoCode/promo-code-image.webp"
+                  alt="Promo Code background"
                   class="w-full h-full object-contain object-right"
                 />
                 <div
@@ -55,10 +55,10 @@
 
               <!-- Overlaid Title & Info -->
               <div
-                class="absolute inset-y-0 left-0 flex flex-col justify-center pl-3 sm:pl-8 pr-4 z-10 w-full pointer-events-none pb-2"
+                class="absolute inset-y-0 left-0 flex flex-col justify-center pl-3 sm:pl-8 pr-4 z-10 w-full pointer-events-none"
               >
                 <h3
-                  id="voucher-modal-title"
+                  id="promo-code-modal-title"
                   class="font-black italic uppercase leading-[1.05] origin-left mb-1"
                   style="transform: skewX(-6deg) rotate(-3deg)"
                 >
@@ -70,10 +70,10 @@
                   </span>
 
                   <span
-                    class="outlined outlined-line2 block text-4xl sm:text-6xl text-[#F49321] mt-1 tracking-tight"
-                    data-text="Voucher!"
+                    class="outlined outlined-line2 block text-3xl sm:text-5xl text-[#F49321] mt-1 tracking-tight"
+                    data-text="Promo Code!"
                   >
-                    Voucher!
+                    Promo Code!
                   </span>
                 </h3>
 
@@ -103,7 +103,7 @@
 
                   <div class="text-center space-y-2">
                     <p class="text-[#1C2D5B] text-sm font-bold leading-relaxed">
-                      Your voucher is on its way to
+                      Your promo code is on its way to
                       <br />
                       <span
                         class="text-[#F49321] font-black break-all text-base"
@@ -123,18 +123,18 @@
                 <!-- FORM STATE -->
                 <form
                   v-else
-                  aria-label="Voucher form"
+                  aria-label="Promo Code form"
                   @submit.prevent="submitForm"
                   class="space-y-3"
                 >
-                  <label for="voucher-name" class="block">
+                  <label for="promo-code-name" class="block">
                     <span
                       class="block text-[11px] font-extrabold text-[#1C2D5B] uppercase tracking-wide mb-1"
                     >
                       Full Name <span class="text-[#F49321]">*</span>
                     </span>
                     <input
-                      id="voucher-name"
+                      id="promo-code-name"
                       v-model="form.name"
                       type="text"
                       autocomplete="name"
@@ -145,14 +145,14 @@
                     />
                   </label>
 
-                  <label for="voucher-email" class="block">
+                  <label for="promo-code-email" class="block">
                     <span
                       class="block text-[11px] font-extrabold text-[#1C2D5B] uppercase tracking-wide mb-1"
                     >
                       Email <span class="text-[#F49321]">*</span>
                     </span>
                     <input
-                      id="voucher-email"
+                      id="promo-code-email"
                       v-model="form.email"
                       type="email"
                       autocomplete="email"
@@ -205,7 +205,7 @@
                     class="w-full min-h-[50px] inline-flex items-center justify-center bg-[#1C2D5B] hover:bg-[#F49321] text-white py-3 px-5 rounded-full text-base font-extrabold uppercase tracking-wide transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_0_#0f1c3f] hover:shadow-[0_4px_0_#c77415] hover:-translate-y-0.5"
                     :disabled="isSubmitting || !turnstileVerified"
                   >
-                    <span v-if="!isSubmitting">Send My Voucher</span>
+                    <span v-if="!isSubmitting">Send My Promo Code</span>
                     <span v-else class="flex items-center justify-center gap-2">
                       <svg
                         class="animate-spin h-5 w-5 text-white"

@@ -281,7 +281,7 @@ export default defineNuxtConfig({
     convergeUserId: process.env.CONVERGE_USER_ID || "",
     convergePin: process.env.CONVERGE_PIN || "",
     convergeDemo: process.env.CONVERGE_DEMO !== "false",
-
+    internalCachePurgeSecret: process.env.INTERNAL_CACHE_PURGE_SECRET,
     estimatorApiUrl:
       process.env.NUXT_ESTIMATOR_API_URL || "http://52.204.215.130/estimator",
 

@@ -6,7 +6,11 @@ const LANDING_DOMAINS = [
 ]
 
 export const purgeLandingCache = async (cacheKey: CacheKey) => {
-    console.log(process.env.INTERNAL_CACHE_PURGE_SECRET)
+    const secret = process.env.INTERNAL_CACHE_PURGE_SECRET
+    if (!secret) {
+        throw new Error('INTERNAL_CACHE_PURGE_SECRET is not set')
+    }
+
     const results = await Promise.all(
         LANDING_DOMAINS.map(async (domain) => {
             try {
@@ -15,7 +19,7 @@ export const purgeLandingCache = async (cacheKey: CacheKey) => {
                     {
                         method: 'POST',
                         headers: {
-                            Authorization: `Bearer ${process.env.INTERNAL_CACHE_PURGE_SECRET}`,
+                            'X-Internal-Purge-Secret': secret,
                         },
                         body: { cacheKey },
                     },

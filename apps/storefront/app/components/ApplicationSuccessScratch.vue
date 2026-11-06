@@ -13,7 +13,7 @@
       <div
         class="absolute inset-3 z-0 flex flex-col items-center justify-center rounded-xl bg-white p-4 text-center border border-slate-200"
       >
-        <!-- THE VOUCHER CODE -->
+        <!-- THE PROMO CODE -->
         <p
           class="text-[#F49321] font-black text-5xl sm:text-6xl tracking-wide mb-1 [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff,_0_4px_10px_rgba(244,147,33,0.4)]"
         >

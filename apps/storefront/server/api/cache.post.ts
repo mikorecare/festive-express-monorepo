@@ -1,17 +1,22 @@
 import { CACHE_MAP } from '~~/server/utils/cache-map'
 
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event)
-    const { cacheKey } = body
-    const config = useRuntimeConfig()
-    const authToken = getHeader(event, 'Authorization')
+    const authToken = getHeader(event, 'X-Internal-Purge-Secret')
     const expectedSecret =
-        config.internalCachePurgeSecret ||
-        process.env.INTERNAL_CACHE_PURGE_SECRET
+        process.env.INTERNAL_CACHE_PURGE_SECRET ||
+        useRuntimeConfig().internalCachePurgeSecret
 
-    if (!authToken || authToken !== `Bearer ${expectedSecret}`) {
+    if (!expectedSecret) {
+        console.error('INTERNAL_CACHE_PURGE_SECRET is not set in runtime env')
+        throw createError({ statusCode: 500, message: 'Server misconfigured' })
+    }
+
+    if (!authToken || authToken !== expectedSecret) {
         throw createError({ statusCode: 401, message: 'Unauthorized' })
     }
+
+    const body = await readBody(event)
+    const { cacheKey } = body
 
     if (!cacheKey) {
         throw createError({
