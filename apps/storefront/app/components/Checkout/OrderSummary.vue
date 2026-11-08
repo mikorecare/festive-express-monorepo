@@ -16,8 +16,24 @@
           {{ item.options.c9_color }} LEDs
         </small>
       </div>
-      <span class="text-orange-500 font-bold text-sm">
-        ${{ (Number(item.price || 0) * item.quantity).toFixed(2) }}
+
+      <!-- Styled Item Price -->
+      <span
+        class="text-orange-500 font-bold text-sm inline-flex items-baseline"
+      >
+        <span
+          class="text-[0.9rem] font-extrabold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-0.5 translate-y-[-0.1em]"
+        >
+          $&nbsp;
+        </span>
+        <span class="font-extrabold leading-none price-text -tracking-[0.04em]">
+          {{
+            (Number(item.price || 0) * item.quantity).toLocaleString(
+              undefined,
+              { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+            )
+          }}
+        </span>
       </span>
     </div>
 
@@ -25,21 +41,79 @@
 
     <div class="flex justify-between text-sm py-1">
       <span class="text-gray-600">Subtotal</span>
-      <span class="font-bold">${{ cartTotal.toFixed(2) }}</span>
+      <span class="font-bold inline-flex items-baseline">
+        <span
+          class="text-[0.9rem] font-extrabold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-0.5 translate-y-[-0.1em]"
+        >
+          $&nbsp;
+        </span>
+        <span class="font-extrabold leading-none price-text -tracking-[0.04em]">
+          {{
+            cartTotal.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
+          }}
+        </span>
+      </span>
     </div>
+
     <div v-if="alacarteCartTotal > 0" class="flex justify-between text-sm py-1">
       <span class="text-gray-600">A la carte</span>
-      <span class="font-bold">${{ alacarteCartTotal.toFixed(2) }}</span>
+      <span class="font-bold inline-flex items-baseline">
+        <span
+          class="text-[0.9rem] font-extrabold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-0.5 translate-y-[-0.1em]"
+        >
+          $&nbsp;
+        </span>
+        <span class="font-extrabold leading-none price-text -tracking-[0.04em]">
+          {{
+            alacarteCartTotal.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
+          }}
+        </span>
+      </span>
     </div>
+
     <div class="flex justify-between text-sm py-1">
       <span class="text-gray-600">Estimated Taxes</span>
-      <span class="font-bold">${{ estimatedTax.toFixed(2) }}</span>
+      <span class="font-bold inline-flex items-baseline">
+        <span
+          class="text-[0.9rem] font-extrabold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-0.5 translate-y-[-0.1em]"
+        >
+          $&nbsp;
+        </span>
+        <span class="font-extrabold leading-none price-text -tracking-[0.04em]">
+          {{
+            estimatedTax.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
+          }}
+        </span>
+      </span>
     </div>
+
     <div class="flex justify-between text-sm py-1" v-if="appliedPromo">
       <span class="text-gray-600">Discount ({{ appliedPromo.code }})</span>
-      <span class="font-bold text-green-600"
-        >−${{ discountAmount(cartTotal).toFixed(2) }}</span
-      >
+      <span class="font-bold text-green-600 inline-flex items-baseline">
+        <span class="mr-0.5">−</span>
+        <span
+          class="text-[0.9rem] font-extrabold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-0.5 translate-y-[-0.1em]"
+        >
+          $&nbsp;
+        </span>
+        <span class="font-extrabold leading-none price-text -tracking-[0.04em]">
+          {{
+            discountAmount(cartTotal).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
+          }}
+        </span>
+      </span>
     </div>
 
     <div class="mt-3">
@@ -86,9 +160,25 @@
       class="flex justify-between items-center mt-3 pt-3 border-t-2 border-navy"
     >
       <span class="text-lg font-bold text-navy">Grand Total</span>
-      <span class="text-2xl font-bold text-orange-500"
-        >${{ grandTotal.toFixed(2) }}</span
+
+      <!-- Styled Grand Total -->
+      <span
+        class="text-2xl font-bold text-orange-500 inline-flex items-baseline"
       >
+        <span
+          class="text-[1.2rem] font-extrabold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-1 translate-y-[-0.1em]"
+        >
+          $&nbsp;
+        </span>
+        <span class="font-extrabold leading-none price-text -tracking-[0.04em]">
+          {{
+            grandTotal.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
+          }}
+        </span>
+      </span>
     </div>
 
     <div class="mt-4">
@@ -106,11 +196,13 @@
     </div>
 
     <button
-      class="w-full bg-orange-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-orange-600 transition disabled:opacity-50 disabled:cursor-not-allowed mt-4"
+      class="btn-3d-glossy btn-3d-glossy--orange w-full min-h-[56px] mt-4 text-lg font-extrabold uppercase tracking-wide"
       :disabled="isPaying || !isFormValid"
       @click="handlePay"
     >
-      {{ isPaying ? "Processing..." : "Confirm & Pay" }}
+      <span class="relative z-10">
+        {{ isPaying ? "Processing..." : "Confirm & Pay" }}
+      </span>
     </button>
 
     <slot name="turnstile"></slot>
@@ -140,12 +232,12 @@
     </ul>
 
     <!-- Legal Disclaimer & Terms Trigger -->
-    <p class="text-[10px] text-gray-400 mt-4 leading-relaxed text-center">
+    <p class="text-[10px] text-gray-700 mt-4 leading-relaxed text-center">
       By submitting this order, you agree to our
       <button
         type="button"
         @click="showTerms = true"
-        class="text-[#F49321] hover:text-[#e07e0e] underline font-semibold transition-colors"
+        class="text-[#F49321] hover:text-[#e07e0e] underline font-bold transition-colors"
       >
         Terms and Conditions
       </button>

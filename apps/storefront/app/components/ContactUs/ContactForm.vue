@@ -71,10 +71,10 @@
       v-else-if="stage < 4"
       aria-label="Contact form"
       @submit.prevent="submitForm"
-      class="relative bg-white rounded-xl shadow-lg border-4 border-[#1C2D5B] overflow-hidden"
+      class="relative bg-white rounded-2xl shadow-lg border-4 border-[#1C2D5B] overflow-hidden"
     >
       <!-- Header -->
-      <div class="bg-[#1C2D5B] py-3.5 px-4 text-center">
+      <div class="section-gloss bg-[#1C2D5B] py-3.5 px-4 text-center">
         <h3
           class="text-lg sm:text-xl font-bold text-white mb-0.5 leading-tight"
         >
@@ -194,7 +194,7 @@
 
         <button
           type="submit"
-          class="w-full min-h-[46px] inline-flex items-center justify-center gap-2 bg-[#1C2D5B] hover:bg-brand-orange active:scale-[0.99] text-white py-2.5 px-5 rounded-lg text-sm sm:text-base font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_3px_8px_rgba(28,45,91,0.2)] hover:shadow-[0_5px_12px_rgba(244,147,33,0.3)]"
+          class="w-full btn-gloss min-h-[46px] inline-flex items-center justify-center gap-2 bg-[#1C2D5B] hover:bg-brand-orange active:scale-[0.99] text-white py-2.5 px-5 rounded-full text-sm sm:text-base font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_3px_8px_rgba(28,45,91,0.2)] hover:shadow-[0_5px_12px_rgba(244,147,33,0.3)]"
           :disabled="isSubmitting || !turnstileVerified"
         >
           <span v-if="!isSubmitting">{{ submitLabel }}</span>

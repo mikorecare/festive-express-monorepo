@@ -449,3 +449,138 @@ html:hover {
 ::-webkit-scrollbar-thumb:hover {
   background: #e8851a;
 }
+
+/* =========================================================
+   Reusable 3D Glossy Button
+   Usage:  <a class="btn-3d-glossy">…</a>
+           <button class="btn-3d-glossy">…</button>
+   Color variants: btn-3d-glossy--orange (default) | --navy | --white
+   ========================================================= */
+.btn-3d-glossy {
+  --btn-bg: #f49321;
+  --btn-bg-hover: #1c2d5b;
+  --btn-fg: #ffffff;
+  --btn-fg-hover: #f49321;
+  --btn-glow: rgba(0, 0, 0, 0.35);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.6rem 2rem;
+  border: none;
+  border-radius: 50px;
+  text-decoration: none;
+  font-family: inherit;
+  color: var(--btn-fg);
+  background: var(--btn-bg);
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow:
+    0 6px 12px var(--btn-glow),
+    inset 0 2px 3px rgba(255, 255, 255, 0.6);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+  isolation: isolate;
+}
+
+/* Top gloss highlight */
+.btn-3d-glossy::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  right: 6px;
+  height: 45%;
+  border-radius: 40px 40px 20px 20px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Sweeping shine */
+.btn-3d-glossy::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -150%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.08) 60%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Optional: enable the continuous shine with this modifier */
+.btn-3d-glossy--shine::after {
+  animation: glossyShineContinuous 3s linear infinite;
+}
+
+.btn-3d-glossy:hover {
+  transform: translateY(-2px);
+  background: var(--btn-bg-hover);
+  color: var(--btn-fg-hover);
+  box-shadow:
+    0 8px 16px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.8);
+}
+
+.btn-3d-glossy:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.btn-3d-glossy:disabled,
+.btn-3d-glossy[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Keep inner content above the gloss layers */
+.btn-3d-glossy > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- Color variants ---- */
+.btn-3d-glossy--navy {
+  --btn-bg: #1c2d5b;
+  --btn-bg-hover: #f49321;
+  --btn-fg: #ffffff;
+  --btn-fg-hover: #ffffff;
+  --btn-glow: rgba(15, 28, 63, 0.45);
+}
+
+.btn-3d-glossy--white {
+  --btn-bg: #ffffff;
+  --btn-bg-hover: #1c2d5b;
+  --btn-fg: #1c2d5b;
+  --btn-fg-hover: #f49321;
+  --btn-glow: rgba(0, 0, 0, 0.2);
+}
+
+@keyframes glossyShineContinuous {
+  0% {
+    left: -150%;
+  }
+  100% {
+    left: 150%;
+  }
+}

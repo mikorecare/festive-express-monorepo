@@ -3,11 +3,11 @@
     <!-- Floating trigger -->
     <button
       type="button"
-      class="fixed bottom-[100px] right-[20px] z-[999] flex items-center justify-center bg-[#1C2D5B] rounded-full w-[64px] h-[64px] p-0 shadow-[0_8px_24px_rgba(0,0,0,0.35)] cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 max-lg:bottom-[160px] max-lg:right-[16px] max-sm:bottom-[130px] max-sm:right-[14px] max-sm:w-[48px] max-sm:h-[48px]"
+      class="fixed z-[999999] flex items-center justify-center bg-[#1C2D5B] rounded-full w-[64px] h-[64px] p-0 shadow-[0_8px_24px_rgba(0,0,0,0.35)] cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 bottom-[20px] right-[20px] top-auto max-lg:top-[16px] max-lg:right-[16px] max-lg:bottom-auto max-sm:top-[14px] max-sm:right-[14px] max-sm:w-[48px] max-sm:h-[48px]"
       :class="{ 'cart-shake': cartBump > 0 }"
       :key="cartBump"
       aria-label="Open cart"
-      @click="open = true"
+      @click="open = !open"
     >
       <div
         class="relative flex items-center justify-center bg-[#F49321] text-white w-[60px] h-[60px] rounded-full border-2 border-white max-sm:w-[44px] max-sm:h-[44px]"
@@ -94,7 +94,7 @@
               <div
                 v-for="item in cartItems"
                 :key="item.id"
-                class="flex flex-col gap-2"
+                class="flex flex-col gap-2 pb-4 border-b border-slate-100 last:border-0 last:pb-0"
               >
                 <NuxtImg
                   :src="item.product?.image_url || '/Images/placeholder.png'"
@@ -108,19 +108,107 @@
                   placeholder
                   @error="onImgError"
                 />
+
                 <div class="flex flex-col gap-1">
+                  <!-- Header: Name and Total -->
                   <div class="flex items-start justify-between">
                     <h3 class="text-xl font-bold uppercase text-[#f59e0b]">
                       {{ item.product?.name || "—" }}
                     </h3>
-                    <p class="shrink-0 text-sm font-bold text-[#f59e0b]">
-                      USD {{ lineTotal(item) }}
+                    <!-- Styled Total Price -->
+                    <p
+                      class="shrink-0 font-bold text-[#f59e0b] inline-flex items-baseline"
+                    >
+                      <span
+                        class="text-[0.8rem] font-extrabold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-0.5 translate-y-[-0.1em]"
+                      >
+                        $&nbsp;
+                      </span>
+                      <span
+                        class="text-sm font-extrabold leading-none price-text -tracking-[0.04em]"
+                      >
+                        {{
+                          Number(lineTotal(item)).toLocaleString(undefined, {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })
+                        }}
+                      </span>
                     </p>
                   </div>
-                  <div class="flex items-center justify-between">
-                    <p class="text-xs text-navy-500">
-                      Quantity: {{ item.quantity }}
-                    </p>
+
+                  <!-- Breakdown & Add-ons -->
+                  <div
+                    class="mt-1 bg-slate-50 p-3 rounded-md border border-slate-200 text-sm"
+                  >
+                    <!-- Add-ons list -->
+                    <div
+                      v-if="item.options?.addons?.length"
+                      class="mt-2 pt-2 border-t border-slate-200"
+                    >
+                      <p
+                        class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1"
+                      >
+                        Add-ons:
+                      </p>
+                      <div class="space-y-1">
+                        <div
+                          v-for="addon in item.options.addons"
+                          :key="addon.product_id"
+                          class="flex justify-between text-xs text-slate-600"
+                        >
+                          <span>{{ addon.quantity }}x {{ addon.name }}</span>
+
+                          <!-- Styled Add-on Price -->
+                          <span class="inline-flex items-baseline">
+                            <span
+                              class="text-[0.6rem] font-bold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-0.5 translate-y-[-0.1em]"
+                            >
+                              $&nbsp;
+                            </span>
+                            <span
+                              class="font-bold leading-none price-text -tracking-[0.04em]"
+                            >
+                              {{
+                                Number(
+                                  addon.quantity * Number(addon.price),
+                                ).toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })
+                              }}
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center justify-between mt-2">
+                    <!-- Quantity Selector -->
+                    <div
+                      class="flex items-center border border-slate-300 rounded-md"
+                    >
+                      <button
+                        type="button"
+                        class="px-2 py-0.5 text-slate-600 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed"
+                        :disabled="item.quantity <= 1"
+                        @click="updateQty(item.id, item.quantity - 1)"
+                      >
+                        -
+                      </button>
+                      <span class="px-3 text-sm font-semibold text-slate-800">
+                        {{ item.quantity }}
+                      </span>
+                      <button
+                        type="button"
+                        class="px-2 py-0.5 text-slate-600 hover:bg-slate-100"
+                        @click="updateQty(item.id, item.quantity + 1)"
+                      >
+                        +
+                      </button>
+                    </div>
+
                     <button
                       type="button"
                       class="text-xs text-red-500 hover:underline"
@@ -139,12 +227,29 @@
         <div class="bg-[#1C2D5B] px-6 pb-6 pt-5 text-white">
           <div class="mb-5 flex items-center justify-between text-base">
             <span>Subtotal:</span>
-            <span class="font-bold text-xl">USD {{ displayTotal }}</span>
+            <!-- Styled Subtotal -->
+            <span class="font-bold text-xl inline-flex items-baseline">
+              <span
+                class="text-[1rem] font-extrabold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-1 translate-y-[-0.1em]"
+              >
+                $&nbsp;
+              </span>
+              <span
+                class="font-black text-2xl leading-none price-text -tracking-[0.04em]"
+              >
+                {{
+                  Number(displayTotal).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                }}
+              </span>
+            </span>
           </div>
           <NuxtLink
             v-if="cartItems.length"
             to="/checkout"
-            class="group relative block w-full overflow-hidden rounded-full bg-[#F49321] py-3.5 text-center text-base font-bold text-white transition hover:bg-[#e67a00] before:pointer-events-none before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
+            class="group btn-3d-glossy btn-3d-glossy-orange relative block w-full overflow-hidden rounded-full bg-[#F49321] py-3.5 text-center text-base font-bold text-white transition hover:bg-[#e67a00] before:pointer-events-none before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
             @click="open = false"
           >
             <span class="relative z-10">Checkout</span>
@@ -178,8 +283,15 @@ const displayTotal = computed(() =>
 );
 const displayCount = computed(() => Number(cart.cartCount?.value || 0));
 
-const lineTotal = (item: any) =>
-  (Number(item.price || 0) * Number(item.quantity || 1)).toFixed(2);
+const lineTotal = (item: any) => {
+  const base = Number(item.price || 0);
+  const addonsTotal = (item.options?.addons || []).reduce(
+    (sum: number, addon: any) =>
+      sum + Number(addon.price || 0) * Number(addon.quantity || 0),
+    0,
+  );
+  return ((base + addonsTotal) * Number(item.quantity || 1)).toFixed(2);
+};
 
 const onImgError = (payload: string | Event) => {
   if (typeof payload === "string") {
@@ -207,6 +319,15 @@ const onEmptyImgError = (payload: string | Event) => {
 
 const removeItem = async (id: string | number) => {
   await cart.removeFromCart?.(id);
+  await cart.loadCart?.();
+};
+
+const updateQty = async (id: string | number, newQty: number) => {
+  if (newQty < 1) {
+    await removeItem(id);
+    return;
+  }
+  await cart.updateCartItemQty?.(id, newQty);
   await cart.loadCart?.();
 };
 

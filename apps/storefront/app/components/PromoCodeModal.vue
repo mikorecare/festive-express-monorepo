@@ -1,253 +1,235 @@
 <template>
-  <Teleport to="body">
-    <Transition name="modal-fade">
-      <div
-        v-if="isOpen"
-        class="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm overflow-y-auto"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="promo-code-modal-title"
-        @click.self="close"
-      >
-        <Transition name="modal-pop" appear>
-          <div
-            class="relative w-full max-w-[600px] mx-auto my-auto bg-[#1C2D5B] rounded-3xl shadow-2xl overflow-hidden font-poppins"
-          >
-            <!-- Close button -->
-            <button
-              type="button"
-              class="absolute top-3 right-3 z-30 w-8 h-8 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition-colors backdrop-blur-sm border border-white/20"
-              aria-label="Close"
-              @click="close"
-            >
-              <svg
-                class="w-4 h-4"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-              >
-                <path d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            <!-- ================= HEADER IMAGE ================= -->
+  <ClientOnly>
+    <Teleport to="body">
+      <Transition name="modal-fade">
+        <div
+          v-if="isOpen"
+          class="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm overflow-y-auto"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="promo-code-modal-title"
+          @click.self="close"
+        >
+          <Transition name="modal-pop" appear>
             <div
-              class="relative w-full h-[180px] sm:h-[240px] bg-[#1C2D5B] overflow-hidden flex flex-col justify-center"
+              class="relative w-full max-w-[600px] mx-auto my-auto bg-[#1C2D5B] rounded-3xl shadow-2xl overflow-hidden font-poppins"
             >
-              <!-- Background Image (Right Half Only) -->
-              <div class="absolute top-0 right-0 w-[55%] sm:w-1/2 h-full">
-                <img
-                  src="/New/PromoCode/promo-code-image.webp"
-                  alt="Promo Code background"
-                  class="w-full h-full object-contain object-right"
-                />
-                <div
-                  class="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-[#1C2D5B] to-transparent"
-                ></div>
-              </div>
-
-              <!-- Gradient for bottom text readability -->
-              <div
-                class="absolute inset-0 bg-gradient-to-t from-[#1C2D5B] via-transparent to-transparent opacity-80"
-              ></div>
-
-              <!-- Overlaid Title & Info -->
-              <div
-                class="absolute inset-y-0 left-0 flex flex-col justify-center pl-3 sm:pl-8 pr-4 z-10 w-full pointer-events-none"
+              <!-- Close button -->
+              <button
+                type="button"
+                class="absolute top-3 right-3 z-30 w-8 h-8 rounded-full bg-black/30 hover:bg-black/50 text-white flex items-center justify-center transition-colors backdrop-blur-sm border border-white/20"
+                aria-label="Close"
+                @click="close"
               >
-                <h3
-                  id="promo-code-modal-title"
-                  class="font-black italic uppercase leading-[1.05] origin-left mb-1"
-                  style="transform: skewX(-6deg) rotate(-3deg)"
+                <svg
+                  class="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
                 >
-                  <span
-                    class="outlined outlined-line1 block text-2xl sm:text-4xl text-white tracking-wide"
-                    data-text="You've got a"
-                  >
-                    You've got a
-                  </span>
+                  <path d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
 
-                  <span
-                    class="outlined outlined-line2 block text-3xl sm:text-5xl text-[#F49321] mt-1 tracking-tight"
-                    data-text="Promo Code!"
-                  >
-                    Promo Code!
-                  </span>
-                </h3>
-
-                <!-- Small Info Text (Full Width & Centered) -->
-                <p
-                  class="text-white text-[10px] sm:text-xs font-semibold leading-snug drop-shadow-md z-20 w-full text-center mt-2"
-                  style="transform: skewX(-6deg)"
-                >
-                  Enter your detail to claim your exclusive
-                  <span class="text-[#F49321] font-bold">$500</span> discount
-                  and bring the magic of
-                  <span class="text-[#F49321] font-bold">holiday lighting</span>
-                  to your home!
-                </p>
-              </div>
-            </div>
-
-            <!-- ================= BODY ================= -->
-            <div class="px-3 sm:px-5 pb-3 sm:pb-5">
-              <!-- The White Container -->
+              <!-- ================= HEADER IMAGE ================= -->
               <div
-                class="bg-white rounded-[20px] p-4 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)]"
+                class="relative w-full h-[120px] sm:h-[160px] bg-[#1C2D5B] overflow-hidden flex flex-col justify-center"
               >
-                <!-- SUCCESS STATE -->
-                <div v-if="isSuccess" class="space-y-3">
-                  <ApplicationSuccessScratch />
-
-                  <div class="text-center space-y-2">
-                    <p class="text-[#1C2D5B] text-sm font-bold leading-relaxed">
-                      Your promo code is on its way to
-                      <br />
-                      <span
-                        class="text-[#F49321] font-black break-all text-base"
-                        >{{ sentEmail }}</span
-                      >
-                    </p>
-                    <button
-                      type="button"
-                      class="w-full min-h-[46px] inline-flex items-center justify-center bg-[#1C2D5B] hover:bg-[#F49321] text-white py-2.5 rounded-xl text-base font-extrabold uppercase transition-all duration-200"
-                      @click="close"
-                    >
-                      Close
-                    </button>
-                  </div>
+                <!-- Background Image (Right Half Only) -->
+                <div class="absolute top-0 right-0 w-[55%] sm:w-1/2 h-full">
+                  <img
+                    src="/New/PromoCode/promo-code-image.webp"
+                    alt="Promo Code background"
+                    class="w-full h-full object-contain object-right"
+                  />
+                  <div
+                    class="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-[#1C2D5B] to-transparent"
+                  ></div>
                 </div>
 
-                <!-- FORM STATE -->
-                <form
-                  v-else
-                  aria-label="Promo Code form"
-                  @submit.prevent="submitForm"
-                  class="space-y-3"
+                <!-- Gradient for bottom text readability -->
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-[#1C2D5B] via-transparent to-transparent opacity-80"
+                ></div>
+
+                <!-- Overlaid Title & Info -->
+                <div
+                  class="absolute inset-y-0 left-0 flex flex-col justify-center pl-3 sm:pl-8 pr-4 z-10 w-full pointer-events-none"
                 >
-                  <label for="promo-code-name" class="block">
-                    <span
-                      class="block text-[11px] font-extrabold text-[#1C2D5B] uppercase tracking-wide mb-1"
-                    >
-                      Full Name <span class="text-[#F49321]">*</span>
-                    </span>
-                    <input
-                      id="promo-code-name"
-                      v-model="form.name"
-                      type="text"
-                      autocomplete="name"
-                      placeholder="Jane Doe"
-                      required
-                      class="form-input"
-                      :disabled="isSubmitting"
-                    />
-                  </label>
+                  <img
+                    src="/New/PromoCode/promo-code.webp"
+                    alt="Enter your details to claim your exclusive $500 discount and bring the magic of holiday lighting to your home!"
+                    class="relative w-full sm:w-[75%] h-20 sm:h-32 object-contain object-left drop-shadow-md"
+                    style="transform: skewX(-6deg)"
+                  />
+                </div>
+              </div>
 
-                  <label for="promo-code-email" class="block">
-                    <span
-                      class="block text-[11px] font-extrabold text-[#1C2D5B] uppercase tracking-wide mb-1"
-                    >
-                      Email <span class="text-[#F49321]">*</span>
-                    </span>
-                    <input
-                      id="promo-code-email"
-                      v-model="form.email"
-                      type="email"
-                      autocomplete="email"
-                      inputmode="email"
-                      placeholder="jane@example.com"
-                      required
-                      class="form-input"
-                      :disabled="isSubmitting"
-                    />
-                  </label>
+              <!-- ================= BODY ================= -->
+              <div class="px-3 pb-3 sm:px-4 sm:pb-4">
+                <!-- The White Container -->
+                <div
+                  class="bg-white rounded-[20px] p-4 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)]"
+                >
+                  <!-- SUCCESS STATE -->
+                  <div v-if="isSuccess" class="space-y-3">
+                    <ApplicationSuccessScratch />
 
-                  <!-- Turnstile -->
-                  <div>
-                    <TurnstileWidget
-                      ref="turnstileRef"
-                      :site-key="siteKey"
-                      :errors="turnstileErrors"
-                      :status="turnstileStatus"
-                      :status-type="turnstileStatusType"
-                      :status-class="turnstileStatusClass"
-                      :status-icon="turnstileStatusIcon"
-                      @success="onTurnstileSuccess"
-                      @error="onTurnstileError"
-                      @expired="onTurnstileExpired"
-                    />
+                    <div class="text-center space-y-2">
+                      <p
+                        class="text-[#1C2D5B] text-sm font-bold leading-relaxed"
+                      >
+                        Your promo code is on its way to
+                        <br />
+                        <span
+                          class="text-[#F49321] font-black break-all text-base"
+                          >{{ sentEmail }}</span
+                        >
+                      </p>
+                      <button
+                        type="button"
+                        class="w-full min-h-[46px] inline-flex items-center justify-center bg-[#1C2D5B] hover:bg-[#F49321] text-white py-2.5 rounded-xl text-base font-extrabold uppercase transition-all duration-200"
+                        @click="close"
+                      >
+                        Close
+                      </button>
+                    </div>
                   </div>
 
-                  <p
-                    v-if="error"
-                    class="text-xs sm:text-sm font-bold text-red-600 flex items-center gap-1"
+                  <!-- FORM STATE -->
+                  <form
+                    v-else
+                    aria-label="Promo Code form"
+                    @submit.prevent="submitForm"
+                    class="space-y-3"
                   >
-                    <svg
-                      class="w-4 h-4 shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    <label for="promo-code-name" class="block">
+                      <span
+                        class="block text-[11px] font-extrabold text-[#1C2D5B] uppercase tracking-wide mb-1"
+                      >
+                        Full Name <span class="text-[#F49321]">*</span>
+                      </span>
+                      <input
+                        id="promo-code-name"
+                        v-model="form.name"
+                        type="text"
+                        autocomplete="name"
+                        placeholder="Jane Doe"
+                        required
+                        class="form-input"
+                        :disabled="isSubmitting"
                       />
-                    </svg>
-                    {{ error }}
-                  </p>
+                    </label>
 
-                  <button
-                    type="submit"
-                    class="w-full min-h-[50px] inline-flex items-center justify-center bg-[#1C2D5B] hover:bg-[#F49321] text-white py-3 px-5 rounded-full text-base font-extrabold uppercase tracking-wide transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_0_#0f1c3f] hover:shadow-[0_4px_0_#c77415] hover:-translate-y-0.5"
-                    :disabled="isSubmitting || !turnstileVerified"
-                  >
-                    <span v-if="!isSubmitting">Send My Promo Code</span>
-                    <span v-else class="flex items-center justify-center gap-2">
+                    <label for="promo-code-email" class="block">
+                      <span
+                        class="block text-[11px] font-extrabold text-[#1C2D5B] uppercase tracking-wide mb-1"
+                      >
+                        Email <span class="text-[#F49321]">*</span>
+                      </span>
+                      <input
+                        id="promo-code-email"
+                        v-model="form.email"
+                        type="email"
+                        autocomplete="email"
+                        inputmode="email"
+                        placeholder="jane@example.com"
+                        required
+                        class="form-input"
+                        :disabled="isSubmitting"
+                      />
+                    </label>
+
+                    <!-- Turnstile -->
+                    <div>
+                      <TurnstileWidget
+                        ref="turnstileRef"
+                        :site-key="siteKey"
+                        :errors="turnstileErrors"
+                        :status="turnstileStatus"
+                        :status-type="turnstileStatusType"
+                        :status-class="turnstileStatusClass"
+                        :status-icon="turnstileStatusIcon"
+                        @success="onTurnstileSuccess"
+                        @error="onTurnstileError"
+                        @expired="onTurnstileExpired"
+                      />
+                    </div>
+
+                    <p
+                      v-if="error"
+                      class="text-xs sm:text-sm font-bold text-red-600 flex items-center gap-1"
+                    >
                       <svg
-                        class="animate-spin h-5 w-5 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-4 h-4 shrink-0"
                         fill="none"
+                        stroke="currentColor"
                         viewBox="0 0 24 24"
                       >
-                        <circle
-                          class="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          stroke-width="4"
-                        />
                         <path
-                          class="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      Sending...
-                    </span>
-                  </button>
+                      {{ error }}
+                    </p>
 
-                  <p
-                    class="text-[10px] font-bold text-slate-400 text-center leading-snug"
-                  >
-                    By submitting your email, you agree to receive emails from
-                    Festive Express about our services, scheduling, and
-                    appointment reminders. You may receive about 2-4 emails per
-                    month. You can unsubscribe at any time using the link in any
-                    email. Consent is not a condition of purchase.
-                  </p>
-                </form>
+                    <button
+                      type="submit"
+                      class="btn-3d-glossy btn-3d-glossy--navy w-full min-h-[50px] text-base font-extrabold uppercase tracking-wide"
+                      :disabled="isSubmitting || !turnstileVerified"
+                    >
+                      <span v-if="!isSubmitting">Send My Promo Code</span>
+                      <span
+                        v-else
+                        class="flex items-center justify-center gap-2"
+                      >
+                        <svg
+                          class="animate-spin h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            class="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            stroke-width="4"
+                          />
+                          <path
+                            class="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
+                        </svg>
+                        Sending...
+                      </span>
+                    </button>
+
+                    <p
+                      class="text-[11px] font-bold text-slate-700 text-center leading-snug"
+                    >
+                      By submitting your email, you agree to receive emails from
+                      Festive Express about our services, scheduling, and
+                      appointment reminders. You may receive about 2-4 emails
+                      per month. You can unsubscribe at any time using the link
+                      in any email. Consent is not a condition of purchase.
+                    </p>
+                  </form>
+                </div>
               </div>
             </div>
-          </div>
-        </Transition>
-      </div>
-    </Transition>
-  </Teleport>
+          </Transition>
+        </div>
+      </Transition>
+    </Teleport>
+  </ClientOnly>
 </template>
 
 <style scoped>
@@ -403,6 +385,7 @@ const turnstileStatusClass = computed(() => {
       return "text-gray-500";
   }
 });
+
 const turnstileStatusIcon = computed(() => {
   switch (turnstileStatusType.value) {
     case "success":
@@ -415,6 +398,7 @@ const turnstileStatusIcon = computed(() => {
       return "fas fa-info-circle";
   }
 });
+
 const onTurnstileSuccess = (token: string) => {
   turnstileToken.value = token;
   turnstileVerified.value = true;
@@ -422,6 +406,7 @@ const onTurnstileSuccess = (token: string) => {
   turnstileStatusType.value = "success";
   turnstileErrors.value.turnstile = "";
 };
+
 const onTurnstileError = () => {
   turnstileVerified.value = false;
   turnstileToken.value = "";
@@ -429,6 +414,7 @@ const onTurnstileError = () => {
   turnstileStatusType.value = "error";
   turnstileErrors.value.turnstile = "Please complete the security verification";
 };
+
 const onTurnstileExpired = () => {
   turnstileVerified.value = false;
   turnstileToken.value = "";
@@ -438,9 +424,12 @@ const onTurnstileExpired = () => {
   turnstileRef.value?.reset();
 };
 
+// Store the voucher intent globally, but do NOT open the modal
 const checkVoucherParams = () => {
+  if (!import.meta.client) return;
+
   if (route.query.q === "voucher" && route.query.d === "true") {
-    isOpen.value = true;
+    localStorage.setItem("hasVoucher", "true");
   }
 };
 
@@ -456,8 +445,6 @@ const submitForm = async () => {
   isSubmitting.value = true;
 
   try {
-    // --- REAL API SUBMIT (COMMENTED OUT) ---
-
     const response = await $fetch<{ success: boolean; error?: string }>(
       props.apiEndpoint,
       {
@@ -488,14 +475,6 @@ const submitForm = async () => {
         turnstileToken.value = "";
       }
     }
-
-    // // --- FAKE SUCCESS FOR TESTING (ACTIVE) ---
-    // sentEmail.value = form.value.email;
-    // isSuccess.value = true;
-    // form.value = { name: "", email: "" };
-    // turnstileRef.value?.reset();
-    // turnstileVerified.value = false;
-    // turnstileToken.value = "";
   } catch (err: any) {
     console.error("Voucher submit error:", err);
     error.value = err?.data?.message || "Network error. Please try again.";
@@ -508,6 +487,12 @@ const close = () => {
   isOpen.value = false;
   isSuccess.value = false;
 
+  // Remove the flag so it doesn't pop up again on refresh
+  if (import.meta.client) {
+    localStorage.removeItem("hasVoucher");
+  }
+
+  // Clean up URL if they are on the home page
   if (route.query.q || route.query.d) {
     const query = { ...route.query };
     delete query.q;
@@ -520,7 +505,22 @@ const close = () => {
   }
 };
 
+// 1. Watch query params ONLY to save to localStorage (does NOT open modal)
 watch(() => route.query, checkVoucherParams, { immediate: true });
+
+// 2. Watch route path ONLY to trigger the modal on /checkout
+watch(
+  () => route.path,
+  (newPath) => {
+    if (newPath === "/checkout" && import.meta.client) {
+      const hasVoucher = localStorage.getItem("hasVoucher");
+      if (hasVoucher === "true") {
+        isOpen.value = true;
+      }
+    }
+  },
+  { immediate: true },
+);
 
 defineExpose({
   open: () => {

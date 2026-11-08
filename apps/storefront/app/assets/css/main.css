@@ -706,3 +706,296 @@ ctm-chat::part(engage-message-bubble) {
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
+
+/* ===== 3D Glossy Button (scoped, self-contained) ===== */
+/* =========================================
+   BASE 3D GLOSSY (Navy)
+   ========================================= */
+.btn-3d-glossy {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border: none;
+  border-radius: 50px;
+  overflow: hidden;
+  cursor: pointer;
+  color: #fff;
+  background: #1c2d5b;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background-color 0.2s ease;
+  box-shadow:
+    0 6px 12px rgba(15, 28, 63, 0.45),
+    inset 0 2px 3px rgba(255, 255, 255, 0.4);
+}
+
+/* Top gloss */
+.btn-3d-glossy::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  right: 6px;
+  height: 45%;
+  border-radius: 40px 40px 20px 20px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Sweeping shine */
+.btn-3d-glossy::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -150%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.08) 60%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  z-index: 0;
+  animation: glossyShineContinuous 3s linear infinite;
+}
+
+/* Default Hover (Navy -> Orange) */
+.btn-3d-glossy:hover {
+  transform: translateY(-2px);
+  background: #f49321;
+  box-shadow:
+    0 8px 16px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.8);
+}
+
+.btn-3d-glossy:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.btn-3d-glossy:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Keep text/spinner above gloss */
+.btn-3d-glossy > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================
+   ORANGE 3D GLOSSY (Variant)
+   ========================================= */
+.btn-3d-glossy-orange {
+  background: #f49321;
+  box-shadow:
+    0 6px 12px rgba(244, 147, 33, 0.35), /* Orange-tinted shadow */
+    inset 0 2px 3px rgba(255, 255, 255, 0.6);
+}
+
+/* Orange Hover -> Darker Orange */
+.btn-3d-glossy-orange:hover {
+  background: #d97d14; /* Darker orange */
+  box-shadow:
+    0 8px 16px rgba(244, 147, 33, 0.45),
+    inset 0 2px 4px rgba(255, 255, 255, 0.8);
+}
+
+@keyframes glossyShineContinuous {
+  0% {
+    left: -150%;
+  }
+  100% {
+    left: 150%;
+  }
+}
+
+
+
+.section-gloss {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* 1. Upper Light reflection - Scaled for large sections */
+.section-gloss::before {
+  content: "";
+  position: absolute;
+  top: 4px; 
+  left: 8px; 
+  right: 8px;
+  /* Keeps the top wash thin (24px max) instead of stretching out */
+  height: 24px; 
+  border-radius: 12px 12px 6px 6px;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.0) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 2. Moving Highlight Sweep - Sharp and refined */
+.section-gloss::after {
+  content: "";
+  position: absolute;
+  top: -100%; 
+  left: -150%;
+  /* Oversized width ensures it fully covers a wide banner layout */
+  width: 300%; 
+  height: 300%;
+  /* Restructured gradient stops to keep the core reflection line narrow and sharp */
+  background: linear-gradient(60deg,
+    rgba(255, 255, 255, 0) 42%,
+    rgba(255, 255, 255, 0.04) 47%,
+    rgba(255, 255, 255, 0.22) 50%,
+    rgba(255, 255, 255, 0.04) 53%,
+    rgba(255, 255, 255, 0) 58%
+  );
+  transform: rotate(20deg);
+  pointer-events: none;
+  z-index: 0;
+  /* Slowed down to 4.5s for a smoother, premium feel on wide containers */
+  animation: sectionGlossSweep 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes sectionGlossSweep {
+  0%   { left: -150%; }
+  /* Extended travel range to handle wide screen variations cleanly */
+  100% { left: 100%; } 
+}
+
+.btn-gloss {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  /* Default to Navy */
+  background-color: #1C2D5B;
+  color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+/* Top curved gloss highlight */
+.btn-gloss::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  right: 6px;
+  height: 45%;
+  border-radius: 40px 40px 20px 20px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0.0) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Continuous sweeping shine */
+.btn-gloss::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -150%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.1) 40%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.1) 60%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  z-index: 0;
+  animation: glossyShineContinuous 4s linear infinite;
+}
+
+/* Default Hover (Navy darkens slightly and lifts) */
+.btn-gloss:hover {
+  transform: translateY(-2px);
+  background-color: #142142;
+  box-shadow:
+    0 8px 16px rgba(0, 0, 0, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.btn-gloss:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+.btn-gloss:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* -----------------------------------------
+   ORANGE VARIANT
+   ----------------------------------------- */
+.btn-gloss-orange {
+  background-color: #F49321;
+}
+
+.btn-gloss-orange:hover {
+  background-color: #d97d14; /* Darker orange */
+}
+
+/* -----------------------------------------
+   ANIMATION
+   ----------------------------------------- */
+@keyframes glossyShineContinuous {
+  0% {
+    left: -150%;
+  }
+  100% {
+    left: 150%;
+  }
+}
+
+.text-outline {
+  --w: 2px;
+  --o: #fff;
+  --d: calc(var(--w) * 0.707);
+  --a: calc(var(--w) * 0.924);
+  --b: calc(var(--w) * 0.383);
+  text-shadow:
+    var(--w) 0 var(--o),
+    calc(var(--w) * -1) 0 var(--o),
+    0 var(--w) var(--o),
+    0 calc(var(--w) * -1) var(--o),
+    var(--d) var(--d) var(--o),
+    calc(var(--d) * -1) var(--d) var(--o),
+    var(--d) calc(var(--d) * -1) var(--o),
+    calc(var(--d) * -1) calc(var(--d) * -1) var(--o),
+    var(--a) var(--b) var(--o),
+    calc(var(--a) * -1) var(--b) var(--o),
+    var(--a) calc(var(--b) * -1) var(--o),
+    calc(var(--a) * -1) calc(var(--b) * -1) var(--o),
+    var(--b) var(--a) var(--o),
+    calc(var(--b) * -1) var(--a) var(--o),
+    var(--b) calc(var(--a) * -1) var(--o),
+    calc(var(--b) * -1) calc(var(--a) * -1) var(--o);
+  -webkit-font-smoothing: antialiased;
+}

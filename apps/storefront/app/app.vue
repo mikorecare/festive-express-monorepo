@@ -7,7 +7,7 @@
     <Footer />
     <FloatingCart />
     <CookieConsent />
-    <ChatWidget ref="chatWidget" />
+    <!-- <ChatWidget ref="chatWidget" /> -->
 
     <!-- Mobile-only bottom nav -->
     <MobileNav class="lg:hidden" />

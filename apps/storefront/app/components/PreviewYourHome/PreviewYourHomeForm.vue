@@ -5,7 +5,7 @@
     <div>
       <label
         for="estimator-address"
-        class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-gray-700 mb-1.5"
+        class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-navy mb-1.5"
       >
         Property address *
       </label>
@@ -46,7 +46,7 @@
     <div>
       <label
         for="estimator-photo"
-        class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-gray-700 mb-1.5"
+        class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-navy mb-1.5"
       >
         Photo of your home
         <span class="text-xs font-normal text-gray-400">(optional)</span>
@@ -61,15 +61,20 @@
       />
       <button
         type="button"
-        aria-controls="estimator-photo"
-        class="w-full px-3 py-2.5 lg:px-4 lg:py-3 border-2 border-dashed border-gray-300 rounded-[14px] hover:border-brand-orange hover:bg-orange-50 transition-colors text-[14px] sm:text-[15px] lg:text-[16px] text-gray-600 flex items-center justify-between gap-2"
+        class="w-full px-3 py-2 border-2 border-dashed border-gray-300 rounded-[14px] ... flex items-center gap-3"
         @click="fileInput?.click()"
       >
-        <span class="truncate text-left">{{
-          imagePreview ? "Change photo" : "Upload a photo (optional)"
+        <img
+          v-if="imagePreview"
+          :src="imagePreview"
+          alt="Your uploaded home"
+          class="h-9 w-12 rounded-md object-cover"
+        />
+        <span class="truncate text-left flex-1">{{
+          imagePreview ? "Change photo" : "Add a photo (optional)"
         }}</span>
         <i
-          class="fa-solid fa-upload flex-shrink-0 text-[22px] sm:text-[26px] text-[#1C2D5B]"
+          class="fa-solid fa-upload text-[18px] text-[#1C2D5B]"
           aria-hidden="true"
         ></i>
       </button>
@@ -87,7 +92,7 @@
       <div class="min-w-0">
         <span
           id="estimator-package-label"
-          class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-gray-700 mb-1.5"
+          class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-navy mb-1.5"
         >
           Your package
         </span>
@@ -116,7 +121,7 @@
       <div class="min-w-0">
         <span
           id="estimator-color-label"
-          class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-gray-700 mb-1.5"
+          class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-navy mb-1.5"
         >
           Light color
         </span>
@@ -152,7 +157,7 @@
     </div>
 
     <!-- Contact Info -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <div class="grid grid-cols-2 gap-3">
       <div>
         <label
           for="estimator-name"
@@ -212,18 +217,20 @@
     </div>
 
     <!-- Turnstile -->
-    <TurnstileWidget
-      ref="turnstileRef"
-      :site-key="siteKey"
-      :errors="turnstileErrors"
-      :status="turnstileStatus"
-      :status-type="turnstileStatusType"
-      :status-class="turnstileStatusClass"
-      :status-icon="turnstileStatusIcon"
-      @success="onTurnstileSuccess"
-      @error="onTurnstileError"
-      @expired="onTurnstileExpired"
-    />
+    <div class="origin-center scale-[0.8] -mb-3 h-[52px]">
+      <TurnstileWidget
+        ref="turnstileRef"
+        :site-key="siteKey"
+        :errors="turnstileErrors"
+        :status="turnstileStatus"
+        :status-type="turnstileStatusType"
+        :status-class="turnstileStatusClass"
+        :status-icon="turnstileStatusIcon"
+        @success="onTurnstileSuccess"
+        @error="onTurnstileError"
+        @expired="onTurnstileExpired"
+      />
+    </div>
 
     <!-- Error -->
     <div
@@ -239,7 +246,7 @@
     <!-- Submit Buttons -->
     <div class="space-y-2 pt-1">
       <button
-        class="w-full bg-brand-orange text-[15px] sm:text-[16px] lg:text-[18px] tracking-wide text-white font-semibold py-3 px-4 rounded-[14px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
+        class="w-full btn-gloss bg-brand-orange text-[15px] sm:text-[16px] lg:text-[18px] tracking-wide text-white font-semibold py-3 px-4 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
         @click="submitRender(false)"
         :disabled="isLoading || !turnstileVerified"
       >
@@ -253,7 +260,7 @@
         </span>
       </button>
       <button
-        class="w-full border border-gray-300 hover:bg-gray-50 text-[14px] sm:text-[15px] lg:text-[16px] text-gray-700 font-semibold py-2.5 px-4 rounded-[14px] transition-colors"
+        class="w-full border border-gray-300 hover:bg-gray-50 text-[14px] sm:text-[15px] lg:text-[16px] text-navy font-semibold py-2.5 px-4 rounded-[14px] transition-colors"
         @click="submitRender(true)"
         :disabled="isLoading || !turnstileVerified"
       >
@@ -281,20 +288,20 @@
           @click.self="showPackageModal = false"
         >
           <div
-            class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-y-auto"
+            class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-hidden"
           >
             <div
-              class="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between z-10"
+              class="sticky btn-gloss bg-[#1C2F5B] top-0 border-b border-gray-200 px-4 py-3 flex items-center justify-between z-10"
             >
               <h3
                 id="package-modal-heading"
-                class="text-[15px] sm:text-[16px] lg:text-[17px] font-bold text-[#1C2F5B]"
+                class="tracking-wide text-[15px] sm:text-[16px] lg:text-[17px] font-bold text-brand-orange"
               >
                 Select your package
               </h3>
               <button
                 type="button"
-                class="text-gray-400 hover:text-gray-700 text-lg leading-none p-1"
+                class="text-gray-400 hover:text-navy text-lg leading-none p-1"
                 @click="showPackageModal = false"
                 aria-label="Close"
               >
@@ -314,7 +321,7 @@
                   v-for="pkg in packageOptions"
                   :key="pkg.id"
                   type="button"
-                  class="px-1.5 pt-2 pb-2.5 border-2 rounded-[14px] transition-all flex flex-col items-center relative bg-[#1C2F5B] overflow-visible text-center min-w-0"
+                  class="px-1.5 btn-gloss pt-2 pb-2.5 border-2 rounded-[14px] transition-all flex flex-col items-center relative bg-[#1C2F5B] overflow-visible text-center min-w-0"
                   :class="
                     selectedPackage === pkg.id
                       ? '!border-[#F7931E] !border-4'
@@ -330,7 +337,7 @@
                     v-if="pkg.title"
                     :src="pkg.title"
                     :alt="pkg.name"
-                    class="h-auto max-h-[38px] sm:max-h-[42px] w-auto object-contain"
+                    class="h-auto max-h-[38px] sm:max-h-[42px] w-auto object-contain z-[99999999]"
                     @error="
                       (e) => {
                         const img = e.target as HTMLImageElement;
@@ -357,7 +364,7 @@
                   <span
                     class="text-white font-normal text-[11px] sm:text-sm leading-none mt-0.5"
                   >
-                     Per Season
+                    Per Season
                   </span>
 
                   <NuxtImg
@@ -402,7 +409,7 @@
               </h3>
               <button
                 type="button"
-                class="text-gray-400 hover:text-gray-700 text-lg leading-none p-1"
+                class="text-gray-400 hover:text-navy text-lg leading-none p-1"
                 @click="showColorModal = false"
                 aria-label="Close"
               >
@@ -420,7 +427,7 @@
                   :class="
                     selectedScheme === color.scheme
                       ? '!border-[#F7931E] border-4 bg-orange-50 text-brand-orange'
-                      : 'border-gray-300 hover:border-gray-400 text-gray-700'
+                      : 'border-gray-300 hover:border-gray-400 text-navy'
                   "
                   :aria-pressed="selectedScheme === color.scheme"
                   :aria-label="color.label"
@@ -614,15 +621,18 @@ onUnmounted(() => {
 
 <style scoped>
 .form-input {
-  border-radius: 14px;
-  border: 2px solid gray !important;
-  height: 48px;
+  border-radius: 12px;
+  border: 1px solid #9ca3af !important;
+  height: 42px;
+  font-size: 16px; /* keeps iOS Safari from zooming in on focus */
   background-color: #f8f9fa;
 }
 
 @media (min-width: 1024px) {
   .form-input {
     height: 52px;
+    border: 2px solid gray !important;
+    border-radius: 14px;
   }
 }
 

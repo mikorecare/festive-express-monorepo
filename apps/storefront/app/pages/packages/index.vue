@@ -101,7 +101,7 @@
               :src="pkg.title_image_url || pkg.icon_url || undefined"
               :alt="pkg.name"
               loading="lazy"
-              class="pkg-title-img h-10 sm:h-16 md:h-24 w-auto object-contain drop-shadow-md shrink-0"
+              class="pkg-title-img h-20 w-auto object-contain drop-shadow-md shrink-0"
             />
             <h2
               class="text-lg sm:text-2xl md:text-3xl font-bold text-[#1C2D5B] truncate"
@@ -153,15 +153,27 @@
 
           <div
             v-else
-            class="package-price flex items-baseline justify-end gap-1 sm:gap-1.5 shrink-0"
+            class="package-price flex flex-col items-end justify-center shrink-0"
           >
-            <div
-              class="text-xl sm:text-3xl md:text-4xl font-extrabold leading-none text-[#f59e0b]"
-            >
-              ${{ Math.round(Number(selectedPrice(pkg)) || 0) }}
+            <!-- Price with Styled Dollar Sign -->
+            <div class="inline-flex items-baseline text-[#f59e0b]">
+              <span
+                class="text-[1.8rem] sm:text-[2.25rem] md:text-[3.25rem] font-extrabold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-1.5 sm:-mr-2.5 translate-y-[-0.1em]"
+              >
+                $&nbsp;
+              </span>
+              <span
+                class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-none price-text -tracking-[0.04em]"
+              >
+                {{
+                  Math.round(Number(selectedPrice(pkg)) || 0).toLocaleString()
+                }}
+              </span>
             </div>
+
+            <!-- Per Season Text -->
             <div
-              class="text-[0.65rem] sm:text-sm md:text-base font-semibold text-slate-600 whitespace-nowrap"
+              class="text-[0.8rem] sm:text-base md:text-lg font-bold text-slate-600 whitespace-nowrap mt-1 sm:mt-2 uppercase tracking-wide"
             >
               Per Season
             </div>
@@ -176,7 +188,7 @@
             class="media-column lg:col-span-7 flex flex-col bg-white rounded-xl shadow-sm border border-slate-100"
           >
             <div
-              class="image-wrapper relative bg-slate-100 group"
+              class="image-wrapper relative bg-slate-100 group cursor-pointer"
               @click.stop="onPackageImageClick(pkg)"
             >
               <div
@@ -447,51 +459,20 @@
               </p>
             </div>
 
-            <button
-              type="button"
-              class="group relative overflow-hidden w-full bg-[#f59e0b] hover:bg-[#1C2D5B] text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
-              :disabled="
-                !selectedSku(pkg)?.id || addingId === selectedSku(pkg)?.id
-              "
-              :aria-label="`Add ${pkg.name} to cart`"
-              @click="addPackageSku(pkg)"
+            <!-- Redirect to Slug Page Button -->
+            <NuxtLink
+              :to="`/packages/${pkg.slug}#package`"
+              class="pkg-select-btn btn-gloss group relative overflow-hidden w-[85%] mx-auto flex items-center justify-center bg-brand-orange border-2 border-white rounded-[50px] py-[12px] sm:py-[14px] px-[16px] text-[1.4rem] md:text-[2.1rem] uppercase font-bold tracking-[0.5px] cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out hover:bg-[#1C2D5B]"
+              :aria-label="`View details for ${pkg.name}`"
             >
               <span
-                v-if="addingId === selectedSku(pkg)?.id"
-                class="inline-flex items-center justify-center gap-2"
+                class="pkg-select-label relative z-10 inline-flex items-center justify-center gap-2"
               >
-                <svg
-                  class="animate-spin h-4 w-4 sm:h-5 sm:w-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  aria-hidden="true"
-                >
-                  <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                  />
-                  <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                  />
-                </svg>
-                Adding...
+                <span class="pkg-select-prefix">Order</span>
+                <span class="pkg-select-name">{{ pkg.name }}</span>
+                <span class="pkg-select-prefix">Now</span>
               </span>
-              <span v-else class="text-sm sm:text-base">
-                Add
-                <span
-                  class="text-navy font-bold uppercase group-hover:text-white transition-colors"
-                >
-                  {{ pkg.name }}
-                </span>
-                to Cart
-              </span>
-            </button>
+            </NuxtLink>
           </div>
         </div>
       </div>
@@ -648,6 +629,15 @@
 </template>
 
 <script setup lang="ts">
+import type {
+  ApiResponse,
+  PackageRow,
+  SkuRow,
+  InclusionSpec,
+  Hotspot,
+  PackageInclusion,
+} from "./types";
+
 useHead({
   title: "Packages",
   link: [
@@ -660,72 +650,6 @@ useHead({
   ],
 });
 
-type InclusionItem = {
-  id: string;
-  name: string;
-  slug?: string;
-  image_url?: string | null;
-};
-
-type PackageInclusion = {
-  quantity: number;
-  is_included: boolean;
-  label_override?: string | null;
-  sort_order?: number;
-  inclusion_items?: InclusionItem | null;
-};
-
-type PackageRow = {
-  id: string | number;
-  name: string;
-  slug: string;
-  description?: string | null;
-  price?: number | string | null;
-  sale_price?: number | string | null;
-  title_image_url?: string | null;
-  icon_url?: string | null;
-  is_popular?: boolean;
-  sort_order?: number;
-  package_inclusions?: PackageInclusion[];
-};
-
-type SkuRow = {
-  id: string | number;
-  name: string;
-  price?: number | string | null;
-  sale_price?: number | string | null;
-  stock?: number | null;
-  image_url?: string | null;
-  package_id: string | number;
-  color_key?: string | null;
-  color_label?: string | null;
-};
-
-type Hotspot = {
-  key: string;
-  top: string;
-  left: string;
-  label: string;
-  thumb?: string;
-};
-
-type InclusionSpec = {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  color_options: string[] | any;
-  features: string[] | any;
-  specifications: Record<string, string> | any;
-  sort_order: number;
-};
-
-type ApiResponse<T> = {
-  success: boolean;
-  data: T;
-};
-
-const cart = useCart();
 const {
   data: landingPayload,
   pending,
@@ -755,7 +679,6 @@ const settings = computed(
 
 const loading = computed(() => pending.value);
 const selectedSkuId = ref<Record<string, string | number>>({});
-const cartBump = useState("cart-bump", () => 0);
 const { colors, loadColors, swatchStyle, byKey } = useProductColors();
 
 const effectiveSkuId = (pkg: PackageRow): string | number | null => {
@@ -781,7 +704,6 @@ const skusFor = (packageId: string | number) => {
 
 /**
  * Preload every SKU + package image so color changes are instant.
- * Uses Image() so the browser caches them behind the scenes.
  */
 watch(
   landingPayload,
@@ -814,7 +736,6 @@ const { data: inclusionResponse, pending: specsLoading } = useFetch<{
 const inclusionItems = computed(() => inclusionResponse.value?.data || []);
 
 const activeHotspot = ref<Record<string, string | null>>({});
-const addingId = ref<string | number | null>(null);
 
 const packageRefs = ref<Map<string | number, HTMLElement>>(new Map());
 const imageRefs = ref<Map<string | number, HTMLImageElement>>(new Map());
@@ -976,68 +897,6 @@ const setImageRef = (
   }
 };
 
-const cartModal = reactive({
-  open: false,
-  type: "success" as "success" | "error",
-  title: "",
-  message: "",
-});
-
-const openCartModal = (
-  type: "success" | "error",
-  title: string,
-  message: string,
-) => {
-  cartModal.type = type;
-  cartModal.title = title;
-  cartModal.message = message;
-  cartModal.open = true;
-};
-
-const addPackageSku = async (pkg: PackageRow) => {
-  const sku = selectedSku(pkg);
-  if (!sku?.id) {
-    openCartModal(
-      "error",
-      "Select an option",
-      "Please choose a color before adding to cart.",
-    );
-    return;
-  }
-
-  addingId.value = sku.id;
-  try {
-    const ok = await cart.addToCart(sku.id, 1);
-
-    if (ok !== false) {
-      if (typeof cart.loadCart === "function") await cart.loadCart();
-
-      cartBump.value++;
-
-      openCartModal(
-        "success",
-        "Added to cart",
-        `${pkg.name || "Package"} was added to your cart.`,
-      );
-    } else {
-      openCartModal(
-        "error",
-        "Could not add",
-        "Something went wrong. Please try again.",
-      );
-    }
-  } catch (e: any) {
-    console.error("addPackageSku", e);
-    openCartModal(
-      "error",
-      "Could not add",
-      e?.message || "Something went wrong.",
-    );
-  } finally {
-    addingId.value = null;
-  }
-};
-
 const activeLightboxImage = ref<string | null>(null);
 
 const openLightbox = (pkg: PackageRow) => {
@@ -1115,8 +974,6 @@ onMounted(async () => {
 
   if (!import.meta.client) return;
 
-  await cart.loadCart();
-
   await scrollToPackage();
 
   const onKey = (e: KeyboardEvent) => {
@@ -1142,31 +999,5 @@ onMounted(async () => {
 .img-fade-leave-active {
   position: absolute;
   inset: 0;
-}
-
-.text-outline {
-  --w: 2px; /* outline thickness, overridden per breakpoint */
-  --o: #fff; /* outline color */
-  --d: calc(var(--w) * 0.707);
-  --a: calc(var(--w) * 0.924);
-  --b: calc(var(--w) * 0.383);
-  text-shadow:
-    var(--w) 0 var(--o),
-    calc(var(--w) * -1) 0 var(--o),
-    0 var(--w) var(--o),
-    0 calc(var(--w) * -1) var(--o),
-    var(--d) var(--d) var(--o),
-    calc(var(--d) * -1) var(--d) var(--o),
-    var(--d) calc(var(--d) * -1) var(--o),
-    calc(var(--d) * -1) calc(var(--d) * -1) var(--o),
-    var(--a) var(--b) var(--o),
-    calc(var(--a) * -1) var(--b) var(--o),
-    var(--a) calc(var(--b) * -1) var(--o),
-    calc(var(--a) * -1) calc(var(--b) * -1) var(--o),
-    var(--b) var(--a) var(--o),
-    calc(var(--b) * -1) var(--a) var(--o),
-    var(--b) calc(var(--a) * -1) var(--o),
-    calc(var(--b) * -1) calc(var(--a) * -1) var(--o);
-  -webkit-font-smoothing: antialiased;
 }
 </style>

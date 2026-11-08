@@ -4,12 +4,10 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event);
     const config = useRuntimeConfig();
 
+    // 1. Verify Turnstile
     if (!body.turnstile_token) {
         console.warn('Missing Turnstile token');
-        return {
-            success: false,
-            error: 'Security verification required'
-        };
+        return { success: false, error: 'Security verification required' };
     }
 
     try {
@@ -17,9 +15,7 @@ export default defineEventHandler(async (event) => {
             'https://challenges.cloudflare.com/turnstile/v0/siteverify',
             {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: new URLSearchParams({
                     secret: config.turnstile?.secretKey || process.env.NUXT_TURNSTILE_SECRET_KEY || "",
                     response: body.turnstile_token,
@@ -32,25 +28,17 @@ export default defineEventHandler(async (event) => {
 
         if (!turnstileResult.success) {
             console.warn('Turnstile verification failed:', turnstileResult);
-            return {
-                success: false,
-                error: 'Security verification failed'
-            };
+            return { success: false, error: 'Security verification failed' };
         }
     } catch (error) {
         console.error('Turnstile verification error:', error);
-        return {
-            success: false,
-            error: 'Security verification failed'
-        };
+        return { success: false, error: 'Security verification failed' };
     }
 
+    // 2. Prevent duplicate orders
     if (!body.transaction_id) {
         console.warn('Missing transaction ID');
-        return {
-            success: false,
-            error: 'Transaction ID required'
-        };
+        return { success: false, error: 'Transaction ID required' };
     }
 
     const supabase = getSupabase();
@@ -70,6 +58,7 @@ export default defineEventHandler(async (event) => {
         };
     }
 
+    // 3. Extract Data
     const {
         first_name,
         last_name,
@@ -77,10 +66,6 @@ export default defineEventHandler(async (event) => {
         billing_phone,
         billing_address,
         billing_postcode,
-        shipping_address,
-        shipping_postcode,
-        preferred_install_dates,
-        removal_dates,
         customer_note,
         items,
         subtotal,
@@ -93,6 +78,7 @@ export default defineEventHandler(async (event) => {
         promo_code_id
     } = body;
 
+    // 4. Create the Order
     const result = await supabase
         .from('orders')
         .insert({
@@ -100,12 +86,12 @@ export default defineEventHandler(async (event) => {
             billing_last_name: last_name,
             billing_email: email,
             billing_phone: billing_phone || '',
-            billing_address: billing_address || shipping_address || '',
-            billing_postcode: billing_postcode || shipping_postcode || '',
-            shipping_address: shipping_address || billing_address || '',
-            shipping_postcode: shipping_postcode || billing_postcode || '',
-            preferred_install_dates: preferred_install_dates || [],
-            removal_dates: removal_dates || [],
+            billing_address: billing_address || '',
+            billing_postcode: billing_postcode || '',
+            shipping_address: billing_address || '',
+            shipping_postcode: billing_postcode || '',
+            preferred_install_dates: items[0]?.preferred_install_dates || [],
+            removal_dates: items[0]?.removal_dates || [],
             customer_note: customer_note || null,
             items: items || [],
             subtotal: subtotal || 0,
@@ -134,6 +120,7 @@ export default defineEventHandler(async (event) => {
 
     const order = result.data as any;
 
+    // 5. Log Timeline
     await supabase
         .from('order_timeline')
         .insert({
