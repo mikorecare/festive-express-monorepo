@@ -146,32 +146,38 @@ let autoScrollInterval: ReturnType<typeof setInterval> | null = null;
 let isInteracting = false;
 let interactTimeout: ReturnType<typeof setTimeout> | null = null;
 
-const scrollToNext = () => {
-  if (!carouselRef.value || window.innerWidth >= 768) return; // Only auto-scroll on mobile
+// Track which card is currently "active" so we can advance reliably
+const currentIndex = ref(0);
 
+const scrollToIndex = (index: number) => {
+  if (!carouselRef.value) return;
   const container = carouselRef.value;
-  const cardWidth = container.scrollWidth / steps.length;
+  const cards = container.querySelectorAll<HTMLElement>("article");
+  if (!cards.length) return;
 
-  // Calculate next scroll position
-  let nextScroll = container.scrollLeft + cardWidth;
+  const safeIndex = ((index % cards.length) + cards.length) % cards.length;
+  currentIndex.value = safeIndex;
 
-  // If we're at the end, loop back to the start
-  if (nextScroll >= container.scrollWidth - container.clientWidth - 10) {
-    nextScroll = 0;
-  }
+  const card = cards[safeIndex];
+  if (!card) return;
 
   container.scrollTo({
-    left: nextScroll,
+    left: card.offsetLeft,
     behavior: "smooth",
   });
 };
 
+const scrollToNext = () => {
+  if (!carouselRef.value || window.innerWidth >= 768) return;
+  scrollToIndex(currentIndex.value + 1);
+};
+
 const startAutoScroll = () => {
   stopAutoScroll();
-  if (window.innerWidth < 768) {
+  if (typeof window !== "undefined" && window.innerWidth < 768) {
     autoScrollInterval = setInterval(() => {
       if (!isInteracting) scrollToNext();
-    }, 4000); // 4 seconds per slide
+    }, 4000);
   }
 };
 
@@ -182,13 +188,31 @@ const stopAutoScroll = () => {
   }
 };
 
-// Pause auto-scroll when user is swiping
+// Pause auto-scroll while user swipes, then resync currentIndex from scroll position
 const handleScroll = () => {
   isInteracting = true;
   if (interactTimeout) clearTimeout(interactTimeout);
   interactTimeout = setTimeout(() => {
     isInteracting = false;
-  }, 1000); // Resume 1 second after they stop scrolling
+  }, 1000);
+
+  if (!carouselRef.value) return;
+  const container = carouselRef.value;
+  const cards = Array.from(container.querySelectorAll<HTMLElement>("article"));
+  if (!cards.length) return;
+
+  // Find the card closest to the current scroll position
+  const scrollLeft = container.scrollLeft;
+  let closest = 0;
+  let minDist = Infinity;
+  cards.forEach((card, i) => {
+    const dist = Math.abs(card.offsetLeft - scrollLeft);
+    if (dist < minDist) {
+      minDist = dist;
+      closest = i;
+    }
+  });
+  currentIndex.value = closest;
 };
 
 onMounted(() => {
