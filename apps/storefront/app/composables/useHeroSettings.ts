@@ -1,6 +1,6 @@
 
 export const useHeroSettings = () => {
-  const heroH1White = useState("heroH1White", () => "Holiday Decorating From Your Device.")
+  const heroH1White = useState("heroH1White", () => "Holiday Lighting From Your Device.")
   const heroH1Orange = useState("heroH1Orange", () => "")
   const heroDescription1 = useState(
     "heroDescription1",

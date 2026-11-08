@@ -1,62 +1,11 @@
 <template>
-  <header class="sticky top-0 z-[9999] w-full shadow-md" role="banner">
-    <!-- Top Bar -->
+  <header class="w-full" role="banner">
+    <!-- Top Bar (NOT sticky — scrolls away) -->
     <div class="bg-navy text-white py-2.5 text-base font-semibold">
       <div class="w-full px-4 mx-auto max-w-7xl">
         <div
           class="flex flex-col md:flex-row items-center justify-between gap-1 md:gap-0"
         >
-          <!-- Social Icons (desktop only) -->
-          <!-- <div
-            class="hidden md:flex gap-3 md:gap-4 justify-center md:justify-start w-full md:w-auto order-1"
-          >
-            <a
-              v-if="settings.social_facebook"
-              :href="settings.social_facebook"
-              target="_blank"
-              rel="noopener"
-              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49321] hover:-translate-y-1"
-              aria-label="Facebook"
-              ><i class="fab fa-facebook"></i
-            ></a>
-            <a
-              v-if="settings.social_instagram"
-              :href="settings.social_instagram"
-              target="_blank"
-              rel="noopener"
-              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49321] hover:-translate-y-1"
-              aria-label="Instagram"
-              ><i class="fab fa-instagram"></i
-            ></a>
-            <a
-              v-if="settings.social_x"
-              :href="settings.social_x"
-              target="_blank"
-              rel="noopener"
-              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49321] hover:-translate-y-1"
-              aria-label="X"
-              ><i class="fab fa-x-twitter"></i
-            ></a>
-            <a
-              v-if="settings.social_youtube"
-              :href="settings.social_youtube"
-              target="_blank"
-              rel="noopener"
-              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49321] hover:-translate-y-1"
-              aria-label="YouTube"
-              ><i class="fab fa-youtube"></i
-            ></a>
-            <a
-              v-if="settings.social_pinterest"
-              :href="settings.social_pinterest"
-              target="_blank"
-              rel="noopener"
-              class="text-white text-[1.1rem] md:text-[1.5rem] transition-all duration-300 hover:text-[#F49321] hover:-translate-y-1"
-              aria-label="Pinterest"
-              ><i class="fab fa-pinterest-p"></i
-            ></a>
-          </div> -->
-
           <div
             class="welcome text-[0.7rem] sm:text-sm md:text-base text-center md:flex-1 order-2"
           >
@@ -82,19 +31,40 @@
       </div>
     </div>
 
-    <!-- Main Header -->
-    <div class="bg-white py-2 md:py-3 transition-all duration-300 w-full">
+    <!-- Main Header (STICKY) -->
+    <div
+      class="sticky top-0 z-[9999] bg-white py-2 md:py-3 shadow-md transition-all duration-300 w-full"
+    >
       <div class="w-full px-4 mx-auto max-w-7xl">
+        <!-- Mobile: 3 equal columns (menu | logo | phone). Desktop: original row -->
         <div
-          class="flex items-center justify-between gap-2.5 md:gap-8 flex-nowrap"
+          class="grid grid-cols-3 items-center lg:flex lg:items-center lg:justify-between gap-2.5 md:gap-8"
         >
-          <!-- Logo -->
+          <!-- Mobile hamburger (left column) — glossy button, NO card/wrapper -->
+          <button
+            type="button"
+            class="mobile-menu-btn btn-secondary-2 justify-self-start lg:hidden"
+            aria-label="Open menu"
+            :aria-expanded="mobileMenuOpen"
+            @click="mobileMenuOpen = !mobileMenuOpen"
+          >
+            <span
+              class="hamburger-icon shrink-0"
+              :class="{ open: mobileMenuOpen }"
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
+          </button>
+
+          <!-- Logo (center column on mobile, normal flow on desktop) -->
           <NuxtLink
             to="/"
-            class="flex flex-col items-center gap-1 text-transparent shrink-0"
+            class="logo-link flex flex-col items-center gap-1 text-transparent shrink-0 justify-self-center lg:justify-self-auto"
           >
-            <div class="h-[100px] w-auto flex items-center overflow-hidden">
-              <MainLogo class="h-full w-auto" />
+            <div class="logo-wrap">
+              <MainLogo class="logo-img" />
             </div>
           </NuxtLink>
 
@@ -130,7 +100,6 @@
                   FAQ
                 </NuxtLink>
               </li>
-              <!-- ADDED BLOG LINK -->
               <li>
                 <NuxtLink
                   to="/blogs"
@@ -143,8 +112,8 @@
             </ul>
           </nav>
 
-          <!-- Right actions -->
-          <div class="flex items-center gap-3 shrink-0">
+          <!-- Right actions: full call box on desktop; icon-only phone on mobile (right column) -->
+          <div class="flex justify-end lg:justify-normal lg:shrink-0">
             <a
               :href="telHref"
               class="contact-box btn-secondary-2 relative overflow-hidden"
@@ -178,19 +147,141 @@
             </a>
           </div>
         </div>
+
+        <!-- Mobile dropdown menu -->
+        <transition
+          enter-active-class="transition duration-200 ease-out"
+          enter-from-class="opacity-0 -translate-y-2"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="transition duration-150 ease-in"
+          leave-from-class="opacity-100 translate-y-0"
+          leave-to-class="opacity-0 -translate-y-2"
+        >
+          <nav
+            v-if="mobileMenuOpen"
+            class="mobile-dropdown lg:hidden mt-3"
+            role="navigation"
+          >
+            <ul class="flex flex-col list-none p-0 m-0">
+              <li>
+                <NuxtLink
+                  to="/"
+                  class="mobile-nav-link"
+                  exact-active-class="mobile-nav-link-active"
+                  @click="mobileMenuOpen = false"
+                >
+                  Home
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/packages"
+                  class="mobile-nav-link"
+                  active-class="mobile-nav-link-active"
+                  @click="mobileMenuOpen = false"
+                >
+                  Packages
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/faq"
+                  class="mobile-nav-link"
+                  active-class="mobile-nav-link-active"
+                  @click="mobileMenuOpen = false"
+                >
+                  FAQ
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/blogs"
+                  class="mobile-nav-link"
+                  active-class="mobile-nav-link-active"
+                  @click="mobileMenuOpen = false"
+                >
+                  Blog
+                </NuxtLink>
+              </li>
+            </ul>
+
+            <!-- Mobile call button (full glossy pill with number inside dropdown) -->
+            <a
+              :href="telHref"
+              class="contact-box btn-secondary-2 relative overflow-hidden w-full mt-3"
+              :aria-label="`Call ${settings.contact_phone_display || '(941) 239-4722'}`"
+            >
+              <span class="phone-icon shrink-0">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  class="w-5 h-5"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M1.5 4.5a3 3 0 013-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 01-.694 1.955l-1.293.97c-.135.101-.164.279-.087.431a15.2 15.2 0 006.414 6.414c.152.077.33.048.431-.087l.97-1.293a1.875 1.875 0 011.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 01-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </span>
+
+              <div class="contact-text">
+                <div class="call-now">CALL US NOW!</div>
+                <div class="phone-number">
+                  {{ settings.contact_phone_display || "(941) 239-4722" }}
+                </div>
+              </div>
+            </a>
+          </nav>
+        </transition>
       </div>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import MainLogo from "./Logos/MainLogo.vue";
-import MainLogoForDark from "./Logos/MainLogoForDark.vue";
 
 const { settings, telHref } = useSettings();
+
+const mobileMenuOpen = ref(false);
 </script>
 
 <style scoped>
+/* ============ LOGO: force big, no exceptions ============ */
+.logo-link {
+  max-width: none !important;
+}
+
+.logo-wrap {
+  height: 100px; /* MOBILE height — bump to 120/140 if still too small */
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  flex: 0 0 auto;
+}
+
+/* Force the SVG inside MainLogo to actually fill the wrapper */
+.logo-wrap :deep(svg),
+.logo-img {
+  height: 100% !important;
+  width: auto !important;
+  max-height: none !important;
+  max-width: none !important;
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .logo-wrap {
+    height: 110px; /* DESKTOP height */
+  }
+}
+/* ======================================================== */
+
 /* Welcome Text & SVG Animation */
 .welcome {
   text-align: center;
@@ -263,8 +354,6 @@ const { settings, telHref } = useSettings();
   position: relative;
 }
 
-/* Active route: text stays #1a2b4a (contrast-safe),
-   state is communicated by bold weight + orange underline. */
 .nav-link-active {
   font-weight: 700;
 }
@@ -272,7 +361,7 @@ const { settings, telHref } = useSettings();
 .nav-link-active::after {
   content: "";
   position: absolute;
-  left: 0.5rem; /* matches px-2 */
+  left: 0.5rem;
   right: 0.5rem;
   bottom: 0;
   height: 3px;
@@ -406,12 +495,124 @@ const { settings, telHref } = useSettings();
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
+/* ---------- Mobile hamburger glossy button (kept glossy, condensed) ---------- */
+.mobile-menu-btn.btn-secondary-2 {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #f49321 0%, #f49321 50%, #f49321 100%);
+  border: none;
+  box-shadow:
+    0 6px 12px rgba(0, 0, 0, 0.35),
+    inset 0 2px 3px rgba(255, 255, 255, 0.6);
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.mobile-menu-btn.btn-secondary-2::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  right: 6px;
+  height: 45%;
+  border-radius: 40px 40px 20px 20px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  pointer-events: none;
+}
+
+.mobile-menu-btn.btn-secondary-2:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.hamburger-icon {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 20px;
+  height: 16px;
+}
+
+.hamburger-icon span {
+  display: block;
+  width: 100%;
+  height: 2.5px;
+  border-radius: 2px;
+  background: #ffffff;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+  transition:
+    transform 0.25s ease,
+    opacity 0.2s ease;
+}
+
+.hamburger-icon.open span:nth-child(1) {
+  transform: translateY(6.5px) rotate(45deg);
+}
+.hamburger-icon.open span:nth-child(2) {
+  opacity: 0;
+}
+.hamburger-icon.open span:nth-child(3) {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+
+/* ---------- Mobile dropdown ---------- */
+.mobile-dropdown {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem;
+  border: 1px solid rgba(28, 45, 91, 0.08);
+}
+
+.mobile-nav-link {
+  display: block;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: #1a2b4a;
+  text-decoration: none;
+  font-weight: 500;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.mobile-nav-link:hover {
+  background: rgba(244, 147, 33, 0.1);
+  color: #f49321;
+}
+
+.mobile-nav-link-active {
+  background: rgba(244, 147, 33, 0.12);
+  color: #f49321;
+  font-weight: 700;
+}
+
 /* Mobile adjustments */
 @media (max-width: 1023px) {
+  /* Right-side phone: circular icon-only glossy */
   .contact-box {
     padding: 8px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: rgba(12, 35, 64, 0.08);
+    gap: 0;
+    background: linear-gradient(180deg, #f49321 0%, #f49321 50%, #f49321 100%);
+    justify-content: center;
   }
   .contact-box .contact-text {
     display: none;
@@ -422,6 +623,22 @@ const { settings, telHref } = useSettings();
   .underline-svg {
     height: 12px;
     bottom: -4px;
+  }
+
+  /* Mobile dropdown call button keeps full pill shape + text */
+  .mobile-dropdown .contact-box {
+    width: 100%;
+    height: auto;
+    padding: 0.6rem 2rem;
+    border-radius: 50px;
+    gap: 0.75rem;
+    background: linear-gradient(180deg, #f49321 0%, #f49321 50%, #f49321 100%);
+  }
+  .mobile-dropdown .contact-box .contact-text {
+    display: flex;
+  }
+  .mobile-dropdown .contact-box .phone-icon {
+    font-size: 1.25rem;
   }
 }
 

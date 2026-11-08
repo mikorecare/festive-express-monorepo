@@ -1,6 +1,6 @@
 <template>
   <footer
-    class="bg-[#101518] text-white pt-8 sm:pt-12"
+    class="bg-[#1C2D5B] text-white pt-8 sm:pt-12"
     role="contentinfo"
     aria-label="Site footer"
   >
