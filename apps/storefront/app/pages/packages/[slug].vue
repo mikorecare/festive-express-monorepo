@@ -29,11 +29,10 @@
       v-else
       class="max-w-6xl mx-auto pt-6 pb-8 lg:py-8 px-4 sm:px-6 lg:px-6"
     >
-      <!-- TOP BANNER: Back Button + Holiday Message -->
+      <!-- TOP BANNER -->
       <div
         class="relative section-gloss mb-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[#1C2D5B] p-2 rounded-2xl shadow-lg border-b-4 border-[#F49321] overflow-hidden"
       >
-        <!-- Back Button -->
         <NuxtLink
           to="/packages"
           class="relative z-10 inline-flex items-center gap-2 text-sm font-semibold text-white uppercase tracking-wider px-5 py-2.5 rounded-full transition-all duration-300 shrink-0 shadow-sm group"
@@ -52,7 +51,6 @@
           Browse for More
         </NuxtLink>
 
-        <!-- Holiday Message -->
         <p
           class="relative z-10 text-sm font-semibold text-white italic tracking-wide text-left sm:text-right [text-shadow:0_2px_4px_rgba(0,0,0,0.3)]"
         >
@@ -65,12 +63,11 @@
 
       <!-- Main Grid -->
       <div class="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-10">
-        <!-- LEFT: Image + Description Card -->
+        <!-- LEFT -->
         <div class="relative">
           <div
             class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden"
           >
-            <!-- Clean mobile image banner, desktop aspect ratio -->
             <div
               class="relative w-full h-48 sm:h-auto sm:aspect-[4/3] bg-slate-100 overflow-hidden"
             >
@@ -96,12 +93,12 @@
           </div>
         </div>
 
-        <!-- RIGHT: Details -->
+        <!-- RIGHT -->
         <div
           id="package"
-          class="px-4 bg-white sm:px-6 lg:px-0 pb-4 pt-2 lg:pt-0 lg:flex lg:flex-col rounded-2xl"
+          class="px-4 bg-white pb-4 pt-2 lg:flex lg:flex-col rounded-2xl"
         >
-          <!-- Title image + price (mobile) — ON THE RIGHT -->
+          <!-- Title image + price (mobile) -->
           <div
             class="lg:hidden px-2 pt-4 pb-2 flex items-center justify-between gap-4"
           >
@@ -119,14 +116,11 @@
             </div>
             <div class="flex flex-col items-end shrink-0 leading-tight">
               <span class="inline-flex items-baseline">
-                <!-- Dollar Sign -->
                 <span
                   class="text-[2.25rem] font-extrabold text-[#F49321] leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-1 sm:-mr-2 translate-y-[-0.1em]"
                 >
                   $&nbsp;
                 </span>
-
-                <!-- The Numbers -->
                 <span
                   class="text-4xl font-extrabold text-[#F49321] leading-none price-text -tracking-[0.04em]"
                 >
@@ -155,14 +149,11 @@
             </div>
             <div class="flex flex-col items-end shrink-0 leading-tight">
               <span class="inline-flex items-baseline">
-                <!-- Dollar Sign -->
                 <span
                   class="text-[2.25rem] font-extrabold text-[#F49321] leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-1 sm:-mr-2 translate-y-[-0.1em]"
                 >
                   $&nbsp;
                 </span>
-
-                <!-- The Numbers -->
                 <span
                   class="text-4xl font-extrabold text-[#F49321] leading-none price-text -tracking-[0.04em]"
                 >
@@ -264,7 +255,7 @@
             </div>
           </div>
 
-          <!-- WHAT'S INCLUDED (Zero Cards, Ultra Compact) -->
+          <!-- What's Included -->
           <div v-if="inclusions.length" class="mb-6">
             <div class="flex items-center gap-2 mb-3">
               <h3
@@ -285,7 +276,6 @@
                 :key="i"
                 class="flex items-center gap-2 min-w-0"
               >
-                <!-- Mini Picture Circle -->
                 <div
                   class="w-[32px] h-[32px] rounded-full border border-slate-200 overflow-hidden shrink-0 bg-white flex items-center justify-center"
                 >
@@ -301,7 +291,6 @@
                   />
                 </div>
 
-                <!-- Text -->
                 <div class="min-w-0">
                   <strong
                     class="text-[0.75rem] text-[#1C2D5B] font-bold leading-tight block"
@@ -319,21 +308,19 @@
             </ul>
           </div>
 
-          <!-- Add-ons & inclusions trigger -->
+          <!-- Customize package trigger -->
           <button
             type="button"
             class="group w-full mb-6 flex items-center justify-between gap-3 px-3 py-2 rounded-xl border-2 border-[#F49321] bg-[#fff9f2] hover:bg-[#ffefdb] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 ease-out text-left shadow-sm hover:shadow-md"
             @click="extrasOpen = true"
           >
             <div class="flex items-center gap-3 min-w-0">
-              <!-- Icon Badge -->
               <div
                 class="w-8 h-8 shrink-0 rounded-full bg-[#F49321] text-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-200"
               >
                 <i class="fa-solid fa-plus text-lg"></i>
               </div>
 
-              <!-- Text -->
               <div class="min-w-0 flex items-center gap-1">
                 <div class="min-w-0 flex flex-col items-start gap-0.5">
                   <p
@@ -342,19 +329,19 @@
                     Customize package
                   </p>
                   <span
-                    v-if="addonSubtotal > 0"
+                    v-if="addonSubtotal > 0 || overagePrice > 0"
                     class="text-[#F49321] font-bold text-[0.7rem] leading-none"
                   >
-                    +${{ addonSubtotal.toFixed(2) }} in add-ons
+                    +${{ (addonSubtotal + overagePrice).toFixed(2) }} in add-ons
                   </span>
                 </div>
               </div>
             </div>
           </button>
 
-          <!-- Add-ons subtotal -->
+          <!-- Subtotal card -->
           <div
-            v-if="addonSubtotal > 0"
+            v-if="addonSubtotal > 0 || overagePrice > 0"
             class="mt-3 mb-4 rounded-xl border border-slate-200 bg-slate-50 p-3"
           >
             <!-- Base Price -->
@@ -363,7 +350,6 @@
             >
               <span>{{ pkg.name }} (Base)</span>
 
-              <!-- New Price Styling -->
               <span class="inline-flex items-baseline">
                 <span
                   class="text-[1rem] sm:text-[1.1rem] font-extrabold text-[#F49321] leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-1 sm:-mr-1.5 translate-y-[-0.1em]"
@@ -378,8 +364,7 @@
               </span>
             </div>
 
-            <!-- Individual Add-ons -->
-            <!-- Individual Add-ons -->
+            <!-- Add-ons -->
             <div
               v-for="[id, qty] in Object.entries(addonQty).filter(
                 ([_, q]) => q > 0,
@@ -392,7 +377,6 @@
                 <span class="text-slate-400">× {{ qty }}</span>
               </span>
 
-              <!-- Styled Add-on Price -->
               <span class="font-semibold inline-flex items-baseline">
                 <span
                   class="text-[0.75rem] font-extrabold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-0.5 translate-y-[-0.1em]"
@@ -416,13 +400,40 @@
               </span>
             </div>
 
+            <!-- Overage -->
+            <div
+              v-if="overagePrice > 0"
+              class="flex items-center justify-between text-sm text-slate-600 mb-1.5"
+            >
+              <span class="truncate pr-2">
+                Overage
+                <span class="text-slate-400">({{ overageFt }} ft extra)</span>
+              </span>
+              <span class="font-semibold inline-flex items-baseline">
+                <span
+                  class="text-[0.75rem] font-extrabold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-0.5 translate-y-[-0.1em]"
+                >
+                  $&nbsp;
+                </span>
+                <span
+                  class="font-extrabold leading-none price-text -tracking-[0.04em]"
+                >
+                  {{
+                    overagePrice.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })
+                  }}
+                </span>
+              </span>
+            </div>
+
             <!-- Total -->
             <div
               class="flex items-center justify-between text-sm font-extrabold text-[#1C2D5B] border-t border-slate-200 pt-1.5 mt-1.5"
             >
               <span>Total</span>
 
-              <!-- Styled Total Price -->
               <span class="inline-flex items-baseline">
                 <span
                   class="text-[0.8rem] font-extrabold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-0.5 translate-y-[-0.1em]"
@@ -433,10 +444,14 @@
                   class="font-extrabold leading-none price-text -tracking-[0.04em]"
                 >
                   {{
-                    (Number(selectedPrice) + addonSubtotal).toLocaleString(
-                      "en-US",
-                      { minimumFractionDigits: 2, maximumFractionDigits: 2 },
-                    )
+                    (
+                      Number(selectedPrice ?? 0) +
+                      (addonSubtotal ?? 0) +
+                      (overagePrice ?? 0)
+                    ).toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })
                   }}
                 </span>
               </span>
@@ -483,7 +498,7 @@
     </div>
   </div>
 
-  <!-- Extras Modal (Now only for Add-ons) -->
+  <!-- Extras Modal -->
   <Teleport to="body">
     <Transition name="modal-fade">
       <div
@@ -497,7 +512,6 @@
         <div
           class="w-full sm:max-w-lg max-h-[90vh] sm:max-h-[85vh] bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden"
         >
-          <!-- Header -->
           <div
             class="flex section-gloss items-center justify-between gap-3 px-4 py-3 border-b border-slate-200 shrink-0 bg-[#1C2D5B]"
           >
@@ -526,16 +540,13 @@
             </button>
           </div>
 
-          <!-- Body (scrollable) -->
           <div class="flex-1 overflow-y-auto px-4 py-2">
-            <!-- Add-ons only -->
             <div v-if="addonCategories.length">
               <div
                 v-for="cat in addonCategories"
                 :key="cat.key"
                 class="mb-4 last:mb-0"
               >
-                <!-- Simple Category Header -->
                 <div class="flex items-center gap-2 mb-2 mt-2 px-1">
                   <NuxtImg
                     v-if="cat.image_url"
@@ -554,7 +565,6 @@
                   </p>
                 </div>
 
-                <!-- Compact List -->
                 <ul class="space-y-1" role="list">
                   <li
                     v-for="p in productsByCategory(cat.key)"
@@ -578,7 +588,6 @@
                       </p>
                     </div>
 
-                    <!-- Tighter Controls -->
                     <div
                       class="flex items-center gap-1 shrink-0 bg-white border border-slate-200 rounded-full p-0.5 shadow-sm"
                     >
@@ -606,7 +615,12 @@
                       </span>
                       <button
                         type="button"
-                        class="w-7 h-7 rounded-full bg-[#1C2D5B] text-white hover:bg-[#F49321] flex items-center justify-center active:scale-95 shadow-sm"
+                        class="w-7 h-7 rounded-full text-white flex items-center justify-center active:scale-95 shadow-sm transition-colors"
+                        :class="
+                          (addonQty[p.id] || 0) > 0
+                            ? 'bg-[#F49321] hover:bg-[#e0851a]'
+                            : 'bg-[#1C2D5B] hover:bg-[#F49321]'
+                        "
                         @click="incrementAddon(p.id)"
                       >
                         <svg
@@ -633,7 +647,6 @@
             </div>
           </div>
 
-          <!-- Sticky footer -->
           <div class="shrink-0 border-t border-slate-200 px-4 py-3 bg-slate-50">
             <div
               v-if="addonSubtotal > 0"
@@ -658,13 +671,42 @@
 
 <script setup lang="ts">
 import { useAddons } from "~/composables/useAddons";
+import { useEstimator } from "~/composables/useEstimator";
+import { useEstimateHandoff } from "~/composables/useEstimateHandoff";
 import type { ApiResponse, PackageRow, SkuRow } from "./types";
 
 const route = useRoute();
 const slug = computed(() => String(route.params.slug || ""));
 const extrasOpen = ref(false);
-const showInclusions = ref(true); // <-- ADDED THIS SO THE ACCORDION WORKS
+const showInclusions = ref(true);
 
+// ---------- Overage (live from estimator, or session handoff on refresh) ----------
+const { calculatedOveragePrice, calculatedOverageFt } = useEstimator();
+const { load: loadEstimateHandoff } = useEstimateHandoff();
+
+const overagePrice = ref(0);
+const overageFt = ref(0);
+
+onMounted(() => {
+  const livePrice = Number(calculatedOveragePrice.value) || 0;
+  const liveFt = Number(calculatedOverageFt.value) || 0;
+
+  if (livePrice > 0) {
+    overagePrice.value = livePrice;
+    overageFt.value = liveFt;
+    return;
+  }
+
+  if (route.query.estimate === "true") {
+    const snap = loadEstimateHandoff();
+    if (snap) {
+      overagePrice.value = snap.overagePrice;
+      overageFt.value = snap.overageFt;
+    }
+  }
+});
+
+// ---------- Package data ----------
 const { data, pending } = await useAsyncData(
   `package-${slug.value}`,
   async () => {
@@ -814,8 +856,13 @@ const addToCart = async () => {
         };
       });
 
-    const options =
-      selectedAddons.length > 0 ? { addons: selectedAddons } : null;
+    const options = {
+      addons: selectedAddons.length > 0 ? selectedAddons : undefined,
+      overage:
+        overagePrice.value > 0
+          ? { amount: overagePrice.value, feet: overageFt.value }
+          : undefined,
+    };
 
     const ok = await cart.addToCart(sku.id, 1, options);
 

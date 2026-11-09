@@ -182,6 +182,40 @@
                         </div>
                       </div>
                     </div>
+
+                    <!-- Overage row (display only) -->
+                    <div
+                      v-if="Number(item.options?.overage?.amount || 0) > 0"
+                      class="mt-2 pt-2 border-t border-slate-200"
+                    >
+                      <p
+                        class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1"
+                      >
+                        Overage:
+                      </p>
+                      <div class="flex justify-between text-xs text-slate-600">
+                        <span>{{ item.options?.overage?.feet }} ft extra</span>
+                        <span class="inline-flex items-baseline">
+                          <span
+                            class="text-[0.6rem] font-bold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-0.5 translate-y-[-0.1em]"
+                          >
+                            $&nbsp;
+                          </span>
+                          <span
+                            class="font-bold leading-none price-text -tracking-[0.04em]"
+                          >
+                            {{
+                              Number(
+                                item.options?.overage?.amount || 0,
+                              ).toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })
+                            }}
+                          </span>
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
                   <div class="flex items-center justify-between mt-2">
@@ -283,15 +317,10 @@ const displayTotal = computed(() =>
 );
 const displayCount = computed(() => Number(cart.cartCount?.value || 0));
 
-const lineTotal = (item: any) => {
-  const base = Number(item.price || 0);
-  const addonsTotal = (item.options?.addons || []).reduce(
-    (sum: number, addon: any) =>
-      sum + Number(addon.price || 0) * Number(addon.quantity || 0),
-    0,
-  );
-  return ((base + addonsTotal) * Number(item.quantity || 1)).toFixed(2);
-};
+// item.price already includes base + add-ons + overage (server-side),
+// so we just multiply by quantity. No double-counting.
+const lineTotal = (item: any) =>
+  (Number(item.price || 0) * Number(item.quantity || 1)).toFixed(2);
 
 const onImgError = (payload: string | Event) => {
   if (typeof payload === "string") {

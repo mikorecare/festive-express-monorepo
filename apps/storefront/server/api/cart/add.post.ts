@@ -48,8 +48,10 @@ export default defineEventHandler(async (event) => {
             )
         }
 
-        // Total price for ONE item (Package + Add-ons)
-        const finalUnitPrice = baseUnitPrice + addonsTotal
+        const overageAmount = Number(options?.overage?.amount ?? 0)
+
+        // Total price for ONE item (Package + Add-ons + Overage)
+        const finalUnitPrice = baseUnitPrice + addonsTotal + overageAmount
 
         // 3. Generate options_hash
         // If there are no options, hash is null.

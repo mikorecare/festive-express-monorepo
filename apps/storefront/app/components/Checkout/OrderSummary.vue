@@ -15,6 +15,21 @@
         >
           {{ item.options.c9_color }} LEDs
         </small>
+        <small
+          v-if="item.options?.addons?.length"
+          class="block text-gray-500 text-xs"
+        >
+          + {{ item.options.addons.length }} add-on<span
+            v-if="item.options.addons.length > 1"
+            >s</span
+          >
+        </small>
+        <small
+          v-if="Number(item.options?.overage?.amount || 0) > 0"
+          class="block text-gray-500 text-xs"
+        >
+          + {{ item.options.overage.feet }} ft overage
+        </small>
       </div>
 
       <!-- Styled Item Price -->
@@ -296,7 +311,6 @@
           <div
             class="overflow-y-auto px-6 py-5 text-sm text-gray-600 leading-relaxed space-y-4"
           >
-            <!-- Loading State -->
             <div v-if="termsPending" class="text-center py-10">
               <div
                 class="w-8 h-8 border-4 border-[#F49321] border-t-transparent rounded-full animate-spin mx-auto mb-3"
@@ -304,12 +318,10 @@
               <p>Loading terms...</p>
             </div>
 
-            <!-- Error State -->
             <div v-else-if="termsError" class="text-center text-red-500 py-10">
               Failed to load terms. Please try again later.
             </div>
 
-            <!-- Dynamic Content -->
             <div
               v-else
               class="prose prose-sm max-w-none prose-headings:text-[#1C2D5B] prose-headings:font-bold prose-h2:border-b-2 prose-h2:border-[#F49321] prose-h2:pb-2 prose-h2:mt-6 prose-h2:mb-3 prose-p:text-slate-600 prose-p:leading-relaxed prose-a:text-[#F49321] prose-a:no-underline hover:prose-a:text-[#1C2D5B] prose-strong:text-[#1C2D5B] prose-li:text-slate-600 prose-blockquote:border-l-4 prose-blockquote:border-[#F49321] prose-blockquote:pl-4 prose-blockquote:my-4 prose-blockquote:text-slate-600 prose-blockquote:italic"

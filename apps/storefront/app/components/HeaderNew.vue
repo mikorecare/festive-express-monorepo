@@ -256,7 +256,7 @@ const mobileMenuOpen = ref(false);
 }
 
 .logo-wrap {
-  height: 100px; /* MOBILE height — bump to 120/140 if still too small */
+  height: 100px;
   width: auto;
   display: flex;
   align-items: center;
@@ -265,7 +265,6 @@ const mobileMenuOpen = ref(false);
   flex: 0 0 auto;
 }
 
-/* Force the SVG inside MainLogo to actually fill the wrapper */
 .logo-wrap :deep(svg),
 .logo-img {
   height: 100% !important;
@@ -277,7 +276,7 @@ const mobileMenuOpen = ref(false);
 
 @media (min-width: 1024px) {
   .logo-wrap {
-    height: 110px; /* DESKTOP height */
+    height: 110px;
   }
 }
 /* ======================================================== */
@@ -495,46 +494,48 @@ const mobileMenuOpen = ref(false);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
-/* ---------- Mobile hamburger glossy button (kept glossy, condensed) ---------- */
-.mobile-menu-btn.btn-secondary-2 {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border-radius: 50%;
-  background: linear-gradient(180deg, #f49321 0%, #f49321 50%, #f49321 100%);
-  border: none;
-  box-shadow:
-    0 6px 12px rgba(0, 0, 0, 0.35),
-    inset 0 2px 3px rgba(255, 255, 255, 0.6);
-  position: relative;
-  overflow: hidden;
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
-}
+/* ---------- Mobile hamburger glossy button — scoped to mobile only ---------- */
+@media (max-width: 1023px) {
+  .mobile-menu-btn.btn-secondary-2 {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 50%;
+    background: linear-gradient(180deg, #f49321 0%, #f49321 50%, #f49321 100%);
+    border: none;
+    box-shadow:
+      0 6px 12px rgba(0, 0, 0, 0.35),
+      inset 0 2px 3px rgba(255, 255, 255, 0.6);
+    position: relative;
+    overflow: hidden;
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.15s ease;
+  }
 
-.mobile-menu-btn.btn-secondary-2::before {
-  content: "";
-  position: absolute;
-  top: 2px;
-  left: 6px;
-  right: 6px;
-  height: 45%;
-  border-radius: 40px 40px 20px 20px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.75) 0%,
-    rgba(255, 255, 255, 0.05) 100%
-  );
-  pointer-events: none;
-}
+  .mobile-menu-btn.btn-secondary-2::before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 6px;
+    right: 6px;
+    height: 45%;
+    border-radius: 40px 40px 20px 20px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.75) 0%,
+      rgba(255, 255, 255, 0.05) 100%
+    );
+    pointer-events: none;
+  }
 
-.mobile-menu-btn.btn-secondary-2:active {
-  transform: translateY(1px);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+  .mobile-menu-btn.btn-secondary-2:active {
+    transform: translateY(1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+  }
 }
 
 .hamburger-icon {
@@ -604,7 +605,6 @@ const mobileMenuOpen = ref(false);
 
 /* Mobile adjustments */
 @media (max-width: 1023px) {
-  /* Right-side phone: circular icon-only glossy */
   .contact-box {
     padding: 8px;
     width: 44px;
@@ -625,7 +625,6 @@ const mobileMenuOpen = ref(false);
     bottom: -4px;
   }
 
-  /* Mobile dropdown call button keeps full pill shape + text */
   .mobile-dropdown .contact-box {
     width: 100%;
     height: auto;

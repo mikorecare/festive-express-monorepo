@@ -19,22 +19,22 @@
         <h2
           class="text-2xl sm:text-4xl lg:text-5xl font-extrabold leading-[1.15] sm:leading-[1.1] text-[#1C2D5B]"
         >
-          Book a Free<br />
-          Consultation With Our<br />
+          Want a custom<br />
+          design for your home?<br />
           <span
             class="text-[#F49321] [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff,_0_2px_4px_rgba(28,45,91,0.35)] lg:[text-shadow:_-2px_-2px_0_#fff,_2px_-2px_0_#fff,_-2px_2px_0_#fff,_2px_2px_0_#fff,_0_4px_10px_rgba(28,45,91,0.45)]"
           >
-            Holiday Lighting Experts!
+            Let's talk it through.
           </span>
         </h2>
 
         <p
           class="mt-4 sm:mt-6 text-black text-xs sm:text-base leading-relaxed font-semibold"
         >
-          Planning holiday lighting for your Florida home? Our experts can help
-          you choose the right package, lighting style, and installation options
-          for your property. Get answers to your questions and take the first
-          step toward a professionally installed holiday display.
+          Our packages cover most homes, but if you have a bigger project, an
+          unusual layout, or just prefer to talk it through, our team can put
+          together something tailored. This is a secondary option — most
+          customers find what they need in the packages above.
         </p>
       </div>
 

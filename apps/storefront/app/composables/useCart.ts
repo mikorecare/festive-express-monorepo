@@ -22,13 +22,16 @@ export const useCart = () => {
   const cartCount = useState<number>("cartCount", () => 0)
   const cartId = useState<string | null>("cartId", () => null)
 
+  // item.price already includes add-ons + overage (server-side baked in)
+  const lineUnitPrice = (item: CartItem): number =>
+    Number(item.price) || Number(item.product?.price) || 0;
+
   const cartTotal = computed(() =>
-    cartItems.value.reduce((sum, item) => {
-      const unit = Number(item.price) || Number(item.product?.price) || 0
-      const qty = Number(item.quantity) || 1
-      return sum + unit * qty
-    }, 0),
-  )
+    cartItems.value.reduce(
+      (sum, item) => sum + lineUnitPrice(item) * (Number(item.quantity) || 1),
+      0,
+    ),
+  );
 
   const ensureCart = async (): Promise<string> => {
     if (!import.meta.client) throw new Error("Cart is only available in the browser")
@@ -155,6 +158,6 @@ export const useCart = () => {
   }
 
   return {
-    cartItems, cartTotal, cartCount, loadCart, addToCart, removeFromCart, clearCart, updateCartItemQty,
+    cartItems, cartTotal, cartCount, loadCart, addToCart, removeFromCart, clearCart, updateCartItemQty, lineUnitPrice,
   }
 }
