@@ -1,4 +1,4 @@
-import { getSupabase } from "~~/server/utils/supabase";
+import { getAuthenticatedSupabase } from "~~/server/utils/auth";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
@@ -20,17 +20,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const supabaseServiceKey = config.supabase.secretKey;
-
-  if (!supabaseServiceKey) {
-    console.error("Missing NUXT_SUPABASE_SECRET_KEY environment variable");
-    throw createError({
-      statusCode: 500,
-      message: "Server configuration error",
-    });
-  }
-
-  const supabase = getSupabase();
+  const supabase = await getAuthenticatedSupabase(event);
 
   try {
     const { data: order, error: orderError } = await supabase
@@ -145,8 +135,6 @@ async function processConvergeRefund(params: {
     };
   }
 
-  // REMOVED: <?xml version="1.0" encoding="utf-8"?>
-  // UPDATED: Changed <ssl_merchant_id> to <ssl_account_id>
   const xmlPayload =
     `<txn>` +
     `<ssl_account_id><![CDATA[${merchantId}]]></ssl_account_id>` +

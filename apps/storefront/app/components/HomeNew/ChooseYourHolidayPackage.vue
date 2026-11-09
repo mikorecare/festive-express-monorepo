@@ -20,11 +20,11 @@
 
       <p
         v-fade
-        class="text-center text-white font-bold tracking-[0.4px] text-[0.8rem] sm:text-[1.15rem] leading-snug mt-4 mb-4 sm:mt-6 sm:mb-4 drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)] max-w-[95%] sm:max-w-none mx-auto"
+        class="text-center text-white font-bold tracking-[0.4px] text-[1.5rem] leading-snug mt-4 mb-4 sm:mt-6 sm:mb-4 drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)] max-w-[95%] sm:max-w-none mx-auto"
       >
-        COMPARE WHAT'S INCLUDED IN EACH PLAN
+        INCLUDED IN EVERY PACKAGE
         <span
-          class="block text-[0.7rem] sm:text-[0.9rem] font-semibold text-white/90 mt-1"
+          class="block text-[1.1rem] font-semibold text-white/90 mt-1"
         >
           (Each package is a rental for one season)
         </span>
@@ -33,23 +33,48 @@
       <!-- NEW PILLS ADDED HERE -->
       <div
         v-fade
-        class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 sm:mb-12"
+        class="flex flex-wrap justify-center gap-6 sm:gap-10 mb-8 sm:mb-12"
       >
-        <span
-          class="btn-gloss btn-gloss-range px-4 py-1.5 rounded-full text-[0.75rem] sm:text-sm font-bold text-white uppercase tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] border border-white/20"
-        >
-          Installation
-        </span>
-        <span
-          class="btn-gloss btn-gloss-range px-4 py-1.5 rounded-full text-[0.75rem] sm:text-sm font-bold text-white uppercase tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] border border-white/20"
-        >
-          Maintenance
-        </span>
-        <span
-          class="btn-gloss btn-gloss-range px-4 py-1.5 rounded-full text-[0.75rem] sm:text-sm font-bold text-white uppercase tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] border border-white/20"
-        >
-          Removal
-        </span>
+        <div class="flex flex-col items-center gap-1">
+          <div
+            class="w-[84px] h-[84px] shrink-0 flex items-center justify-center"
+          >
+            <AssetsInstallation
+              class="w-[120px] h-[120px]"
+              aria-hidden="true"
+              glow
+            />
+          </div>
+          <span
+            class="text-base sm:text-lg font-bold uppercase tracking-wider text-white"
+          >
+            Installation
+          </span>
+        </div>
+        <div class="flex flex-col items-center gap-1">
+          <div
+            class="w-[84px] h-[84px] shrink-0 flex items-center justify-center"
+          >
+            <AssetsMaintenance class="w-[120px] h-[120px]" aria-hidden="true" />
+          </div>
+          <span
+            class="text-base sm:text-lg font-bold uppercase tracking-wider text-white"
+          >
+            Maintenance
+          </span>
+        </div>
+        <div class="flex flex-col items-center gap-1">
+          <div
+            class="w-[84px] h-[84px] shrink-0 flex items-center justify-center"
+          >
+            <AssetsRemoval class="w-[120px] h-[120px]" aria-hidden="true" />
+          </div>
+          <span
+            class="text-base sm:text-lg font-bold uppercase tracking-wider text-white"
+          >
+            Removal
+          </span>
+        </div>
       </div>
 
       <div v-if="pending" class="text-center py-10 text-white font-semibold">
@@ -286,20 +311,26 @@
       <EarlyBirdEndsBanner />
     </div>
 
-    <!-- MOVED "NOT READY TO ORDER" BUTTON TO THE LAST PART OF THE SECTION -->
-    <!-- MOVED "SEE IT ON YOUR HOME" BUTTON -->
     <div v-fade class="flex justify-center mt-8 md:mt-12 relative z-20">
       <a
         href="#preview"
-        class="pkg-select-btn btn-gloss btn-gloss-orange text-[#1C2D5B] group relative overflow-hidden w-[85%] max-w-[408px] bg-brand-orange border-2 border-white rounded-[50px] py-[12px] sm:py-[14px] px-[16px] text-[1.4rem] uppercase font-bold tracking-[0.5px] text-center cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out hover:bg-[#1C2D5B]"
+        class="pkg-select-btn group relative w-[85%] max-w-[408px] inline-block cursor-pointer transition-transform duration-200 ease-in-out hover:scale-105"
       >
-        <span class="relative z-10">See it on your home</span>
+        <img
+          src="/New/Packages/see-it-button.png"
+          alt="See it on your home"
+          class="w-full h-auto"
+        />
       </a>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
+import AssetsInstallation from "../Icons/AssetsInstallation.vue";
+import AssetsMaintenance from "../Icons/AssetsMaintenance.vue";
+import AssetsRemoval from "../Icons/AssetsRemoval.vue";
+
 interface InclusionDisplay {
   name: string;
   image_url: string | null;

@@ -92,8 +92,8 @@
             <!-- Items -->
             <div v-else class="space-y-5">
               <div
-                v-for="item in cartItems"
-                :key="item.id"
+                v-for="(item, index) in cartItems"
+                :key="`${item.id}-${index}`"
                 class="flex flex-col gap-2 pb-4 border-b border-slate-100 last:border-0 last:pb-0"
               >
                 <NuxtImg
@@ -127,12 +127,7 @@
                       <span
                         class="text-sm font-extrabold leading-none price-text -tracking-[0.04em]"
                       >
-                        {{
-                          Number(lineTotal(item)).toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })
-                        }}
+                        {{ formatMoney(lineTotal(item)) }}
                       </span>
                     </p>
                   </div>
@@ -170,12 +165,9 @@
                               class="font-bold leading-none price-text -tracking-[0.04em]"
                             >
                               {{
-                                Number(
-                                  addon.quantity * Number(addon.price),
-                                ).toLocaleString(undefined, {
-                                  minimumFractionDigits: 2,
-                                  maximumFractionDigits: 2,
-                                })
+                                formatMoney(
+                                  addon.quantity * parseMoney(addon.price),
+                                )
                               }}
                             </span>
                           </span>
@@ -183,9 +175,9 @@
                       </div>
                     </div>
 
-                    <!-- Overage row (display only) -->
+                    <!-- Overage row -->
                     <div
-                      v-if="Number(item.options?.overage?.amount || 0) > 0"
+                      v-if="overageAmount(item) > 0"
                       class="mt-2 pt-2 border-t border-slate-200"
                     >
                       <p
@@ -194,7 +186,7 @@
                         Overage:
                       </p>
                       <div class="flex justify-between text-xs text-slate-600">
-                        <span>{{ item.options?.overage?.feet }} ft extra</span>
+                        <span>{{ overageFeet(item) }} ft extra</span>
                         <span class="inline-flex items-baseline">
                           <span
                             class="text-[0.6rem] font-bold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-0.5 translate-y-[-0.1em]"
@@ -204,14 +196,7 @@
                           <span
                             class="font-bold leading-none price-text -tracking-[0.04em]"
                           >
-                            {{
-                              Number(
-                                item.options?.overage?.amount || 0,
-                              ).toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              })
-                            }}
+                            {{ formatMoney(overageAmount(item)) }}
                           </span>
                         </span>
                       </div>
@@ -271,12 +256,7 @@
               <span
                 class="font-black text-2xl leading-none price-text -tracking-[0.04em]"
               >
-                {{
-                  Number(displayTotal).toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })
-                }}
+                {{ formatMoney(displayTotal) }}
               </span>
             </span>
           </div>
@@ -308,30 +288,102 @@ import IcNavCart from "~/components/Icons/IcNavCart.vue";
 const cart = useCart();
 const open = ref(false);
 
-const cartItems = computed(() => cart.cartItems.value);
+const cartItems = computed(() => cart.cartItems.value || []);
 
 const cartBump = useState("cart-bump", () => 0);
 
-const displayTotal = computed(() =>
-  Number(cart.cartTotal?.value || 0).toFixed(2),
-);
-const displayCount = computed(() => Number(cart.cartCount?.value || 0));
+// Safe number parsing — handles numbers, strings, "1,234.56", "$15.00", null, undefined.
+const parseMoney = (v: unknown): number => {
+  if (v === null || v === undefined) return 0;
+  if (typeof v === "number") return isNaN(v) ? 0 : v;
+  const cleaned = String(v).replace(/[^0-9.-]/g, "");
+  const n = Number(cleaned);
+  return isNaN(n) ? 0 : n;
+};
 
-// item.price already includes base + add-ons + overage (server-side),
-// so we just multiply by quantity. No double-counting.
-const lineTotal = (item: any) =>
-  (Number(item.price || 0) * Number(item.quantity || 1)).toFixed(2);
+// Format a number for display with 2 decimals and thousands separators.
+const formatMoney = (v: unknown): string => {
+  return parseMoney(v).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
+
+// Safely unwrap cartTotal — may be a ref, computed ref, raw value, or undefined.
+const unwrap = <T,>(v: any): T | undefined => {
+  if (v && typeof v === "object" && "value" in v) return v.value;
+  return v;
+};
+
+// Derive count from line items so the badge always matches what the cart contains.
+const displayCount = computed(() => {
+  const items = cartItems.value;
+  if (!Array.isArray(items) || items.length === 0) return 0;
+  return items.reduce((sum, item) => {
+    const q = Number(item?.quantity);
+    return sum + (Number.isFinite(q) && q > 0 ? Math.floor(q) : 1);
+  }, 0);
+});
+
+const displayTotal = computed(() => {
+  const raw =
+    unwrap<number>(cart.cartTotal) ?? unwrap<number>((cart as any).total) ?? 0;
+  return parseMoney(raw);
+});
+
+// Look in all the places a price might live.
+const itemPrice = (item: any): number => {
+  const candidates = [
+    item?.price,
+    item?.unit_price,
+    item?.total,
+    item?.total_price,
+    item?.subtotal,
+    item?.pricing?.total,
+    item?.pricing?.price,
+  ];
+  for (const c of candidates) {
+    const n = parseMoney(c);
+    if (n > 0) return n;
+  }
+  return 0;
+};
+
+// Line total — unit price (already includes add-ons + overage server-side) × quantity.
+const lineTotal = (item: any): number => {
+  const price = itemPrice(item);
+  const qty = Number(item?.quantity ?? 1) || 1;
+  return price * qty;
+};
+
+// Overage helpers — tolerate different key shapes from the backend.
+const overageAmount = (item: any): number => {
+  const o = item?.options?.overage ?? item?.overage ?? {};
+  const candidates = [o?.amount, o?.price, o?.total, o?.cost];
+  for (const c of candidates) {
+    const n = parseMoney(c);
+    if (n > 0) return n;
+  }
+  return 0;
+};
+
+const overageFeet = (item: any): number => {
+  const o = item?.options?.overage ?? item?.overage ?? {};
+  const candidates = [o?.feet, o?.extra_feet, o?.length, o?.qty];
+  for (const c of candidates) {
+    const n = parseMoney(c);
+    if (n > 0) return n;
+  }
+  return 0;
+};
 
 const onImgError = (payload: string | Event) => {
   if (typeof payload === "string") {
     console.error("Image load error:", payload);
     return;
   }
-
   const img = payload.target as HTMLImageElement;
-  if (img) {
-    img.src = "/Images/placeholder.png";
-  }
+  if (img) img.src = "/Images/placeholder.png";
 };
 
 const onEmptyImgError = (payload: string | Event) => {
@@ -339,11 +391,8 @@ const onEmptyImgError = (payload: string | Event) => {
     console.error("Empty image load error:", payload);
     return;
   }
-
   const img = payload.target as HTMLImageElement;
-  if (img) {
-    img.src = "/Images/placeholder.png";
-  }
+  if (img) img.src = "/Images/placeholder.png";
 };
 
 const removeItem = async (id: string | number) => {
@@ -365,14 +414,18 @@ watch(open, (v) => {
   document.body.style.overflow = v ? "hidden" : "";
 });
 
+// Declared outside onMounted so onUnmounted can remove it safely.
+let onFocus: (() => void) | null = null;
+
 onMounted(async () => {
   await cart.loadCart?.();
-  const onFocus = () => cart.loadCart?.();
+  onFocus = () => cart.loadCart?.();
   window.addEventListener("focus", onFocus);
-  onUnmounted(() => {
-    window.removeEventListener("focus", onFocus);
-    document.body.style.overflow = "";
-  });
+});
+
+onUnmounted(() => {
+  if (onFocus) window.removeEventListener("focus", onFocus);
+  document.body.style.overflow = "";
 });
 </script>
 
