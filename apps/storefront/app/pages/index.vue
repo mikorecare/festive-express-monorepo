@@ -11,9 +11,9 @@
 <template>
   <HomeNewHero />
   <HomeNewChooseYourHolidayPackage />
+  <HomeNewPreviewYourHome />
   <HomeNewHowItWorks />
 
-  <HomeNewPreviewYourHome />
   <HomeNewReviews />
   <HomeNewVideoTestimonials />
   <HomeNewFaq />

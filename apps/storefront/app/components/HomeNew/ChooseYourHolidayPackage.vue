@@ -17,9 +17,10 @@
           HOLIDAY PACKAGE
         </h2>
       </div>
+
       <p
         v-fade
-        class="text-center text-white font-bold tracking-[0.4px] text-[0.8rem] sm:text-[1.15rem] leading-snug mt-4 mb-6 sm:mt-6 sm:mb-8 drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)] max-w-[95%] sm:max-w-none mx-auto"
+        class="text-center text-white font-bold tracking-[0.4px] text-[0.8rem] sm:text-[1.15rem] leading-snug mt-4 mb-4 sm:mt-6 sm:mb-4 drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)] max-w-[95%] sm:max-w-none mx-auto"
       >
         COMPARE WHAT'S INCLUDED IN EACH PLAN
         <span
@@ -28,6 +29,28 @@
           (Each package is a rental for one season)
         </span>
       </p>
+
+      <!-- NEW PILLS ADDED HERE -->
+      <div
+        v-fade
+        class="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 sm:mb-12"
+      >
+        <span
+          class="btn-gloss btn-gloss-range px-4 py-1.5 rounded-full text-[0.75rem] sm:text-sm font-bold text-white uppercase tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] border border-white/20"
+        >
+          Installation
+        </span>
+        <span
+          class="btn-gloss btn-gloss-range px-4 py-1.5 rounded-full text-[0.75rem] sm:text-sm font-bold text-white uppercase tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] border border-white/20"
+        >
+          Maintenance
+        </span>
+        <span
+          class="btn-gloss btn-gloss-range px-4 py-1.5 rounded-full text-[0.75rem] sm:text-sm font-bold text-white uppercase tracking-wider drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] border border-white/20"
+        >
+          Removal
+        </span>
+      </div>
 
       <div v-if="pending" class="text-center py-10 text-white font-semibold">
         Loading holiday packages...
@@ -261,6 +284,17 @@
 
     <div class="flex justify-center mt-5">
       <EarlyBirdEndsBanner />
+    </div>
+
+    <!-- MOVED "NOT READY TO ORDER" BUTTON TO THE LAST PART OF THE SECTION -->
+    <!-- MOVED "SEE IT ON YOUR HOME" BUTTON -->
+    <div v-fade class="flex justify-center mt-8 md:mt-12 relative z-20">
+      <a
+        href="#preview"
+        class="pkg-select-btn btn-gloss btn-gloss-orange text-[#1C2D5B] group relative overflow-hidden w-[85%] max-w-[408px] bg-brand-orange border-2 border-white rounded-[50px] py-[12px] sm:py-[14px] px-[16px] text-[1.4rem] uppercase font-bold tracking-[0.5px] text-center cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out hover:bg-[#1C2D5B]"
+      >
+        <span class="relative z-10">See it on your home</span>
+      </a>
     </div>
   </section>
 </template>

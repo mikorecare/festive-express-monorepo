@@ -13,6 +13,19 @@
     <div
       class="relative z-10 w-full max-w-full mx-auto p-3 sm:p-4 rounded-xl sm:max-w-[90vw] lg:max-w-[1280px] lg:p-8"
     >
+      <!-- ========================================== -->
+      <!-- TITLE DESIGN MATCHING "HOW IT WORKS"       -->
+      <!-- ========================================== -->
+      <div class="mb-10 lg:mb-14">
+        <!-- Eyebrow -->
+        <h2
+          class="text-[#F49321] text-center font-extrabold text-3xl tracking-wide mb-4 sm:text-4xl md:text-5xl lg:text-6xl lg:mb-6 [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff,_0_2px_6px_rgba(28,45,91,0.35)] lg:[text-shadow:_-2px_-2px_0_#fff,_2px_-2px_0_#fff,_-2px_2px_0_#fff,_2px_2px_0_#fff,_0_4px_10px_rgba(28,45,91,0.45)]"
+        >
+          Preview Your Home
+        </h2>
+      </div>
+      <!-- ========================================== -->
+
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start">
         <!-- Estimator: mobile row-2, desktop col-1 -->
         <div
@@ -86,7 +99,7 @@
 const steps = [
   "Enter your address",
   "Select the package",
-  "Pick your Color",
+  "Pick your color",
   "View your home",
 ];
 </script>
