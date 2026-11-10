@@ -6,14 +6,107 @@
       <h3
         class="text-lg font-extrabold text-white flex items-center tracking-wide"
       >
-        <i class="fas fa-credit-card mr-3 text-[#F49321]"></i> Payment
+        <i class="fas fa-credit-card mr-3 text-[#F49321]"></i> Payment & Contact
         Information
       </h3>
     </div>
 
-    <div class="space-y-4 px-6 pb-6">
+    <div class="space-y-4 px-6 pb-6 pt-2">
+      <!-- Contact Info Section -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1"
+            >First Name *</label
+          >
+          <input
+            :value="modelValue.billing_first_name"
+            @input="
+              updateField(
+                'billing_first_name',
+                ($event.target as HTMLInputElement).value,
+              )
+            "
+            @blur="$emit('validate', 'billing_first_name')"
+            type="text"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            :class="{ 'border-red-500': errors.billing_first_name }"
+            placeholder="John"
+          />
+          <p v-if="errors.billing_first_name" class="text-red-500 text-sm mt-1">
+            {{ errors.billing_first_name }}
+          </p>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1"
+            >Last Name *</label
+          >
+          <input
+            :value="modelValue.billing_last_name"
+            @input="
+              updateField(
+                'billing_last_name',
+                ($event.target as HTMLInputElement).value,
+              )
+            "
+            @blur="$emit('validate', 'billing_last_name')"
+            type="text"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            :class="{ 'border-red-500': errors.billing_last_name }"
+            placeholder="Doe"
+          />
+          <p v-if="errors.billing_last_name" class="text-red-500 text-sm mt-1">
+            {{ errors.billing_last_name }}
+          </p>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1"
+            >Email Address *</label
+          >
+          <input
+            :value="modelValue.billing_email"
+            @input="
+              updateField(
+                'billing_email',
+                ($event.target as HTMLInputElement).value,
+              )
+            "
+            @blur="$emit('validate', 'billing_email')"
+            type="email"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            :class="{ 'border-red-500': errors.billing_email }"
+            placeholder="john@example.com"
+          />
+          <p v-if="errors.billing_email" class="text-red-500 text-sm mt-1">
+            {{ errors.billing_email }}
+          </p>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-1"
+            >Billing Phone *</label
+          >
+          <input
+            :value="modelValue.billing_phone"
+            @input="
+              updateField(
+                'billing_phone',
+                ($event.target as HTMLInputElement).value,
+              )
+            "
+            @blur="$emit('validate', 'billing_phone')"
+            type="tel"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            :class="{ 'border-red-500': errors.billing_phone }"
+            placeholder="(555) 123-4567"
+            maxlength="14"
+          />
+          <p v-if="errors.billing_phone" class="text-red-500 text-sm mt-1">
+            {{ errors.billing_phone }}
+          </p>
+        </div>
+      </div>
+
       <!-- Cardholder Name -->
-      <div>
+      <div class="border-t border-gray-200 pt-4 mt-2">
         <label class="block text-sm font-semibold text-gray-700 mb-1"
           >Cardholder Name *</label
         >
@@ -124,54 +217,12 @@
 
       <!-- Billing Address Section -->
       <div class="border-t border-gray-200 pt-4 mt-4">
-        <!-- Dropdown to choose billing address (when multiple installations) -->
-        <div v-if="installationCount && installationCount > 1" class="mb-4">
-          <label class="block text-sm font-semibold text-gray-700 mb-1"
-            >Billing Address *</label
-          >
-          <select
-            :value="modelValue.billing_same ? 'first' : 'custom'"
-            @change="
-              handleBillingChoice(($event.target as HTMLSelectElement).value)
-            "
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-          >
-            <option value="first">Use first installation address</option>
-            <option value="custom">Use a different billing address</option>
-          </select>
-        </div>
-
-        <!-- Checkbox (only when 1 installation) -->
-        <div v-else class="flex items-center mb-4">
-          <input
-            :checked="modelValue.billing_same"
-            @change="
-              updateField(
-                'billing_same',
-                ($event.target as HTMLInputElement).checked,
-              )
-            "
-            type="checkbox"
-            id="billingSame"
-            class="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500 cursor-pointer"
-          />
-          <label
-            for="billingSame"
-            class="ml-2 text-sm text-gray-700 font-medium cursor-pointer"
-          >
-            Billing address is same as installation address
-          </label>
-        </div>
-
-        <!-- Manual Billing Address Fields (only if billing_same is false) -->
-        <div
-          v-if="!modelValue.billing_same"
-          class="grid grid-cols-1 md:grid-cols-2 gap-4"
+        <label class="block text-sm font-semibold text-gray-700 mb-2"
+          >Billing Address *</label
         >
-          <div class="md:col-span-2">
-            <label class="block text-sm font-semibold text-gray-700 mb-1"
-              >Billing Address *</label
-            >
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="md:col-span-4">
             <input
               :value="modelValue.billing_address"
               @input="
@@ -180,15 +231,18 @@
                   ($event.target as HTMLInputElement).value,
                 )
               "
+              @blur="$emit('validate', 'billing_address')"
               type="text"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              :class="{ 'border-red-500': errors.billing_address }"
               placeholder="123 Main St"
             />
+            <p v-if="errors.billing_address" class="text-red-500 text-sm mt-1">
+              {{ errors.billing_address }}
+            </p>
           </div>
-          <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1"
-              >City *</label
-            >
+
+          <div class="md:col-span-2">
             <input
               :value="modelValue.billing_city"
               @input="
@@ -197,15 +251,18 @@
                   ($event.target as HTMLInputElement).value,
                 )
               "
+              @blur="$emit('validate', 'billing_city')"
               type="text"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              placeholder="Sarasota"
+              :class="{ 'border-red-500': errors.billing_city }"
+              placeholder="City"
             />
+            <p v-if="errors.billing_city" class="text-red-500 text-sm mt-1">
+              {{ errors.billing_city }}
+            </p>
           </div>
+
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-1"
-              >State *</label
-            >
             <input
               :value="modelValue.billing_state"
               @input="
@@ -214,16 +271,19 @@
                   ($event.target as HTMLInputElement).value,
                 )
               "
+              @blur="$emit('validate', 'billing_state')"
               type="text"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              :class="{ 'border-red-500': errors.billing_state }"
               placeholder="FL"
               maxlength="2"
             />
+            <p v-if="errors.billing_state" class="text-red-500 text-sm mt-1">
+              {{ errors.billing_state }}
+            </p>
           </div>
-          <div class="md:col-span-2">
-            <label class="block text-sm font-semibold text-gray-700 mb-1"
-              >ZIP / Postcode *</label
-            >
+
+          <div>
             <input
               :value="modelValue.billing_postcode"
               @input="
@@ -232,13 +292,23 @@
                   ($event.target as HTMLInputElement).value,
                 )
               "
+              @blur="$emit('validate', 'billing_postcode')"
               type="text"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              placeholder="34236"
-              maxlength="10"
+              :class="{ 'border-red-500': errors.billing_postcode }"
+              placeholder="ZIP"
+              maxlength="5"
             />
+            <p v-if="errors.billing_postcode" class="text-red-500 text-sm mt-1">
+              {{ errors.billing_postcode }}
+            </p>
           </div>
         </div>
+      </div>
+
+      <div class="text-xs text-gray-500 mt-2">
+        <i class="fas fa-lock mr-1"></i> Your payment information is secure and
+        encrypted.
       </div>
     </div>
   </div>
@@ -248,11 +318,14 @@
 import { computed } from "vue";
 
 interface FormData {
+  billing_first_name: string;
+  billing_last_name: string;
+  billing_email: string;
+  billing_phone: string;
   card_name: string;
   card_number: string;
   card_expiry: string;
   card_cvv: string;
-  billing_same: boolean;
   billing_address: string;
   billing_city: string;
   billing_state: string;
@@ -262,7 +335,6 @@ interface FormData {
 const props = defineProps<{
   modelValue: FormData;
   errors: Record<string, string>;
-  installationCount?: number;
 }>();
 
 const emit = defineEmits<{
@@ -270,11 +342,7 @@ const emit = defineEmits<{
   (e: "validate", field: string): void;
 }>();
 
-const handleBillingChoice = (value: string) => {
-  updateField("billing_same", value === "first");
-};
-
-// Card brand colors & icons (same as before)
+// Card brand colors & icons
 const cardBrandColors: Record<string, string> = {
   visa: "#1434CB",
   mastercard: "#252525",

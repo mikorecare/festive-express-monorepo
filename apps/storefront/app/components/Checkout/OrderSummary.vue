@@ -7,34 +7,57 @@
       :key="item.id"
       class="flex justify-between py-2 border-b border-gray-100"
     >
-      <div>
+      <div class="pr-2">
         <strong class="text-sm">{{ item.product?.name }}</strong>
+
         <small
           v-if="item.options?.c9_color"
           class="block text-gray-500 text-xs"
         >
           {{ item.options.c9_color }} LEDs
         </small>
+
+        <!-- ADDRESS DETAIL -->
         <small
-          v-if="item.options?.addons?.length"
-          class="block text-gray-500 text-xs"
+          v-if="item.options?.address"
+          class="block text-gray-500 text-xs leading-tight mt-1 max-w-[200px]"
         >
-          + {{ item.options.addons.length }} add-on<span
-            v-if="item.options.addons.length > 1"
-            >s</span
-          >
+          {{ item.options.address }}
         </small>
+
+        <!-- ADD-ONS BREAKDOWN -->
+        <div v-if="item.options?.addons?.length" class="mt-1">
+          <small class="block text-gray-500 text-xs font-semibold"
+            >Add-ons:</small
+          >
+          <ul class="text-xs text-gray-500">
+            <li
+              v-for="addon in item.options.addons"
+              :key="addon.product_id"
+              class="flex justify-between mt-0.5"
+            >
+              <span>{{ addon.quantity }}x {{ addon.name }}</span>
+              <span v-if="Number(addon.price) > 0" class="ml-2"
+                >${{ (Number(addon.price) * addon.quantity).toFixed(2) }}</span
+              >
+            </li>
+          </ul>
+        </div>
+
+        <!-- OVERAGE BREAKDOWN -->
         <small
           v-if="Number(item.options?.overage?.amount || 0) > 0"
-          class="block text-gray-500 text-xs"
+          class="block text-gray-500 text-xs mt-1"
         >
-          + {{ item.options.overage.feet }} ft overage
+          + {{ item.options.overage.feet }} ft overage (${{
+            Number(item.options.overage.amount).toFixed(2)
+          }})
         </small>
       </div>
 
       <!-- Styled Item Price -->
       <span
-        class="text-orange-500 font-bold text-sm inline-flex items-baseline"
+        class="text-orange-500 font-bold text-sm inline-flex items-baseline shrink-0"
       >
         <span
           class="text-[0.9rem] font-extrabold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-0.5 translate-y-[-0.1em]"
@@ -343,7 +366,7 @@
             <button
               type="button"
               @click="showTerms = false"
-              class="px-6 py-2 bg-[#F49321] hover:bg-[#e07e0e] text-white text-sm font-bold rounded-lg transition-colors"
+              class="px-6 btn-3d-glossy py-2 bg-[#F49321] hover:bg-[#e07e0e] text-white text-sm font-bold rounded-lg transition-colors"
             >
               I Understand
             </button>
@@ -368,14 +391,6 @@ const {
   removePromo,
   loadPromo,
 } = usePromo();
-
-const FL_TAX_RATE = computed(() => {
-  const raw =
-    settings.value?.fl_tax_rate ?? (settings.value as any)?.["fl_tax_rate"];
-  const n = Number(raw);
-  if (!Number.isNaN(n) && n >= 0) return n;
-  return 0.07;
-});
 
 const props = defineProps<{
   cartItems: any[];
@@ -405,27 +420,16 @@ const handlePay = () => {
   emit("pay", appliedPromo.value?.id);
 };
 
-const estimatedTax = computed(() => {
-  const subtotal = Number(props.cartTotal) || 0;
-  const discount = discountAmount(subtotal);
-  return Math.max(0, subtotal - discount) * FL_TAX_RATE.value;
-});
-
-const grandTotal = computed(() => {
-  const subtotal = Number(props.cartTotal) || 0;
-  const discount = discountAmount(subtotal);
-  return Math.max(0, subtotal + estimatedTax.value - discount);
-});
+// NOTE: estimatedTax and grandTotal are now purely handled by the props passed from checkout.vue!
+// We removed the duplicate computed logic here.
 
 const {
   loadEarlyBird,
-  showSale,
-  effectivePrice,
-  earlyBirdExpiresAt,
   isEarlyBirdLive,
   earlyBirdTitle,
   earlyBirdDescription,
   formatEndsLabel,
+  earlyBirdExpiresAt,
 } = useEarlyBirdSpecial();
 
 const countdown = ref("");
@@ -450,26 +454,13 @@ const tickCountdown = () => {
 
 let timer: ReturnType<typeof setInterval> | null = null;
 
-// --- Terms & Conditions Modal Logic ---
 const showTerms = ref(false);
-
-type TermsContent = {
-  id?: string;
-  title?: string | null;
-  subtitle?: string | null;
-  description?: string | null;
-};
-
-type TermsApiResponse = {
-  success: boolean;
-  data: TermsContent | null;
-};
 
 const {
   data: termsResponse,
   pending: termsPending,
   error: termsError,
-} = await useFetch<TermsApiResponse>("/api/terms-of-use", {
+} = await useFetch<any>("/api/terms-of-use", {
   lazy: true,
   server: false,
 });
@@ -491,10 +482,9 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .fade-enter-active,
-.fade-leave-active {
+.fade-leave-to {
   transition: opacity 0.2s ease;
 }
-
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;

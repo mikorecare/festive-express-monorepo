@@ -47,14 +47,6 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Left Column -->
         <div class="lg:col-span-2 space-y-6">
-          <!-- Customer Contact Info (Shared) -->
-          <CheckoutServiceInformation
-            v-model="contactForm"
-            :errors="contactErrors"
-            @validate="validateContactField"
-          />
-
-          <!-- Loop through each installation unit -->
           <div
             v-for="(inst, index) in installations"
             :key="index"
@@ -74,73 +66,29 @@
                 </span>
               </div>
 
-              <!-- Installation Specific Address & Phone -->
               <div
                 class="bg-white rounded-b-2xl p-6 shadow-md border border-slate-200"
               >
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div class="md:col-span-3">
+                  <div class="md:col-span-4 mb-2">
                     <label
                       class="block text-sm font-semibold text-gray-700 mb-1"
-                      >Installation Address *</label
                     >
-                    <input
-                      :value="inst.address"
-                      @input="
-                        (e) =>
-                          updateInstallationField(
-                            index,
-                            'address',
-                            (e.target as HTMLInputElement).value,
-                          )
-                      "
-                      @blur="validateInstallation(index, 'address')"
-                      type="text"
-                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                      :class="{ 'border-red-500': inst.errors.address }"
-                      placeholder="123 Festive Lane"
-                    />
-                    <p
-                      v-if="inst.errors.address"
-                      class="text-red-500 text-sm mt-1"
+                      Installation Address
+                    </label>
+                    <div
+                      class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium"
                     >
-                      {{ inst.errors.address }}
-                    </p>
+                      {{ inst.address || "No address provided" }}
+                    </div>
                   </div>
-                  <div class="md:col-span-1">
-                    <label
-                      class="block text-sm font-semibold text-gray-700 mb-1"
-                      >ZIP / Postcode *</label
-                    >
-                    <input
-                      :value="inst.postcode"
-                      @input="
-                        (e) =>
-                          updateInstallationField(
-                            index,
-                            'postcode',
-                            (e.target as HTMLInputElement).value,
-                          )
-                      "
-                      @blur="validateInstallation(index, 'postcode')"
-                      type="text"
-                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                      :class="{ 'border-red-500': inst.errors.postcode }"
-                      maxlength="10"
-                      placeholder="34236"
-                    />
-                    <p
-                      v-if="inst.errors.postcode"
-                      class="text-red-500 text-sm mt-1"
-                    >
-                      {{ inst.errors.postcode }}
-                    </p>
-                  </div>
+
                   <div class="md:col-span-4">
                     <label
                       class="block text-sm font-semibold text-gray-700 mb-1"
-                      >Installation Contact Phone *</label
                     >
+                      Installation Contact Phone *
+                    </label>
                     <input
                       :value="inst.phone"
                       @input="
@@ -169,7 +117,6 @@
               </div>
             </div>
 
-            <!-- Installation Specific Dates -->
             <CheckoutScheduleService
               :model-value="inst"
               :errors="inst.errors"
@@ -183,9 +130,22 @@
           <CheckoutPaymentInformation
             v-model="paymentForm"
             :errors="paymentErrors"
-            :is-single-installation="installations.length === 1"
             @validate="validatePaymentField"
           />
+
+          <!-- Customer Note -->
+          <div class="bg-white rounded-2xl shadow-md p-6">
+            <label class="block text-sm font-bold text-[#1C2D5B] mb-1">
+              Customer Note
+              <span class="text-slate-400 font-normal">(optional)</span>
+            </label>
+            <textarea
+              v-model="customerNote"
+              class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-[#F49321] focus:border-transparent transition-all"
+              rows="3"
+              placeholder="Any special instructions? (gate code, pets, preferred side of house, etc.)"
+            ></textarea>
+          </div>
         </div>
 
         <!-- Right Column -->
@@ -226,8 +186,6 @@
 <script setup lang="ts">
 useHead({ title: "Checkout" });
 import CheckoutTurnstileWidget from "../components/Checkout/TurnstileWidget.vue";
-import { usePaymentError } from "~/composables/usePaymentError";
-import { useToast } from "~/composables/useToast";
 import { toast } from "vue-sonner";
 
 const config = useRuntimeConfig();
@@ -243,12 +201,11 @@ const FL_TAX_RATE = computed(() => {
 });
 
 const { cartItems, cartTotal, loadCart, clearCart } = useCart();
-const { isServiceZip } = useServiceZips();
-const { handlePaymentError } = usePaymentError();
 const { showToast } = useToast();
 
 const paymentMethod = ref<string>("converge");
 const isPaying = ref(false);
+const customerNote = ref("");
 
 const turnstileRef = ref<InstanceType<typeof CheckoutTurnstileWidget> | null>(
   null,
@@ -258,42 +215,38 @@ const turnstileToken = ref("");
 const turnstileStatus = ref("");
 const turnstileStatusType = ref("");
 
-// 1. Shared Contact Info (Removed Phone)
-const contactForm = ref({
-  billing_first_name: "",
-  billing_last_name: "",
-  billing_email: "",
-  customer_note: "",
-});
-
-const contactErrors = ref({
-  billing_first_name: "",
-  billing_last_name: "",
-  billing_email: "",
-});
-
-// 2. Payment Info
+// 1. Combined Payment & Contact Form
 const paymentForm = ref({
+  billing_first_name: "",
+  billing_last_name: "",
+  billing_email: "",
+  billing_phone: "",
   card_name: "",
   card_number: "",
   card_expiry: "",
   card_cvv: "",
-  billing_same: true,
   billing_address: "",
   billing_city: "",
   billing_state: "FL",
   billing_postcode: "",
-  billing_phone: "",
 });
 
 const paymentErrors = ref({
+  billing_first_name: "",
+  billing_last_name: "",
+  billing_email: "",
+  billing_phone: "",
   card_name: "",
   card_number: "",
   card_expiry: "",
   card_cvv: "",
+  billing_address: "",
+  billing_city: "",
+  billing_state: "",
+  billing_postcode: "",
 });
 
-// 3. Dynamic Installations
+// 2. Dynamic Installations
 interface Installation {
   product_id: string;
   product_name: string;
@@ -307,24 +260,25 @@ interface Installation {
 
 const installations = ref<Installation[]>([]);
 
-// Watch cart to generate installations based on quantity
+// Watch cart to generate installations
 watch(
   cartItems,
   (items) => {
     const newInstallations: Installation[] = [];
     items.forEach((item) => {
-      for (let i = 0; i < item.quantity; i++) {
-        newInstallations.push({
-          product_id: String(item.product_id),
-          product_name: item.product?.name || "Package",
-          address: "",
-          postcode: "",
-          phone: "",
-          install_dates: ["", "", ""],
-          removal_dates: ["", "", ""],
-          errors: {},
-        });
-      }
+      const zipMatches = item.options?.address?.match(/\b\d{5}\b/g);
+      const postcode = zipMatches ? zipMatches[zipMatches.length - 1] : "";
+
+      newInstallations.push({
+        product_id: String(item.product_id),
+        product_name: item.product?.name || "Package",
+        address: item.options?.address || "",
+        postcode: postcode,
+        phone: item.options?.phone || "",
+        install_dates: ["", "", ""],
+        removal_dates: ["", "", ""],
+        errors: {},
+      });
     });
     installations.value = newInstallations;
   },
@@ -334,34 +288,30 @@ watch(
 const validationErrors = ref({ turnstile: "" });
 
 const isFormValid = computed(() => {
-  const contactValid =
-    Object.values(contactErrors.value).every((e) => !e) &&
-    !!contactForm.value.billing_first_name &&
-    !!contactForm.value.billing_last_name &&
-    !!contactForm.value.billing_email;
-
   const paymentValid =
     Object.values(paymentErrors.value).every((e) => !e) &&
+    !!paymentForm.value.billing_first_name &&
+    !!paymentForm.value.billing_last_name &&
+    !!paymentForm.value.billing_email &&
+    !!paymentForm.value.billing_phone &&
     !!paymentForm.value.card_name &&
     !!paymentForm.value.card_number &&
     !!paymentForm.value.card_expiry &&
-    !!paymentForm.value.card_cvv;
+    !!paymentForm.value.card_cvv &&
+    !!paymentForm.value.billing_address &&
+    !!paymentForm.value.billing_city &&
+    !!paymentForm.value.billing_state &&
+    !!paymentForm.value.billing_postcode;
 
   const installationsValid = installations.value.every(
     (inst) =>
       Object.values(inst.errors).every((e) => !e) &&
       !!inst.address &&
-      !!inst.postcode &&
       !!inst.phone &&
       inst.install_dates.some((d) => d),
   );
 
-  return (
-    contactValid &&
-    paymentValid &&
-    installationsValid &&
-    isTurnstileVerified.value
-  );
+  return paymentValid && installationsValid && isTurnstileVerified.value;
 });
 
 const updateInstallationField = (index: number, field: string, value: any) => {
@@ -382,7 +332,7 @@ const updateInstallation = (index: number, updated: any) => {
   };
 };
 
-// Turnstile Methods...
+// Turnstile Methods
 const turnstileStatusClass = computed(() => {
   switch (turnstileStatusType.value) {
     case "success":
@@ -437,46 +387,42 @@ const resetTurnstile = () => {
   turnstileStatusType.value = "";
 };
 
-// Validation Methods...
-const validateContactField = (field: string) => {
-  const value = contactForm.value[field as keyof typeof contactForm.value];
+// Validation Methods
+const validatePaymentField = (field: string) => {
+  const value = (paymentForm.value as any)[field];
   const stringValue = String(value || "");
 
   if (field === "billing_email") {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    contactErrors.value.billing_email = !stringValue
+    paymentErrors.value.billing_email = !stringValue
       ? "Email address is required"
       : !emailRegex.test(stringValue)
         ? "Please enter a valid email address"
         : "";
+  } else if (field === "billing_phone") {
+    const digits = stringValue.replace(/\D/g, "");
+    paymentErrors.value.billing_phone =
+      digits.length < 10 ? "Please enter a valid phone number" : "";
+  } else if (field === "billing_postcode") {
+    const zip = stringValue.replace(/\D/g, "");
+    paymentErrors.value.billing_postcode =
+      zip.length !== 5 ? "Please enter a valid 5-digit ZIP code" : "";
+  } else if (field === "billing_state") {
+    paymentErrors.value.billing_state =
+      stringValue.length !== 2 ? "Please enter a valid 2-letter state" : "";
   } else {
-    (contactErrors.value as any)[field] =
+    (paymentErrors.value as any)[field] =
       !stringValue || stringValue.trim().length < 2
         ? "This field is required"
         : "";
   }
 };
 
-const validatePaymentField = (field: string) => {
-  // Keep your existing payment validation logic here
-};
-
 const validateInstallation = (index: number, field: string) => {
   const inst = installations.value[index];
   if (!inst) return;
 
-  if (field === "postcode") {
-    const zip = inst.postcode.replace(/\D/g, "");
-    if (zip.length !== 5) {
-      inst.errors.postcode = "Please enter a valid 5-digit ZIP code";
-    } else if (!isServiceZip(zip)) {
-      inst.errors.postcode =
-        "We currently only serve the Sarasota, Bradenton, and Lakewood Ranch area.";
-    } else {
-      inst.errors.postcode = "";
-      inst.postcode = zip;
-    }
-  } else if (field === "phone") {
+  if (field === "phone") {
     const digits = inst.phone.replace(/\D/g, "");
     inst.errors.phone =
       digits.length < 10 ? "Please enter a valid phone number" : "";
@@ -486,17 +432,16 @@ const validateInstallation = (index: number, field: string) => {
         ? "Please select at least 1 date"
         : "";
   } else if (field === "address") {
-    inst.errors.address =
-      inst.address.trim().length < 5 ? "Please enter a valid address" : "";
+    inst.errors.address = !inst.address ? "Address is required" : "";
   }
 };
 
 const validateAllFields = () => {
-  Object.keys(contactForm.value).forEach(validateContactField);
-  Object.keys(paymentForm.value).forEach(validatePaymentField);
+  Object.keys(paymentForm.value).forEach((key) => {
+    validatePaymentField(key);
+  });
   installations.value.forEach((_, index) => {
     validateInstallation(index, "address");
-    validateInstallation(index, "postcode");
     validateInstallation(index, "phone");
     validateInstallation(index, "install_dates");
   });
@@ -552,10 +497,6 @@ const validateCheckout = () => {
   return true;
 };
 
-const getCityFromZip = (zip: string): string => {
-  return "Sarasota";
-};
-
 // Payment Flow
 const loadCheckoutScript = (): Promise<void> => {
   return new Promise((resolve, reject) => {
@@ -574,42 +515,28 @@ const payWithConverge = async () => {
   isPaying.value = true;
 
   try {
-    const email = contactForm.value.billing_email || "";
+    const email = paymentForm.value.billing_email || "";
     const promoCodeId = appliedPromo.value?.id || null;
-
-    // Determine billing address source
-    const useInstallationBilling = paymentForm.value.billing_same;
     const primaryInst = installations.value[0]!;
-    const billingAddress = useInstallationBilling
-      ? primaryInst.address
-      : paymentForm.value.billing_address;
-    const billingCity = useInstallationBilling
-      ? getCityFromZip(primaryInst.postcode)
-      : paymentForm.value.billing_city;
-    const billingState = useInstallationBilling
-      ? "FL"
-      : paymentForm.value.billing_state;
-    const billingZip = useInstallationBilling
-      ? primaryInst.postcode
-      : paymentForm.value.billing_postcode;
-    const billingPhone = primaryInst.phone; // always use installation phone for AVS
 
     const orderBody = {
-      first_name: contactForm.value.billing_first_name,
-      last_name: contactForm.value.billing_last_name,
+      first_name: paymentForm.value.billing_first_name,
+      last_name: paymentForm.value.billing_last_name,
       email: email,
-      billing_phone: billingPhone,
-      billing_address: billingAddress,
-      billing_postcode: billingZip,
+      billing_phone: paymentForm.value.billing_phone,
+      billing_address: paymentForm.value.billing_address,
+      billing_postcode: paymentForm.value.billing_postcode,
       shipping_address: primaryInst.address,
       shipping_postcode: primaryInst.postcode,
-      billing_city: billingCity,
-      billing_state: billingState,
-      customer_note: contactForm.value.customer_note || null,
+      billing_city: paymentForm.value.billing_city,
+      billing_state: paymentForm.value.billing_state,
+      customer_note: customerNote.value || null,
 
       items: installations.value.map((inst, index) => {
         const cartItem = cartItems.value.find(
-          (i) => String(i.product_id) === inst.product_id,
+          (i) =>
+            String(i.product_id) === inst.product_id &&
+            i.options?.address === inst.address,
         );
         return {
           product_id: inst.product_id,
@@ -635,16 +562,16 @@ const payWithConverge = async () => {
       method: "POST",
       body: {
         amount: grandTotal.value,
-        first_name: contactForm.value.billing_first_name,
-        last_name: contactForm.value.billing_last_name,
+        first_name: paymentForm.value.billing_first_name,
+        last_name: paymentForm.value.billing_last_name,
         email: email,
         invoice_number: `F-EX-${Date.now()}`,
-        billing_address: billingAddress,
-        billing_city: billingCity,
-        billing_state: billingState,
-        billing_zip: billingZip,
+        billing_address: paymentForm.value.billing_address,
+        billing_city: paymentForm.value.billing_city,
+        billing_state: paymentForm.value.billing_state,
+        billing_zip: paymentForm.value.billing_postcode,
         billing_country: "USA",
-        billing_phone: billingPhone,
+        billing_phone: paymentForm.value.billing_phone,
       },
     });
 
@@ -659,15 +586,15 @@ const payWithConverge = async () => {
       ssl_card_number: paymentForm.value.card_number.replace(/\s/g, ""),
       ssl_exp_date: paymentForm.value.card_expiry.replace("/", ""),
       ssl_cvv2cvc2: paymentForm.value.card_cvv,
-      ssl_first_name: contactForm.value.billing_first_name,
-      ssl_last_name: contactForm.value.billing_last_name,
-      ssl_avs_address: billingAddress,
-      ssl_city: billingCity,
-      ssl_state: billingState,
-      ssl_avs_zip: billingZip,
+      ssl_first_name: paymentForm.value.billing_first_name,
+      ssl_last_name: paymentForm.value.billing_last_name,
+      ssl_avs_address: paymentForm.value.billing_address,
+      ssl_city: paymentForm.value.billing_city,
+      ssl_state: paymentForm.value.billing_state,
+      ssl_avs_zip: paymentForm.value.billing_postcode,
       ssl_country: "USA",
       ssl_email: email,
-      ssl_phone: billingPhone,
+      ssl_phone: paymentForm.value.billing_phone,
       ssl_invoice_number: `INV-${Date.now()}`,
       ssl_get_token: "Y",
       ssl_add_token: "Y",
