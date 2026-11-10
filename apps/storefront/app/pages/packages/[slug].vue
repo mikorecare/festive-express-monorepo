@@ -838,6 +838,8 @@ const openCartModal = (
   cartModal.open = true;
 };
 
+const { $fbq } = useNuxtApp();
+
 const addToCart = async () => {
   const sku = selectedSku.value;
   if (!sku?.id || adding.value) return;
@@ -868,6 +870,32 @@ const addToCart = async () => {
 
     if (ok !== false) {
       if (typeof cart.loadCart === "function") await cart.loadCart();
+
+      // ---- Meta Pixel: AddToCart ----
+      const addonTotal = selectedAddons.reduce(
+        (sum, a) => sum + a.price * a.quantity,
+        0,
+      );
+      const mainPrice = Number(sku.price ?? pkg.value?.price ?? 0);
+      const overageAmt = Number(overagePrice.value || 0);
+
+      ($fbq as any)("track", "AddToCart", {
+        content_name: pkg.value?.name ?? sku.name,
+        content_ids: [sku.id, ...selectedAddons.map((a) => a.product_id)],
+        content_type: "product",
+        contents: [
+          { id: sku.id, quantity: 1, item_price: mainPrice },
+          ...selectedAddons.map((a) => ({
+            id: a.product_id,
+            quantity: a.quantity,
+            item_price: a.price,
+          })),
+        ],
+        value: mainPrice + addonTotal + overageAmt,
+        currency: "USD",
+        num_items: 1 + selectedAddons.reduce((n, a) => n + a.quantity, 0),
+      });
+      // ---- /Meta Pixel ----
 
       Object.keys(addonQty).forEach((key) => delete addonQty[key]);
       extrasOpen.value = false;

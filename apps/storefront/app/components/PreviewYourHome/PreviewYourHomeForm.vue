@@ -247,7 +247,16 @@
     <div class="space-y-2 pt-1">
       <button
         class="w-full btn-gloss bg-brand-orange text-[15px] sm:text-[16px] lg:text-[18px] tracking-wide text-white font-semibold py-3 px-4 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
-        @click="submitRender(false)"
+        @click="
+          async () => {
+            if (isLoading || !turnstileVerified) return;
+            await submitRender(false);
+            $fbq('track', 'Lead', {
+              content_name: 'Light up my home',
+              content_category: 'render_request',
+            });
+          }
+        "
         :disabled="isLoading || !turnstileVerified"
       >
         <span
@@ -259,9 +268,19 @@
           {{ isLoading ? "Lighting up..." : "Light up my home →" }}
         </span>
       </button>
+
       <button
         class="w-full border border-gray-300 hover:bg-gray-50 text-[14px] sm:text-[15px] lg:text-[16px] text-navy font-semibold py-2.5 px-4 rounded-[14px] transition-colors"
-        @click="submitRender(true)"
+        @click="
+          async () => {
+            if (isLoading || !turnstileVerified) return;
+            await submitRender(true);
+            $fbq('track', 'Lead', {
+              content_name: 'Address-only check',
+              content_category: 'render_request',
+            });
+          }
+        "
         :disabled="isLoading || !turnstileVerified"
       >
         <i class="fas fa-search mr-2"></i>
