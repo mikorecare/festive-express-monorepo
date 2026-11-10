@@ -23,9 +23,7 @@
         class="text-center text-white font-bold tracking-[0.4px] text-[1.5rem] leading-snug mt-4 mb-4 sm:mt-6 sm:mb-4 drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)] max-w-[95%] sm:max-w-none mx-auto"
       >
         INCLUDED IN EVERY PACKAGE
-        <span
-          class="block text-[1.1rem] font-semibold text-white/90 mt-1"
-        >
+        <span class="block text-[1.1rem] font-semibold text-white/90 mt-1">
           (Each package is a rental for one season)
         </span>
       </p>
@@ -33,44 +31,55 @@
       <!-- NEW PILLS ADDED HERE -->
       <div
         v-fade
-        class="flex flex-wrap justify-center gap-6 sm:gap-10 mb-8 sm:mb-12"
+        class="flex flex-nowrap justify-center gap-3 sm:gap-10 mb-8 sm:mb-12"
       >
-        <div class="flex flex-col items-center gap-1">
+        <!-- Installation -->
+        <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
           <div
-            class="w-[84px] h-[84px] shrink-0 flex items-center justify-center"
+            class="w-[56px] h-[56px] sm:w-[84px] sm:h-[84px] shrink-0 flex items-center justify-center"
           >
             <AssetsInstallation
-              class="w-[120px] h-[120px]"
+              class="w-[80px] h-[80px] sm:w-[120px] sm:h-[120px]"
               aria-hidden="true"
               glow
             />
           </div>
           <span
-            class="text-base sm:text-lg font-bold uppercase tracking-wider text-white"
+            class="text-sm sm:text-lg font-bold uppercase tracking-wider text-white text-center drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]"
           >
             Installation
           </span>
         </div>
-        <div class="flex flex-col items-center gap-1">
+
+        <!-- Maintenance -->
+        <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
           <div
-            class="w-[84px] h-[84px] shrink-0 flex items-center justify-center"
+            class="w-[56px] h-[56px] sm:w-[84px] sm:h-[84px] shrink-0 flex items-center justify-center"
           >
-            <AssetsMaintenance class="w-[120px] h-[120px]" aria-hidden="true" />
+            <AssetsMaintenance
+              class="w-[80px] h-[80px] sm:w-[120px] sm:h-[120px]"
+              aria-hidden="true"
+            />
           </div>
           <span
-            class="text-base sm:text-lg font-bold uppercase tracking-wider text-white"
+            class="text-sm sm:text-lg font-bold uppercase tracking-wider text-white text-center drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]"
           >
             Maintenance
           </span>
         </div>
-        <div class="flex flex-col items-center gap-1">
+
+        <!-- Removal -->
+        <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
           <div
-            class="w-[84px] h-[84px] shrink-0 flex items-center justify-center"
+            class="w-[56px] h-[56px] sm:w-[84px] sm:h-[84px] shrink-0 flex items-center justify-center"
           >
-            <AssetsRemoval class="w-[120px] h-[120px]" aria-hidden="true" />
+            <AssetsRemoval
+              class="w-[80px] h-[80px] sm:w-[120px] sm:h-[120px]"
+              aria-hidden="true"
+            />
           </div>
           <span
-            class="text-base sm:text-lg font-bold uppercase tracking-wider text-white"
+            class="text-sm sm:text-lg font-bold uppercase tracking-wider text-white text-center drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]"
           >
             Removal
           </span>
