@@ -253,6 +253,7 @@
                 >${{ Number(order.tax_total).toFixed(2) }}</strong
               >
             </div>
+
             <div
               class="flex justify-between py-2 border-t-2 border-brand-orange"
             >
@@ -407,13 +408,60 @@
             </div>
           </div>
 
+          <!-- Installation Address with Google Map -->
           <div class="bg-white rounded-xl p-6 shadow-sm">
             <h3 class="text-lg font-bold text-navy mb-4">
               Installation Address
             </h3>
-            <div class="space-y-0.5 text-gray-700">
-              <p>{{ order.shipping_address }}</p>
+
+            <!-- Address Info (Always visible) -->
+            <div class="space-y-0.5 text-gray-700 mb-4">
+              <p>{{ order.shipping_address || "No address" }}</p>
               <p>{{ order.shipping_postcode }}</p>
+            </div>
+
+            <!-- Driving Info -->
+            <div
+              v-if="order.directions"
+              class="mb-4 p-3 bg-orange-50 border border-orange-100 rounded-lg"
+            >
+              <p class="text-sm text-gray-600">
+                <span class="font-bold text-brand-orange">
+                  {{ order.directions.distance_miles }} miles
+                </span>
+                away from origin
+              </p>
+              <p class="text-xs text-gray-500 mt-1">
+                <span class="font-bold"
+                  >{{ order.directions.duration_minutes }} min</span
+                >
+                drive time
+              </p>
+            </div>
+
+            <!-- Directions Map (Shows Origin + Destination + Route) -->
+            <div
+              v-if="placeId && order.directions?.origin?.place_id"
+              class="w-full h-80 bg-gray-100 rounded-lg overflow-hidden border border-gray-200 relative"
+            >
+              <iframe
+                credentialless
+                width="100%"
+                height="100%"
+                frameborder="0"
+                style="border: 0"
+                referrerpolicy="no-referrer-when-downgrade"
+                :src="`https://www.google.com/maps/embed/v1/directions?key=${config.public.googleMapsApiKey}&origin=place_id:${order.directions.origin.place_id}&destination=place_id:${placeId}&mode=driving`"
+                allowfullscreen
+              ></iframe>
+            </div>
+
+            <div
+              v-else
+              class="w-full h-40 bg-gray-50 rounded-lg flex items-center justify-center text-sm text-gray-400 italic border border-gray-200"
+            >
+              <span v-if="!placeId">No map data (missing place_id)</span>
+              <span v-else>No origin data available to draw route</span>
             </div>
           </div>
 
@@ -579,6 +627,7 @@ const { showToast } = useToast();
 const route = useRoute();
 const orderId = route.params.id as string;
 const isSaving = ref(false);
+const config = useRuntimeConfig();
 
 const order = ref<any>(null);
 const originalStatus = ref<string>("pending");
@@ -779,6 +828,14 @@ const getStatusColor = (status: string) => {
   };
   return colors[status] || "bg-gray-400";
 };
+
+// Extract place_id from the first item
+const placeId = computed(() => {
+  if (!order.value || !order.value.items || order.value.items.length === 0) {
+    return null;
+  }
+  return order.value.items[0]?.options?.place_id || null;
+});
 
 onMounted(loadOrder);
 </script>

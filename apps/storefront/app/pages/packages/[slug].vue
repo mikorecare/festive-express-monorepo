@@ -95,9 +95,11 @@
             </label>
             <input
               v-model="installPhone"
+              @input="formatPhone"
               type="tel"
               placeholder="(555) 123-4567"
               class="w-full px-3 py-2.5 lg:px-4 lg:py-3 border border-gray-300 rounded-[14px] focus:ring-2 focus:ring-orange-500 focus:border-transparent text-[15px] lg:text-[16px]"
+              maxlength="14"
             />
           </div>
 
@@ -186,8 +188,9 @@
 import { usePackagePage } from "~/composables/usePackagePage";
 import { useServiceableAddress } from "~/composables/useServiceableAddress";
 import { onMounted, ref } from "vue";
+import { usePhoneFormat } from "~/composables/usePhoneFormat";
 
-const installPhone = ref("");
+const { phone: installPhone, formatPhone } = usePhoneFormat("");
 
 const {
   pkg,

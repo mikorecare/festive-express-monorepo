@@ -115,25 +115,6 @@
       </span>
     </div>
 
-    <div class="flex justify-between text-sm py-1">
-      <span class="text-gray-600">Estimated Taxes</span>
-      <span class="font-bold inline-flex items-baseline">
-        <span
-          class="text-[0.9rem] font-extrabold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-0.5 translate-y-[-0.1em]"
-        >
-          $&nbsp;
-        </span>
-        <span class="font-extrabold leading-none price-text -tracking-[0.04em]">
-          {{
-            estimatedTax.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })
-          }}
-        </span>
-      </span>
-    </div>
-
     <div class="flex justify-between text-sm py-1" v-if="appliedPromo">
       <span class="text-gray-600">Discount ({{ appliedPromo.code }})</span>
       <span class="font-bold text-green-600 inline-flex items-baseline">
@@ -146,6 +127,25 @@
         <span class="font-extrabold leading-none price-text -tracking-[0.04em]">
           {{
             discountAmount(cartTotal).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
+          }}
+        </span>
+      </span>
+    </div>
+
+    <div class="flex justify-between text-sm py-1">
+      <span class="text-gray-600">Estimated Taxes</span>
+      <span class="font-bold inline-flex items-baseline">
+        <span
+          class="text-[0.9rem] font-extrabold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-0.5 translate-y-[-0.1em]"
+        >
+          $&nbsp;
+        </span>
+        <span class="font-extrabold leading-none price-text -tracking-[0.04em]">
+          {{
+            estimatedTax.toLocaleString(undefined, {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
             })

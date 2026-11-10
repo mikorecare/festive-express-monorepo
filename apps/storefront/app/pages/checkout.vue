@@ -50,83 +50,76 @@
           <div
             v-for="(inst, index) in installations"
             :key="index"
-            class="space-y-6"
+            class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden"
           >
-            <div>
-              <div
-                class="relative btn-gloss overflow-hidden bg-[#1C2D5B] text-white px-4 py-2 rounded-t-xl flex items-center justify-between border-b-4 border-[#F49321]"
+            <!-- Header -->
+            <div
+              class="relative btn-gloss overflow-hidden bg-[#1C2D5B] text-white px-4 py-2 flex items-center justify-between border-b-4 border-[#F49321]"
+            >
+              <span
+                class="relative z-10 text-sm sm:text-base font-extrabold tracking-wide"
               >
-                <span
-                  class="relative z-10 text-sm sm:text-base font-extrabold tracking-wide"
-                >
-                  Installation #{{ index + 1 }}
-                  <span class="text-[#F49321]"
-                    >for {{ inst.product_name }}</span
-                  >
-                </span>
-              </div>
-
-              <div
-                class="bg-white rounded-b-2xl p-6 shadow-md border border-slate-200"
-              >
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div class="md:col-span-4 mb-2">
-                    <label
-                      class="block text-sm font-semibold text-gray-700 mb-1"
-                    >
-                      Installation Address
-                    </label>
-                    <div
-                      class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium"
-                    >
-                      {{ inst.address || "No address provided" }}
-                    </div>
-                  </div>
-
-                  <div class="md:col-span-4">
-                    <label
-                      class="block text-sm font-semibold text-gray-700 mb-1"
-                    >
-                      Installation Contact Phone *
-                    </label>
-                    <input
-                      :value="inst.phone"
-                      @input="
-                        (e) =>
-                          updateInstallationField(
-                            index,
-                            'phone',
-                            (e.target as HTMLInputElement).value,
-                          )
-                      "
-                      @blur="validateInstallation(index, 'phone')"
-                      type="tel"
-                      class="w-full md:max-w-[50%] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                      :class="{ 'border-red-500': inst.errors.phone }"
-                      maxlength="14"
-                      placeholder="(555) 123-4567"
-                    />
-                    <p
-                      v-if="inst.errors.phone"
-                      class="text-red-500 text-sm mt-1"
-                    >
-                      {{ inst.errors.phone }}
-                    </p>
-                  </div>
-                </div>
-              </div>
+                Installation #{{ index + 1 }}
+                <span class="text-[#F49321]">for {{ inst.product_name }}</span>
+              </span>
             </div>
 
-            <CheckoutScheduleService
-              :model-value="inst"
-              :errors="inst.errors"
-              :min-date="minDate"
-              @update:model-value="(val) => updateInstallation(index, val)"
-              @validate="(field) => validateInstallation(index, field)"
-            />
+            <!-- ALL content for Installation #1 goes inside here -->
+            <div class="p-6 space-y-6">
+              <!-- Address & Phone -->
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="md:col-span-4 mb-2">
+                  <label class="block text-sm font-semibold text-gray-700 mb-1">
+                    Installation Address
+                  </label>
+                  <div
+                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium"
+                  >
+                    {{ inst.address || "No address provided" }}
+                  </div>
+                </div>
+
+                <div class="md:col-span-4">
+                  <label class="block text-sm font-semibold text-gray-700 mb-1">
+                    Installation Contact Phone *
+                  </label>
+                  <input
+                    :value="inst.phone"
+                    @input="
+                      (e) => {
+                        formatPhone(e);
+                        updateInstallationField(
+                          index,
+                          'phone',
+                          (e.target as HTMLInputElement).value,
+                        );
+                      }
+                    "
+                    @blur="validateInstallation(index, 'phone')"
+                    type="tel"
+                    class="w-full md:max-w-[50%] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                    :class="{ 'border-red-500': inst.errors.phone }"
+                    maxlength="14"
+                    placeholder="(555) 123-4567"
+                  />
+                  <p v-if="inst.errors.phone" class="text-red-500 text-sm mt-1">
+                    {{ inst.errors.phone }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Calendars (Now INSIDE the Installation container) -->
+              <CheckoutScheduleService
+                :model-value="inst"
+                :errors="inst.errors"
+                :min-date="minDate"
+                @update:model-value="(val) => updateInstallation(index, val)"
+                @validate="(field) => validateInstallation(index, field)"
+              />
+            </div>
           </div>
 
-          <!-- Payment Information -->
+          <!-- Payment Information (Outside the loop) -->
           <CheckoutPaymentInformation
             v-model="paymentForm"
             :errors="paymentErrors"
@@ -148,7 +141,7 @@
           </div>
         </div>
 
-        <!-- Right Column -->
+        <!-- Right Column (Order Summary) -->
         <div class="lg:col-span-1">
           <CheckoutOrderSummary
             :cart-items="cartItems"
@@ -186,12 +179,14 @@
 <script setup lang="ts">
 useHead({ title: "Checkout" });
 import CheckoutTurnstileWidget from "../components/Checkout/TurnstileWidget.vue";
+import { usePhoneFormat } from "~/composables/usePhoneFormat";
 import { toast } from "vue-sonner";
 
 const config = useRuntimeConfig();
 const siteKey = config.public.turnstile.siteKey as string;
 
 const { settings } = useSettings();
+const { formatPhone } = usePhoneFormat();
 const FL_TAX_RATE = computed(() => {
   const raw =
     settings.value?.fl_tax_rate ?? (settings.value as any)?.["fl_tax_rate"];
