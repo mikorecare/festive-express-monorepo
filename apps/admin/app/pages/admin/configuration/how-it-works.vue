@@ -213,7 +213,7 @@ const emptyForm = (): HowItWorksRow => ({
     },
   ],
   footer_description: `<p style="text-align:center">That's it. One decision. Zero hassle. All the magic.</p>
-<p style="text-align:center">Powered by the same team behind Festive Lighting Pros — Florida's trusted illumineers who create professional holiday displays year after year.</p>`,
+<p style="text-align:center">Powered by the same team behind Festive Express — Florida's trusted illumineers who create professional holiday displays year after year.</p>`,
 });
 
 const { showToast } = useToast();

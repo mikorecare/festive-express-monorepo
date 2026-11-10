@@ -1,95 +1,142 @@
 <template>
-  <div class="bg-white rounded-2xl p-6 shadow-md">
-    <h3 class="text-lg font-bold text-navy mb-4 flex items-center">
-      <i class="fas fa-calendar-alt mr-2"></i> Schedule Your Service
-    </h3>
+  <div class="bg-white rounded-2xl shadow-md">
+    <div
+      class="bg-[#1C2D5B] btn-gloss px-6 py-2 flex items-center border-b-4 border-[#F49321] rounded-t-xl mb-2"
+    >
+      <h3
+        class="text-lg font-extrabold text-white flex items-center tracking-wide"
+      >
+        <i class="fas fa-calendar-alt mr-3 text-[#F49321]"></i> Schedule Your
+        Service
+      </h3>
+    </div>
 
-    <div class="space-y-4">
-      <!-- Installation Dates -->
-      <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-2">
-          Preferred Installation Dates (Select up to 3) *
-        </label>
+    <div class="space-y-6 px-6 pb-6">
+      <!-- Calendars Container (Single Row on Desktop) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
+        <!-- Installation Dates -->
+        <div class="flex flex-col">
+          <label class="block text-sm font-bold text-[#1C2D5B] mb-3">
+            Preferred Installation Dates
+            <span class="text-slate-400 font-normal">(Up to 3) *</span>
+          </label>
 
-        <InlineCalendar
-          :selected="modelValue.install_dates.filter(Boolean)"
-          :min-date="minDate"
-          :max-select="3"
-          @update:selected="onInstallDatesChange"
-          @blur="$emit('validate', 'install_dates')"
-          :class="{ 'ring-1 ring-red-500 rounded-lg': errors.install_dates }"
-        />
+          <div class="flex-1">
+            <InlineCalendar
+              :selected="modelValue.install_dates.filter(Boolean)"
+              :min-date="minDate"
+              :max-select="3"
+              @update:selected="onInstallDatesChange"
+              @blur="$emit('validate', 'install_dates')"
+              :class="{
+                'ring-2 ring-red-500 rounded-xl': errors.install_dates,
+              }"
+            />
+          </div>
 
-        <p v-if="errors.install_dates" class="text-red-500 text-sm mt-1">
-          {{ errors.install_dates }}
-        </p>
-        <p class="text-xs text-gray-400 mt-1">
-          <i class="fas fa-info-circle mr-1"></i>
-          Earliest date is 3 days from today. Select 1–3 preferred dates.
-        </p>
-      </div>
+          <p
+            v-if="errors.install_dates"
+            class="text-red-500 text-sm mt-2 font-semibold flex items-center gap-1"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            {{ errors.install_dates }}
+          </p>
+          <p
+            class="text-xs text-slate-500 mt-2 font-medium flex items-start gap-1"
+          >
+            <i class="fas fa-info-circle mt-0.5 text-[#F49321]"></i>
+            Earliest date is 3 days from today.
+          </p>
+        </div>
 
-      <!-- Removal Dates -->
-      <div class="pt-4 border-t border-gray-200">
-        <label class="block text-sm font-semibold text-gray-700 mb-2">
-          Preferred Removal Dates (Select up to 3)
-          <span class="text-xs font-normal text-gray-400">(Optional)</span>
-        </label>
+        <!-- Removal Dates -->
+        <div
+          class="flex flex-col relative before:hidden lg:before:block before:absolute before:-left-5 before:top-0 before:bottom-0 before:w-px before:bg-slate-200"
+        >
+          <label class="block text-sm font-bold text-[#1C2D5B] mb-3">
+            Preferred Removal Dates
+            <span class="text-slate-400 font-normal">(Up to 3, Optional)</span>
+          </label>
 
-        <InlineCalendar
-          :selected="modelValue.removal_dates.filter(Boolean)"
-          :min-date="minDate"
-          :max-select="3"
-          @update:selected="onRemovalDatesChange"
-        />
+          <div class="flex-1">
+            <InlineCalendar
+              :selected="modelValue.removal_dates.filter(Boolean)"
+              :min-date="minDate"
+              :max-select="3"
+              @update:selected="onRemovalDatesChange"
+            />
+          </div>
 
-        <p class="text-xs text-gray-400 mt-1">
-          <i class="fas fa-info-circle mr-1"></i>
-          Select 1–3 preferred removal dates
-        </p>
+          <p
+            class="text-xs text-slate-500 mt-2 font-medium flex items-start gap-1"
+          >
+            <i class="fas fa-info-circle mt-0.5 text-slate-400"></i>
+            Select 1–3 preferred removal dates
+          </p>
+        </div>
       </div>
 
       <!-- Selected Dates Summary -->
-      <div v-if="hasSelectedDates" class="pt-4 border-t border-gray-200">
-        <h4 class="text-sm font-semibold text-navy mb-2">
+      <div v-if="hasSelectedDates" class="pt-6 border-t border-slate-100">
+        <h4
+          class="text-sm font-bold text-[#1C2D5B] mb-3 uppercase tracking-wide"
+        >
           Selected Dates Summary
         </h4>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-xl"
+        >
           <div>
-            <p class="text-xs font-semibold text-gray-500 mb-1">
-              Installation Dates
+            <p
+              class="text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-2"
+            >
+              Installation
             </p>
-            <div class="flex flex-wrap gap-1">
+            <div class="flex flex-wrap gap-2">
               <span
                 v-for="(date, index) in sortedInstallDates"
                 :key="'install-summary-' + index"
-                class="text-xs bg-brand-orange/10 text-brand-orange px-2 py-1 rounded-full"
+                class="text-xs font-bold bg-[#F49321]/10 text-[#1C2D5B] px-3 py-1.5 rounded-full border border-[#F49321]/20"
               >
                 {{ formatDate(date) }}
               </span>
               <span
                 v-if="!sortedInstallDates.length"
-                class="text-xs text-gray-400"
+                class="text-xs text-slate-400 italic"
               >
                 No dates selected
               </span>
             </div>
           </div>
           <div>
-            <p class="text-xs font-semibold text-gray-500 mb-1">
-              Removal Dates
+            <p
+              class="text-[11px] font-bold text-slate-500 uppercase tracking-wide mb-2"
+            >
+              Removal
             </p>
-            <div class="flex flex-wrap gap-1">
+            <div class="flex flex-wrap gap-2">
               <span
                 v-for="(date, index) in sortedRemovalDates"
                 :key="'removal-summary-' + index"
-                class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full"
+                class="text-xs font-bold bg-[#1C2D5B]/5 text-[#1C2D5B] px-3 py-1.5 rounded-full border border-[#1C2D5B]/10"
               >
                 {{ formatDate(date) }}
               </span>
               <span
                 v-if="!sortedRemovalDates.length"
-                class="text-xs text-gray-400"
+                class="text-xs text-slate-400 italic"
               >
                 No dates selected
               </span>
@@ -110,13 +157,9 @@ interface FormData {
   removal_dates: string[];
 }
 
-interface ValidationErrors {
-  install_dates: string;
-}
-
 const props = defineProps<{
   modelValue: FormData;
-  errors: ValidationErrors;
+  errors: Record<string, string>;
   minDate: string;
 }>();
 
@@ -135,7 +178,6 @@ const formatDate = (dateString: string) => {
   });
 };
 
-// Always keep the arrays length 3 (matches parent contract)
 const toFixedArray = (arr: string[]) => {
   const cleaned = arr.filter(Boolean);
   const out = cleaned.slice(0, 3);

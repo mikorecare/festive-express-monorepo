@@ -1,7 +1,6 @@
-import { getSupabase } from "~~/server/utils/supabase";
+import { getAuthenticatedSupabase } from "~~/server/utils/auth";
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig();
   const id = getRouterParam(event, "id");
 
   if (!id) {
@@ -12,17 +11,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event);
-  const supabaseServiceKey = config.supabase.secretKey;
-
-  if (!supabaseServiceKey) {
-    console.error("Missing NUXT_SUPABASE_SECRET_KEY environment variable");
-    throw createError({
-      statusCode: 500,
-      message: "Server configuration error",
-    });
-  }
-
-  const supabase = getSupabase();
+  const supabase = await getAuthenticatedSupabase(event);
 
   try {
     const updateData: Record<string, any> = {

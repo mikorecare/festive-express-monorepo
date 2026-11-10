@@ -20,7 +20,6 @@
           Back to Orders
         </button>
 
-        <!-- Refund Button -->
         <button
           v-if="canRefund"
           class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium text-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
@@ -50,7 +49,7 @@
     </div>
 
     <div v-if="order" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Main Column (2/3) - Scrollable -->
+      <!-- Main Column (2/3) -->
       <div class="lg:col-span-2 space-y-6">
         <!-- Order Summary -->
         <div class="bg-white rounded-xl p-6 shadow-sm">
@@ -139,21 +138,67 @@
             <div
               v-for="(item, index) in order.items"
               :key="index"
-              class="flex justify-between items-start py-2 border-b border-gray-100 last:border-0"
+              class="py-3 border-b border-gray-100 last:border-0"
             >
-              <div>
-                <span class="text-gray-800">{{ item.product_name }}</span>
-                <span class="text-sm text-gray-500 ml-2"
-                  >x {{ item.quantity }}</span
-                >
-                <span
-                  v-if="item.is_package"
-                  class="ml-2 px-2 py-0.5 bg-brand-orange text-white text-xs font-semibold rounded-full"
-                  >Package</span
-                >
+              <div class="flex justify-between items-start">
+                <div class="min-w-0 pr-3">
+                  <div class="flex items-center flex-wrap gap-2">
+                    <span class="text-gray-800 font-medium">{{
+                      item.product_name
+                    }}</span>
+                    <span class="text-sm text-gray-500"
+                      >x {{ item.quantity }}</span
+                    >
+                    <span
+                      v-if="item.is_package"
+                      class="px-2 py-0.5 bg-brand-orange text-white text-xs font-semibold rounded-full"
+                      >Package</span
+                    >
+                  </div>
+                </div>
+                <div class="text-right font-medium text-navy shrink-0">
+                  ${{ (item.quantity * Number(item.price)).toFixed(2) }}
+                </div>
               </div>
-              <div class="text-right font-medium text-navy">
-                ${{ (item.quantity * Number(item.price)).toFixed(2) }}
+
+              <!-- Add-ons breakdown -->
+              <div
+                v-if="item.options?.addons?.length"
+                class="mt-1.5 text-xs text-gray-600"
+              >
+                <span class="font-semibold text-gray-700">Add-ons:</span>
+                <span
+                  v-for="(a, i) in item.options.addons"
+                  :key="i"
+                  class="ml-1"
+                >
+                  {{ Number(i) > 0 ? "," : "" }} {{ a.quantity }}x {{ a.name }}
+                </span>
+              </div>
+
+              <!-- Overage breakdown -->
+              <div
+                v-if="Number(item.options?.overage?.amount || 0) > 0"
+                class="mt-1 text-xs text-brand-orange font-medium"
+              >
+                Overage: {{ item.options.overage.feet }} ft extra (+${{
+                  Number(item.options.overage.amount).toFixed(2)
+                }})
+              </div>
+
+              <!-- Per-item install address -->
+              <div
+                v-if="item.installation_address"
+                class="mt-1 text-xs text-gray-500"
+              >
+                <span class="font-semibold">Install at:</span>
+                {{ item.installation_address }}
+                <span v-if="item.installation_postcode"
+                  >, {{ item.installation_postcode }}</span
+                >
+                <span v-if="item.installation_phone" class="block text-gray-400"
+                  >Phone: {{ item.installation_phone }}</span
+                >
               </div>
             </div>
           </div>
@@ -332,10 +377,9 @@
         </div>
       </div>
 
-      <!-- Sidebar (1/3) - Sticky -->
+      <!-- Sidebar -->
       <div class="lg:col-span-1 space-y-6">
         <div class="sticky top-6 space-y-6">
-          <!-- Customer Information -->
           <div class="bg-white rounded-xl p-6 shadow-sm">
             <h3 class="text-lg font-bold text-navy mb-4">
               Customer Information
@@ -352,7 +396,6 @@
             </div>
           </div>
 
-          <!-- Billing Address -->
           <div class="bg-white rounded-xl p-6 shadow-sm">
             <h3 class="text-lg font-bold text-navy mb-4">Billing Address</h3>
             <div class="space-y-0.5 text-gray-700">
@@ -364,7 +407,6 @@
             </div>
           </div>
 
-          <!-- Installation Address -->
           <div class="bg-white rounded-xl p-6 shadow-sm">
             <h3 class="text-lg font-bold text-navy mb-4">
               Installation Address
@@ -375,7 +417,6 @@
             </div>
           </div>
 
-          <!-- Order Meta -->
           <div class="bg-white rounded-xl p-6 shadow-sm">
             <h3 class="text-lg font-bold text-navy mb-4">Order Meta</h3>
             <div class="space-y-2 text-sm">
@@ -549,7 +590,6 @@ const form = ref({
   customer_note: "",
 });
 
-// Refund state
 const isRefunding = ref(false);
 const showRefundModal = ref(false);
 const refundAmount = ref(0);
@@ -557,7 +597,6 @@ const refundReason = ref("customer_request");
 const refundNotes = ref("");
 const refundError = ref("");
 
-// Status rules based on current/original status
 const statusRules: Record<string, string[]> = {
   pending: ["pending", "confirmed", "completed", "cancelled"],
   confirmed: ["confirmed", "completed", "cancelled"],
@@ -585,7 +624,6 @@ const getAvailableStatusOptions = () => {
   }));
 };
 
-// Check if refund is possible
 const canRefund = computed(() => {
   if (!order.value) return false;
   return (
@@ -596,7 +634,6 @@ const canRefund = computed(() => {
   );
 });
 
-// Open refund modal
 const openRefundModal = () => {
   refundAmount.value = Number(order.value?.total || 0);
   refundReason.value = "customer_request";
@@ -605,7 +642,6 @@ const openRefundModal = () => {
   showRefundModal.value = true;
 };
 
-// Close refund modal
 const closeRefundModal = () => {
   if (isRefunding.value) return;
   showRefundModal.value = false;
@@ -613,7 +649,6 @@ const closeRefundModal = () => {
   refundError.value = "";
 };
 
-// Process refund
 const processRefund = async () => {
   if (!order.value || !order.value.transaction_id) {
     refundError.value = "No transaction ID found for this order.";

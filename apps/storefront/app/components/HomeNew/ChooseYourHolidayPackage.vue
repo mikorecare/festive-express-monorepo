@@ -7,27 +7,84 @@
     <div class="max-w-[1280px] mx-auto px-3 sm:px-5">
       <div v-fade class="text-center mb-6 md:mb-10">
         <p
-          class="text-white font-extrabold text-[1.8rem] sm:text-4xl lg:text-[72px] tracking-wide uppercase sm:mb-1 md:mb-4 drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)]"
+          class="text-white font-extrabold text-[1.8rem] sm:text-4xl lg:text-[72px] tracking-wide uppercase sm:mb-1 md:mb-8 drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)]"
         >
           CHOOSE YOUR
         </p>
         <h2
-          class="text-[#F49321] font-extrabold text-[1.8rem] sm:text-4xl lg:text-[72px] tracking-wide uppercase leading-[1.15] [-webkit-text-stroke:1.5px_#fff] md:[-webkit-text-stroke:2px_#fff] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(28,45,91,0.45)]"
+          class="text-[#F49321] font-extrabold text-[1.8rem] sm:text-4xl lg:text-[72px] tracking-wide uppercase [-webkit-text-stroke:1.5px_#fff] md:[-webkit-text-stroke:2px_#fff] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(28,45,91,0.45)]"
         >
           HOLIDAY PACKAGE
         </h2>
       </div>
+
       <p
         v-fade
-        class="text-center text-white font-bold tracking-[0.4px] text-[0.8rem] sm:text-[1.15rem] leading-snug mt-4 mb-6 sm:mt-6 sm:mb-8 drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)] max-w-[95%] sm:max-w-none mx-auto"
+        class="text-center text-white font-bold tracking-[0.4px] text-[1.5rem] leading-snug mt-4 mb-4 sm:mt-6 sm:mb-4 drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)] max-w-[95%] sm:max-w-none mx-auto"
       >
-        COMPARE WHAT'S INCLUDED IN EACH PLAN
-        <span
-          class="block text-[0.7rem] sm:text-[0.9rem] font-semibold text-white/90 mt-1"
-        >
+        INCLUDED IN EVERY PACKAGE
+        <span class="block text-[1.1rem] font-semibold text-white/90 mt-1">
           (Each package is a rental for one season)
         </span>
       </p>
+
+      <!-- NEW PILLS ADDED HERE -->
+      <div
+        v-fade
+        class="flex flex-nowrap justify-center gap-3 sm:gap-10 mb-8 sm:mb-12"
+      >
+        <!-- Installation -->
+        <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
+          <div
+            class="w-[56px] h-[56px] sm:w-[84px] sm:h-[84px] shrink-0 flex items-center justify-center"
+          >
+            <AssetsInstallation
+              class="w-[80px] h-[80px] sm:w-[120px] sm:h-[120px]"
+              aria-hidden="true"
+              glow
+            />
+          </div>
+          <span
+            class="text-sm sm:text-lg font-bold uppercase tracking-wider text-white text-center drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]"
+          >
+            Installation
+          </span>
+        </div>
+
+        <!-- Maintenance -->
+        <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
+          <div
+            class="w-[56px] h-[56px] sm:w-[84px] sm:h-[84px] shrink-0 flex items-center justify-center"
+          >
+            <AssetsMaintenance
+              class="w-[80px] h-[80px] sm:w-[120px] sm:h-[120px]"
+              aria-hidden="true"
+            />
+          </div>
+          <span
+            class="text-sm sm:text-lg font-bold uppercase tracking-wider text-white text-center drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]"
+          >
+            Maintenance
+          </span>
+        </div>
+
+        <!-- Removal -->
+        <div class="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
+          <div
+            class="w-[56px] h-[56px] sm:w-[84px] sm:h-[84px] shrink-0 flex items-center justify-center"
+          >
+            <AssetsRemoval
+              class="w-[80px] h-[80px] sm:w-[120px] sm:h-[120px]"
+              aria-hidden="true"
+            />
+          </div>
+          <span
+            class="text-sm sm:text-lg font-bold uppercase tracking-wider text-white text-center drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]"
+          >
+            Removal
+          </span>
+        </div>
+      </div>
 
       <div v-if="pending" class="text-center py-10 text-white font-semibold">
         Loading holiday packages...
@@ -55,14 +112,6 @@
           <div class="relative p-2.5 sm:p-3 pb-0 z-20">
             <h3 class="sr-only">{{ pkg.name }}</h3>
 
-            <NuxtImg
-              class="absolute z-[3] pointer-events-none w-auto drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)] -bottom-[24px] h-[52px] md:-bottom-[34px] md:h-[68px] lg:-bottom-[38px] lg:h-[72px] left-[75px] sm:left-[85px] md:left-[58px] lg:left-[85px]"
-              :src="pkg.title_image_url || '/Images/placeholder.png'"
-              :alt="pkg.name"
-              sizes="60px md:68px lg:72px"
-              loading="lazy"
-            />
-
             <div
               class="rounded-[22px] overflow-hidden relative leading-none w-full max-w-[400px] mx-auto"
             >
@@ -83,21 +132,7 @@
                 </template>
               </NuxtImg>
               <div
-                class="absolute -top-1/2 -left-[150%] w-[200%] h-[200%] bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] rotate-[25deg] pointer-events-none animate-[glossyShineContinuous_3s_linear_infinite]"
-              />
-            </div>
-
-            <div
-              class="absolute z-[3] rounded-full bg-brand-orange flex items-center justify-center shadow-[0_6px_16px_rgba(244,147,33,0.45)] left-[16px] sm:left-[20px] -bottom-[26px] sm:-bottom-[30px] w-[56px] h-[56px] sm:w-[64px] sm:h-[64px]"
-              aria-hidden="true"
-            >
-              <NuxtImg
-                class="object-contain w-[56px] h-[56px] sm:w-[64px] sm:h-[64px]"
-                :src="pkg.icon_url || '/Images/placeholder.png'"
-                alt=""
-                loading="lazy"
-                width="64"
-                height="64"
+                class="absolute -top-1/3 -left-[150%] w-[200%] h-[200%] bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] rotate-[25deg] pointer-events-none animate-[glossyShineContinuous_3s_linear_infinite]"
               />
             </div>
           </div>
@@ -106,71 +141,101 @@
           <!-- Navy header (z-10)             -->
           <!-- ============================== -->
           <div
-            class="relative -mt-[18px] sm:-mt-[20px] px-3.5 sm:px-4 pt-[44px] sm:pt-[50px] pb-3 flex items-center justify-between gap-2 sm:gap-3 bg-[#1C2D5B] z-10"
+            class="relative -mt-[18px] sm:-mt-[20px] px-2 sm:px-4 pt-[24px] sm:pt-[32px] pb-3 sm:pb-4 flex items-center justify-between gap-1 sm:gap-3 bg-[#1C2D5B] z-10"
           >
-            <!-- LEFT: Early Bird badge -->
-            <div
-              v-if="showSale(pkg.sale_price)"
-              class="flex flex-col items-center shrink-0"
-            >
-              <div class="relative h-7 sm:h-8 md:h-9">
-                <NuxtImg
-                  :src="earlyBirdIconUrl"
-                  alt="Early Bird Special"
-                  loading="eager"
-                  decoding="sync"
-                  class="relative z-0 h-7 sm:h-8 md:h-9 w-auto origin-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
-                />
+            <!-- LEFT: Early Bird badge + Icon Circle -->
+            <div class="flex items-center gap-1 sm:gap-3 shrink-0 z-10">
+              <!-- Early Bird Badge -->
+              <div
+                v-if="showSale(pkg.sale_price)"
+                class="flex flex-col items-center shrink-0 hidden sm:flex"
+              >
+                <div class="relative h-7 sm:h-8 md:h-9">
+                  <NuxtImg
+                    :src="earlyBirdIconUrl"
+                    alt="Early Bird Special"
+                    loading="eager"
+                    decoding="sync"
+                    class="relative z-0 h-7 sm:h-8 md:h-9 w-auto origin-center drop-shadow-[0_3px_6px_rgba(0,0,0,0.25)]"
+                  />
+                </div>
+              </div>
 
-                <img
-                  :src="starburstSrc"
+              <!-- Icon Circle -->
+              <div
+                class="rounded-full bg-brand-orange flex items-center justify-center shadow-[0_6px_16px_rgba(244,147,33,0.45)] w-[72px] h-[72px] shrink-0"
+                aria-hidden="true"
+              >
+                <NuxtImg
+                  class="object-contain w-[72px] h-[72px]"
+                  :src="pkg.icon_url || '/Images/placeholder.png'"
                   alt=""
-                  width="56"
-                  height="56"
-                  loading="eager"
-                  decoding="sync"
-                  class="absolute z-[1] top-[-52%] right-[-19px] md:top-[-44%] md:right-[-23px] lg:top-[-58%] lg:right-[-28px] h-9 w-9 sm:h-10 sm:w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 object-contain pointer-events-none"
+                  loading="lazy"
                 />
               </div>
             </div>
-            <div v-else class="flex-1 min-w-0">
-              <h3 class="sr-only">{{ pkg.name }}</h3>
+
+            <!-- CENTER: Title Image (Flex-1, Centered in remaining space) -->
+            <div
+              class="flex-1 flex items-center justify-start pl-3 sm:pl-5 lg:pl-4 min-w-0"
+            >
+              <NuxtImg
+                class="w-auto max-w-full h-[72px] object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.25)]"
+                :src="pkg.title_image_url || '/Images/placeholder.png'"
+                :alt="pkg.name"
+                loading="lazy"
+              />
             </div>
 
             <!-- RIGHT: Pricing details -->
             <div
-              class="flex flex-col items-end shrink-0 text-right leading-tight -mt-2 sm:-mt-4"
+              class="flex flex-col items-end shrink-0 text-right leading-tight z-10"
             >
               <template v-if="showSale(pkg.sale_price)">
-                <span class="text-[0.9rem] sm:text-[1rem] font-bold text-white">
+                <!-- Reduced text sizes slightly on mobile so the image has more room -->
+                <span
+                  class="text-[0.7rem] sm:text-[1rem] font-bold text-white leading-none mb-0.5"
+                >
                   was
                   <span class="line-through decoration-[#EC008C] decoration-2">
                     ${{ Math.round(Number(pkg.price) || 0) }}
                   </span>
                 </span>
                 <span
-                  class="text-[0.7rem] sm:text-[0.75rem] font-bold text-white"
+                  class="text-[0.6rem] sm:text-[0.75rem] font-bold text-white leading-none"
                   >now</span
                 >
                 <span
-                  class="text-[1.3rem] sm:text-[1.5rem] md:text-[1.8rem] font-black text-[#F49321] leading-none"
+                  class="text-[1.4rem] sm:text-[2.1rem] md:text-[2.5rem] font-black text-[#F49321] leading-none"
                 >
                   ${{ Math.round(effectivePrice(pkg.price, pkg.sale_price)) }}
                 </span>
                 <span
-                  class="text-[0.65rem] sm:text-[0.7rem] md:text-[0.8rem] font-semibold text-white/90"
-                  > Per Season</span
+                  class="text-[0.55rem] sm:text-[0.7rem] md:text-[0.8rem] font-semibold text-white/90"
+                >
+                  Per Season</span
                 >
               </template>
               <template v-else>
-                <span
-                  class="text-[1.3rem] sm:text-[1.5rem] md:text-[1.8rem] font-black text-brand-orange leading-none"
-                >
-                  ${{ Math.round(Number(pkg.price) || 0) }}
+                <span class="inline-flex items-baseline">
+                  <!-- Same text size, scaled down visually, pushed up slightly to look like a superscript -->
+                  <span
+                    class="text-[2.3rem] sm:text-[2.1rem] md:text-[2.8rem] font-extrabold text-[#F49321] leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-1 sm:-mr-2 translate-y-[-0.1em]"
+                  >
+                    $&nbsp;
+                  </span>
+
+                  <!-- The Numbers -->
+                  <span
+                    class="text-[2.4rem] sm:text-[2.1rem] md:text-[2.8rem] font-extrabold text-[#F49321] leading-none price-text -tracking-[0.04em]"
+                  >
+                    {{ Number(pkg.price || 0).toLocaleString() }}
+                  </span>
                 </span>
                 <span
-                  class="text-[0.65rem] sm:text-[0.7rem] md:text-[0.8rem] font-semibold text-white/90"
-                  > Per Season</span
+                  class="text-[1.1rem] sm:text-[0.7rem] md:text-[0.9rem] font-semibold text-white/90"
+                >
+                  Per Season</span
                 >
               </template>
             </div>
@@ -232,11 +297,11 @@
           >
             <button
               type="button"
-              class="pkg-select-btn group relative overflow-hidden w-[85%] bg-brand-orange border-2 border-white rounded-[50px] py-[10px] sm:py-[12px] px-[16px] text-[0.9rem] sm:text-[0.95rem] font-bold tracking-[0.5px] cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out hover:bg-[#1C2D5B] -mt-[26px] sm:-mt-[30px] before:content-[''] before:absolute before:inset-0 before:z-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full tracking-wider"
+              class="pkg-select-btn btn-gloss group relative overflow-hidden w-[85%] bg-brand-orange border-2 border-white rounded-[50px] py-[12px] sm:py-[14px] px-[16px] text-[1.4rem] uppercase font-bold tracking-[0.5px] cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out hover:bg-[#1C2D5B] -mt-[26px] sm:-mt-[30px]"
               @click="selectPackage(pkg)"
             >
               <span
-                class="pkg-select-label relative z-10 inline-flex items-center justify-center"
+                class="pkg-select-label relative z-10 inline-flex items-center justify-center gap-2"
               >
                 <span class="pkg-select-prefix">{{
                   getPackageButtonPrefix(pkg)
@@ -254,10 +319,27 @@
     <div class="flex justify-center mt-5">
       <EarlyBirdEndsBanner />
     </div>
+
+    <div v-fade class="flex justify-center mt-8 md:mt-12 relative z-20">
+      <a
+        href="#preview"
+        class="pkg-select-btn group relative w-[85%] max-w-[408px] inline-block cursor-pointer transition-transform duration-200 ease-in-out hover:scale-105"
+      >
+        <img
+          src="/New/Packages/see-it-button.png"
+          alt="See it on your home"
+          class="w-full h-auto"
+        />
+      </a>
+    </div>
   </section>
 </template>
 
 <script setup lang="ts">
+import AssetsInstallation from "../Icons/AssetsInstallation.vue";
+import AssetsMaintenance from "../Icons/AssetsMaintenance.vue";
+import AssetsRemoval from "../Icons/AssetsRemoval.vue";
+
 interface InclusionDisplay {
   name: string;
   image_url: string | null;
@@ -324,19 +406,19 @@ const includedRows = (pkg: PackageRow) => {
 };
 
 const selectPackage = (pkg: PackageRow) => {
-  navigateTo(`/packages?package=${pkg.slug}`);
+  navigateTo(`/packages/${pkg.slug}#package`);
 };
 
 const handleCardHover = () => {
-  // intentionally empty — kept to preserve existing hover wiring
+  // intentionally empty
 };
 
 const getPackageButtonPrefix = (pkg: { name: string }) => {
   const name = pkg.name.toLowerCase();
-  if (name.includes("joy")) return "Choose ";
-  if (name.includes("jolly")) return "Get ";
-  if (name.includes("merry")) return "Make It ";
-  return "Choose ";
+  if (name.includes("joy")) return "Order";
+  if (name.includes("jolly")) return "Order";
+  if (name.includes("merry")) return "Order";
+  return "Choose";
 };
 
 const firstParagraph = (text?: string | null) => {
@@ -350,9 +432,9 @@ const firstParagraph = (text?: string | null) => {
 
 const getPackageButtonName = (pkg: { name: string }) => {
   const name = pkg.name.toLowerCase();
-  if (name.includes("joy")) return " Joy";
-  if (name.includes("jolly")) return " Jolly";
-  if (name.includes("merry")) return " Merry";
+  if (name.includes("joy")) return "Joy  NOW";
+  if (name.includes("jolly")) return "Jolly NOW";
+  if (name.includes("merry")) return "Merry NOW";
   return pkg.name.toUpperCase();
 };
 
@@ -373,34 +455,16 @@ onMounted(async () => {
 
 .pkg-select-label {
   color: #fff;
+  gap: 0.5rem; /* Added more space between Order and the package name */
 }
 
+/* Always show "Order" */
 .pkg-select-prefix {
   display: inline-block;
-  max-width: 0;
-  margin-right: 0;
-  overflow: hidden;
-  opacity: 0;
-  white-space: nowrap;
   color: #fff !important;
-  transition:
-    max-width 0.3s ease,
-    opacity 0.3s ease,
-    margin 0.3s ease;
 }
 
 .pkg-select-name {
-  color: #fff !important;
-}
-
-.pkg-select-btn:hover .pkg-select-prefix {
-  max-width: 120px;
-  margin-right: 6px;
-  opacity: 1;
-  color: #fff !important;
-}
-
-.pkg-select-btn:hover .pkg-select-name {
   color: #fff !important;
 }
 
@@ -411,5 +475,20 @@ onMounted(async () => {
   100% {
     transform: rotate(25deg) translateX(100%);
   }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .pkg-select-btn {
+    background-color: #1c2d5b;
+  }
+
+  .pkg-select-btn:active {
+    background-color: #f49321;
+  }
+}
+
+.price-text {
+  /* Keeps your tight spacing */
+  letter-spacing: -0.05em;
 }
 </style>

@@ -278,7 +278,7 @@ const statusFilter = ref("");
 const paymentStatusFilter = ref("");
 const searchQuery = ref("");
 const currentUser = ref<{ role?: string } | null>(null);
-const isSuperAdmin = computed(() => currentUser.value?.role === "super_admin");
+const isSuperAdmin = computed(() => currentUser.value?.role === "admin");
 const showModal = ref(false);
 const orderToDelete = ref<any>(null);
 const deleteConfirmText = ref("");

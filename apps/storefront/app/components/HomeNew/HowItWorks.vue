@@ -16,7 +16,7 @@
 
     <!-- Content -->
     <div
-      class="relative z-10 w-full max-w-full mx-auto bg-white p-3.5 rounded-2xl sm:p-6 sm:max-w-[90vw] lg:max-w-[70vw] xl:max-w-[65vw] lg:p-8 shadow-[0_20px_60px_-20px_rgba(28,45,91,0.25)]"
+      class="relative z-10 w-full max-w-full mx-auto bg-white p-3.5 rounded-2xl sm:p-6 sm:max-w-[90vw] lg:max-w-[70vw] xl:max-w-[65vw] lg:p-8 shadow-[0_20px_60px_-20px_rgba(28,45,91,0.25)] overflow-hidden"
     >
       <!-- Eyebrow -->
       <p
@@ -31,7 +31,11 @@
       >
         Professional holiday lighting, made simple.
       </h2>
-
+      <p
+        class="text-[#F49321] font-extrabold text-base sm:text-lg lg:text-2xl tracking-wide mb-2 text-left lg:mb-14 [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff,_0_2px_4px_rgba(28,45,91,0.35)]"
+      >
+        Rent, Relax, &amp; Celebrate
+      </p>
       <!-- Subhead -->
       <p
         class="text-slate-600 text-xs sm:text-sm font-medium mb-6 text-left lg:text-lg lg:max-w-[680px] lg:mb-14 leading-relaxed"
@@ -40,12 +44,16 @@
         and take-down dates. We handle the rest.
       </p>
 
-      <!-- Cards row -->
-      <div class="grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-6">
+      <!-- Cards row: Carousel on mobile, Grid on desktop -->
+      <div
+        ref="carouselRef"
+        class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-6 -mx-3.5 px-3.5 md:mx-0 md:px-0 md:pb-0 md:grid md:grid-cols-3 md:gap-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        @scroll="handleScroll"
+      >
         <article
           v-for="(step, i) in steps"
           :key="i"
-          class="group relative bg-white rounded-2xl overflow-visible border border-slate-200/70 shadow-[0_4px_20px_-8px_rgba(28,45,91,0.15)] transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_20px_40px_-12px_rgba(28,45,91,0.25)] hover:border-[#F49321]/40"
+          class="group relative bg-white rounded-2xl overflow-visible border border-slate-200/70 shadow-[0_4px_20px_-8px_rgba(28,45,91,0.15)] transition-all duration-300 ease-out hover:-translate-y-1.5 hover:shadow-[0_20px_40px_-12px_rgba(28,45,91,0.25)] hover:border-[#F49321]/40 shrink-0 w-[85vw] sm:w-[60vw] snap-center md:w-auto md:shrink"
         >
           <!-- Image area -->
           <div class="relative">
@@ -107,6 +115,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from "vue";
+
 const steps = [
   {
     number: "1",
@@ -130,4 +140,89 @@ const steps = [
     image: "/New/Home-How-It-Works/celebrate.webp",
   },
 ];
+
+const carouselRef = ref<HTMLElement | null>(null);
+let autoScrollInterval: ReturnType<typeof setInterval> | null = null;
+let isInteracting = false;
+let interactTimeout: ReturnType<typeof setTimeout> | null = null;
+
+// Track which card is currently "active" so we can advance reliably
+const currentIndex = ref(0);
+
+const scrollToIndex = (index: number) => {
+  if (!carouselRef.value) return;
+  const container = carouselRef.value;
+  const cards = container.querySelectorAll<HTMLElement>("article");
+  if (!cards.length) return;
+
+  const safeIndex = ((index % cards.length) + cards.length) % cards.length;
+  currentIndex.value = safeIndex;
+
+  const card = cards[safeIndex];
+  if (!card) return;
+
+  container.scrollTo({
+    left: card.offsetLeft,
+    behavior: "smooth",
+  });
+};
+
+const scrollToNext = () => {
+  if (!carouselRef.value || window.innerWidth >= 768) return;
+  scrollToIndex(currentIndex.value + 1);
+};
+
+const startAutoScroll = () => {
+  stopAutoScroll();
+  if (typeof window !== "undefined" && window.innerWidth < 768) {
+    autoScrollInterval = setInterval(() => {
+      if (!isInteracting) scrollToNext();
+    }, 4000);
+  }
+};
+
+const stopAutoScroll = () => {
+  if (autoScrollInterval) {
+    clearInterval(autoScrollInterval);
+    autoScrollInterval = null;
+  }
+};
+
+// Pause auto-scroll while user swipes, then resync currentIndex from scroll position
+const handleScroll = () => {
+  isInteracting = true;
+  if (interactTimeout) clearTimeout(interactTimeout);
+  interactTimeout = setTimeout(() => {
+    isInteracting = false;
+  }, 1000);
+
+  if (!carouselRef.value) return;
+  const container = carouselRef.value;
+  const cards = Array.from(container.querySelectorAll<HTMLElement>("article"));
+  if (!cards.length) return;
+
+  // Find the card closest to the current scroll position
+  const scrollLeft = container.scrollLeft;
+  let closest = 0;
+  let minDist = Infinity;
+  cards.forEach((card, i) => {
+    const dist = Math.abs(card.offsetLeft - scrollLeft);
+    if (dist < minDist) {
+      minDist = dist;
+      closest = i;
+    }
+  });
+  currentIndex.value = closest;
+};
+
+onMounted(() => {
+  startAutoScroll();
+  window.addEventListener("resize", startAutoScroll);
+});
+
+onUnmounted(() => {
+  stopAutoScroll();
+  window.removeEventListener("resize", startAutoScroll);
+  if (interactTimeout) clearTimeout(interactTimeout);
+});
 </script>

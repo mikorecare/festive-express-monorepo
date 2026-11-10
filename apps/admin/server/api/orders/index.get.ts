@@ -1,9 +1,8 @@
-
-import { getSupabase } from '~~/server/utils/supabase'
+import { getAuthenticatedSupabase } from '~~/server/utils/auth'
 
 export default defineEventHandler(async (event) => {
     try {
-        const supabase = getSupabase()
+        const supabase = await getAuthenticatedSupabase(event)
         const query = getQuery(event)
         const page = parseInt(query.page as string) || 1
         const itemsPerPage = parseInt(query.limit as string) || 10
@@ -38,11 +37,12 @@ export default defineEventHandler(async (event) => {
         }
 
         if (search) {
+            const safe = search.replace(/[%_,()]/g, '')
             queryBuilder = queryBuilder.or(
-                `order_number.ilike.%${search}%,` +
-                `billing_first_name.ilike.%${search}%,` +
-                `billing_last_name.ilike.%${search}%,` +
-                `billing_email.ilike.%${search}%`
+                `order_number.ilike.%${safe}%,` +
+                `billing_first_name.ilike.%${safe}%,` +
+                `billing_last_name.ilike.%${safe}%,` +
+                `billing_email.ilike.%${safe}%`
             )
         }
 

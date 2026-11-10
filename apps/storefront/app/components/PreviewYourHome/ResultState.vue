@@ -31,11 +31,11 @@
         <p class="success-message">
           We've sent your preview to your inbox.
           <br class="hidden sm:block" />
-          We'll get back to you in a
+          We'll redirect you to your order
           <strong
             class="text-[#F49321] font-extrabold text-lg tracking-wide [text-shadow:_-2px_-2px_0_#fff,_2px_-2px_0_#fff,_-2px_2px_0_#fff,_2px_2px_0_#fff,_0_4px_10px_rgba(28,45,91,0.45)]"
           >
-            Festive Express
+            ORDER
           </strong>
         </p>
 
@@ -215,7 +215,7 @@
         <template v-if="!isPreview">
           <div class="space-y-1.5 md:space-y-3">
             <button
-              class="w-full bg-brand-orange hover:bg-orange-600 text-white font-semibold py-1.5 md:py-3 px-3 md:px-4 rounded-lg transition-colors text-[10px] md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full btn-3d-glossy btn-3d-glossy-orange text-white font-semibold py-1.5 md:py-3 px-3 md:px-4 rounded-lg transition-colors text-[10px] md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
               @click="handleBookConsultation"
               :disabled="booking || isBooked || !turnstileVerified"
             >
@@ -281,11 +281,12 @@
 import { ref, onUnmounted, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useEstimator } from "~/composables/useEstimator";
+import { useEstimateHandoff } from "~/composables/useEstimateHandoff";
 import TurnstileWidget from "../Checkout/TurnstileWidget.vue";
 import type { IPackageOption } from "~/components/PreviewYourHome/types";
 
 const router = useRouter();
-
+const { save: saveEstimateHandoff } = useEstimateHandoff();
 const {
   isPreview,
   result,
@@ -404,7 +405,16 @@ const getPackageTitle = () => {
 
 const goToPackage = () => {
   const packageId = selectedPackage.value || "joy";
-  router.push(`/packages?package=${packageId}`);
+
+  saveEstimateHandoff({
+    overageFt: calculatedOverageFt.value,
+    overagePrice: Number(calculatedOveragePrice.value) || 0,
+    totalFt: result.value?.stats ? getTotalFeet(result.value.stats) : 0,
+    packageSlug: String(selectedPackage.value || ""),
+    totalEstimate: totalEstimate.value,
+  });
+
+  router.push(`/packages/${packageId}?estimate=true#package`);
 };
 
 const startCountdown = () => {

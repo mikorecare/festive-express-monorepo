@@ -7,7 +7,7 @@
     aria-label="Bottom navigation"
   >
     <ul
-      class="grid list-none m-0 p-0 max-w-[500px] mx-auto px-2 py-1.5"
+      class="grid section-gloss bg-[#1C2D5B] list-none m-0 p-0 max-w-[500px] mx-auto px-2 py-1.5"
       :style="{
         gridTemplateColumns: `repeat(${navItems.length}, minmax(0, 1fr))`,
       }"
@@ -19,7 +19,7 @@
           :class="
             isActive(item.to)
               ? 'text-[#F49321] bg-[#F49321]/10'
-              : 'text-[#1C2D5B] hover:text-[#F49321] hover:bg-[#F49321]/5'
+              : 'text-white hover:text-[#F49321] hover:bg-[#F49321]/5'
           "
           :aria-label="item.label"
           :aria-current="isActive(item.to) ? 'page' : undefined"

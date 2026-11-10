@@ -1,6 +1,6 @@
 <template>
   <footer
-    class="bg-[#101518] text-white pt-8 sm:pt-12"
+    class="bg-[#1C2D5B] text-white pt-8 sm:pt-12 border-t-[12px] border-[#F49321] shadow-[inset_0_8px_0_0_#ffffff]"
     role="contentinfo"
     aria-label="Site footer"
   >
@@ -142,7 +142,7 @@
 </template>
 
 <script setup lang="ts">
-import MainLogoForDark from './Logos/MainLogoForDark.vue';
+import MainLogoForDark from "./Logos/MainLogoForDark.vue";
 
 const { settings, telHref } = useSettings();
 const currentYear = useState("current-year", () => new Date().getFullYear());

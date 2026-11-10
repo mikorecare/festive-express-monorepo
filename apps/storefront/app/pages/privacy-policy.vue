@@ -1,21 +1,43 @@
 <template>
   <div>
     <section
-      aria-label="Privacy policy page header"
+      aria-label="Privacy Policy page header"
       role="region"
-      class="page-hero snow-bg"
+      class="relative py-10 sm:py-16 text-white overflow-hidden min-h-[320px] sm:min-h-[400px]"
     >
-      <div class="hero-overlay">
-        <div class="container">
-          <div class="hero-content">
-            <h1><span class="text-brand-orange">Privacy</span> Policy</h1>
-            <p
-              v-if="data?.subtitle"
-              class="text-white/80 max-w-2xl mx-auto mt-2"
+      <img
+        src="/New/Banner/checkout.webp"
+        alt="Privacy Policy background"
+        width="1920"
+        height="800"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        class="absolute inset-0 w-full h-full object-cover z-10"
+      />
+      <div class="absolute inset-0 bg-black/40 z-[11]" aria-hidden="true"></div>
+      <div
+        class="relative z-[12] container mx-auto px-3 sm:px-4 flex items-center justify-center min-h-[320px] sm:min-h-[400px]"
+      >
+        <div class="hero-content text-center max-w-2xl mx-auto">
+          <h1
+            v-fade
+            class="text-[1.75rem] leading-tight sm:text-3xl md:text-5xl font-extrabold tracking-wider mb-3 sm:mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] sm:drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
+          >
+            <span
+              class="text-outline text-brand-orange [--o:#fff] [--w:2px] md:[--w:3px]"
+              >Privacy</span
+            ><span
+              class="text-outline text-[#1C2D5B] [--o:#fff] [--w:2px] md:[--w:3px]"
+              >&nbsp;Policy</span
             >
-              {{ data?.subtitle }}
-            </p>
-          </div>
+          </h1>
+          <p
+            v-fade
+            class="text-outline text-base sm:text-xl md:text-2xl tracking-wide font-bold text-[#1c2d5b] [--o:#fff] [--w:1.5px] md:[--w:2px] [text-wrap:balance] drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] sm:drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
+          >
+            Learn how we collect, use, and protect your personal information.
+          </p>
         </div>
       </div>
     </section>

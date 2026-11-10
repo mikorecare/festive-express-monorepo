@@ -361,37 +361,37 @@ const reviews: Review[] = [
   {
     name: "Tom Leonard",
     location: "St. Armand Circle, Long Boat Key, FL",
-    text: "We gave Festive Lighting Pros a unique challenge when we started this and we had over 100 trees in a park to light plus we wanted to create a ceiling over the park. They came up with an ingenious idea to stream cables across the bar and hung over one hundred spheres from these cables. It turned out magical. Everybody loves it. And it's been a pleasure to work with someone that can actually think outside the box.",
+    text: "We gave Festive Express a unique challenge when we started this and we had over 100 trees in a park to light plus we wanted to create a ceiling over the park. They came up with an ingenious idea to stream cables across the bar and hung over one hundred spheres from these cables. It turned out magical. Everybody loves it. And it's been a pleasure to work with someone that can actually think outside the box.",
     image: "/New/Reviews/Tom-Leonard.R9aNuc-q.webp",
   },
   {
     name: "Austin York",
     location: "Sun Outdoors, Sarasota, FL",
-    text: "Hi my name is Austin from Sun Outdoors Sarasota and we use Festive Lighting Pros for our holiday lighting needs. From the very beginning, Matt and his team are professional, timely, and courteous.",
+    text: "Hi my name is Austin from Sun Outdoors Sarasota and we use Festive Express for our holiday lighting needs. From the very beginning, Matt and his team are professional, timely, and courteous.",
     image: "/New/Reviews/Austin-York.paittgJr.webp",
   },
   {
     name: "Mitch Good",
     location: "El Melvin Cocina Mexicana, Downtown Sarasota, FL",
-    text: "I just want to give a quick shout out to Festive Lighting Pros. They've been with us for about a year now. They take care of all your maintenance. Our customers love it. We love it.",
+    text: "I just want to give a quick shout out to Festive Express. They've been with us for about a year now. They take care of all your maintenance. Our customers love it. We love it.",
     image: "/New/Reviews/Mitch-Good.CUnh5dH7.webp",
   },
   {
     name: "Kelly Johnson",
     location: "Kia of Port Charlotte",
-    text: "They (Festive Lighting Pros) were professional. They were quick, they installed everything with safety in mind, and you can see how beautiful the results are.",
+    text: "They (Festive Express) were professional. They were quick, they installed everything with safety in mind, and you can see how beautiful the results are.",
     image: "/New/Reviews/Kelly-Johnson.D7E2qk98.webp",
   },
   {
     name: "Jonnie and Tim Dwyer",
     location: "Lakewood Ranch, FL",
-    text: "Festive Lighting Pros took away such tremendous stress by making our home look so beautiful for our grandchildren. The enchantment that they experienced was worth every penny. It gave us more time and more opportunities to enjoy the holidays rather than making it all work and Matt's installers, they were so professional.",
+    text: "Festive Express took away such tremendous stress by making our home look so beautiful for our grandchildren. The enchantment that they experienced was worth every penny. It gave us more time and more opportunities to enjoy the holidays rather than making it all work and Matt's installers, they were so professional.",
     image: "/New/Reviews/Dwyers.Fhz14vyW.webp",
   },
   {
     name: "Brad Gucciardo",
     location: "Bella Sole, Bradenton, FL",
-    text: "They did an amazing job decorating my home to say that Festive Lighting Pros changed my entire attitude about Christmas specially this year is an understatement. This is incredible to come home to this every day is amazing. You will have a smile on your face, every morning every night when you come home.",
+    text: "They did an amazing job decorating my home to say that Festive Express changed my entire attitude about Christmas specially this year is an understatement. This is incredible to come home to this every day is amazing. You will have a smile on your face, every morning every night when you come home.",
     image: "/New/Reviews/Brad-Gucciardo.UcbiY9kA.webp",
   },
   {
@@ -403,13 +403,13 @@ const reviews: Review[] = [
   {
     name: "Neil Newsham",
     location: "Bradenton, FL",
-    text: "I couldn't be more happy with the services provided by Festive Lighting Pros. They were very, very efficient, very, very professional, easy to deal with. We really liked the way our house turned out.",
+    text: "I couldn't be more happy with the services provided by Festive Express. They were very, very efficient, very, very professional, easy to deal with. We really liked the way our house turned out.",
     image: "/New/Reviews/Niel-Newshams.D9nvFpN1.webp",
   },
   {
     name: "Liz Hazeltine",
     location: "Sarasota, FL",
-    text: "Hi, my name is Liz and we live in Sarasota. This was a new house and our first Christmas in it and we wanted it to look spectacular. So we hired Festive Lighting Pros and we got beyond our wildest dreams. They were easy to work with. And the house looks great and you can see for yourself.",
+    text: "Hi, my name is Liz and we live in Sarasota. This was a new house and our first Christmas in it and we wanted it to look spectacular. So we hired Festive Express and we got beyond our wildest dreams. They were easy to work with. And the house looks great and you can see for yourself.",
     image: "/New/Reviews/Liz-Hazeltine.x-axJl76.webp",
   },
   {

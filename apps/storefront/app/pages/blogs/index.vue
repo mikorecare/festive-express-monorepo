@@ -490,29 +490,4 @@ const retry = () => {
   }
 }
 
-.text-outline {
-  --w: 2px; /* outline thickness, overridden per breakpoint */
-  --o: #fff; /* outline color */
-  --d: calc(var(--w) * 0.707);
-  --a: calc(var(--w) * 0.924);
-  --b: calc(var(--w) * 0.383);
-  text-shadow:
-    var(--w) 0 var(--o),
-    calc(var(--w) * -1) 0 var(--o),
-    0 var(--w) var(--o),
-    0 calc(var(--w) * -1) var(--o),
-    var(--d) var(--d) var(--o),
-    calc(var(--d) * -1) var(--d) var(--o),
-    var(--d) calc(var(--d) * -1) var(--o),
-    calc(var(--d) * -1) calc(var(--d) * -1) var(--o),
-    var(--a) var(--b) var(--o),
-    calc(var(--a) * -1) var(--b) var(--o),
-    var(--a) calc(var(--b) * -1) var(--o),
-    calc(var(--a) * -1) calc(var(--b) * -1) var(--o),
-    var(--b) var(--a) var(--o),
-    calc(var(--b) * -1) var(--a) var(--o),
-    var(--b) calc(var(--a) * -1) var(--o),
-    calc(var(--b) * -1) calc(var(--a) * -1) var(--o);
-  -webkit-font-smoothing: antialiased;
-}
 </style>

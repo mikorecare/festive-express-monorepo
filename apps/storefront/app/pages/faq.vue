@@ -5,53 +5,48 @@
     <section
       aria-label="FAQ page header"
       role="region"
-      class="page-hero snow-bg relative bg-slate-900 py-8 sm:py-14 text-white overflow-hidden min-h-[240px] sm:min-h-[320px]"
+      class="relative py-10 sm:py-16 text-white overflow-hidden min-h-[320px] sm:min-h-[400px]"
     >
-      <!-- Background image -->
-      <NuxtImg
-        src="/Images/Banner/Page-Hero-Cover.webp"
-        alt=""
-        role="none"
-        sizes="100vw"
-        format="webp"
-        quality="80"
-        :img-attrs="{
-          loading: 'eager',
-          fetchpriority: 'high',
-          decoding: 'async',
-        }"
-        preload
-        class="absolute inset-0 w-full h-full object-cover z-0"
+      <!-- Same image and classes as Checkout -->
+      <img
+        src="/New/Banner/checkout.webp"
+        alt="FAQ background"
+        width="1920"
+        height="800"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+        class="absolute inset-0 w-full h-full object-cover z-10"
       />
 
       <!-- Dark overlay -->
-      <div class="absolute inset-0 bg-black/40 z-[1]" aria-hidden="true"></div>
+      <div class="absolute inset-0 bg-black/40 z-[11]" aria-hidden="true"></div>
 
-      <!-- Content -->
+      <!-- Content matching Checkout layout -->
       <div
-        class="relative z-10 container mx-auto max-w-[1280px] px-4 sm:px-5 py-8 sm:py-14 text-center"
+        class="relative z-[12] container mx-auto px-3 sm:px-4 flex items-center justify-center min-h-[320px] sm:min-h-[400px]"
       >
-        <h1
-          class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight mb-4"
-        >
-          <span
-            class="text-brand-orange [-webkit-text-stroke:0.04em_#fff] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
+        <div class="hero-content text-center max-w-2xl mx-auto">
+          <h1
+            v-fade
+            class="text-[1.25rem] sm:text-3xl md:text-5xl leading-tight font-extrabold tracking-wider mb-3 sm:mb-4 whitespace-nowrap drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] sm:drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
           >
-            Frequently Asked
-          </span>
-          <span
-            class="text-white [-webkit-text-stroke:0.04em_#1C2D5B] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
+            <span
+              class="text-outline text-brand-orange [--o:#fff] [--w:2px] md:[--w:3px]"
+              >Frequently Asked&nbsp;</span
+            ><span
+              class="text-outline text-[#1C2D5B] [--o:#fff] [--w:2px] md:[--w:3px]"
+              >Questions</span
+            >
+          </h1>
+          <p
+            v-fade
+            class="text-outline text-base sm:text-xl md:text-2xl tracking-wide font-bold text-[#1c2d5b] [--o:#fff] [--w:1.5px] md:[--w:2px] [text-wrap:balance] drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] sm:drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
           >
-            Questions
-          </span>
-        </h1>
-
-        <p
-          class="mt-2 text-sm sm:text-base text-white/95 max-w-xl mx-auto [text-shadow:_0_2px_8px_rgba(0,0,0,0.75)]"
-        >
-          Everything you need to know about Festive Express<br />and our holiday
-          lighting packages.
-        </p>
+            Everything you need to know about Festive Express and our holiday
+            lighting packages.
+          </p>
+        </div>
       </div>
     </section>
 

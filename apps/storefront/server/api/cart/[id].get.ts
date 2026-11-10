@@ -23,6 +23,8 @@ export default defineEventHandler(async (event) => {
                 product_id,
                 quantity,
                 price,
+                options,
+                is_package,
                 product:products (
                     id,
                     name,
@@ -60,9 +62,20 @@ export default defineEventHandler(async (event) => {
                 imageUrl = urlData?.publicUrl || imageUrl
             }
 
-            // Return the item with transformed product
+            // Parse options if Supabase returned it as a string (rare, but happens with some drivers)
+            let parsedOptions = item.options
+            if (typeof parsedOptions === 'string') {
+                try {
+                    parsedOptions = JSON.parse(parsedOptions)
+                } catch {
+                    parsedOptions = null
+                }
+            }
+
+            // Return the item with transformed product and parsed options
             return {
                 ...item,
+                options: parsedOptions,
                 product: {
                     ...product,
                     image_url: imageUrl

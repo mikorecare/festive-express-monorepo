@@ -1,7 +1,7 @@
 <template>
   <div
     ref="heroRef"
-    class="hero-banner relative min-h-[88dvh] overflow-hidden flex items-center max-lg:min-h-auto max-lg:py-10 border-b-[27px] border-[#F49321]"
+    class="hero-banner relative min-h-[88dvh] overflow-hidden flex items-center max-lg:min-h-[85dvh] max-lg:py-0 border-b-[27px] border-[#F49321]"
   >
     <!-- MOBILE -->
     <div class="lg:hidden absolute inset-0 z-0">
@@ -14,14 +14,12 @@
         quality="75"
         :img-attrs="{ loading: 'eager', fetchpriority: 'high' }"
         preload
-        class="w-full h-full object-cover"
+        class="w-full h-full object-cover object-[center_50%]"
       />
     </div>
 
     <!-- ==================================================== -->
     <!-- 💻 DESKTOP HERO LAYER (z-0)                           -->
-    <!-- All slides are stacked; only the active one is on top.-->
-    <!-- No src swapping = no flicker when a card finishes.    -->
     <!-- ==================================================== -->
     <div v-if="!isMobile" class="hero-carousel absolute inset-0 max-lg:hidden">
       <div
@@ -49,8 +47,6 @@
 
     <!-- ==================================================== -->
     <!-- 🌱 GROWING CARD (z-5)                                 -->
-    <!-- Above the hero layer, below overlay + content.        -->
-    <!-- Starts exactly on the first queue slot, grows to full.-->
     <!-- ==================================================== -->
     <div
       v-if="!isMobile && growIndex !== null"
@@ -77,79 +73,54 @@
     <!-- OVERLAY z-10 -->
     <div class="overlay absolute inset-0 z-10 max-lg:bg-black/25"></div>
 
-    <!-- COUNTDOWNS z-20 -->
-    <CountdownWidget
-      v-if="heroCountdownEnabled"
-      class="desktop-widget max-lg:hidden"
-      :time-left="timeLeft"
-      :format-number="formatNumber"
-    />
-    <CountdownWidget
-      v-if="heroCountdownEnabled"
-      class="mobile-widget lg:hidden"
-      :time-left="timeLeft"
-      :format-number="formatNumber"
-    />
-
     <!-- CONTENT z-20 -->
     <div
-      class="hero-content-container relative z-20 w-full max-w-[1200px] px-[5%] lg:pl-[15%] flex justify-start items-center gap-5 max-lg:flex-col max-lg:items-start max-lg:gap-8 max-lg:px-[6%] max-lg:py-6"
+      class="hero-content-container relative z-20 w-full max-w-[1200px] px-[5%] lg:pl-[15%] flex justify-start items-center gap-5 max-lg:flex-col max-lg:items-start max-lg:gap-0 max-lg:px-[6%] max-lg:pt-10 max-lg:w-full max-lg:h-[80dvh]"
     >
       <div
-        class="hero-card relative w-full max-w-[460px] bg-[#161c30]/50 backdrop-blur-sm rounded-2xl p-11 px-8 shadow-[0_10px_30px_rgba(0,0,0,0.4)] text-white text-center border border-white/12 overflow-hidden before:content-[''] before:absolute before:-top-1/2 before:-left-[150%] before:w-[200%] before:h-[200%] before:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] before:rotate-[25deg] before:pointer-events-none before:animate-[glossyShineContinuous_3s_linear_infinite] max-lg:max-w-full max-lg:p-0 max-lg:text-left max-lg:!bg-transparent max-lg:!backdrop-blur-none max-lg:!border-none max-lg:!shadow-none max-lg:!rounded-none max-lg:before:!hidden max-lg:after:!hidden max-lg:flex max-lg:flex-col max-lg:gap-8"
+        class="hero-card relative w-full max-w-[460px] bg-[#161c30]/50 backdrop-blur-sm rounded-2xl p-11 px-8 shadow-[0_10px_30px_rgba(0,0,0,0.4)] text-white text-center border border-white/12 overflow-hidden before:content-[''] before:absolute before:-top-1/2 before:-left-[150%] before:w-[200%] before:h-[200%] before:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] before:rotate-[25deg] before:pointer-events-none before:animate-[glossyShineContinuous_3s_linear_infinite] max-lg:max-w-full max-lg:p-0 max-lg:text-left max-lg:!bg-transparent max-lg:!backdrop-blur-none max-lg:!border-none max-lg:!shadow-none max-lg:!rounded-none max-lg:before:!hidden max-lg:after:!hidden max-lg:flex max-lg:flex-col max-lg:h-full max-lg:justify-between"
         :class="{ 'hero-card-focused': isHeroVisible }"
       >
         <div>
           <h1
-            class="text-4xl text-start font-extrabold leading-[1.15] mb-4 tracking-wide text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] max-lg:text-[1.5rem] max-lg:mb-2 max-lg:leading-[1.2] max-lg:drop-shadow-[0_4px_14px_rgba(0,0,0,0.9)] max-lg:[text-shadow:0_2px_6px_rgba(0,0,0,0.95),0_4px_16px_rgba(0,0,0,0.75)]"
+            class="text-4xl text-start font-extrabold leading-[1.15] mb-4 tracking-wide text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] max-lg:text-[1.5rem] max-lg:mb-2 max-lg:leading-[1.2] max-lg:drop-shadow-[0_4px_14px_rgba(0,0,0,0.9)]"
           >
+            <!-- Part 1: navy fill, white outline -->
             <span
-              class="highlight block text-[#F49321] [-webkit-text-stroke:0.05em_#1C2D5B] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(28,45,91,0.45)] tracking-wider"
+              class="highlight block text-white [-webkit-text-stroke:0.085em_#1C2D5B] [paint-order:stroke_fill] drop-shadow-[0_4px_10px_rgba(28,45,91,0.45)] tracking-wider max-lg:[-webkit-text-stroke:1.5px_#1C2D5B]"
               >{{ heroH1White }}</span
             >
-            <span class="block text-white">{{ heroH1Orange }}</span>
-          </h1>
-          <p
-            class="tagline text-start text-[1.1rem] font-bold leading-[1.35] tracking-wide mb-8 text-slate-200 max-lg:text-[0.9rem] max-lg:mb-0 max-lg:leading-[1.4] max-lg:[text-shadow:0_2px_4px_rgba(0,0,0,0.7)]"
-          >
-            <template v-for="(part, i) in heroDescription1.split('|')" :key="i">
-              <br v-if="i > 0" class="mobile-only" />{{ part }}
-            </template>
-            <br />
-          </p>
-          <p
-            class="subtext block text-start text-[0.88rem] tracking-widest font-semibold my-4 opacity-90 max-lg:text-[0.78rem] max-lg:mt-2"
-          >
-            <template
-              v-for="(part2, i) in heroDescription2.split('|')"
-              :key="i"
+
+            <!-- Part 2: navy fill, white outline -->
+            <span
+              class="block text-[#1C2D5B] [-webkit-text-stroke:0.055em_#ffffff] [paint-order:stroke_fill] max-lg:[-webkit-text-stroke:1.5px_#ffffff]"
+              >{{ heroH1Orange }}</span
             >
-              <br v-if="i > 0" class="mobile-only" />{{ part2
-              }}<span v-if="i === 0">.</span>
-            </template>
-          </p>
+          </h1>
         </div>
-        <div class="flex flex-col gap-3 w-full">
-          <NuxtLink
-            to="#preview"
-            class="relative uppercase inline-flex items-center justify-center bg-[#1C2D5B] text-white font-extrabold text-lg rounded-full border-[3px] border-[#1C2D5B] px-12 py-2 hover:bg-[#e0850a] transition-colors max-lg:font-semibold tracking-wider max-lg:text-base max-lg:px-6 max-lg:py-3 max-lg:border-2 max-lg:w-full"
-          >
-            <span>Preview your home</span>
-          </NuxtLink>
-          <NuxtLink
-            to="/packages"
-            class="relative inline-flex items-center justify-center uppercase bg-[#F49321] text-white font-extrabold text-lg rounded-full border-[3px] border-[#F49321] shadow-[0_0_0_4px_#F49321] px-12 py-2 hover:bg-[#e0850a] transition-colors max-lg:font-semibold tracking-wider max-lg:text-base max-lg:px-6 max-lg:py-3 max-lg:border-2 max-lg:shadow-none max-lg:w-full"
-          >
-            <span>{{ heroButtonLabel }}</span>
-          </NuxtLink>
+
+        <!-- BUTTONS: Removed max-lg:text-base so they stay huge -->
+        <div class="flex flex-col gap-3 w-full items-center max-lg:pb-6">
+          <div class="flex flex-col gap-4 w-full max-w-[340px] mx-auto">
+            <NuxtLink
+              to="#preview"
+              class="btn-3d-glossy relative uppercase inline-flex items-center justify-center bg-[#1C2D5B] text-white font-bold text-[1.4rem] rounded-[50px] border-2 border-white px-4 lg:px-6 py-[12px] sm:py-[14px] hover:bg-[#e0850a] transition-all duration-200 ease-in-out tracking-[0.5px] max-lg:w-full whitespace-nowrap shadow-[0_4px_10px_rgba(0,0,0,0.15)]"
+            >
+              <span class="relative z-10">Preview your home</span>
+            </NuxtLink>
+            <NuxtLink
+              to="/packages"
+              class="btn-3d-glossy btn-3d-glossy-orange relative uppercase inline-flex items-center justify-center bg-[#F49321] text-white font-bold text-[1.4rem] rounded-[50px] border-2 border-white px-4 lg:px-6 py-[12px] sm:py-[14px] hover:bg-[#e0850a] transition-all duration-200 ease-in-out tracking-[0.5px] max-lg:w-full whitespace-nowrap shadow-[0_4px_10px_rgba(0,0,0,0.15)]"
+            >
+              <span class="relative z-10">{{ heroButtonLabel }}</span>
+            </NuxtLink>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- ==================================================== -->
     <!-- 🃏 QUEUE (z-30) — ONLY upcoming slides.               -->
-    <!-- Slot 0 (left) = next hero. Previous hero re-enters    -->
-    <!-- from the right and pushes everything to the left.     -->
     <!-- ==================================================== -->
     <TransitionGroup
       v-if="!isMobile"

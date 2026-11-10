@@ -1,9 +1,9 @@
-
 import { getSupabase } from '~~/server/utils/supabase'
+import { createHash } from 'node:crypto' // 👈 Added for hashing options
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)
-    const { cartId, productId, quantity } = body
+    const { cartId, productId, quantity, options } = body // 👈 Extract options
 
     if (!cartId || !productId) {
         throw createError({
@@ -15,6 +15,7 @@ export default defineEventHandler(async (event) => {
     const supabase = getSupabase()
 
     try {
+        // 1. Fetch the base product
         const { data: productData, error: productError } = await supabase
             .from("products")
             .select("id, price")
@@ -36,41 +37,52 @@ export default defineEventHandler(async (event) => {
             })
         }
 
-        const { data: settings } = await supabase
-            .from("settings")
-            .select("key, value")
-            .in("key", ["early_bird_enabled", "early_bird_expires_at"])
+        // 2. Calculate prices
+        const baseUnitPrice = Number(productData.price ?? 0)
 
-        let earlyBirdEnabled = false
-        let earlyBirdExpiresAt: string | null = null
-
-        if (settings && Array.isArray(settings)) {
-            for (const row of settings) {
-                const value = typeof row.value === "string" ? row.value.replace(/^"|"$/g, "") : row.value
-                if (row.key === "early_bird_enabled") {
-                    earlyBirdEnabled = value === "true" || value === "1" || value === "yes"
-                }
-                if (row.key === "early_bird_expires_at") {
-                    earlyBirdExpiresAt = value
-                }
-            }
+        let addonsTotal = 0
+        if (options?.addons && Array.isArray(options.addons)) {
+            addonsTotal = options.addons.reduce(
+                (sum: number, a: any) => sum + (Number(a.price) * Number(a.quantity)),
+                0
+            )
         }
 
-        const unitPrice = Number(productData.price ?? 0)
+        const overageAmount = Number(options?.overage?.amount ?? 0)
 
-        const { data: existing } = await supabase
+        // Total price for ONE item (Package + Add-ons + Overage)
+        const finalUnitPrice = baseUnitPrice + addonsTotal + overageAmount
+
+        // 3. Generate options_hash
+        // If there are no options, hash is null.
+        // If there are options, we hash them so we can group identical configurations.
+        const optionsHash = options
+            ? createHash('md5').update(JSON.stringify(options)).digest('hex')
+            : null
+
+        // 4. Check if this EXACT configuration is already in the cart
+        let existingQuery = supabase
             .from("cart_items")
             .select("id, quantity")
             .eq("cart_id", cartId)
             .eq("product_id", productId)
-            .maybeSingle()
+
+        if (optionsHash) {
+            existingQuery = existingQuery.eq("options_hash", optionsHash)
+        } else {
+            existingQuery = existingQuery.is("options_hash", null)
+        }
+
+        const { data: existing } = await existingQuery.maybeSingle()
 
         if (existing?.id) {
+            // Update existing row
             const { error } = await supabase
                 .from("cart_items")
                 .update({
                     quantity: (existing.quantity || 0) + quantity,
-                    price: unitPrice
+                    price: finalUnitPrice, // Update price just in case
+                    options: options || null,
                 })
                 .eq("id", existing.id)
 
@@ -82,13 +94,17 @@ export default defineEventHandler(async (event) => {
                 })
             }
         } else {
+            // Insert new row
             const { error } = await supabase
                 .from("cart_items")
                 .insert({
                     cart_id: cartId,
                     product_id: productId,
                     quantity,
-                    price: unitPrice
+                    price: finalUnitPrice,
+                    options: options || null,
+                    options_hash: optionsHash,
+                    is_package: true
                 })
 
             if (error) {

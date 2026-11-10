@@ -10,9 +10,10 @@
 
 <template>
   <HomeNewHero />
-  <HomeNewHowItWorks />
   <HomeNewChooseYourHolidayPackage />
   <HomeNewPreviewYourHome />
+  <HomeNewHowItWorks />
+
   <HomeNewReviews />
   <HomeNewVideoTestimonials />
   <HomeNewFaq />
@@ -22,6 +23,6 @@
 
 <script setup lang="ts">
 useHead({
-  title: "Illumineers Creating Wonder",
+  title: "Rent, Relax, & Celebrate",
 });
 </script>

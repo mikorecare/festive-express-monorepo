@@ -101,7 +101,7 @@
               :src="pkg.title_image_url || pkg.icon_url || undefined"
               :alt="pkg.name"
               loading="lazy"
-              class="pkg-title-img h-10 sm:h-16 md:h-24 w-auto object-contain drop-shadow-md shrink-0"
+              class="pkg-title-img h-20 w-auto object-contain drop-shadow-md shrink-0"
             />
             <h2
               class="text-lg sm:text-2xl md:text-3xl font-bold text-[#1C2D5B] truncate"
@@ -153,15 +153,27 @@
 
           <div
             v-else
-            class="package-price flex items-baseline justify-end gap-1 sm:gap-1.5 shrink-0"
+            class="package-price flex flex-col items-end justify-center shrink-0"
           >
-            <div
-              class="text-xl sm:text-3xl md:text-4xl font-extrabold leading-none text-[#f59e0b]"
-            >
-              ${{ Math.round(Number(selectedPrice(pkg)) || 0) }}
+            <!-- Price with Styled Dollar Sign -->
+            <div class="inline-flex items-baseline text-[#f59e0b]">
+              <span
+                class="text-[1.8rem] sm:text-[2.25rem] md:text-[3.25rem] font-extrabold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-1.5 sm:-mr-2.5 translate-y-[-0.1em]"
+              >
+                $&nbsp;
+              </span>
+              <span
+                class="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-none price-text -tracking-[0.04em]"
+              >
+                {{
+                  Math.round(Number(selectedPrice(pkg)) || 0).toLocaleString()
+                }}
+              </span>
             </div>
+
+            <!-- Per Season Text -->
             <div
-              class="text-[0.65rem] sm:text-sm md:text-base font-semibold text-slate-600 whitespace-nowrap"
+              class="text-[0.8rem] sm:text-base md:text-lg font-bold text-slate-600 whitespace-nowrap mt-1 sm:mt-2 uppercase tracking-wide"
             >
               Per Season
             </div>
@@ -176,7 +188,7 @@
             class="media-column lg:col-span-7 flex flex-col bg-white rounded-xl shadow-sm border border-slate-100"
           >
             <div
-              class="image-wrapper relative bg-slate-100 group"
+              class="image-wrapper relative bg-slate-100 group cursor-pointer"
               @click.stop="onPackageImageClick(pkg)"
             >
               <div
@@ -370,11 +382,32 @@
           <div
             class="details-column lg:col-span-5 flex flex-col gap-4 sm:gap-6"
           >
-            <div
-              v-if="pkg.description"
-              class="text-sm sm:text-base text-navy leading-relaxed whitespace-pre-line"
-              v-html="pkg.description"
-            />
+            <!-- Package Details (collapsible, default closed) -->
+            <div v-if="pkg.description" class="package-details-block">
+              <button
+                type="button"
+                class="details-toggle flex w-full items-center justify-between gap-2 bg-transparent text-navy border-2 border-slate-900 px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold rounded-lg hover:bg-slate-900 hover:text-white transition-all"
+                :aria-expanded="isDetailsOpen(pkg.id)"
+                :aria-controls="`package-details-${pkg.id}`"
+                @click="toggleDetails(pkg.id)"
+              >
+                <span class="toggle-label">Package Details</span>
+                <span
+                  class="collapse-chevron inline-block transition-transform duration-300"
+                  :class="{ 'rotate-180': isDetailsOpen(pkg.id) }"
+                  aria-hidden="true"
+                >
+                  ▾
+                </span>
+              </button>
+
+              <div
+                v-if="isDetailsOpen(pkg.id)"
+                :id="`package-details-${pkg.id}`"
+                class="details-content mt-3 text-sm sm:text-base text-navy leading-relaxed whitespace-pre-line"
+                v-html="pkg.description"
+              />
+            </div>
 
             <div class="inclusions-block">
               <h3
@@ -447,57 +480,26 @@
               </p>
             </div>
 
-            <button
-              type="button"
-              class="group relative overflow-hidden w-full bg-[#f59e0b] hover:bg-[#1C2D5B] text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/40 before:to-transparent before:-translate-x-full before:skew-x-[-20deg] before:transition-transform before:duration-1000 before:ease-out hover:before:translate-x-full"
-              :disabled="
-                !selectedSku(pkg)?.id || addingId === selectedSku(pkg)?.id
-              "
-              :aria-label="`Add ${pkg.name} to cart`"
-              @click="addPackageSku(pkg)"
+            <!-- Redirect to Slug Page Button -->
+            <NuxtLink
+              :to="`/packages/${pkg.slug}#package`"
+              class="pkg-select-btn btn-gloss btn-gloss-orange group relative overflow-hidden w-[85%] mx-auto flex items-center justify-center bg-brand-orange border-2 border-white rounded-[50px] py-[12px] sm:py-[14px] px-[16px] text-[1.4rem] md:text-[2.1rem] uppercase font-bold tracking-[0.5px] cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out hover:bg-[#1C2D5B]"
+              :aria-label="`View details for ${pkg.name}`"
             >
               <span
-                v-if="addingId === selectedSku(pkg)?.id"
-                class="inline-flex items-center justify-center gap-2"
+                class="pkg-select-label relative z-10 inline-flex items-center justify-center gap-2"
               >
-                <svg
-                  class="animate-spin h-4 w-4 sm:h-5 sm:w-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  aria-hidden="true"
-                >
-                  <circle
-                    class="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    stroke-width="4"
-                  />
-                  <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                  />
-                </svg>
-                Adding...
+                <span class="pkg-select-prefix">Order</span>
+                <span class="pkg-select-name">{{ pkg.name }}</span>
+                <span class="pkg-select-prefix">Now</span>
               </span>
-              <span v-else class="text-sm sm:text-base">
-                Add
-                <span
-                  class="text-navy font-bold uppercase group-hover:text-white transition-colors"
-                >
-                  {{ pkg.name }}
-                </span>
-                to Cart
-              </span>
-            </button>
+            </NuxtLink>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Product Information Section -->
+    <!-- Product Information Section (Collapsible) -->
     <section
       aria-label="Product specifications"
       role="region"
@@ -505,115 +507,142 @@
       class="product-info-section py-10 sm:py-20 bg-slate-50"
     >
       <div class="container mx-auto px-3 sm:px-4 max-w-7xl">
+        <!-- Collapsible header -->
         <div class="section-header2 text-center mb-6 sm:mb-12">
           <h2
             class="text-2xl sm:text-3xl font-extrabold text-navy mb-2 sm:mb-3"
           >
-            Product Specifications
+            Package Specifications
           </h2>
           <p
-            class="section-subtitle text-navy text-sm sm:text-base max-w-2xl mx-auto"
+            class="section-subtitle text-navy text-sm sm:text-base max-w-2xl mx-auto mb-4 sm:mb-5"
           >
             Discover the professional-grade materials and engineering behind
             every installation.
           </p>
+
+          <button
+            type="button"
+            class="collapse-toggle inline-flex items-center justify-center gap-2 bg-transparent text-navy border-2 border-slate-900 px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold rounded-lg hover:bg-slate-900 hover:text-white transition-all"
+            :aria-expanded="specsOpen"
+            aria-controls="package-specs-content"
+            @click="specsOpen = !specsOpen"
+          >
+            <span class="toggle-label">{{
+              specsOpen ? "Hide Specifications" : "Show Specifications"
+            }}</span>
+            <span
+              class="collapse-chevron inline-block transition-transform duration-300"
+              :class="{ 'rotate-180': specsOpen }"
+              aria-hidden="true"
+            >
+              ▾
+            </span>
+          </button>
         </div>
 
+        <!-- Collapsible content -->
         <div
-          v-if="specsLoading"
-          role="status"
-          aria-live="polite"
-          class="text-center text-navy py-8 sm:py-10"
-        >
-          Loading specifications...
-        </div>
-
-        <div
-          v-else-if="!inclusionItems.length"
-          role="alert"
-          class="text-center text-navy py-8 sm:py-10"
-        >
-          No product specifications available.
-        </div>
-
-        <div
-          v-else
-          class="product-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
-          role="list"
+          v-show="specsOpen"
+          id="package-specs-content"
+          class="specs-collapse-content"
         >
           <div
-            v-for="item in inclusionItems"
-            :key="item.id"
-            class="product-card bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden"
-            role="listitem"
+            v-if="specsLoading"
+            role="status"
+            aria-live="polite"
+            class="text-center text-navy py-8 sm:py-10"
+          >
+            Loading specifications...
+          </div>
+
+          <div
+            v-else-if="!inclusionItems.length"
+            role="alert"
+            class="text-center text-navy py-8 sm:py-10"
+          >
+            No product specifications available.
+          </div>
+
+          <div
+            v-else
+            class="product-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
+            role="list"
           >
             <div
-              class="product-header bg-[#1C2D5B] text-white p-3 sm:p-5 flex justify-between items-center gap-2 sm:gap-3"
+              v-for="item in inclusionItems"
+              :key="item.id"
+              class="product-card bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-[0_10px_25px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 flex flex-col overflow-hidden"
+              role="listitem"
             >
-              <h3 class="text-base sm:text-lg font-bold text-white m-0">
-                {{ item.name }}
-              </h3>
-            </div>
-
-            <div class="product-body p-4 sm:p-6 flex flex-col flex-grow">
-              <p
-                v-if="item.description"
-                class="description text-navy text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4"
-              >
-                {{ item.description }}
-              </p>
-
               <div
-                v-if="colorList(item).length"
-                class="options-tag bg-[#f0f4f8] text-[#1C2D5B] px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-[6px] text-[0.8rem] sm:text-[0.88rem] mb-3 sm:mb-5"
+                class="product-header bg-[#1C2D5B] text-white p-3 sm:p-5 flex justify-between items-center gap-2 sm:gap-3"
               >
-                <strong>Color Options:</strong>
-                {{ colorList(item).join(", ") }}
+                <h3 class="text-base sm:text-lg font-bold text-white m-0">
+                  {{ item.name }}
+                </h3>
               </div>
 
-              <div
-                v-if="featureList(item).length"
-                class="spec-block mb-3 sm:mb-4"
-              >
-                <h4
-                  class="text-sm sm:text-base font-bold text-[#1C2D5B] mb-2 sm:mb-2.5 pb-0.75 border-b-2 border-[#f59e0b] inline-block"
+              <div class="product-body p-4 sm:p-6 flex flex-col flex-grow">
+                <p
+                  v-if="item.description"
+                  class="description text-navy text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4"
                 >
-                  Features
-                </h4>
-                <ul
-                  class="list-disc list-inside text-xs sm:text-sm text-navy space-y-1 sm:space-y-1.5 p-0 m-0"
-                  role="list"
-                >
-                  <li
-                    v-for="(f, i) in featureList(item)"
-                    :key="i"
-                    role="listitem"
-                  >
-                    {{ f }}
-                  </li>
-                </ul>
-              </div>
+                  {{ item.description }}
+                </p>
 
-              <div
-                v-if="Object.keys(specMap(item)).length"
-                class="spec-block mt-auto"
-              >
-                <h4
-                  class="text-sm sm:text-base font-bold text-[#1C2D5B] mb-2 sm:mb-2.5 pb-0.75 border-b-2 border-[#f59e0b] inline-block"
-                >
-                  Specifications
-                </h4>
                 <div
-                  class="spec-grid grid grid-cols-2 gap-1.5 sm:gap-2 bg-slate-50 p-2.5 sm:p-3 rounded-lg text-xs sm:text-sm text-slate-600"
-                  role="list"
+                  v-if="colorList(item).length"
+                  class="options-tag bg-[#f0f4f8] text-[#1C2D5B] px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-[6px] text-[0.8rem] sm:text-[0.88rem] mb-3 sm:mb-5"
                 >
-                  <div
-                    v-for="(val, key) in specMap(item)"
-                    :key="key"
-                    role="listitem"
+                  <strong>Color Options:</strong>
+                  {{ colorList(item).join(", ") }}
+                </div>
+
+                <div
+                  v-if="featureList(item).length"
+                  class="spec-block mb-3 sm:mb-4"
+                >
+                  <h4
+                    class="text-sm sm:text-base font-bold text-[#1C2D5B] mb-2 sm:mb-2.5 pb-0.75 border-b-2 border-[#f59e0b] inline-block"
                   >
-                    <span class="font-bold text-navy">{{ key }}:</span>
-                    {{ val }}
+                    Features
+                  </h4>
+                  <ul
+                    class="list-disc list-inside text-xs sm:text-sm text-navy space-y-1 sm:space-y-1.5 p-0 m-0"
+                    role="list"
+                  >
+                    <li
+                      v-for="(f, i) in featureList(item)"
+                      :key="i"
+                      role="listitem"
+                    >
+                      {{ f }}
+                    </li>
+                  </ul>
+                </div>
+
+                <div
+                  v-if="Object.keys(specMap(item)).length"
+                  class="spec-block mt-auto"
+                >
+                  <h4
+                    class="text-sm sm:text-base font-bold text-[#1C2D5B] mb-2 sm:mb-2.5 pb-0.75 border-b-2 border-[#f59e0b] inline-block"
+                  >
+                    Specifications
+                  </h4>
+                  <div
+                    class="spec-grid grid grid-cols-2 gap-1.5 sm:gap-2 bg-slate-50 p-2.5 sm:p-3 rounded-lg text-xs sm:text-sm text-slate-600"
+                    role="list"
+                  >
+                    <div
+                      v-for="(val, key) in specMap(item)"
+                      :key="key"
+                      role="listitem"
+                    >
+                      <span class="font-bold text-navy">{{ key }}:</span>
+                      {{ val }}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -648,6 +677,15 @@
 </template>
 
 <script setup lang="ts">
+import type {
+  ApiResponse,
+  PackageRow,
+  SkuRow,
+  InclusionSpec,
+  Hotspot,
+  PackageInclusion,
+} from "./types";
+
 useHead({
   title: "Packages",
   link: [
@@ -660,72 +698,6 @@ useHead({
   ],
 });
 
-type InclusionItem = {
-  id: string;
-  name: string;
-  slug?: string;
-  image_url?: string | null;
-};
-
-type PackageInclusion = {
-  quantity: number;
-  is_included: boolean;
-  label_override?: string | null;
-  sort_order?: number;
-  inclusion_items?: InclusionItem | null;
-};
-
-type PackageRow = {
-  id: string | number;
-  name: string;
-  slug: string;
-  description?: string | null;
-  price?: number | string | null;
-  sale_price?: number | string | null;
-  title_image_url?: string | null;
-  icon_url?: string | null;
-  is_popular?: boolean;
-  sort_order?: number;
-  package_inclusions?: PackageInclusion[];
-};
-
-type SkuRow = {
-  id: string | number;
-  name: string;
-  price?: number | string | null;
-  sale_price?: number | string | null;
-  stock?: number | null;
-  image_url?: string | null;
-  package_id: string | number;
-  color_key?: string | null;
-  color_label?: string | null;
-};
-
-type Hotspot = {
-  key: string;
-  top: string;
-  left: string;
-  label: string;
-  thumb?: string;
-};
-
-type InclusionSpec = {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  color_options: string[] | any;
-  features: string[] | any;
-  specifications: Record<string, string> | any;
-  sort_order: number;
-};
-
-type ApiResponse<T> = {
-  success: boolean;
-  data: T;
-};
-
-const cart = useCart();
 const {
   data: landingPayload,
   pending,
@@ -755,8 +727,27 @@ const settings = computed(
 
 const loading = computed(() => pending.value);
 const selectedSkuId = ref<Record<string, string | number>>({});
-const cartBump = useState("cart-bump", () => 0);
 const { colors, loadColors, swatchStyle, byKey } = useProductColors();
+
+/* Collapsible Product / Package Specifications section */
+const specsOpen = ref(false);
+
+/* Per-package collapsible "Package Details" (default closed) */
+const detailsOpenIds = ref<Set<string>>(new Set());
+
+const isDetailsOpen = (packageId: string | number) =>
+  detailsOpenIds.value.has(String(packageId));
+
+const toggleDetails = (packageId: string | number) => {
+  const id = String(packageId);
+  const next = new Set(detailsOpenIds.value);
+  if (next.has(id)) {
+    next.delete(id);
+  } else {
+    next.add(id);
+  }
+  detailsOpenIds.value = next;
+};
 
 const effectiveSkuId = (pkg: PackageRow): string | number | null => {
   const userPick = selectedSkuId.value[String(pkg.id)];
@@ -781,7 +772,6 @@ const skusFor = (packageId: string | number) => {
 
 /**
  * Preload every SKU + package image so color changes are instant.
- * Uses Image() so the browser caches them behind the scenes.
  */
 watch(
   landingPayload,
@@ -814,7 +804,6 @@ const { data: inclusionResponse, pending: specsLoading } = useFetch<{
 const inclusionItems = computed(() => inclusionResponse.value?.data || []);
 
 const activeHotspot = ref<Record<string, string | null>>({});
-const addingId = ref<string | number | null>(null);
 
 const packageRefs = ref<Map<string | number, HTMLElement>>(new Map());
 const imageRefs = ref<Map<string | number, HTMLImageElement>>(new Map());
@@ -949,9 +938,12 @@ const onImgError = (error: string | Event) => {
 };
 
 const scrollToSpecs = () => {
-  document
-    .getElementById("package-specs")
-    ?.scrollIntoView({ behavior: "smooth" });
+  specsOpen.value = true;
+  nextTick(() => {
+    document
+      .getElementById("package-specs")
+      ?.scrollIntoView({ behavior: "smooth" });
+  });
 };
 
 const setPackageRef = (
@@ -973,68 +965,6 @@ const setImageRef = (
     imageRefs.value.set(packageId, el);
   } else {
     imageRefs.value.delete(packageId);
-  }
-};
-
-const cartModal = reactive({
-  open: false,
-  type: "success" as "success" | "error",
-  title: "",
-  message: "",
-});
-
-const openCartModal = (
-  type: "success" | "error",
-  title: string,
-  message: string,
-) => {
-  cartModal.type = type;
-  cartModal.title = title;
-  cartModal.message = message;
-  cartModal.open = true;
-};
-
-const addPackageSku = async (pkg: PackageRow) => {
-  const sku = selectedSku(pkg);
-  if (!sku?.id) {
-    openCartModal(
-      "error",
-      "Select an option",
-      "Please choose a color before adding to cart.",
-    );
-    return;
-  }
-
-  addingId.value = sku.id;
-  try {
-    const ok = await cart.addToCart(sku.id, 1);
-
-    if (ok !== false) {
-      if (typeof cart.loadCart === "function") await cart.loadCart();
-
-      cartBump.value++;
-
-      openCartModal(
-        "success",
-        "Added to cart",
-        `${pkg.name || "Package"} was added to your cart.`,
-      );
-    } else {
-      openCartModal(
-        "error",
-        "Could not add",
-        "Something went wrong. Please try again.",
-      );
-    }
-  } catch (e: any) {
-    console.error("addPackageSku", e);
-    openCartModal(
-      "error",
-      "Could not add",
-      e?.message || "Something went wrong.",
-    );
-  } finally {
-    addingId.value = null;
   }
 };
 
@@ -1115,8 +1045,6 @@ onMounted(async () => {
 
   if (!import.meta.client) return;
 
-  await cart.loadCart();
-
   await scrollToPackage();
 
   const onKey = (e: KeyboardEvent) => {
@@ -1144,29 +1072,54 @@ onMounted(async () => {
   inset: 0;
 }
 
-.text-outline {
-  --w: 2px; /* outline thickness, overridden per breakpoint */
-  --o: #fff; /* outline color */
-  --d: calc(var(--w) * 0.707);
-  --a: calc(var(--w) * 0.924);
-  --b: calc(var(--w) * 0.383);
-  text-shadow:
-    var(--w) 0 var(--o),
-    calc(var(--w) * -1) 0 var(--o),
-    0 var(--w) var(--o),
-    0 calc(var(--w) * -1) var(--o),
-    var(--d) var(--d) var(--o),
-    calc(var(--d) * -1) var(--d) var(--o),
-    var(--d) calc(var(--d) * -1) var(--o),
-    calc(var(--d) * -1) calc(var(--d) * -1) var(--o),
-    var(--a) var(--b) var(--o),
-    calc(var(--a) * -1) var(--b) var(--o),
-    var(--a) calc(var(--b) * -1) var(--o),
-    calc(var(--a) * -1) calc(var(--b) * -1) var(--o),
-    var(--b) var(--a) var(--o),
-    calc(var(--b) * -1) var(--a) var(--o),
-    var(--b) calc(var(--a) * -1) var(--o),
-    calc(var(--b) * -1) calc(var(--a) * -1) var(--o);
-  -webkit-font-smoothing: antialiased;
+/* Collapsible Package Specifications */
+.specs-collapse-content {
+  overflow: hidden;
+}
+
+.collapse-toggle,
+.details-toggle {
+  color: #1c2d5b;
+}
+
+.collapse-toggle .toggle-label,
+.details-toggle .toggle-label {
+  color: inherit;
+  opacity: 1;
+  visibility: visible;
+  display: inline-block;
+}
+
+/* Beat :active / :focus / :hover / group-active / any state selector */
+.collapse-toggle:active .toggle-label,
+.collapse-toggle:focus .toggle-label,
+.collapse-toggle:hover .toggle-label,
+.details-toggle:active .toggle-label,
+.details-toggle:focus .toggle-label,
+.details-toggle:hover .toggle-label {
+  color: #1c2d5b;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: inline-block !important;
+}
+
+.collapse-toggle:not(:hover):not(:focus):not(:active),
+.details-toggle:not(:hover):not(:focus):not(:active) {
+  color: #1c2d5b;
+}
+
+/* In case :focus-visible or global reset targets inner spans */
+.collapse-toggle > span,
+.details-toggle > span {
+  color: inherit;
+}
+
+/* Package Details toggle */
+.details-toggle {
+  cursor: pointer;
+}
+
+.details-content {
+  overflow: visible;
 }
 </style>

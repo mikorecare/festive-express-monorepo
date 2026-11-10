@@ -1,7 +1,6 @@
-import { getSupabase } from "~~/server/utils/supabase";
+import { getAuthenticatedSupabase } from "~~/server/utils/auth";
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig();
   const id = getRouterParam(event, "id");
 
   if (!id) {
@@ -11,20 +10,10 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const supabaseServiceKey = config.supabase.secretKey;
-
-  if (!supabaseServiceKey) {
-    console.error("Missing NUXT_SUPABASE_SECRET_KEY environment variable");
-    throw createError({
-      statusCode: 500,
-      message: "Server configuration error",
-    });
-  }
-
-  const supabase = getSupabase();
+  const supabase = await getAuthenticatedSupabase(event);
 
   try {
-    // Fetch order with promo code relation - using correct column names
+    // Fetch order with promo code relation
     const { data: order, error: orderError } = await supabase
       .from("orders")
       .select(
@@ -76,7 +65,18 @@ export default defineEventHandler(async (event) => {
       console.error("Timeline fetch error:", timelineError);
     }
 
-    const items = order.items || [];
+    // Parse items if Supabase returned them as a JSON string
+    let items: any[] = [];
+    const rawItems = order.items;
+    if (typeof rawItems === "string") {
+      try {
+        items = JSON.parse(rawItems);
+      } catch {
+        items = [];
+      }
+    } else if (Array.isArray(rawItems)) {
+      items = rawItems;
+    }
 
     return {
       success: true,
