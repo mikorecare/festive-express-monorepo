@@ -37,7 +37,8 @@ export default defineNuxtConfig({
       apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api',
       azureClientId: process.env.AZURE_CLIENT_ID,
       supabaseUrl: process.env.SUPABASE_URL,
-      supabaseAnonKey: process.env.SUPABASE_KEY
+      supabaseAnonKey: process.env.SUPABASE_KEY,
+      googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY
     },
   },
 
@@ -137,7 +138,9 @@ export default defineNuxtConfig({
           "https://www.youtube.com",
           "https://www.youtube-nocookie.com",
           "https://player.vimeo.com",
-          "https://motion-media-llc.aryeo.com",
+          "https://www.google.com",
+          "https://maps.google.com",
+          "https://maps.googleapis.com"
         ],
 
         'media-src': [

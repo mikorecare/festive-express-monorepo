@@ -1,9 +1,9 @@
 import { getSupabase } from '~~/server/utils/supabase'
-import { createHash } from 'node:crypto' // 👈 Added for hashing options
+import { createHash } from 'node:crypto'
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)
-    const { cartId, productId, quantity, options } = body // 👈 Extract options
+    const { cartId, productId, quantity, options } = body
 
     if (!cartId || !productId) {
         throw createError({
@@ -54,10 +54,22 @@ export default defineEventHandler(async (event) => {
         const finalUnitPrice = baseUnitPrice + addonsTotal + overageAmount
 
         // 3. Generate options_hash
-        // If there are no options, hash is null.
-        // If there are options, we hash them so we can group identical configurations.
-        const optionsHash = options
-            ? createHash('md5').update(JSON.stringify(options)).digest('hex')
+        // We only hash the specific fields that define a unique installation:
+        // address, place_id, phone, overage, and the addons (ID + Qty).
+        // We DO NOT hash the addon prices, so if prices change slightly, it doesn't create a new row.
+        const optionsToHash = options ? {
+            address: options.address || "",
+            place_id: options.place_id || "",
+            phone: options.phone || "",
+            overage: options.overage || null,
+            addons: options.addons?.map((a: any) => ({
+                id: a.product_id,
+                qty: a.quantity
+            })) || []
+        } : null
+
+        const optionsHash = optionsToHash
+            ? createHash('md5').update(JSON.stringify(optionsToHash)).digest('hex')
             : null
 
         // 4. Check if this EXACT configuration is already in the cart
@@ -82,7 +94,7 @@ export default defineEventHandler(async (event) => {
                 .update({
                     quantity: (existing.quantity || 0) + quantity,
                     price: finalUnitPrice, // Update price just in case
-                    options: options || null,
+                    options: options || null, // <--- Saves the full options (including address, phone, addons)
                 })
                 .eq("id", existing.id)
 
@@ -102,7 +114,7 @@ export default defineEventHandler(async (event) => {
                     product_id: productId,
                     quantity,
                     price: finalUnitPrice,
-                    options: options || null,
+                    options: options || null, // <--- Saves the full options (including address, phone, addons)
                     options_hash: optionsHash,
                     is_package: true
                 })

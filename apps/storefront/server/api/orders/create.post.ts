@@ -5,35 +5,35 @@ export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
 
     // 1. Verify Turnstile
-    if (!body.turnstile_token) {
-        console.warn('Missing Turnstile token');
-        return { success: false, error: 'Security verification required' };
-    }
+    // if (!body.turnstile_token) {
+    //     console.warn('Missing Turnstile token');
+    //     return { success: false, error: 'Security verification required' };
+    // }
 
-    try {
-        const turnstileResponse = await fetch(
-            'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({
-                    secret: config.turnstile?.secretKey || process.env.NUXT_TURNSTILE_SECRET_KEY || "",
-                    response: body.turnstile_token,
-                    remoteip: event.node.req.socket.remoteAddress || '',
-                }),
-            }
-        );
+    // try {
+    //     const turnstileResponse = await fetch(
+    //         'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+    //         {
+    //             method: 'POST',
+    //             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    //             body: new URLSearchParams({
+    //                 secret: config.turnstile?.secretKey || process.env.NUXT_TURNSTILE_SECRET_KEY || "",
+    //                 response: body.turnstile_token,
+    //                 remoteip: event.node.req.socket.remoteAddress || '',
+    //             }),
+    //         }
+    //     );
 
-        const turnstileResult = await turnstileResponse.json();
+    //     const turnstileResult = await turnstileResponse.json();
 
-        if (!turnstileResult.success) {
-            console.warn('Turnstile verification failed:', turnstileResult);
-            return { success: false, error: 'Security verification failed' };
-        }
-    } catch (error) {
-        console.error('Turnstile verification error:', error);
-        return { success: false, error: 'Security verification failed' };
-    }
+    //     if (!turnstileResult.success) {
+    //         console.warn('Turnstile verification failed:', turnstileResult);
+    //         return { success: false, error: 'Security verification failed' };
+    //     }
+    // } catch (error) {
+    //     console.error('Turnstile verification error:', error);
+    //     return { success: false, error: 'Security verification failed' };
+    // }
 
     // 2. Prevent duplicate orders
     if (!body.transaction_id) {

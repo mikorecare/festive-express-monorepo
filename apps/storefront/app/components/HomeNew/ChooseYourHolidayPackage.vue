@@ -405,7 +405,17 @@ const includedRows = (pkg: PackageRow) => {
   return mapped.filter((r) => r.is_included);
 };
 
+const { $fbq } = useNuxtApp();
+
 const selectPackage = (pkg: PackageRow) => {
+  $fbq("track", "ViewContent", {
+    content_name: pkg.name,
+    content_ids: [pkg.id],
+    content_type: "product",
+    value: Number(pkg.price),
+    currency: "USD",
+  });
+
   navigateTo(`/packages/${pkg.slug}#package`);
 };
 

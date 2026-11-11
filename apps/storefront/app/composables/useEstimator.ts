@@ -242,7 +242,7 @@ export function useEstimator() {
         address.value = suggestion.full;
         suggestions.value = [];
         suggestionsOpen.value = false;
-        errors.value.address = undefined;
+        errors.value = { ...(typeof errors.value === 'object' && errors.value ? errors.value : {}), address: undefined };
     }
 
     function updateMultiColor(index: number, event: Event): void {

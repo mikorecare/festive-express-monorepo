@@ -136,6 +136,30 @@
                   <div
                     class="mt-1 bg-slate-50 p-3 rounded-md border border-slate-200 text-sm"
                   >
+                    <!-- Installation Address -->
+                    <div
+                      v-if="item.options?.address"
+                      class="mb-2 pb-2 border-b border-slate-200"
+                    >
+                      <p
+                        class="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1"
+                      >
+                        Installation Address:
+                      </p>
+                      <p class="text-xs text-slate-700 leading-tight">
+                        {{ item.options.address }}
+                      </p>
+                      <p
+                        v-if="item.options?.phone"
+                        class="text-xs text-slate-600 font-semibold mt-1"
+                      >
+                        <i
+                          class="fas fa-phone text-[10px] mr-1 text-slate-400"
+                        ></i>
+                        {{ item.options.phone }}
+                      </p>
+                    </div>
+
                     <!-- Add-ons list -->
                     <div
                       v-if="item.options?.addons?.length"
@@ -186,7 +210,16 @@
                         Overage:
                       </p>
                       <div class="flex justify-between text-xs text-slate-600">
-                        <span>{{ overageFeet(item) }} ft extra</span>
+                        <span>
+                          {{ overageFeet(item) }} ft extra
+                          <span
+                            v-if="item.options?.overage?.estimated_footage"
+                            class="text-slate-400 ml-1"
+                          >
+                            ({{ item.options.overage.estimated_footage }} ft
+                            total)
+                          </span>
+                        </span>
                         <span class="inline-flex items-baseline">
                           <span
                             class="text-[0.6rem] font-bold leading-none price-text -tracking-[0.04em] inline-block scale-[0.75] origin-bottom -mr-0.5 translate-y-[-0.1em]"
@@ -203,30 +236,18 @@
                     </div>
                   </div>
 
+                  <!-- Action Row (Edit & Remove) -->
                   <div class="flex items-center justify-between mt-2">
-                    <!-- Quantity Selector -->
-                    <div
-                      class="flex items-center border border-slate-300 rounded-md"
+                    <NuxtLink
+                      v-if="item.is_package && item.product?.sku"
+                      :to="`/packages/${item!.product!.sku!.split('-')[0]!.toLowerCase()}?edit=${item.id}`"
+                      class="text-xs font-semibold text-[#1C2D5B] hover:underline"
+                      @click="open = false"
                     >
-                      <button
-                        type="button"
-                        class="px-2 py-0.5 text-slate-600 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed"
-                        :disabled="item.quantity <= 1"
-                        @click="updateQty(item.id, item.quantity - 1)"
-                      >
-                        -
-                      </button>
-                      <span class="px-3 text-sm font-semibold text-slate-800">
-                        {{ item.quantity }}
-                      </span>
-                      <button
-                        type="button"
-                        class="px-2 py-0.5 text-slate-600 hover:bg-slate-100"
-                        @click="updateQty(item.id, item.quantity + 1)"
-                      >
-                        +
-                      </button>
-                    </div>
+                      Modify
+                    </NuxtLink>
+                    <div v-else></div>
+                    <!-- Spacer if not a package -->
 
                     <button
                       type="button"
@@ -397,15 +418,6 @@ const onEmptyImgError = (payload: string | Event) => {
 
 const removeItem = async (id: string | number) => {
   await cart.removeFromCart?.(id);
-  await cart.loadCart?.();
-};
-
-const updateQty = async (id: string | number, newQty: number) => {
-  if (newQty < 1) {
-    await removeItem(id);
-    return;
-  }
-  await cart.updateCartItemQty?.(id, newQty);
   await cart.loadCart?.();
 };
 
