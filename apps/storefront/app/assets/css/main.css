@@ -52,6 +52,7 @@
   }
 }
 
+/* ORIGINAL — used by other components. DO NOT REMOVE. */
 @keyframes glossyShineContinuous {
   0% {
     transform: translateX(-100%) rotate(25deg);
@@ -750,12 +751,12 @@ ctm-chat::part(engage-message-bubble) {
   z-index: 0;
 }
 
-/* Sweeping shine */
+/* Sweeping shine (transform-based, unique keyframe) */
 .btn-3d-glossy::after {
   content: "";
   position: absolute;
   top: -50%;
-  left: -150%;
+  left: 0;
   width: 200%;
   height: 200%;
   background: linear-gradient(
@@ -766,10 +767,10 @@ ctm-chat::part(engage-message-bubble) {
     rgba(255, 255, 255, 0.08) 60%,
     rgba(255, 255, 255, 0) 80%
   );
-  transform: rotate(25deg);
   pointer-events: none;
   z-index: 0;
-  animation: glossyShineContinuous 3s linear infinite;
+  animation: glossyShineBtn3d 3s linear infinite;
+  will-change: transform;
 }
 
 /* Default Hover (Navy -> Orange) */
@@ -816,17 +817,32 @@ ctm-chat::part(engage-message-bubble) {
     inset 0 2px 4px rgba(255, 255, 255, 0.8);
 }
 
-@keyframes glossyShineContinuous {
-  0% {
-    left: -150%;
-  }
-  100% {
-    left: 150%;
-  }
+/* =========================================
+   UNIQUE GLOSS SWEEP KEYFRAMES (transform-based)
+   Each class owns its own keyframe — no override conflicts.
+   ========================================= */
+
+/* Used by .btn-3d-glossy::after */
+@keyframes glossyShineBtn3d {
+  0%   { transform: translateX(-150%) rotate(25deg); }
+  100% { transform: translateX(150%)  rotate(25deg); }
 }
 
+/* Used by .btn-gloss::after */
+@keyframes glossyShineBtnGloss {
+  0%   { transform: translateX(-150%) rotate(25deg); }
+  100% { transform: translateX(150%)  rotate(25deg); }
+}
 
+/* Used by .section-gloss::after */
+@keyframes glossyShineSection {
+  0%   { transform: translateX(-150%) rotate(20deg); }
+  100% { transform: translateX(100%)  rotate(20deg); }
+}
 
+/* =========================================
+   SECTION GLOSS (large containers)
+   ========================================= */
 .section-gloss {
   position: relative;
   overflow: hidden;
@@ -837,11 +853,11 @@ ctm-chat::part(engage-message-bubble) {
 .section-gloss::before {
   content: "";
   position: absolute;
-  top: 4px; 
-  left: 8px; 
+  top: 4px;
+  left: 8px;
   right: 8px;
   /* Keeps the top wash thin (24px max) instead of stretching out */
-  height: 24px; 
+  height: 24px;
   border-radius: 12px 12px 6px 6px;
   background: linear-gradient(180deg,
     rgba(255, 255, 255, 0.25) 0%,
@@ -854,10 +870,10 @@ ctm-chat::part(engage-message-bubble) {
 .section-gloss::after {
   content: "";
   position: absolute;
-  top: -100%; 
-  left: -150%;
+  top: -100%;
+  left: 0;
   /* Oversized width ensures it fully covers a wide banner layout */
-  width: 300%; 
+  width: 300%;
   height: 300%;
   /* Restructured gradient stops to keep the core reflection line narrow and sharp */
   background: linear-gradient(60deg,
@@ -867,19 +883,16 @@ ctm-chat::part(engage-message-bubble) {
     rgba(255, 255, 255, 0.04) 53%,
     rgba(255, 255, 255, 0) 58%
   );
-  transform: rotate(20deg);
   pointer-events: none;
   z-index: 0;
   /* Slowed down to 4.5s for a smoother, premium feel on wide containers */
-  animation: sectionGlossSweep 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: glossyShineSection 4.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform;
 }
 
-@keyframes sectionGlossSweep {
-  0%   { left: -150%; }
-  /* Extended travel range to handle wide screen variations cleanly */
-  100% { left: 100%; } 
-}
-
+/* =========================================
+   .btn-gloss — Navy base + optional orange
+   ========================================= */
 .btn-gloss {
   position: relative;
   overflow: hidden;
@@ -908,12 +921,12 @@ ctm-chat::part(engage-message-bubble) {
   z-index: 0;
 }
 
-/* Continuous sweeping shine */
+/* Continuous sweeping shine (transform-based, unique keyframe) */
 .btn-gloss::after {
   content: "";
   position: absolute;
   top: -50%;
-  left: -150%;
+  left: 0;
   width: 200%;
   height: 200%;
   background: linear-gradient(
@@ -924,10 +937,10 @@ ctm-chat::part(engage-message-bubble) {
     rgba(255, 255, 255, 0.1) 60%,
     rgba(255, 255, 255, 0) 80%
   );
-  transform: rotate(25deg);
   pointer-events: none;
   z-index: 0;
-  animation: glossyShineContinuous 4s linear infinite;
+  animation: glossyShineBtnGloss 4s linear infinite;
+  will-change: transform;
 }
 
 /* Default Hover (Navy darkens slightly and lifts) */
@@ -960,18 +973,6 @@ ctm-chat::part(engage-message-bubble) {
 
 .btn-gloss-orange:hover {
   background-color: #d97d14; /* Darker orange */
-}
-
-/* -----------------------------------------
-   ANIMATION
-   ----------------------------------------- */
-@keyframes glossyShineContinuous {
-  0% {
-    left: -150%;
-  }
-  100% {
-    left: 150%;
-  }
 }
 
 .text-outline {
