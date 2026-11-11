@@ -47,7 +47,7 @@
           <span
             class="text-sm sm:text-lg font-bold uppercase tracking-wider text-white text-center drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]"
           >
-            Installation
+            We Install
           </span>
         </div>
 
@@ -64,7 +64,7 @@
           <span
             class="text-sm sm:text-lg font-bold uppercase tracking-wider text-white text-center drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]"
           >
-            Maintenance
+            We Maintain
           </span>
         </div>
 
@@ -81,7 +81,7 @@
           <span
             class="text-sm sm:text-lg font-bold uppercase tracking-wider text-white text-center drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]"
           >
-            Removal
+            We Remove
           </span>
         </div>
       </div>
@@ -320,22 +320,23 @@
       <EarlyBirdEndsBanner />
     </div>
 
-    <div v-fade class="flex justify-center mt-8 md:mt-12 relative z-20">
-      <a
-        href="#preview"
-        class="pkg-select-btn group relative w-[85%] max-w-[408px] inline-block cursor-pointer transition-transform duration-200 ease-in-out hover:scale-105"
-      >
-        <img
-          src="/New/Packages/see-it-button.png"
-          alt="See it on your home"
-          class="w-full h-auto"
-        />
-      </a>
-    </div>
+    <template>
+      <div v-fade class="flex justify-center mt-8 relative z-20">
+        <a
+          href="#preview"
+          class="pkg-select-btn group relative w-[85%] max-w-[408px] inline-block cursor-pointer transition-transform duration-200 ease-in-out hover:scale-105"
+        >
+          <CrystalBlueButton class="w-full uppercase">
+            See it on <span class="text-brand-orange">your home</span>
+          </CrystalBlueButton>
+        </a>
+      </div>
+    </template>
   </section>
 </template>
 
 <script setup lang="ts">
+import CrystalBlueButton from "../Buttons/CrystalBlueButton.vue";
 import AssetsInstallation from "../Icons/AssetsInstallation.vue";
 import AssetsMaintenance from "../Icons/AssetsMaintenance.vue";
 import AssetsRemoval from "../Icons/AssetsRemoval.vue";

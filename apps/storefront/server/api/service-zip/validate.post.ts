@@ -25,6 +25,7 @@ export default defineEventHandler(async (event) => {
     const body = await readBody<Body>(event)
     const placeId = body?.place_id?.trim()
     const pkg = body?.package?.trim()
+    const config = useRuntimeConfig()
 
     if (!placeId) {
         return {
@@ -43,7 +44,7 @@ export default defineEventHandler(async (event) => {
         }
     }
 
-    const apiKey = process.env.GOOGLE_MAPS_API_KEY
+    const apiKey = config.googleMapsApiKey
     if (!apiKey) {
         console.error('[service-zip] Missing GOOGLE_MAPS_API_KEY')
         return {
@@ -303,7 +304,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // 8. Forward to estimator
-    const config = useRuntimeConfig()
+
     const target = `${config.estimatorApiUrl}/api/overage`
 
     try {

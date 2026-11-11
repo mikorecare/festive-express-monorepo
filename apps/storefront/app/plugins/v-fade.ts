@@ -1,8 +1,6 @@
-// plugins/v-fade.ts
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.directive('fade', {
     mounted(el: HTMLElement) {
-      // Automatically attach the base class
       el.classList.add('fade-up')
 
       const observer = new IntersectionObserver(
@@ -10,23 +8,26 @@ export default defineNuxtPlugin((nuxtApp) => {
           const entry = entries[0]
           if (!entry) return
 
-          if (entry.isIntersecting) {
+          if (entry.intersectionRatio >= 0.15) {
             el.classList.add('is-visible')
-          } else {
-            // Removes class when scrolling out of view to re-trigger every time
+          } else if (
+            entry.intersectionRatio === 0 &&
+            entry.rootBounds &&
+            entry.boundingClientRect.top >= entry.rootBounds.bottom
+          ) {
+            // Fully below the viewport: safe to reset and re-trigger later.
+            // Leaving through the top does nothing, so it stays visible.
             el.classList.remove('is-visible')
           }
         },
-        { threshold: 0.15 } // Triggers when 15% of the element is visible
+        { threshold: [0, 0.15] }
       )
 
       observer.observe(el)
-      ;(el as any)._observer = observer
+        ; (el as any)._observer = observer
     },
     unmounted(el: HTMLElement) {
-      if ((el as any)._observer) {
-        ;(el as any)._observer.disconnect()
-      }
+      ; (el as any)._observer?.disconnect()
     }
   })
 })

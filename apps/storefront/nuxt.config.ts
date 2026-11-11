@@ -288,7 +288,7 @@ export default defineNuxtConfig({
 
     estimatorAssetUrl:
       process.env.NUXT_ESTIMATOR_ASSET_URL || "http://52.204.215.130",
-
+    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
     turnstile: {
       secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY || "",
     },
