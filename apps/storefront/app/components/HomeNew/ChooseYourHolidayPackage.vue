@@ -321,13 +321,17 @@
     </div>
 
     <template>
-      <div v-fade class="flex justify-center mt-8 relative z-20">
+      <div v-fade class="flex justify-center w-full mt-8 relative z-20">
         <a
           href="#preview"
-          class="pkg-select-btn group relative w-[85%] max-w-[408px] inline-block cursor-pointer transition-transform duration-200 ease-in-out hover:scale-105"
+          class="pkg-select-btn group relative inline-flex justify-center w-[85%] max-w-[408px] cursor-pointer transition-transform duration-200 ease-in-out hover:scale-105"
         >
           <CrystalBlueButton class="w-full uppercase">
-            See it on <span class="text-brand-orange">your home</span>
+            <span
+              class="inline-flex items-center justify-center w-full text-center"
+            >
+              See it on <span class="text-brand-orange ml-1">your home</span>
+            </span>
           </CrystalBlueButton>
         </a>
       </div>
