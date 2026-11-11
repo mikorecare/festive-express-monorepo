@@ -87,14 +87,12 @@ defineProps({
   align-items: center;
   justify-content: center;
   width: 100%;
+  min-width: 280px; /* Ensures it doesn't get too squished on small screens */
   aspect-ratio: 463 / 99;
-  padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
-  transition:
-    filter 0.2s ease,
-    transform 0.2s ease;
+  transition: filter 0.2s ease, transform 0.2s ease;
 }
 
 .crystal-btn__bg {
