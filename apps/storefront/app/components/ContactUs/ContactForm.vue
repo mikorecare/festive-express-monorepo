@@ -131,10 +131,12 @@
           </span>
           <input
             id="phone"
-            v-model="form.phone"
+            :value="form.phone"
+            @input="onPhoneInput"
             type="tel"
             autocomplete="tel"
             inputmode="tel"
+            maxlength="14"
             placeholder="(555) 123-4567"
             required
             class="form-input text-sm sm:text-base py-2.5"
@@ -270,6 +272,7 @@ const turnstileVerified = ref(false);
 const turnstileStatus = ref("");
 const turnstileStatusType = ref("");
 const turnstileErrors = ref({ turnstile: "" });
+const { formatPhone } = usePhoneFormat();
 
 const turnstileStatusClass = computed(() => {
   switch (turnstileStatusType.value) {
@@ -322,6 +325,11 @@ const onTurnstileExpired = () => {
   if (turnstileRef.value) {
     turnstileRef.value.reset();
   }
+};
+
+const onPhoneInput = (e: Event) => {
+  formatPhone(e);
+  form.value.phone = (e.target as HTMLInputElement).value;
 };
 
 const submitForm = async () => {
