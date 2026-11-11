@@ -14,19 +14,28 @@
         :srcset="heroDesktop.srcset"
         :sizes="heroDesktop.sizes"
       />
-      <img
-        :src="heroMobile.src"
-        :srcset="heroMobile.srcset"
-        :sizes="heroMobile.sizes"
-        alt=""
-        role="presentation"
-        width="1920"
-        height="1080"
-        fetchpriority="high"
-        loading="eager"
-        decoding="async"
-        class="w-full h-full object-cover object-[center_50%]"
-      />
+      <NuxtImg
+        src="/New/Banner/bg-family-mobile.webp"
+        sizes="100vw"
+        format="webp"
+        quality="85"
+        custom
+      >
+        <template #default="{ imgAttrs, src }">
+          <img
+            v-bind="imgAttrs"
+            :src="src"
+            alt=""
+            role="presentation"
+            width="828"
+            height="1100"
+            fetchpriority="high"
+            loading="eager"
+            decoding="async"
+            class="w-full h-full object-cover object-[center_50%]"
+          />
+        </template>
+      </NuxtImg>
     </picture>
 
     <!-- ==================================================== -->
