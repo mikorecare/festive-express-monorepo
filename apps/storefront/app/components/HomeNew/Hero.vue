@@ -3,25 +3,39 @@
     ref="heroRef"
     class="hero-banner relative min-h-[88dvh] overflow-hidden flex items-center max-lg:min-h-[85dvh] max-lg:py-0 border-b-[27px] border-[#F49321]"
   >
-    <!-- MOBILE -->
-    <div class="lg:hidden absolute inset-0 z-0">
-      <NuxtImg
-        src="/New/Banner/bg-family-mobile.webp"
+    <!-- ==================================================== -->
+    <!-- LCP LAYER (z-0): the browser downloads ONLY the file  -->
+    <!-- that matches the viewport (mobile or desktop)         -->
+    <!-- ==================================================== -->
+    <picture class="absolute inset-0 z-0 block">
+      <source
+        media="(min-width: 1024px)"
+        type="image/webp"
+        :srcset="heroDesktop.srcset"
+        :sizes="heroDesktop.sizes"
+      />
+      <img
+        :src="heroMobile.src"
+        :srcset="heroMobile.srcset"
+        :sizes="heroMobile.sizes"
         alt=""
-        role="none"
-        sizes="xs:100vw sm:100vw md:100vw"
-        format="webp"
-        quality="75"
-        :img-attrs="{ loading: 'eager', fetchpriority: 'high' }"
-        preload
+        role="presentation"
+        width="1920"
+        height="1080"
+        fetchpriority="high"
+        loading="eager"
+        decoding="async"
         class="w-full h-full object-cover object-[center_50%]"
       />
-    </div>
+    </picture>
 
     <!-- ==================================================== -->
-    <!-- 💻 DESKTOP HERO LAYER (z-0)                           -->
+    <!-- 💻 DESKTOP CAROUSEL (z-0) — mounts after page load    -->
     <!-- ==================================================== -->
-    <div v-if="!isMobile" class="hero-carousel absolute inset-0 max-lg:hidden">
+    <div
+      v-if="!isMobile && carouselReady"
+      class="hero-carousel absolute inset-0 max-lg:hidden"
+    >
       <div
         v-for="(src, i) in desktopSlides"
         :key="src"
@@ -32,12 +46,12 @@
           :src="src"
           alt=""
           role="none"
-          sizes="lg:100vw xl:100vw"
+          sizes="100vw"
           format="webp"
-          quality="100"
+          quality="85"
           :img-attrs="{
             loading: 'eager',
-            fetchpriority: i === 0 ? 'high' : 'auto',
+            fetchpriority: i === 0 ? 'high' : 'low',
             decoding: 'async',
           }"
           class="w-full h-full object-cover"
@@ -49,24 +63,24 @@
     <!-- 🌱 GROWING CARD (z-5)                                 -->
     <!-- ==================================================== -->
     <div
-      v-if="!isMobile && growIndex !== null"
+      v-if="!isMobile && carouselReady && growIndex !== null"
       class="hero-grow max-lg:hidden"
-      :class="{ 'is-expanded': expanding }"
       :style="growStyle"
     >
       <NuxtImg
         :src="slideAt(growIndex)"
         alt=""
         role="none"
-        sizes="lg:100vw xl:100vw"
+        sizes="100vw"
         format="webp"
-        quality="100"
+        quality="85"
         :img-attrs="{
           loading: 'eager',
           fetchpriority: 'high',
           decoding: 'async',
         }"
-        class="w-full h-full object-cover"
+        class="w-full h-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.65,0,0.35,1)]"
+        :class="expanding ? 'scale-100' : 'scale-125'"
       />
     </div>
 
@@ -99,7 +113,6 @@
           </h1>
         </div>
 
-        <!-- BUTTONS: Removed max-lg:text-base so they stay huge -->
         <div class="flex flex-col gap-3 w-full items-center max-lg:pb-6">
           <div class="flex flex-col gap-4 w-full max-w-[340px] mx-auto">
             <NuxtLink
@@ -120,10 +133,10 @@
     </div>
 
     <!-- ==================================================== -->
-    <!-- 🃏 QUEUE (z-30) — ONLY upcoming slides.               -->
+    <!-- 🃏 QUEUE (z-30) — ONLY upcoming slides                -->
     <!-- ==================================================== -->
     <TransitionGroup
-      v-if="!isMobile"
+      v-if="!isMobile && carouselReady"
       tag="div"
       name="q"
       class="hero-queue max-lg:hidden"
@@ -144,7 +157,11 @@
           fit="cover"
           format="webp"
           quality="85"
-          :img-attrs="{ loading: 'eager', decoding: 'async' }"
+          :img-attrs="{
+            loading: 'eager',
+            fetchpriority: 'low',
+            decoding: 'async',
+          }"
           class="w-full h-full object-cover"
         />
       </div>
@@ -153,78 +170,51 @@
 </template>
 
 <script setup lang="ts">
-const timeLeft = ref({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-let timerInterval: ReturnType<typeof setInterval> | null = null;
 const heroRef = ref<HTMLElement | null>(null);
 const isHeroVisible = ref(false);
 
+const DESKTOP_BP = 1024; // matches Tailwind's `lg`
 const isMobile = ref(false);
-const FL_TZ = "America/New_York";
 
 const heroWidth = ref(1200);
 const heroHeight = ref(700);
 
-const flParts = (date: Date) => {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: FL_TZ,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hourCycle: "h23",
-  }).formatToParts(date);
-  const get = (t: Intl.DateTimeFormatPartTypes) =>
-    Number(parts.find((p) => p.type === t)?.value || 0);
-  return {
-    year: get("year"),
-    month: get("month"),
-    day: get("day"),
-    hour: get("hour"),
-    minute: get("minute"),
-    second: get("second"),
-  };
-};
+// ============================================
+// 🖼️ LCP IMAGE (picture + preload)
+// ============================================
+const img = useImage();
+const imgMods = { format: "webp", quality: 85 };
 
-const floridaWallTimeToUtc = (
-  year: number,
-  month: number,
-  day: number,
-  hour = 0,
-  minute = 0,
-  second = 0,
-) => {
-  const utcGuess = Date.UTC(year, month - 1, day, hour, minute, second);
-  const shown = flParts(new Date(utcGuess));
-  const asUtc = Date.UTC(
-    shown.year,
-    shown.month - 1,
-    shown.day,
-    shown.hour,
-    shown.minute,
-    shown.second,
-  );
-  return utcGuess - (asUtc - utcGuess);
-};
+const heroDesktop = img.getSizes("/New/Banner/bg-family.webp", {
+  sizes: "100vw",
+  modifiers: imgMods,
+});
+const heroMobile = img.getSizes("/New/Banner/bg-family-mobile.webp", {
+  sizes: "100vw",
+  modifiers: imgMods,
+});
 
-const calculateTimeLeft = () => {
-  const now = Date.now();
-  const year = flParts(new Date()).year;
-  let christmas = floridaWallTimeToUtc(year, 12, 25, 0, 0, 0);
-  if (now >= christmas)
-    christmas = floridaWallTimeToUtc(year + 1, 12, 25, 0, 0, 0);
-  const diff = christmas - now;
-  if (diff <= 0) return;
-  timeLeft.value = {
-    days: Math.floor(diff / 86_400_000),
-    hours: Math.floor((diff / 3_600_000) % 24),
-    minutes: Math.floor((diff / 60_000) % 60),
-    seconds: Math.floor((diff / 1000) % 60),
-  };
-};
-
-const formatNumber = (num: number) => String(num).padStart(2, "0");
+// Preload only the image that matches the viewport
+useHead({
+  link: [
+    {
+      rel: "preload",
+      as: "image",
+      fetchpriority: "high",
+      media: "(min-width: 1024px)",
+      imagesrcset: heroDesktop.srcset,
+      imagesizes: heroDesktop.sizes,
+    },
+    {
+      rel: "preload",
+      as: "image",
+      fetchpriority: "high",
+      media: "(max-width: 1023px)",
+      imagesrcset: heroMobile.srcset,
+      imagesizes: heroMobile.sizes,
+    },
+  ],
+});
 
 // ============================================
 // 🎠 CAROUSEL
@@ -264,27 +254,32 @@ const growIndex = ref<number | null>(null); // card currently growing
 const expanding = ref(false);
 const prefersReducedMotion = ref(false);
 
+// The carousel (extra images) only mounts after the page has loaded and
+// the browser is idle, so it never competes with the LCP image.
+const carouselReady = ref(false);
+let idleDone = false;
+
 let carouselInterval: ReturnType<typeof setInterval> | null = null;
 let commitTimeout: ReturnType<typeof setTimeout> | null = null;
 let rafId: number | null = null;
 
 // grow card: starts exactly on queue slot 0, ends full-bleed
 const growStyle = computed(() => {
+  const w = heroWidth.value;
+  const h = heroHeight.value;
+
   if (expanding.value) {
-    return {
-      left: "0px",
-      top: "0px",
-      width: heroWidth.value + "px",
-      height: heroHeight.value + "px",
-      borderRadius: "0px",
-    };
+    return { clipPath: "inset(0px 0px 0px 0px round 0px)" };
   }
+
+  // exact rectangle of queue slot 0
+  const left = w - QUEUE_RIGHT - queueWidth;
+  const top = h - QUEUE_BOTTOM - CARD_H;
+  const right = w - (left + CARD_W);
+  const bottom = QUEUE_BOTTOM;
+
   return {
-    left: heroWidth.value - QUEUE_RIGHT - queueWidth + "px",
-    top: heroHeight.value - QUEUE_BOTTOM - CARD_H + "px",
-    width: CARD_W + "px",
-    height: CARD_H + "px",
-    borderRadius: "12px",
+    clipPath: `inset(${top}px ${right}px ${bottom}px ${left}px round 12px)`,
   };
 });
 
@@ -330,42 +325,50 @@ const stopCarousel = () => {
   }
 };
 
+// Single place that decides whether the carousel should run
+const maybeStartCarousel = () => {
+  if (!idleDone || isMobile.value || prefersReducedMotion.value) return;
+  carouselReady.value = true;
+  startCarousel();
+};
+
+const whenIdle = (cb: () => void) => {
+  if ("requestIdleCallback" in window) {
+    (window as any).requestIdleCallback(cb, { timeout: 2000 });
+  } else {
+    setTimeout(cb, 1500);
+  }
+};
+
+const armCarousel = () => {
+  idleDone = true;
+  maybeStartCarousel();
+};
+
 let intersectionObserver: IntersectionObserver | null = null;
 let resizeObserver: ResizeObserver | null = null;
 
-const {
-  isEarlyBirdActive,
-  loadEarlyBird,
-  earlyBirdEnabled,
-  earlyBirdExpiresAt,
-  earlyBirdIconSecondaryUrl,
-  formatEndsLabel,
-} = await useEarlyBirdSpecial();
-
-const {
-  heroH1White,
-  heroH1Orange,
-  heroDescription1,
-  heroDescription2,
-  heroButtonLabel,
-  heroCountdownEnabled,
-  loadHeroSettings,
-} = useHeroSettings();
+const { heroH1White, heroH1Orange, heroButtonLabel, loadHeroSettings } =
+  useHeroSettings();
 
 const handleVisibilityChange = () => {
   if (document.hidden) stopCarousel();
-  else if (!isMobile.value && !prefersReducedMotion.value) startCarousel();
+  else maybeStartCarousel();
 };
+
 const handleResize = () => {
-  isMobile.value = window.innerWidth <= 992;
+  isMobile.value = window.innerWidth < DESKTOP_BP;
   if (isMobile.value) stopCarousel();
-  else if (!prefersReducedMotion.value) startCarousel();
+  else maybeStartCarousel();
 };
 
 onMounted(() => {
-  loadEarlyBird();
+  // NOTE: if the headline text arrives here after hydration, it can become the
+  // LCP element once the image is fast. Loading hero settings during SSR
+  // (useAsyncData / useFetch inside useHeroSettings) avoids that.
   loadHeroSettings();
-  isMobile.value = window.innerWidth <= 992;
+
+  isMobile.value = window.innerWidth < DESKTOP_BP;
 
   if (heroRef.value) {
     heroWidth.value = heroRef.value.clientWidth;
@@ -377,9 +380,6 @@ onMounted(() => {
     });
     resizeObserver.observe(heroRef.value);
   }
-
-  calculateTimeLeft();
-  timerInterval = setInterval(calculateTimeLeft, 1000);
 
   intersectionObserver = new IntersectionObserver(
     (entries) => {
@@ -394,14 +394,20 @@ onMounted(() => {
   const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
   prefersReducedMotion.value = mq.matches;
 
-  if (!isMobile.value && !prefersReducedMotion.value) startCarousel();
+  // Wait for full page load + idle before mounting the carousel images
+  if (document.readyState === "complete") {
+    whenIdle(armCarousel);
+  } else {
+    window.addEventListener("load", () => whenIdle(armCarousel), {
+      once: true,
+    });
+  }
 
   document.addEventListener("visibilitychange", handleVisibilityChange);
   window.addEventListener("resize", handleResize);
 });
 
 onUnmounted(() => {
-  if (timerInterval) clearInterval(timerInterval);
   if (commitTimeout) clearTimeout(commitTimeout);
   if (rafId) cancelAnimationFrame(rafId);
   if (intersectionObserver) {
@@ -423,9 +429,11 @@ onUnmounted(() => {
   background-attachment: scroll !important;
 }
 .hero-card {
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.hero-card-focused .hero-card {
+.hero-card.hero-card-focused {
   transform: scale(1.02);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
 }
@@ -458,31 +466,28 @@ onUnmounted(() => {
     transform: rotate(25deg) translateX(100%);
   }
 }
-@media (max-width: 992px) {
+/* breakpoints aligned with Tailwind's `lg` (1024px) */
+@media (max-width: 1023px) {
   .hero-card::before,
   .hero-card::after {
     display: none !important;
     content: none !important;
     animation: none !important;
   }
-}
-@media (min-width: 993px) {
-  .hero-card::before {
-    display: block !important;
-    content: "" !important;
-  }
-}
-@media (min-width: 993px) {
-  .mobile-widget {
-    display: none !important;
-  }
-}
-@media (max-width: 992px) {
   .desktop-widget {
     display: none !important;
   }
   .mobile-widget {
     display: block !important;
+  }
+}
+@media (min-width: 1024px) {
+  .hero-card::before {
+    display: block !important;
+    content: "" !important;
+  }
+  .mobile-widget {
+    display: none !important;
   }
 }
 
@@ -493,7 +498,8 @@ onUnmounted(() => {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: #0b1020;
+  /* transparent so the LCP <picture> underneath shows until slides paint */
+  background: transparent;
   z-index: 0;
 }
 .hero-slide {
@@ -520,19 +526,13 @@ onUnmounted(() => {
 /* ============================================ */
 .hero-grow {
   position: absolute;
+  inset: 0;
   z-index: 5;
   overflow: hidden;
   background: #0b1020;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
   pointer-events: none;
-  transition:
-    left 900ms cubic-bezier(0.65, 0, 0.35, 1),
-    top 900ms cubic-bezier(0.65, 0, 0.35, 1),
-    width 900ms cubic-bezier(0.65, 0, 0.35, 1),
-    height 900ms cubic-bezier(0.65, 0, 0.35, 1),
-    border-radius 900ms cubic-bezier(0.65, 0, 0.35, 1),
-    box-shadow 900ms cubic-bezier(0.65, 0, 0.35, 1);
-  will-change: left, top, width, height;
+  transition: clip-path 900ms cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: clip-path;
 }
 .hero-grow.is-expanded {
   box-shadow: none;

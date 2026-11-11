@@ -61,6 +61,7 @@
           <!-- Logo (center column on mobile, normal flow on desktop) -->
           <NuxtLink
             to="/"
+            aria-label="Home"
             class="logo-link flex flex-col items-center gap-1 text-transparent shrink-0 justify-self-center lg:justify-self-auto"
           >
             <div class="logo-wrap">
@@ -116,7 +117,7 @@
           <div class="flex justify-end lg:justify-normal lg:shrink-0">
             <a
               :href="telHref"
-              class="contact-box btn-secondary-2 relative overflow-hidden"
+              class="btn-gloss contact-box btn-secondary-2 relative overflow-hidden"
               :aria-label="`Call ${settings.contact_phone_display || '(941) 239-4722'}`"
             >
               <span class="phone-icon shrink-0">
@@ -140,10 +141,6 @@
                   {{ settings.contact_phone_display || "(941) 239-4722" }}
                 </div>
               </div>
-
-              <div
-                class="absolute -top-1/2 -left-[150%] w-[200%] h-[200%] bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] rotate-[25deg] pointer-events-none animate-[glossyShineContinuous_3s_linear_infinite]"
-              ></div>
             </a>
           </div>
         </div>
