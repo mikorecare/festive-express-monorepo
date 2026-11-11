@@ -100,16 +100,38 @@ export function usePackagePage() {
 
     const selectedSkuId = ref<string | number | null>(null)
     const selectedSku = computed<SkuRow | null>(() => {
-        if (!skusForPkg.value.length) return null
+        if (!pkg.value) return null
+
+        // 1. If user picked a specific SKU, use it
         if (selectedSkuId.value != null) {
-            return skusForPkg.value.find((s) => String(s.id) === String(selectedSkuId.value)) ?? null
+            const found = skusForPkg.value.find(
+                (s) => String(s.id) === String(selectedSkuId.value)
+            )
+            if (found) return found
         }
-        return skusForPkg.value[0] ?? null
+
+        // 2. Use the first SKU for this package
+        const first = skusForPkg.value[0]
+        if (first) return first
+
+        // 3. Last resort: any SKU with a price from raw data
+        const rawSku = data.value?.skus?.find((s) => s.price != null)
+        return rawSku ?? null
     })
 
     const selectedPrice = computed(() => {
+        // 1. If a specific SKU is selected, use its price
         const sku = selectedSku.value
-        return Number(sku?.price ?? pkg.value?.price ?? 0)
+        if (sku?.price != null) return Number(sku.price)
+
+        // 2. Fall back to the package's own price
+        if (pkg.value?.price != null) return Number(pkg.value.price)
+
+        // 3. Fall back to ANY SKU with a valid price (no package_id check)
+        const anySku = data.value?.skus?.find((s) => s.price != null && Number(s.price) > 0)
+        if (anySku?.price != null) return Number(anySku.price)
+
+        return 0
     })
 
     const shortDescription = computed(() => {
