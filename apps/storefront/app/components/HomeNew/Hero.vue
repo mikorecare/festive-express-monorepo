@@ -7,44 +7,24 @@
     <!-- LCP LAYER (z-0): the browser downloads ONLY the file  -->
     <!-- that matches the viewport (mobile or desktop)         -->
     <!-- ==================================================== -->
-    <picture class="absolute inset-0 z-0 block">
-      <source
-        media="(min-width: 1024px)"
-        type="image/webp"
-        :srcset="heroDesktop.srcset"
-        :sizes="heroDesktop.sizes"
-      />
+    <div class="lg:hidden absolute inset-0 z-0">
       <NuxtImg
         src="/New/Banner/bg-family-mobile.webp"
-        sizes="100vw"
+        alt=""
+        role="none"
+        sizes="xs:100vw sm:100vw md:100vw"
         format="webp"
-        quality="100"
-        custom
-      >
-        <template #default="{ imgAttrs, src }">
-          <img
-            v-bind="imgAttrs"
-            :src="src"
-            alt=""
-            role="presentation"
-            width="828"
-            height="1100"
-            fetchpriority="high"
-            loading="eager"
-            decoding="async"
-            class="w-full h-full object-cover object-[center_50%]"
-          />
-        </template>
-      </NuxtImg>
-    </picture>
+        quality="75"
+        :img-attrs="{ loading: 'eager', fetchpriority: 'high' }"
+        preload
+        class="w-full h-full object-cover object-[center_50%]"
+      />
+    </div>
 
     <!-- ==================================================== -->
-    <!-- 💻 DESKTOP CAROUSEL (z-0) — mounts after page load    -->
+    <!-- 💻 DESKTOP HERO LAYER (z-0)                           -->
     <!-- ==================================================== -->
-    <div
-      v-if="!isMobile && carouselReady"
-      class="hero-carousel absolute inset-0 max-lg:hidden"
-    >
+    <div v-if="!isMobile" class="hero-carousel absolute inset-0 max-lg:hidden">
       <div
         v-for="(src, i) in desktopSlides"
         :key="src"
@@ -55,12 +35,12 @@
           :src="src"
           alt=""
           role="none"
-          sizes="100vw"
+          sizes="lg:100vw xl:100vw"
           format="webp"
-          quality="85"
+          quality="100"
           :img-attrs="{
             loading: 'eager',
-            fetchpriority: i === 0 ? 'high' : 'low',
+            fetchpriority: i === 0 ? 'high' : 'auto',
             decoding: 'async',
           }"
           class="w-full h-full object-cover"
