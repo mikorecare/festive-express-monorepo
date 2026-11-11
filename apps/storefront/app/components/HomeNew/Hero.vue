@@ -1,50 +1,30 @@
 <template>
   <div
     ref="heroRef"
-    class="hero-banner relative min-h-[88dvh] overflow-hidden flex items-center max-lg:min-h-[85dvh] max-lg:py-0 border-b-[27px] border-[#F49321]"
+    class="hero-banner relative min-h-[88svh] max-lg:min-h-[85svh] overflow-hidden flex items-center max-lg:min-h-[85dvh] max-lg:py-0 border-b-[27px] border-[#F49321]"
   >
     <!-- ==================================================== -->
     <!-- LCP LAYER (z-0): the browser downloads ONLY the file  -->
     <!-- that matches the viewport (mobile or desktop)         -->
     <!-- ==================================================== -->
-    <picture class="absolute inset-0 z-0 block">
-      <source
-        media="(min-width: 1024px)"
-        type="image/webp"
-        :srcset="heroDesktop.srcset"
-        :sizes="heroDesktop.sizes"
-      />
+    <div class="lg:hidden absolute inset-0 z-0">
       <NuxtImg
         src="/New/Banner/bg-family-mobile.webp"
-        sizes="100vw"
+        alt=""
+        role="none"
+        sizes="xs:100vw sm:100vw md:100vw"
         format="webp"
-        quality="85"
-        custom
-      >
-        <template #default="{ imgAttrs, src }">
-          <img
-            v-bind="imgAttrs"
-            :src="src"
-            alt=""
-            role="presentation"
-            width="828"
-            height="1100"
-            fetchpriority="high"
-            loading="eager"
-            decoding="async"
-            class="w-full h-full object-cover object-[center_50%]"
-          />
-        </template>
-      </NuxtImg>
-    </picture>
+        quality="75"
+        :img-attrs="{ loading: 'eager', fetchpriority: 'high' }"
+        preload
+        class="w-full h-full object-cover object-[center_50%]"
+      />
+    </div>
 
     <!-- ==================================================== -->
-    <!-- 💻 DESKTOP CAROUSEL (z-0) — mounts after page load    -->
+    <!-- 💻 DESKTOP HERO LAYER (z-0)                           -->
     <!-- ==================================================== -->
-    <div
-      v-if="!isMobile && carouselReady"
-      class="hero-carousel absolute inset-0 max-lg:hidden"
-    >
+    <div v-if="!isMobile" class="hero-carousel absolute inset-0 max-lg:hidden">
       <div
         v-for="(src, i) in desktopSlides"
         :key="src"
@@ -55,12 +35,12 @@
           :src="src"
           alt=""
           role="none"
-          sizes="100vw"
+          sizes="lg:100vw xl:100vw"
           format="webp"
-          quality="85"
+          quality="100"
           :img-attrs="{
             loading: 'eager',
-            fetchpriority: i === 0 ? 'high' : 'low',
+            fetchpriority: i === 0 ? 'high' : 'auto',
             decoding: 'async',
           }"
           class="w-full h-full object-cover"
@@ -98,7 +78,7 @@
 
     <!-- CONTENT z-20 -->
     <div
-      class="hero-content-container relative z-20 w-full max-w-[1200px] px-[5%] lg:pl-[15%] flex justify-start items-center gap-5 max-lg:flex-col max-lg:items-start max-lg:gap-0 max-lg:px-[6%] max-lg:pt-10 max-lg:w-full max-lg:h-[80dvh]"
+      class="hero-content-container relative z-20 w-full max-w-[1200px] px-[5%] lg:pl-[15%] flex justify-start items-center gap-5 max-lg:flex-col max-lg:items-start max-lg:gap-0 max-lg:px-[6%] max-lg:pt-10 max-lg:w-full max-lg:h-[80svh]"
     >
       <div
         class="hero-card relative w-full max-w-[460px] bg-[#161c30]/50 backdrop-blur-sm rounded-2xl p-11 px-8 shadow-[0_10px_30px_rgba(0,0,0,0.4)] text-white text-center border border-white/12 overflow-hidden before:content-[''] before:absolute before:-top-1/2 before:-left-[150%] before:w-[200%] before:h-[200%] before:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] before:rotate-[25deg] before:pointer-events-none before:animate-[glossyShineContinuous_3s_linear_infinite] max-lg:max-w-full max-lg:p-0 max-lg:text-left max-lg:!bg-transparent max-lg:!backdrop-blur-none max-lg:!border-none max-lg:!shadow-none max-lg:!rounded-none max-lg:before:!hidden max-lg:after:!hidden max-lg:flex max-lg:flex-col max-lg:h-full max-lg:justify-between"
