@@ -64,7 +64,6 @@
         />
 
         <div
-          id="package"
           class="px-4 bg-white pb-4 pt-2 lg:flex lg:flex-col rounded-2xl"
         >
           <PackageDetailsPackageHero

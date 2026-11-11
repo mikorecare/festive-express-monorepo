@@ -47,7 +47,7 @@
           <span
             class="text-sm sm:text-lg font-bold uppercase tracking-wider text-white text-center drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]"
           >
-            Installation
+            We Install
           </span>
         </div>
 
@@ -64,7 +64,7 @@
           <span
             class="text-sm sm:text-lg font-bold uppercase tracking-wider text-white text-center drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]"
           >
-            Maintenance
+            We Maintain
           </span>
         </div>
 
@@ -81,7 +81,7 @@
           <span
             class="text-sm sm:text-lg font-bold uppercase tracking-wider text-white text-center drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]"
           >
-            Removal
+            We Remove
           </span>
         </div>
       </div>

@@ -139,9 +139,11 @@
           :src="slideAt(idx)"
           alt=""
           role="none"
-          sizes="120px"
+          width="240"
+          height="360"
+          fit="cover"
           format="webp"
-          quality="75"
+          quality="85"
           :img-attrs="{ loading: 'eager', decoding: 'async' }"
           class="w-full h-full object-cover"
         />

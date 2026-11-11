@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="package">
     <!-- mobile -->
     <div
       class="lg:hidden px-2 pt-4 pb-2 flex items-center justify-between gap-4"

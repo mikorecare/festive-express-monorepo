@@ -16,7 +16,7 @@
     <form
       v-if="!isSubscribed"
       @submit.prevent="handleSubscribe"
-      class="space-y-4"
+      class="space-y-3"
     >
       <!-- Name Fields -->
       <div class="flex gap-3">
@@ -29,7 +29,7 @@
             placeholder="First Name"
             required
             :disabled="subscribing"
-            class="w-full px-3.5 py-3 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321] disabled:opacity-60"
+            class="w-full px-3.5 py-2 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321] disabled:opacity-60"
           />
         </div>
         <div class="flex-1">
@@ -41,7 +41,7 @@
             placeholder="Last Name"
             required
             :disabled="subscribing"
-            class="w-full px-3.5 py-3 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321] disabled:opacity-60"
+            class="w-full px-3.5 py-2 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321] disabled:opacity-60"
           />
         </div>
       </div>
@@ -56,7 +56,7 @@
           placeholder="Email address"
           required
           :disabled="subscribing"
-          class="w-full px-3.5 py-3 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321] disabled:opacity-60"
+          class="w-full px-3.5 py-2 rounded-lg text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#F49321] disabled:opacity-60"
         />
       </div>
 
@@ -94,7 +94,7 @@
           !firstName ||
           !lastName
         "
-        class="w-full bg-[#F49321] hover:bg-[#e07e0e] text-white font-bold px-2 py-2 rounded-lg transition-colors text-sm uppercase tracking-wide disabled:opacity-60 disabled:cursor-not-allowed"
+        class="w-full btn-3d-glossy btn-3d-glossy-orange py-2 uppercase tracking-wide disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {{ subscribing ? "Subscribing..." : "Subscribe" }}
       </button>

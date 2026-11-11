@@ -112,14 +112,14 @@
                 </div>
               </div>
 
-              <div class="p-4 md:p-8">
+              <div v-fade class="p-4 md:p-8">
                 <!-- Category & Meta -->
                 <div
                   class="flex flex-wrap items-center gap-2 md:gap-3 mb-2 md:mb-3"
                 >
                   <span
                     v-if="featuredPost.category"
-                    class="inline-block bg-[#F49321] text-white px-3 py-1 text-[8px] md:text-[9px] font-extrabold uppercase tracking-widest rounded-full border-2 border-[#1C2D5B] shadow-sm"
+                    class="btn-gloss inline-block bg-[#F49321] text-white px-3 py-1 text-[8px] md:text-[9px] font-extrabold uppercase tracking-widest rounded-full border-2 border-[#1C2D5B] shadow-sm"
                   >
                     {{ featuredPost.category.name }}
                   </span>
@@ -132,11 +132,12 @@
                   <span
                     class="text-gray-500 text-[10px] md:text-sm uppercase tracking-wider"
                   >
-                    By Admin
+                    By Festive Express Team
                   </span>
                 </div>
 
                 <h2
+                  v-fade
                   class="outlined outlined-line1 block text-xl md:text-3xl lg:text-4xl font-extrabold text-[#1c2d5b] leading-tight mb-2 md:mb-3 tracking-wide line-clamp-2"
                   :data-text="featuredPost.title"
                 >
@@ -439,7 +440,6 @@ const formatDate = (isoString: string | null) => {
 const retry = () => {
   refresh();
 };
-
 </script>
 
 <style scoped>
@@ -489,5 +489,4 @@ const retry = () => {
     -webkit-text-stroke: 8px #f49321;
   }
 }
-
 </style>

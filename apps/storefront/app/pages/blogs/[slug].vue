@@ -64,13 +64,14 @@
         <div class="p-6 md:p-10 lg:p-16">
           <!-- Meta Row -->
           <div
+            v-fade
             class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6"
           >
             <!-- LEFT: Category, Date, Author -->
             <div class="flex flex-wrap items-center gap-3">
               <span
                 v-if="post.category"
-                class="inline-block bg-[#1C2D5B] text-white px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-sm shadow-sm"
+                class="btn-gloss inline-block bg-[#F49321] text-white px-3 py-1 text-[8px] md:text-[9px] font-extrabold uppercase tracking-widest rounded-full border-2 border-[#1C2D5B] shadow-sm"
               >
                 {{ post.category.name }}
               </span>
@@ -194,6 +195,7 @@
 
           <!-- Tags Footer -->
           <div
+            v-fade
             v-if="post?.tags?.length"
             class="mt-12 pt-8 border-t border-gray-200"
           >
@@ -207,7 +209,7 @@
                 v-for="tag in post.tags"
                 :key="tag.id"
                 :to="`/blogs/tag/${tag.slug}`"
-                class="bg-gray-100 text-gray-700 hover:bg-[#F49321] hover:text-white transition-colors px-3 py-1.5 text-xs font-semibold rounded-full"
+                class="btn-3d-glossy px-3 py-1.5 text-xs font-semibold rounded-full"
               >
                 #{{ tag.name }}
               </NuxtLink>
@@ -529,7 +531,6 @@ const formatDate = (isoString: string | null) => {
     year: "numeric",
   });
 };
-
 </script>
 
 <style scoped>
