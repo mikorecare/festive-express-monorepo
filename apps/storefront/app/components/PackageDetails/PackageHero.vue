@@ -61,5 +61,7 @@
 </template>
 
 <script setup lang="ts">
+import PriceBlock from './PriceBlock.vue';
+
 defineProps<{ name: string; titleImage?: string | null; price: number }>();
 </script>
