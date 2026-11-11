@@ -5,35 +5,35 @@ export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
 
     // 1. Verify Turnstile
-    // if (!body.turnstile_token) {
-    //     console.warn('Missing Turnstile token');
-    //     return { success: false, error: 'Security verification required' };
-    // }
+    if (!body.turnstile_token) {
+        console.warn('Missing Turnstile token');
+        return { success: false, error: 'Security verification required' };
+    }
 
-    // try {
-    //     const turnstileResponse = await fetch(
-    //         'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-    //         {
-    //             method: 'POST',
-    //             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    //             body: new URLSearchParams({
-    //                 secret: config.turnstile?.secretKey || process.env.NUXT_TURNSTILE_SECRET_KEY || "",
-    //                 response: body.turnstile_token,
-    //                 remoteip: event.node.req.socket.remoteAddress || '',
-    //             }),
-    //         }
-    //     );
+    try {
+        const turnstileResponse = await fetch(
+            'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    secret: config.turnstile?.secretKey || process.env.NUXT_TURNSTILE_SECRET_KEY || "",
+                    response: body.turnstile_token,
+                    remoteip: event.node.req.socket.remoteAddress || '',
+                }),
+            }
+        );
 
-    //     const turnstileResult = await turnstileResponse.json();
+        const turnstileResult = await turnstileResponse.json();
 
-    //     if (!turnstileResult.success) {
-    //         console.warn('Turnstile verification failed:', turnstileResult);
-    //         return { success: false, error: 'Security verification failed' };
-    //     }
-    // } catch (error) {
-    //     console.error('Turnstile verification error:', error);
-    //     return { success: false, error: 'Security verification failed' };
-    // }
+        if (!turnstileResult.success) {
+            console.warn('Turnstile verification failed:', turnstileResult);
+            return { success: false, error: 'Security verification failed' };
+        }
+    } catch (error) {
+        console.error('Turnstile verification error:', error);
+        return { success: false, error: 'Security verification failed' };
+    }
 
     // 2. Prevent duplicate orders
     if (!body.transaction_id) {
@@ -128,6 +128,39 @@ export default defineEventHandler(async (event) => {
             status: 'pending',
             notes: 'Order created and payment confirmed',
         });
+
+    // 6. Send SMS confirmation (best-effort; never blocks the order)
+    const phoneDigits = (billing_phone || '').replace(/\D/g, '');
+
+    if (phoneDigits.length === 10) {
+        const firstName = (first_name || '').trim().replace(/[\r\n\t]/g, ' ').slice(0, 30);
+
+        // Keep under 160 chars; short reference for the customer
+        const longVersion =
+            `Hi ${firstName}, your Festive Express order #${order.order_number} is confirmed! ` +
+            `Ref: ${transaction_id}. We'll reach out within 24 hours with next steps.`;
+
+        const smsMessage =
+            longVersion.length <= 160
+                ? longVersion
+                : `Hi ${firstName}, your Festive Express order #${order.order_number} is confirmed! ` +
+                `Ref: ${transaction_id}. - The Festive Express Team`;
+
+        const { data: smsResult, error: sendSmsError } = await supabase.rpc('send_ctm_sms', {
+            to_number: phoneDigits,
+            message_body: smsMessage,
+        });
+
+        if (sendSmsError) {
+            console.error('[CTM send SMS] RPC error:', sendSmsError);
+        } else if (!smsResult || smsResult.c >= 400) {
+            console.error('[CTM send SMS] rejected:', smsResult);
+        } else {
+            console.log('[CTM send SMS] queued:', smsResult.request_id);
+        }
+    } else {
+        console.warn('Skipping SMS — invalid US phone:', billing_phone);
+    }
 
     return {
         success: true,
