@@ -1,7 +1,7 @@
 <template>
   <div
     ref="heroRef"
-    class="hero-banner relative min-h-[88dvh] overflow-hidden flex items-center max-lg:min-h-[85dvh] max-lg:py-0 border-b-[27px] border-[#F49321]"
+    class="hero-banner relative min-h-[88svh] max-lg:min-h-[85svh] overflow-hidden flex items-center max-lg:min-h-[85dvh] max-lg:py-0 border-b-[27px] border-[#F49321]"
   >
     <!-- ==================================================== -->
     <!-- LCP LAYER (z-0): the browser downloads ONLY the file  -->
@@ -18,7 +18,7 @@
         src="/New/Banner/bg-family-mobile.webp"
         sizes="100vw"
         format="webp"
-        quality="85"
+        quality="100"
         custom
       >
         <template #default="{ imgAttrs, src }">
@@ -98,7 +98,7 @@
 
     <!-- CONTENT z-20 -->
     <div
-      class="hero-content-container relative z-20 w-full max-w-[1200px] px-[5%] lg:pl-[15%] flex justify-start items-center gap-5 max-lg:flex-col max-lg:items-start max-lg:gap-0 max-lg:px-[6%] max-lg:pt-10 max-lg:w-full max-lg:h-[80dvh]"
+      class="hero-content-container relative z-20 w-full max-w-[1200px] px-[5%] lg:pl-[15%] flex justify-start items-center gap-5 max-lg:flex-col max-lg:items-start max-lg:gap-0 max-lg:px-[6%] max-lg:pt-10 max-lg:w-full max-lg:h-[80svh]"
     >
       <div
         class="hero-card relative w-full max-w-[460px] bg-[#161c30]/50 backdrop-blur-sm rounded-2xl p-11 px-8 shadow-[0_10px_30px_rgba(0,0,0,0.4)] text-white text-center border border-white/12 overflow-hidden before:content-[''] before:absolute before:-top-1/2 before:-left-[150%] before:w-[200%] before:h-[200%] before:bg-[linear-gradient(60deg,rgba(255,255,255,0)_20%,rgba(255,255,255,0.08)_40%,rgba(255,255,255,0.35)_50%,rgba(255,255,255,0.08)_60%,rgba(255,255,255,0)_80%)] before:rotate-[25deg] before:pointer-events-none before:animate-[glossyShineContinuous_3s_linear_infinite] max-lg:max-w-full max-lg:p-0 max-lg:text-left max-lg:!bg-transparent max-lg:!backdrop-blur-none max-lg:!border-none max-lg:!shadow-none max-lg:!rounded-none max-lg:before:!hidden max-lg:after:!hidden max-lg:flex max-lg:flex-col max-lg:h-full max-lg:justify-between"
