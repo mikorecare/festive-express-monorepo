@@ -43,10 +43,10 @@ jobs:
             pm2 flush 2>/dev/null || true
             npm cache clean --force 2>/dev/null || true
             rm -rf apps/*-new apps/*/.next/cache 2>/dev/null || true
-            
+
             # Force Linux to clear buff/cache to free up RAM for the build
             sync; echo 3 | sudo tee /proc/sys/vm/drop_caches >/dev/null 2>&1 || true
-            
+
             sudo journalctl --vacuum-size=200M 2>/dev/null || true
             sudo apt clean 2>/dev/null || true
             git gc --prune=now 2>/dev/null || true
@@ -89,22 +89,30 @@ jobs:
             free -h
 
             # ==========================================
+            # INSTALL DEPENDENCIES (Root level for Monorepo)
+            # ==========================================
+            echo "── Installing Dependencies ──"
+            npm ci
+
+            # ==========================================
             # STAGING BUILDS (Old app stays online)
             # ==========================================
 
             echo "── Staging Storefront ──"
             cp -r apps/storefront apps/storefront-new
             cd apps/storefront-new
-            rm -rf .nuxt .output .next dist node_modules/.cache
-            npm ci
+            rm -rf .nuxt .output .next dist
+            # Symlink root node_modules to bypass workspace conflict during build
+            ln -s ../../node_modules node_modules
             npm run build
             cd ../..
 
             echo "── Staging Admin ──"
             cp -r apps/admin apps/admin-new
             cd apps/admin-new
-            rm -rf .nuxt .output .next dist node_modules/.cache
-            npm ci
+            rm -rf .nuxt .output .next dist
+            # Symlink root node_modules to bypass workspace conflict during build
+            ln -s ../../node_modules node_modules
             npm run build
             cd ../..
 
