@@ -1,4 +1,3 @@
-<!-- components/EstimatorForm.vue -->
 <template>
   <div class="space-y-3.5 lg:space-y-5">
     <!-- Address -->
@@ -162,7 +161,7 @@
     </div>
 
     <!-- Contact Info -->
-    <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <div>
         <label
           for="estimator-name"
