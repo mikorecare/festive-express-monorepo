@@ -156,11 +156,11 @@ export default defineNuxtConfig({
             ],
 
             sameAs: [
+              "https://www.instagram.com/festive.express.decor/",
               "https://www.facebook.com/Festive.Express/",
-              "https://www.instagram.com/flp-express",
-              "https://www.x.com/flp-express",
-              "https://www.youtube.com/flp-express",
-              "https://www.pinterest.com/flp-express",
+              "https://www.linkedin.com/company/festive-express-decor/",
+              "https://www.facebook.com/Festive.Express.Sarasota",
+              "https://www.linkedin.com/company/festive-express-sarasota/",
             ],
           }),
         },

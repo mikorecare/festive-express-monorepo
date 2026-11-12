@@ -222,7 +222,6 @@ const paymentForm = ref({
   card_cvv: "",
   billing_address: "",
   billing_city: "",
-  billing_state: "FL",
   billing_postcode: "",
 });
 
@@ -237,7 +236,6 @@ const paymentErrors = ref({
   card_cvv: "",
   billing_address: "",
   billing_city: "",
-  billing_state: "",
   billing_postcode: "",
 });
 
@@ -295,7 +293,6 @@ const isFormValid = computed(() => {
     !!paymentForm.value.card_cvv &&
     !!paymentForm.value.billing_address &&
     !!paymentForm.value.billing_city &&
-    !!paymentForm.value.billing_state &&
     !!paymentForm.value.billing_postcode;
 
   const installationsValid = installations.value.every(
@@ -402,10 +399,7 @@ const validatePaymentField = (field: string) => {
     const zip = stringValue.replace(/\D/g, "");
     paymentErrors.value.billing_postcode =
       zip.length !== 5 ? "Please enter a valid 5-digit ZIP code" : "";
-  } else if (field === "billing_state") {
-    paymentErrors.value.billing_state =
-      stringValue.length !== 2 ? "Please enter a valid 2-letter state" : "";
-  } else {
+  }  else {
     (paymentErrors.value as any)[field] =
       !stringValue || stringValue.trim().length < 2
         ? "This field is required"
@@ -524,7 +518,6 @@ const payWithConverge = async () => {
       shipping_address: primaryInst.address,
       shipping_postcode: primaryInst.postcode,
       billing_city: paymentForm.value.billing_city,
-      billing_state: paymentForm.value.billing_state,
       customer_note: customerNote.value || null,
 
       items: installations.value.map((inst, index) => {
@@ -563,7 +556,6 @@ const payWithConverge = async () => {
         invoice_number: `F-EX-${Date.now()}`,
         billing_address: paymentForm.value.billing_address,
         billing_city: paymentForm.value.billing_city,
-        billing_state: paymentForm.value.billing_state,
         billing_zip: paymentForm.value.billing_postcode,
         billing_country: "USA",
         billing_phone: paymentForm.value.billing_phone,
@@ -585,7 +577,6 @@ const payWithConverge = async () => {
       ssl_last_name: paymentForm.value.billing_last_name,
       ssl_avs_address: paymentForm.value.billing_address,
       ssl_city: paymentForm.value.billing_city,
-      ssl_state: paymentForm.value.billing_state,
       ssl_avs_zip: paymentForm.value.billing_postcode,
       ssl_country: "USA",
       ssl_email: email,

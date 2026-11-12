@@ -20,25 +20,25 @@
     >
       <!-- Eyebrow -->
       <p
-        class="text-[#F49321] font-extrabold text-base tracking-wide mb-1.5 text-left sm:text-lg lg:text-4xl lg:mb-4 [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff,_0_2px_6px_rgba(28,45,91,0.35)] lg:[text-shadow:_-2px_-2px_0_#fff,_2px_-2px_0_#fff,_-2px_2px_0_#fff,_2px_2px_0_#fff,_0_4px_10px_rgba(28,45,91,0.45)]"
+        class="text-[#F49321] font-extrabold text-4xl tracking-wide mb-1.5 text-left sm:text-5xl md:text-6xl lg:text-7xl lg:mb-4 [text-shadow:_-1.5px_-1.5px_0_#fff,_1.5px_-1.5px_0_#fff,_-1.5px_1.5px_0_#fff,_1.5px_1.5px_0_#fff,_0_3px_8px_rgba(28,45,91,0.35)] lg:[text-shadow:_-3px_-3px_0_#fff,_3px_-3px_0_#fff,_-3px_3px_0_#fff,_3px_3px_0_#fff,_0_5px_12px_rgba(28,45,91,0.45)]"
       >
         How it works
       </p>
 
       <!-- Headline -->
       <h2
-        class="text-2xl font-poppins font-extrabold text-[#1C2D5B] leading-tight mb-2 text-left sm:text-3xl lg:text-5xl lg:leading-[1.1] lg:mb-5"
+        class="text-3xl sm:text-4xl font-poppins font-extrabold text-[#1C2D5B] leading-[1.15] mb-2 text-left lg:text-7xl lg:leading-[1.05] lg:mb-5 uppercase tracking-wide"
       >
         Professional holiday lighting, made simple.
       </h2>
       <p
-        class="text-[#F49321] font-extrabold text-base sm:text-lg lg:text-2xl tracking-wide mb-2 text-left lg:mb-14 [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff,_0_2px_4px_rgba(28,45,91,0.35)]"
+        class="text-[#F49321] font-extrabold text-xl sm:text-2xl lg:text-3xl tracking-wide mb-2 text-left lg:mb-14 [text-shadow:_-1.5px_-1.5px_0_#fff,_1.5px_-1.5px_0_#fff,_-1.5px_1.5px_0_#fff,_1.5px_1.5px_0_#fff,_0_3px_8px_rgba(28,45,91,0.35)]"
       >
         Rent, Relax, &amp; Celebrate
       </p>
       <!-- Subhead -->
       <p
-        class="text-slate-600 text-xs sm:text-sm font-medium mb-6 text-left lg:text-lg lg:max-w-[680px] lg:mb-14 leading-relaxed"
+        class="text-slate-600 text-base sm:text-lg font-medium mb-6 text-left lg:text-2xl lg:max-w-[840px] lg:mb-14 leading-relaxed"
       >
         Choose one of three fixed rental packages. Pay online. Pick your install
         and take-down dates. We handle the rest.
@@ -80,7 +80,7 @@
 
             <!-- Floating number badge -->
             <div
-              class="absolute font-raleway -bottom-5 left-4 sm:-bottom-6 sm:left-5 z-10 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full bg-[#F49321] text-[#1C2D5B] font-black text-lg sm:text-xl lg:text-2xl ring-4 ring-white shadow-[0_8px_20px_-4px_rgba(244,147,33,0.55)] transition-transform duration-300 ease-out group-hover:scale-110 [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff]"
+              class="absolute font-raleway -bottom-5 left-4 sm:-bottom-6 sm:left-5 z-10 flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full bg-[#F49321] text-[#1C2D5B] font-black text-xl sm:text-2xl lg:text-3xl ring-4 ring-white shadow-[0_8px_20px_-4px_rgba(244,147,33,0.55)] transition-transform duration-300 ease-out group-hover:scale-110 [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff]"
             >
               {{ step.number }}
             </div>
@@ -91,13 +91,13 @@
             class="px-3.5 pb-4 pt-6 sm:px-4 sm:pb-4 sm:pt-7 lg:px-6 lg:pb-6 lg:pt-11"
           >
             <h3
-              class="text-[#F49321] uppercase text-base sm:text-lg lg:text-2xl font-raleway font-extrabold mb-1.5 sm:mb-2 lg:mb-3 tracking-wide [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff,_0_2px_4px_rgba(28,45,91,0.35)] lg:[text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff,_0_4px_8px_rgba(28,45,91,0.45)]"
+              class="text-[#F49321] uppercase text-xl sm:text-2xl lg:text-3xl font-raleway font-extrabold mb-1.5 sm:mb-2 lg:mb-3 tracking-wide [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff,_0_2px_4px_rgba(28,45,91,0.35)] lg:[text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff,_0_4px_8px_rgba(28,45,91,0.45)]"
             >
               {{ step.title }}
             </h3>
 
             <p
-              class="text-[#1C2D5B] font-semibold text-xs sm:text-sm leading-relaxed tracking-wide lg:text-base"
+              class="text-[#1C2D5B] font-semibold text-base sm:text-lg leading-relaxed tracking-wide lg:text-xl"
             >
               {{ step.description }}
             </p>

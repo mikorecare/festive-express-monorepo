@@ -8,7 +8,7 @@
       role="region"
     >
       <h2
-        class="font-poppins text-[#1C2F5B] font-extrabold text-lg sm:text-xl lg:text-[1.25rem] leading-tight sm:leading-[1.4] lg:leading-[46px] mb-3 sm:mb-4 border-b-2 border-[#F49321] pb-2"
+        class="font-poppins text-[#1C2F5B] font-extrabold text-xl sm:text-2xl lg:text-3xl leading-tight sm:leading-[1.4] lg:leading-[1.3] mb-3 sm:mb-4 border-b-2 border-[#F49321] pb-2"
       >
         {{ cat.name }}
       </h2>
@@ -25,7 +25,7 @@
         >
           <button
             type="button"
-            class="w-full flex items-center justify-between gap-3 sm:gap-4 px-4 sm:px-5 py-3.5 sm:py-4 text-left font-semibold text-[#1C2D5B] text-sm sm:text-base leading-snug hover:bg-orange-50 transition min-h-[52px]"
+            class="w-full flex items-center justify-between gap-3 sm:gap-4 px-4 sm:px-5 py-4 sm:py-5 text-left font-semibold text-[#1C2D5B] text-base sm:text-lg leading-snug hover:bg-orange-50 transition min-h-[56px]"
             :aria-expanded="isOpen(faq.id)"
             :aria-controls="`faq-answer-${faq.id}`"
             :id="`faq-question-${faq.id}`"
@@ -33,7 +33,7 @@
           >
             <span class="flex-1 tracking-wide">{{ faq.question }}</span>
             <i
-              class="fas fa-chevron-down text-[#F49321] transition-transform duration-300 shrink-0 text-xs sm:text-sm"
+              class="fas fa-chevron-down text-[#F49321] transition-transform duration-300 shrink-0 text-sm sm:text-base"
               :class="{ 'rotate-180': isOpen(faq.id) }"
               aria-hidden="true"
             />
@@ -48,7 +48,7 @@
           >
             <div class="faq-answer-inner">
               <div
-                class="px-4 sm:px-5 py-3 sm:py-4 text-navy text-[0.85rem] sm:text-base leading-relaxed whitespace-pre-line border-t border-gray-100"
+                class="px-4 sm:px-5 py-3 sm:py-4 text-navy text-base sm:text-[17px] leading-relaxed whitespace-pre-line border-t border-gray-100"
               >
                 {{ faq.answer }}
               </div>

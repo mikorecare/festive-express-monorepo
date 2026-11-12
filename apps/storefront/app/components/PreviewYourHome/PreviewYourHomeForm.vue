@@ -5,7 +5,7 @@
     <div>
       <label
         for="estimator-address"
-        class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-navy mb-1.5"
+        class="block text-[15px] sm:text-[16px] lg:text-[18px] font-semibold text-navy mb-1.5"
       >
         Property address *
       </label>
@@ -15,7 +15,7 @@
           v-model="address"
           autocomplete="off"
           placeholder="Start typing your street address"
-          class="w-full px-3 py-2.5 lg:px-4 lg:py-3 border border-gray-300 rounded-[14px] focus:ring-2 focus:ring-orange-500 focus:border-transparent text-[15px] lg:text-[16px] form-input"
+          class="w-full px-3 py-2.5 lg:px-4 lg:py-3 border border-gray-300 rounded-[14px] focus:ring-2 focus:ring-orange-500 focus:border-transparent text-[16px] lg:text-[18px] form-input"
           :class="{ 'border-red-500': errors.address }"
           @input="debouncedSearch"
           @focus="suggestionsOpen = true"
@@ -30,13 +30,18 @@
             class="px-3.5 sm:px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0"
             @click="selectAddress(s)"
           >
-            <div class="text-[14px] sm:text-[15px] font-medium text-gray-800">
+            <div class="text-[15px] sm:text-[16px] font-medium text-gray-800">
               {{ s.main }}
             </div>
-            <div class="text-xs text-gray-500">{{ s.secondary }}</div>
+            <div class="text-[13px] sm:text-[14px] text-gray-500">
+              {{ s.secondary }}
+            </div>
           </div>
         </div>
-        <p v-if="errors.address" class="text-red-500 text-xs mt-1">
+        <p
+          v-if="errors.address"
+          class="text-red-500 text-[13px] sm:text-sm mt-1"
+        >
           {{ errors.address }}
         </p>
       </div>
@@ -46,7 +51,7 @@
     <div>
       <label
         for="estimator-photo"
-        class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-navy mb-1.5"
+        class="block text-[15px] sm:text-[16px] lg:text-[18px] font-semibold text-navy mb-1.5"
       >
         Photo of your home
         <span class="text-xs font-normal text-gray-400">(optional)</span>
@@ -61,7 +66,7 @@
       />
       <button
         type="button"
-        class="w-full px-3 py-2 border-2 border-dashed border-gray-300 rounded-[14px] ... flex items-center gap-3"
+        class="w-full px-3 py-2.5 border-2 border-dashed border-gray-300 rounded-[14px] text-[15px] sm:text-[16px] flex items-center gap-3"
         @click="fileInput?.click()"
       >
         <img
@@ -74,7 +79,7 @@
           imagePreview ? "Change photo" : "Add a photo (optional)"
         }}</span>
         <i
-          class="fa-solid fa-upload text-[18px] text-[#1C2D5B]"
+          class="fa-solid fa-upload text-[20px] sm:text-[22px] text-[#1C2D5B]"
           aria-hidden="true"
         ></i>
       </button>
@@ -92,14 +97,14 @@
       <div class="min-w-0">
         <span
           id="estimator-package-label"
-          class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-navy mb-1.5"
+          class="block text-[15px] sm:text-[16px] lg:text-[18px] font-semibold text-navy mb-1.5"
         >
           Your package
         </span>
         <button
           type="button"
           aria-labelledby="estimator-package-label"
-          class="w-full min-w-0 px-3 py-2.5 lg:px-4 lg:py-3 border border-gray-300 rounded-[14px] bg-[#f8f9fa] hover:border-brand-orange transition-colors text-[14px] sm:text-[15px] lg:text-[16px] flex items-center justify-between gap-2 text-left"
+          class="w-full min-w-0 px-3 py-2.5 lg:px-4 lg:py-3 border border-gray-300 rounded-[14px] bg-[#f8f9fa] hover:border-brand-orange transition-colors text-[15px] sm:text-[16px] lg:text-[18px] flex items-center justify-between gap-2 text-left"
           @click="showPackageModal = true"
         >
           <span class="flex items-baseline gap-2 min-w-0 flex-1">
@@ -108,12 +113,12 @@
             </span>
             <span
               v-if="selectedPackageData"
-              class="text-xs sm:text-[13px] text-gray-500 truncate shrink-0"
+              class="text-[13px] sm:text-[14px] text-gray-500 truncate shrink-0"
             >
               ${{ selectedPackageData.previousPrice.toLocaleString() }}
             </span>
           </span>
-          <i class="fas fa-chevron-down text-gray-400 shrink-0 text-xs"></i>
+          <i class="fas fa-chevron-down text-gray-400 shrink-0 text-sm"></i>
         </button>
       </div>
 
@@ -121,19 +126,19 @@
       <div class="min-w-0">
         <span
           id="estimator-color-label"
-          class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-navy mb-1.5"
+          class="block text-[15px] sm:text-[16px] lg:text-[18px] font-semibold text-navy mb-1.5"
         >
           Light color
         </span>
         <button
           type="button"
           aria-labelledby="estimator-color-label"
-          class="w-full min-w-0 px-3 py-2.5 lg:px-4 lg:py-3 border border-gray-300 rounded-[14px] bg-[#f8f9fa] hover:border-brand-orange transition-colors text-[14px] sm:text-[15px] lg:text-[16px] flex items-center justify-between gap-2 text-left"
+          class="w-full min-w-0 px-3 py-2.5 lg:px-4 lg:py-3 border border-gray-300 rounded-[14px] bg-[#f8f9fa] hover:border-brand-orange transition-colors text-[15px] sm:text-[16px] lg:text-[18px] flex items-center justify-between gap-2 text-left"
           @click="showColorModal = true"
         >
           <span class="flex items-center gap-2 min-w-0 flex-1">
             <span
-              class="color-dot w-4 h-4 sm:w-5 sm:h-5 rounded-full shrink-0"
+              class="color-dot w-5 h-5 sm:w-6 sm:h-6 rounded-full shrink-0"
               :class="{
                 'border-2 border-gray-300':
                   selectedColorData?.scheme !== 'candy-cane' &&
@@ -151,7 +156,7 @@
               {{ selectedColorData?.label || "Select color" }}
             </span>
           </span>
-          <i class="fas fa-chevron-down text-gray-400 shrink-0 text-xs"></i>
+          <i class="fas fa-chevron-down text-gray-400 shrink-0 text-sm"></i>
         </button>
       </div>
     </div>
@@ -161,7 +166,7 @@
       <div>
         <label
           for="estimator-name"
-          class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold !text-[#1C2F5B] mb-1.5"
+          class="block text-[15px] sm:text-[16px] lg:text-[18px] font-semibold !text-[#1C2F5B] mb-1.5"
         >
           Your name *
         </label>
@@ -169,17 +174,17 @@
           id="estimator-name"
           v-model="name"
           autocomplete="name"
-          class="w-full px-3 py-2.5 border border-gray-300 rounded-[14px] focus:ring-2 focus:ring-orange-500 focus:border-transparent text-[15px] lg:text-[16px] form-input"
+          class="w-full px-3 py-2.5 border border-gray-300 rounded-[14px] focus:ring-2 focus:ring-orange-500 focus:border-transparent text-[16px] lg:text-[18px] form-input"
           :class="{ 'border-red-500': errors.name }"
         />
-        <p v-if="errors.name" class="text-red-500 text-xs mt-1">
+        <p v-if="errors.name" class="text-red-500 text-[13px] sm:text-sm mt-1">
           {{ errors.name }}
         </p>
       </div>
       <div>
         <label
           for="estimator-email"
-          class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold !text-[#1C2F5B] mb-1.5"
+          class="block text-[15px] sm:text-[16px] lg:text-[18px] font-semibold !text-[#1C2F5B] mb-1.5"
         >
           Email *
         </label>
@@ -189,10 +194,10 @@
           type="email"
           inputmode="email"
           autocomplete="email"
-          class="w-full px-3 py-2.5 border border-gray-300 rounded-[14px] focus:ring-2 focus:ring-orange-500 focus:border-transparent text-[15px] lg:text-[16px] form-input"
+          class="w-full px-3 py-2.5 border border-gray-300 rounded-[14px] focus:ring-2 focus:ring-orange-500 focus:border-transparent text-[16px] lg:text-[18px] form-input"
           :class="{ 'border-red-500': errors.email }"
         />
-        <p v-if="errors.email" class="text-red-500 text-xs mt-1">
+        <p v-if="errors.email" class="text-red-500 text-[13px] sm:text-sm mt-1">
           {{ errors.email }}
         </p>
       </div>
@@ -201,7 +206,7 @@
     <div>
       <label
         for="estimator-phone"
-        class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold !text-[#1C2F5B] mb-1.5"
+        class="block text-[15px] sm:text-[16px] lg:text-[18px] font-semibold !text-[#1C2F5B] mb-1.5"
       >
         Mobile
         <span class="text-xs font-normal text-gray-400">(optional)</span>
@@ -212,7 +217,7 @@
         type="tel"
         inputmode="tel"
         autocomplete="tel"
-        class="w-full px-3 py-2.5 border border-gray-300 rounded-[14px] focus:ring-2 focus:ring-orange-500 focus:border-transparent text-[15px] lg:text-[16px] form-input"
+        class="w-full px-3 py-2.5 border border-gray-300 rounded-[14px] focus:ring-2 focus:ring-orange-500 focus:border-transparent text-[16px] lg:text-[18px] form-input"
       />
     </div>
 
@@ -235,7 +240,7 @@
     <!-- Error -->
     <div
       v-if="error"
-      class="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-[14px] text-[13px] sm:text-[14px]"
+      class="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-[14px] text-[14px] sm:text-[15px]"
       role="alert"
       aria-live="polite"
     >
@@ -246,7 +251,7 @@
     <!-- Submit Buttons -->
     <div class="space-y-2 pt-1">
       <button
-        class="w-full btn-gloss bg-brand-orange text-[15px] sm:text-[16px] lg:text-[18px] tracking-wide text-white font-semibold py-3 px-4 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
+        class="w-full btn-gloss bg-brand-orange text-[16px] sm:text-[17px] lg:text-[20px] tracking-wide text-white font-semibold py-3.5 px-4 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
         @click="
           async () => {
             if (isLoading || !turnstileVerified) return;
@@ -270,7 +275,7 @@
       </button>
 
       <button
-        class="w-full border border-gray-300 hover:bg-gray-50 text-[14px] sm:text-[15px] lg:text-[16px] text-navy font-semibold py-2.5 px-4 rounded-[14px] transition-colors"
+        class="w-full border border-gray-300 hover:bg-gray-50 text-[15px] sm:text-[16px] lg:text-[18px] text-navy font-semibold py-3 px-4 rounded-[14px] transition-colors"
         @click="
           async () => {
             if (isLoading || !turnstileVerified) return;
@@ -288,7 +293,7 @@
       </button>
     </div>
 
-    <p class="text-[11px] text-gray-400 text-center">
+    <p class="text-[12px] sm:text-[13px] text-gray-400 text-center">
       <i class="fas fa-shield-alt mr-1"></i>
       We only use your info to send your preview.
     </p>
@@ -314,13 +319,13 @@
             >
               <h3
                 id="package-modal-heading"
-                class="tracking-wide text-[15px] sm:text-[16px] lg:text-[17px] font-bold text-brand-orange"
+                class="tracking-wide text-[17px] sm:text-[18px] lg:text-[20px] font-bold text-brand-orange"
               >
                 Select your package
               </h3>
               <button
                 type="button"
-                class="text-gray-400 hover:text-navy text-lg leading-none p-1"
+                class="text-gray-400 hover:text-navy text-xl leading-none p-1"
                 @click="showPackageModal = false"
                 aria-label="Close"
               >
@@ -366,7 +371,7 @@
                   />
                   <span
                     v-else
-                    class="font-bold text-[14px] sm:text-[16px] font-poppins leading-none text-white truncate max-w-full"
+                    class="font-bold text-[16px] sm:text-[18px] font-poppins leading-none text-white truncate max-w-full"
                   >
                     {{ pkg.name }}
                   </span>
@@ -375,13 +380,13 @@
                     class="flex items-end mt-0.5 gap-0.5 font-semibold justify-center"
                   >
                     <span
-                      class="text-[#F7931E] font-bold text-lg sm:text-xl leading-none"
+                      class="text-[#F7931E] font-bold text-xl sm:text-2xl leading-none"
                     >
                       ${{ pkg.previousPrice.toLocaleString() }}
                     </span>
                   </div>
                   <span
-                    class="text-white font-normal text-[11px] sm:text-sm leading-none mt-0.5"
+                    class="text-white font-normal text-[13px] sm:text-base leading-none mt-0.5"
                   >
                     Per Season
                   </span>
@@ -422,13 +427,13 @@
             >
               <h3
                 id="color-modal-heading"
-                class="text-[15px] sm:text-[16px] lg:text-[17px] font-bold text-[#1C2F5B]"
+                class="text-[17px] sm:text-[18px] lg:text-[20px] font-bold text-[#1C2F5B]"
               >
                 Select C-9 Light Color
               </h3>
               <button
                 type="button"
-                class="text-gray-400 hover:text-navy text-lg leading-none p-1"
+                class="text-gray-400 hover:text-navy text-xl leading-none p-1"
                 @click="showColorModal = false"
                 aria-label="Close"
               >
@@ -456,7 +461,7 @@
                   "
                 >
                   <span
-                    class="color-dot w-8 h-8 sm:w-9 sm:h-9 rounded-full inline-block flex-shrink-0"
+                    class="color-dot w-10 h-10 sm:w-11 sm:h-11 rounded-full inline-block flex-shrink-0"
                     :class="{
                       'border-2 border-gray-300':
                         color.scheme !== 'candy-cane' &&
@@ -467,7 +472,7 @@
                     :style="color.sw ? `background:${color.sw}` : ''"
                   ></span>
                   <span
-                    class="text-[10px] sm:text-[11px] text-[#1C2F5B] leading-tight text-center truncate max-w-full"
+                    class="text-[12px] sm:text-[13px] text-[#1C2F5B] leading-tight text-center truncate max-w-full"
                     :class="
                       selectedScheme === color.scheme ? 'font-semibold' : ''
                     "
@@ -642,14 +647,15 @@ onUnmounted(() => {
 .form-input {
   border-radius: 12px;
   border: 1px solid #9ca3af !important;
-  height: 42px;
+  height: 46px;
   font-size: 16px; /* keeps iOS Safari from zooming in on focus */
   background-color: #f8f9fa;
 }
 
 @media (min-width: 1024px) {
   .form-input {
-    height: 52px;
+    height: 56px;
+    font-size: 18px;
     border: 2px solid gray !important;
     border-radius: 14px;
   }

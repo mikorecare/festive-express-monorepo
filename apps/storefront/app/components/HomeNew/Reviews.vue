@@ -13,21 +13,23 @@
       <!-- Header -->
       <div v-fade class="text-start lg:text-left mb-8 lg:mb-10">
         <p
-          class="text-[#F49321] font-extrabold text-lg sm:text-xl lg:text-2xl tracking-wide mb-2 [text-shadow:_-2px_-2px_0_#fff,_2px_-2px_0_#fff,_-2px_2px_0_#fff,_2px_2px_0_#fff,_0_4px_10px_rgba(28,45,91,0.45)]"
+          class="text-[#F49321] font-extrabold text-4xl tracking-wide mb-2 sm:text-5xl md:text-6xl lg:text-7xl [text-shadow:_-1.5px_-1.5px_0_#fff,_1.5px_-1.5px_0_#fff,_-1.5px_1.5px_0_#fff,_1.5px_1.5px_0_#fff,_0_3px_8px_rgba(28,45,91,0.35)] lg:[text-shadow:_-3px_-3px_0_#fff,_3px_-3px_0_#fff,_-3px_3px_0_#fff,_3px_3px_0_#fff,_0_5px_12px_rgba(28,45,91,0.45)]"
         >
           What Customers Say
         </p>
         <h2
           id="reviews-heading"
-          class="text-[1.5rem] sm:text-4xl lg:text-5xl font-extrabold text-[#1C2D5B] leading-[1.15] mb-3 [text-shadow:_0_4px_10px_rgba(28,45,91,0.45)]"
+          class="text-3xl sm:text-4xl font-extrabold text-[#1C2D5B] leading-[1.15] mb-3 uppercase tracking-wide lg:text-7xl lg:leading-[1.05]"
         >
           Five-Star Service Across Every Lighting Project
         </h2>
         <p
-          class="text-[#1C2D5B] font-semibold tracking-wide text-sm sm:text-base lg:text-lg"
+          class="text-[#1C2D5B] font-semibold tracking-wide text-base sm:text-lg lg:text-2xl"
         >
           See why homeowners and businesses trust
-          <strong class="font-extrabold text-lg tracking-wide">
+          <strong
+            class="font-extrabold text-[#F49321] tracking-wide [text-shadow:_-1.5px_-1.5px_0_#fff,_1.5px_-1.5px_0_#fff,_-1.5px_1.5px_0_#fff,_1.5px_1.5px_0_#fff,_0_3px_8px_rgba(28,45,91,0.35)] lg:[text-shadow:_-2px_-2px_0_#fff,_2px_-2px_0_#fff,_-2px_2px_0_#fff,_2px_2px_0_#fff,_0_4px_10px_rgba(28,45,91,0.45)]"
+          >
             Festive Express
           </strong>
           for professional holiday lighting services.
@@ -51,7 +53,7 @@
             v-for="(review, i) in reviews"
             :key="i"
             v-fade
-            class="snap-center sm:snap-start shrink-0 w-[85vw] max-w-[460px] sm:w-[340px] lg:w-[calc((100%-2rem)/3)] bg-[#1C2D5B] rounded-tl-xl rounded-br-xl rounded-tr-none rounded-bl-none shadow-[0_6px_24px_rgba(28,45,91,0.12)] overflow-hidden h-[300px] flex flex-row transition-shadow duration-200 hover:shadow-[0_12px_28px_rgba(28,45,91,0.18)]"
+            class="snap-center sm:snap-start shrink-0 w-[85vw] max-w-[460px] sm:w-[340px] lg:w-[calc((100%-2rem)/3)] bg-[#1C2D5B] rounded-tl-xl rounded-br-xl rounded-tr-none rounded-bl-none shadow-[0_6px_24px_rgba(28,45,91,0.12)] overflow-hidden h-[320px] flex flex-row transition-shadow duration-200 hover:shadow-[0_12px_28px_rgba(28,45,91,0.18)]"
             :style="{ transitionDelay: `${i * 60}ms` }"
           >
             <!-- LEFT COLUMN — 45% -->
@@ -76,13 +78,13 @@
               <!-- Name + location below photo -->
               <div class="px-3 pt-2">
                 <p
-                  class="font-bold text-[#1C2D5B] text-sm leading-tight truncate"
+                  class="font-bold text-[#1C2D5B] text-base leading-tight truncate"
                   :title="review.name"
                 >
                   {{ review.name }}
                 </p>
                 <p
-                  class="text-[10px] font-semibold text-black opacity-80 mt-0.5 leading-snug break-words"
+                  class="text-[12px] font-semibold text-black opacity-80 mt-0.5 leading-snug break-words"
                 >
                   {{ review.location }}
                 </p>
@@ -138,19 +140,19 @@
 
             <!-- RIGHT COLUMN — verbatim only -->
             <div class="p-3 flex-1 min-w-0 flex flex-col">
-              <p class="text-sm text-white/90 leading-relaxed line-clamp-9">
+              <p class="text-base text-white/90 leading-relaxed line-clamp-8">
                 {{ review.text }}
               </p>
 
               <button
                 type="button"
-                class="mt-auto pt-3 self-start text-[#F49321] hover:text-[#ffb347] font-bold text-xs transition-colors min-h-[36px] flex items-center gap-1 tracking-wide"
+                class="mt-auto pt-3 self-start text-[#F49321] hover:text-[#ffb347] font-bold text-sm transition-colors min-h-[36px] flex items-center gap-1 tracking-wide"
                 :aria-label="`Read full review for ${review.name}`"
                 @click="openReview(review)"
               >
                 Read more
                 <svg
-                  class="w-3 h-3"
+                  class="w-3.5 h-3.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -229,13 +231,13 @@
           >
             <div>
               <p
-                class="text-[#F49321] font-extrabold text-sm tracking-wide mb-0.5"
+                class="text-[#F49321] font-extrabold text-base tracking-wide mb-0.5"
               >
                 What Customers Say
               </p>
               <h3
                 id="modal-heading"
-                class="text-lg sm:text-xl lg:text-2xl font-bold text-[#1C2D5B]"
+                class="text-xl sm:text-2xl lg:text-3xl font-bold text-[#1C2D5B]"
               >
                 Customer Reviews
               </h3>
@@ -280,10 +282,10 @@
                       </span>
                     </div>
                     <div class="min-w-0">
-                      <p class="font-bold text-[#1C2D5B] text-sm truncate">
+                      <p class="font-bold text-[#1C2D5B] text-base truncate">
                         {{ review.name }}
                       </p>
-                      <p class="text-xs text-gray-500 truncate">
+                      <p class="text-sm text-gray-500 truncate">
                         {{ review.location }}
                       </p>
                     </div>
@@ -334,7 +336,7 @@
                 </div>
 
                 <p
-                  class="text-sm text-gray-700 leading-relaxed whitespace-pre-line"
+                  class="text-base text-gray-700 leading-relaxed whitespace-pre-line"
                 >
                   {{ review.text }}
                 </p>

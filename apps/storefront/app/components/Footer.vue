@@ -9,9 +9,40 @@
         class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-6 sm:gap-10 mb-8 sm:mb-12"
       >
         <div
-          class="col-span-2 sm:col-span-1 flex justify-center sm:justify-start"
+          class="col-span-2 sm:col-span-1 flex flex-col items-center sm:items-start"
         >
           <MainLogoForDark />
+
+          <!-- Social links -->
+          <div class="mt-4 sm:mt-5 flex items-center gap-8 sm:gap-10">
+            <a
+              href="https://www.instagram.com/festive.express.decor/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Festive Express on Instagram"
+              class="text-slate-300 hover:text-brand-orange transition-colors duration-300 text-xl sm:text-2xl"
+            >
+              <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+            </a>
+            <a
+              href="https://www.facebook.com/Festive.Express/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Festive Express on Facebook"
+              class="text-slate-300 hover:text-brand-orange transition-colors duration-300 text-xl sm:text-2xl"
+            >
+              <i class="fa-brands fa-facebook-f" aria-hidden="true"></i>
+            </a>
+            <a
+              href="https://www.linkedin.com/company/festive-express-decor/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Festive Express on LinkedIn"
+              class="text-slate-300 hover:text-brand-orange transition-colors duration-300 text-xl sm:text-2xl"
+            >
+              <i class="fa-brands fa-linkedin-in" aria-hidden="true"></i>
+            </a>
+          </div>
         </div>
 
         <div>

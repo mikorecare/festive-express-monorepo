@@ -83,7 +83,7 @@ export default defineEventHandler(async (event) => {
         if (billing_city) formData.append('ssl_city', String(billing_city).trim());
         if (billing_state) formData.append('ssl_state', String(billing_state).trim());
         if (billing_zip) formData.append('ssl_avs_zip', String(billing_zip).trim());
-        if (billing_country) formData.append('ssl_country', String(billing_country).trim());
+        if (billing_country) formData.append('ssl_country', 'FL');
         if (billing_phone) formData.append('ssl_phone', String(billing_phone).trim());
 
         const apiUrl = process.env.NODE_ENV === "production"
