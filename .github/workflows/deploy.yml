@@ -102,18 +102,22 @@ jobs:
             cp -r apps/storefront apps/storefront-new
             cd apps/storefront-new
             rm -rf .nuxt .output .next dist
-            # Symlink root node_modules to bypass workspace conflict during build
             ln -s ../../node_modules node_modules
+            # Rename package.json to bypass duplicate workspace error
+            mv package.json package.json.bak
             npm run build
+            mv package.json.bak package.json
             cd ../..
 
             echo "── Staging Admin ──"
             cp -r apps/admin apps/admin-new
             cd apps/admin-new
             rm -rf .nuxt .output .next dist
-            # Symlink root node_modules to bypass workspace conflict during build
             ln -s ../../node_modules node_modules
+            # Rename package.json to bypass duplicate workspace error
+            mv package.json package.json.bak
             npm run build
+            mv package.json.bak package.json
             cd ../..
 
             # ==========================================
