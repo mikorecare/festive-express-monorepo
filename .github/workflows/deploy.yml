@@ -33,21 +33,25 @@ jobs:
             echo "── Preflight: disk space ──"
             FREE_GB=$(( $(df --output=avail . | tail -1) / 1024 / 1024 ))
             echo "Free disk: ${FREE_GB}GB"
-            if [ "$FREE_GB" -lt 3 ]; then
+            if [ "$FREE_GB" -lt 5 ]; then
               echo "ERROR: Only ${FREE_GB}GB free. Aborting."
               df -h .
               exit 1
             fi
 
-            echo "── Reclaiming space ──"
+            echo "── Reclaiming space and memory ──"
             pm2 flush 2>/dev/null || true
             npm cache clean --force 2>/dev/null || true
-            rm -rf apps/*/.nuxt apps/*/.output apps/*/.next apps/*/dist 2>/dev/null || true
-            find apps -type d -name ".cache" -prune -exec rm -rf {} + 2>/dev/null || true
+            rm -rf apps/*-new apps/*/.next/cache 2>/dev/null || true
+            
+            # Force Linux to clear buff/cache to free up RAM for the build
+            sync; echo 3 | sudo tee /proc/sys/vm/drop_caches >/dev/null 2>&1 || true
+            
             sudo journalctl --vacuum-size=200M 2>/dev/null || true
             sudo apt clean 2>/dev/null || true
             git gc --prune=now 2>/dev/null || true
             df -h
+            free -h
 
             echo "── Fetching latest ──"
             git fetch origin production
@@ -55,19 +59,16 @@ jobs:
             git log -1 --oneline
 
             echo "── Locating Node ──"
-            # Try nvm first (v24, then any v20+, then whatever's there)
             if [ -d "$HOME/.nvm/versions/node" ]; then
               NODE_DIR=$(ls -d "$HOME"/.nvm/versions/node/v24.* 2>/dev/null | sort -V | tail -1)
               [ -z "$NODE_DIR" ] && NODE_DIR=$(ls -d "$HOME"/.nvm/versions/node/v20.* 2>/dev/null | sort -V | tail -1)
               [ -z "$NODE_DIR" ] && NODE_DIR=$(ls -d "$HOME"/.nvm/versions/node/*/ 2>/dev/null | sort -V | tail -1)
               [ -n "$NODE_DIR" ] && export PATH="$NODE_DIR/bin:$PATH"
             fi
-            # Try nvm.sh as fallback
             if ! command -v node >/dev/null 2>&1 && [ -s "$HOME/.nvm/nvm.sh" ]; then
               \. "$HOME/.nvm/nvm.sh"
               nvm use 24 2>/dev/null || nvm use 20 2>/dev/null || nvm use --lts 2>/dev/null || true
             fi
-            # Try common system locations
             if ! command -v node >/dev/null 2>&1; then
               for d in /usr/local/bin /usr/bin /opt/node/bin; do
                 if [ -x "$d/node" ]; then
@@ -76,47 +77,56 @@ jobs:
                 fi
               done
             fi
-            # Final check
             if ! command -v node >/dev/null 2>&1; then
               echo "ERROR: node not found anywhere."
-              echo "HOME=$HOME"
-              echo "PATH=$PATH"
-              ls -la "$HOME/.nvm/versions/node" 2>&1 || true
-              ls -la /usr/local/bin/node /usr/bin/node 2>&1 || true
               exit 1
             fi
-            echo "Node: $(command -v node)"
-            echo "Version: $(node --version)"
-            echo "npm: $(npm --version)"
+            echo "Node: $(command -v node) | Version: $(node --version)"
 
-            export NODE_OPTIONS="--max-old-space-size=768"
+            # Lowered to 512MB to force Node to use Swap safely without OOM crashing
+            export NODE_OPTIONS="--max-old-space-size=512"
             echo "── Memory ──"
             free -h
 
-            echo "── Building Storefront ──"
-            cd apps/storefront
-            rm -rf .nuxt .output .next dist node_modules/.cache
-            npm ci
-            npm run build
-            rm -rf node_modules/.cache 2>/dev/null || true
+            # ==========================================
+            # STAGING BUILDS (Old app stays online)
+            # ==========================================
 
-            echo "── Building Admin ──"
-            cd ../admin
+            echo "── Staging Storefront ──"
+            cp -r apps/storefront apps/storefront-new
+            cd apps/storefront-new
             rm -rf .nuxt .output .next dist node_modules/.cache
             npm ci
             npm run build
-            rm -rf node_modules/.cache 2>/dev/null || true
+            cd ../..
+
+            echo "── Staging Admin ──"
+            cp -r apps/admin apps/admin-new
+            cd apps/admin-new
+            rm -rf .nuxt .output .next dist node_modules/.cache
+            npm ci
+            npm run build
+            cd ../..
+
+            # ==========================================
+            # SWAP & DEPLOY (Downtime is seconds)
+            # ==========================================
+
+            echo "── Swapping new builds into place ──"
+            mv apps/storefront apps/storefront-old
+            mv apps/storefront-new apps/storefront
+
+            mv apps/admin apps/admin-old
+            mv apps/admin-new apps/admin
 
             echo "── Reloading PM2 ──"
-            cd ../..
             pm2 reload ecosystem.config.js --update-env
             pm2 save
-
             sleep 5
             pm2 list
 
             echo "── Post-deploy cleanup ──"
-            find apps -type d -name ".cache" -prune -exec rm -rf {} + 2>/dev/null || true
+            rm -rf apps/storefront-old apps/admin-old
             rm -rf apps/*/.nuxt/cache apps/*/.next/cache 2>/dev/null || true
             npm cache clean --force 2>/dev/null || true
             git gc --prune=now 2>/dev/null || true
