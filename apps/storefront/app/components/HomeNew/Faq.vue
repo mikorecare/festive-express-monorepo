@@ -13,7 +13,7 @@
     <!-- Content needs relative z-10 to sit above bg -->
     <div class="relative z-10">
       <h1
-        class="font-poppins text-center font-extrabold text-[#F49321] text-2xl sm:text-4xl lg:text-[60px] leading-[1.1] sm:leading-[0.9] lg:leading-[0.77] tracking-tight [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff,_0_2px_4px_rgba(28,45,91,0.35)] lg:[text-shadow:_-2px_-2px_0_#fff,_2px_-2px_0_#fff,_-2px_2px_0_#fff,_2px_2px_0_#fff,_0_4px_10px_rgba(28,45,91,0.45)] mb-6 sm:mb-10 lg:mb-12 px-2"
+        class="font-poppins text-center font-extrabold text-[#F49321] text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1] sm:leading-[1] lg:leading-[0.85] tracking-tight [text-shadow:_-1.5px_-1.5px_0_#fff,_1.5px_-1.5px_0_#fff,_-1.5px_1.5px_0_#fff,_1.5px_1.5px_0_#fff,_0_3px_8px_rgba(28,45,91,0.35)] lg:[text-shadow:_-3px_-3px_0_#fff,_3px_-3px_0_#fff,_-3px_3px_0_#fff,_3px_3px_0_#fff,_0_5px_12px_rgba(28,45,91,0.45)] mb-6 sm:mb-10 lg:mb-12 px-2"
       >
         Holiday Lighting Questions
       </h1>

@@ -262,7 +262,7 @@
             </p>
           </div>
 
-          <div>
+          <!-- <div>
             <input
               :value="modelValue.billing_state"
               @input="
@@ -281,7 +281,7 @@
             <p v-if="errors.billing_state" class="text-red-500 text-sm mt-1">
               {{ errors.billing_state }}
             </p>
-          </div>
+          </div> -->
 
           <div>
             <input
@@ -328,7 +328,6 @@ interface FormData {
   card_cvv: string;
   billing_address: string;
   billing_city: string;
-  billing_state: string;
   billing_postcode: string;
 }
 

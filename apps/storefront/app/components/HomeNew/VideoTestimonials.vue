@@ -14,7 +14,7 @@
         <div v-fade class="max-w-[720px]">
           <h2
             id="video-testimonials-heading"
-            class="text-[1.75rem] sm:text-4xl lg:text-5xl font-extrabold leading-[1.1]"
+            class="text-[1.75rem] sm:text-4xl lg:text-5xl font-extrabold leading-[1.1] uppercase tracking-wide mb-2 sm:mb-3"
           >
             <span class="block text-[#1C2D5B]">Video testimonials</span>
             <span
@@ -23,7 +23,7 @@
               Hear it from our neighbors
             </span>
           </h2>
-          <p class="text-black text-sm sm:text-base mt-2 sm:mt-3 font-medium">
+          <p class="text-black text-lg mt-2 sm:mt-3 font-medium leading-tight">
             Real homeowners on renting the magic and enjoying the season from
             the couch.
           </p>

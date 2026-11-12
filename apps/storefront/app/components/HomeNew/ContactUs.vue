@@ -17,7 +17,7 @@
       <!-- ============================== -->
       <div v-fade class="max-w-[600px]">
         <h2
-          class="text-2xl sm:text-4xl lg:text-5xl font-extrabold leading-[1.15] sm:leading-[1.1] text-[#1C2D5B]"
+          class="text-3xl sm:text-4xl lg:text-6xl font-extrabold leading-[1.15] sm:leading-[1.1] text-[#1C2D5B]"
         >
           Want a custom<br />
           design for your home?<br />
@@ -29,7 +29,7 @@
         </h2>
 
         <p
-          class="mt-4 sm:mt-6 text-black text-xs sm:text-base leading-relaxed font-semibold"
+          class="mt-4 sm:mt-6 text-black text-base sm:text-base lg:text-lg leading-relaxed font-semibold"
         >
           Our packages cover most homes, but if you have a bigger project, an
           unusual layout, or just prefer to talk it through, our team can put

@@ -73,9 +73,6 @@
       />
     </div>
 
-    <!-- OVERLAY z-10 -->
-    <div class="overlay absolute inset-0 z-10 max-lg:bg-black/25"></div>
-
     <!-- CONTENT z-20 -->
     <div
       class="hero-content-container relative z-20 w-full max-w-[1200px] px-[5%] lg:pl-[15%] flex justify-start items-center gap-5 max-lg:flex-col max-lg:items-start max-lg:gap-0 max-lg:px-[6%] max-lg:pt-10 max-lg:w-full max-lg:h-[80svh]"

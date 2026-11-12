@@ -9,19 +9,50 @@
         class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-6 sm:gap-10 mb-8 sm:mb-12"
       >
         <div
-          class="col-span-2 sm:col-span-1 flex justify-center sm:justify-start"
+          class="col-span-2 sm:col-span-1 flex flex-col items-center sm:items-start"
         >
           <MainLogoForDark />
+
+          <!-- Social links -->
+          <div class="mt-4 sm:mt-5 flex items-center gap-8 sm:gap-10">
+            <a
+              href="https://www.instagram.com/festive.express.decor/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Festive Express on Instagram"
+              class="text-slate-300 hover:text-brand-orange transition-colors duration-300 text-xl sm:text-2xl"
+            >
+              <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+            </a>
+            <a
+              href="https://www.facebook.com/Festive.Express/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Festive Express on Facebook"
+              class="text-slate-300 hover:text-brand-orange transition-colors duration-300 text-xl sm:text-2xl"
+            >
+              <i class="fa-brands fa-facebook-f" aria-hidden="true"></i>
+            </a>
+            <a
+              href="https://www.linkedin.com/company/festive-express-decor/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Festive Express on LinkedIn"
+              class="text-slate-300 hover:text-brand-orange transition-colors duration-300 text-xl sm:text-2xl"
+            >
+              <i class="fa-brands fa-linkedin-in" aria-hidden="true"></i>
+            </a>
+          </div>
         </div>
 
         <div>
           <p
-            class="text-brand-orange text-sm sm:text-[1.1rem] font-semibold mb-2.5 sm:mb-5 uppercase tracking-widest"
+            class="text-brand-orange text-base sm:text-[1.1rem] font-semibold mb-2.5 sm:mb-5 uppercase tracking-widest"
           >
             Contact Us
           </p>
           <p
-            class="text-slate-300 tracking-wide mb-2 sm:mb-2.5 text-xs sm:text-base break-words"
+            class="text-slate-300 tracking-wide mb-2 sm:mb-2.5 text-sm sm:text-base break-words"
           >
             <a
               v-if="settings.contact_email"
@@ -33,7 +64,7 @@
             <span v-else>—</span>
           </p>
           <p
-            class="text-slate-300 tracking-wide mb-2 sm:mb-2.5 text-xs sm:text-base"
+            class="text-slate-300 tracking-wide mb-2 sm:mb-2.5 text-sm sm:text-base"
           >
             <a
               :href="telHref"
@@ -55,7 +86,7 @@
 
         <div class="col-span-2 sm:col-span-1">
           <p
-            class="text-brand-orange text-sm sm:text-[1.1rem] font-semibold mb-2.5 sm:mb-5 uppercase tracking-widest"
+            class="text-brand-orange text-base sm:text-[1.1rem] font-semibold mb-2.5 sm:mb-5 uppercase tracking-widest"
           >
             Quick Links
           </p>
@@ -64,37 +95,37 @@
           >
             <NuxtLink
               to="/about-us"
-              class="text-slate-300 tracking-wide hover:text-brand-orange sm:block sm:mb-2.5 transition-colors duration-300 text-xs sm:text-base"
+              class="text-slate-300 tracking-wide hover:text-brand-orange sm:block sm:mb-2.5 transition-colors duration-300 text-sm sm:text-base"
             >
               About Us
             </NuxtLink>
             <NuxtLink
               to="/contact"
-              class="text-slate-300 tracking-wide hover:text-brand-orange sm:block sm:mb-2.5 transition-colors duration-300 text-xs sm:text-base"
+              class="text-slate-300 tracking-wide hover:text-brand-orange sm:block sm:mb-2.5 transition-colors duration-300 text-sm sm:text-base"
             >
               Contact Us
             </NuxtLink>
             <NuxtLink
               to="/faq"
-              class="text-slate-300 tracking-wide hover:text-brand-orange sm:block sm:mb-2.5 transition-colors duration-300 text-xs sm:text-base"
+              class="text-slate-300 tracking-wide hover:text-brand-orange sm:block sm:mb-2.5 transition-colors duration-300 text-sm sm:text-base"
             >
               FAQ
             </NuxtLink>
             <NuxtLink
               to="/privacy-policy"
-              class="text-slate-300 tracking-wide hover:text-brand-orange sm:block sm:mb-2.5 transition-colors duration-300 text-xs sm:text-base"
+              class="text-slate-300 tracking-wide hover:text-brand-orange sm:block sm:mb-2.5 transition-colors duration-300 text-sm sm:text-base"
             >
               Privacy Policy
             </NuxtLink>
             <NuxtLink
               to="/cookie-policy"
-              class="text-slate-300 tracking-wide hover:text-brand-orange sm:block sm:mb-2.5 transition-colors duration-300 text-xs sm:text-base"
+              class="text-slate-300 tracking-wide hover:text-brand-orange sm:block sm:mb-2.5 transition-colors duration-300 text-sm sm:text-base"
             >
               Cookie Policy
             </NuxtLink>
             <NuxtLink
               to="/terms"
-              class="text-slate-300 tracking-wide hover:text-brand-orange sm:block sm:mb-2.5 transition-colors duration-300 text-xs sm:text-base"
+              class="text-slate-300 tracking-wide hover:text-brand-orange sm:block sm:mb-2.5 transition-colors duration-300 text-sm sm:text-base"
             >
               Terms & Conditions
             </NuxtLink>
@@ -108,7 +139,7 @@
         class="w-full mx-auto max-w-7xl flex flex-col sm:flex-row flex-wrap justify-between items-center gap-3 sm:gap-[15px] text-slate-400 text-[0.85rem] sm:text-[0.95rem]"
       >
         <div
-          class="text-navy text-center sm:text-left text-[0.75rem] sm:text-sm w-full sm:w-auto space-y-1"
+          class="text-navy text-center sm:text-left text-sm sm:text-sm w-full sm:w-auto space-y-1"
         >
           <!-- Copyright Line -->
           <div class="font-semibold">
@@ -119,9 +150,7 @@
           </div>
 
           <!-- Shorter Disclaimer Line -->
-          <div
-            class="text-slate-500 text-[0.65rem] sm:text-[0.75rem] leading-snug"
-          >
+          <div class="text-slate-500 text-xs sm:text-[0.75rem] leading-snug">
             Festive Express is owned and operated by Festive Lighting Pros, a
             division of Festive Franchising Corp.
           </div>

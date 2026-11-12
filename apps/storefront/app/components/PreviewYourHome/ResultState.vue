@@ -1,6 +1,6 @@
 <template>
   <div v-if="result">
-    <p class="text-sm text-gray-700 mb-4">
+    <p class="text-[13px] sm:text-sm text-gray-700 mb-4">
       <i class="fas fa-info-circle mr-1"></i>
       This is a computer-generated preview at how your home could glow with our
       Christmas lights. It's meant to give you a good sense of the overall
@@ -108,16 +108,16 @@
 
           <div class="md:w-1/5 space-y-1">
             <div class="bg-gray-50 rounded-lg p-1.5 md:p-3">
-              <p class="text-[8px] md:text-xs text-gray-500">
+              <p class="text-[11px] md:text-sm text-gray-500">
                 Estimated footage
               </p>
-              <p class="text-xs md:text-xl font-bold text-navy">
+              <p class="text-sm md:text-xl font-bold text-navy">
                 {{ Math.round(getTotalFeet(result.stats)) || "—" }} ft
               </p>
             </div>
             <div class="bg-gray-50 rounded-lg p-1.5 md:p-3">
-              <p class="text-[8px] md:text-xs text-gray-500">Package Price</p>
-              <p class="text-xs md:text-xl font-bold text-brand-orange">
+              <p class="text-[11px] md:text-sm text-gray-500">Package Price</p>
+              <p class="text-sm md:text-xl font-bold text-brand-orange">
                 {{ getPackagePrice() }}
               </p>
             </div>
@@ -125,8 +125,8 @@
               v-if="calculatedOverageFt > 0"
               class="bg-gray-50 rounded-lg p-1.5 md:p-3"
             >
-              <p class="text-[8px] md:text-xs text-gray-500">Extra footage</p>
-              <p class="text-xs md:text-xl font-bold text-navy text-orange-600">
+              <p class="text-[11px] md:text-sm text-gray-500">Extra footage</p>
+              <p class="text-sm md:text-xl font-bold text-navy text-orange-600">
                 +{{ Math.round(calculatedOverageFt) }} ft
               </p>
             </div>
@@ -134,8 +134,8 @@
               v-if="calculatedOveragePrice"
               class="bg-gray-50 rounded-lg p-1.5 md:p-3"
             >
-              <p class="text-[8px] md:text-xs text-gray-500">Extra to add</p>
-              <p class="text-xs md:text-xl font-bold text-navy text-orange-600">
+              <p class="text-[11px] md:text-sm text-gray-500">Extra to add</p>
+              <p class="text-sm md:text-xl font-bold text-navy text-orange-600">
                 {{ formatMoney(calculatedOveragePrice) }}
               </p>
             </div>
@@ -147,14 +147,14 @@
           class="bg-gray-50 rounded-lg p-1.5 md:p-4"
         >
           <div class="flex items-center justify-between">
-            <span class="text-[8px] md:text-sm text-gray-700"
+            <span class="text-[11px] md:text-sm text-gray-700"
               >Price per linear foot</span
             >
-            <span class="text-xs md:text-lg font-bold text-navy"
+            <span class="text-sm md:text-lg font-bold text-navy"
               >${{ OVERAGE_RATE }}</span
             >
           </div>
-          <p class="text-[7px] md:text-xs text-gray-500 mt-0.5 md:mt-1">
+          <p class="text-[11px] md:text-xs text-gray-500 mt-0.5 md:mt-1">
             Your home is over {{ PACKAGE_TOTAL_FT }} ft — extra footage is
             priced per linear foot.
           </p>
@@ -165,11 +165,11 @@
           class="bg-amber-50 border border-amber-200 rounded-lg p-1.5 md:p-4"
         >
           <h4
-            class="text-[8px] md:text-sm font-semibold text-amber-800 mb-0.5 md:mb-1"
+            class="text-[12px] md:text-sm font-semibold text-amber-800 mb-0.5 md:mb-1"
           >
             Your home needs a bit more than {{ PACKAGE_TOTAL_FT }} ft
           </h4>
-          <p class="text-[7px] md:text-sm text-amber-700">
+          <p class="text-[12px] md:text-sm text-amber-700">
             The {{ getPackageName() || "Jolly" }} package covers up to
             {{ PACKAGE_TOTAL_FT }} ft. Add
             {{ Math.round(calculatedOverageFt) }} extra ft at ${{
@@ -183,11 +183,11 @@
           class="bg-green-50 border border-green-200 rounded-lg p-1.5 md:p-4"
         >
           <h4
-            class="text-[8px] md:text-sm font-semibold text-green-800 mb-0.5 md:mb-1"
+            class="text-[12px] md:text-sm font-semibold text-green-800 mb-0.5 md:mb-1"
           >
             ✓ Your home is covered by the package
           </h4>
-          <p class="text-[7px] md:text-sm text-green-700">
+          <p class="text-[12px] md:text-sm text-green-700">
             Your home needs {{ Math.round(getTotalFeet(result.stats)) }} ft
             total, which is within the {{ PACKAGE_TOTAL_FT }} ft package limit.
           </p>
@@ -215,7 +215,7 @@
         <template v-if="!isPreview">
           <div class="space-y-1.5 md:space-y-3">
             <button
-              class="w-full btn-3d-glossy btn-3d-glossy-orange text-white font-semibold py-1.5 md:py-3 px-3 md:px-4 rounded-lg transition-colors text-[10px] md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+              class="w-full btn-3d-glossy btn-3d-glossy-orange text-white font-semibold py-2 md:py-3 px-3 md:px-4 rounded-lg transition-colors text-[13px] md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
               @click="handleBookConsultation"
               :disabled="booking || isBooked || !turnstileVerified"
             >
@@ -229,7 +229,7 @@
               }}
             </button>
             <button
-              class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-1.5 md:py-3 px-3 md:px-4 rounded-lg transition-colors text-[10px] md:text-base"
+              class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-2 md:py-3 px-3 md:px-4 rounded-lg transition-colors text-[13px] md:text-base"
               @click="reset"
               :disabled="booking"
             >
@@ -242,7 +242,7 @@
         <template v-else>
           <div class="space-y-1.5 md:space-y-3">
             <button
-              class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-1.5 md:py-3 px-3 md:px-4 rounded-lg transition-colors text-[10px] md:text-base"
+              class="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold py-2 md:py-3 px-3 md:px-4 rounded-lg transition-colors text-[13px] md:text-base"
               @click="reset"
             >
               <i class="fas fa-arrow-left mr-1 md:mr-2"></i>
@@ -251,7 +251,7 @@
           </div>
         </template>
 
-        <p class="text-[7px] md:text-xs text-gray-400 text-center">
+        <p class="text-[11px] md:text-xs text-gray-400 text-center">
           Estimate for {{ result.address || "your home" }}.
         </p>
       </div>
@@ -264,10 +264,10 @@
         >
           <div class="flex flex-col items-center gap-3 text-center px-4">
             <div class="loading-spinner"></div>
-            <p class="text-sm md:text-base font-semibold text-navy">
+            <p class="text-[15px] md:text-base font-semibold text-navy">
               Sending your preview...
             </p>
-            <p class="text-[11px] md:text-sm text-gray-500">
+            <p class="text-[12px] md:text-sm text-gray-500">
               Hang tight — this only takes a moment.
             </p>
           </div>
@@ -670,19 +670,19 @@ onUnmounted(() => {
   }
 
   .success-title {
-    font-size: 1.25rem;
+    font-size: 1.375rem;
   }
 
   .success-message {
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
   }
 
   .success-timer {
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
   }
 
   .success-timer strong {
-    font-size: 1rem;
+    font-size: 1.0625rem;
   }
 }
 
@@ -692,21 +692,21 @@ onUnmounted(() => {
   }
 
   .success-icon-wrapper {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
   }
 
   .success-icon {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
   }
 
   .success-title {
-    font-size: 1rem;
+    font-size: 1.125rem;
   }
 
   .success-message {
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
   }
 }
 </style>
