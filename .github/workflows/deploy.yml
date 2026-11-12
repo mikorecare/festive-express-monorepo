@@ -42,7 +42,7 @@ jobs:
             echo "── Reclaiming space and memory ──"
             pm2 flush 2>/dev/null || true
             npm cache clean --force 2>/dev/null || true
-            rm -rf apps/*-new apps/*/.next/cache 2>/dev/null || true
+            rm -rf .staging apps/*-new apps/*-old apps/*/.next/cache 2>/dev/null || true
 
             # Force Linux to clear buff/cache to free up RAM for the build
             sync; echo 3 | sudo tee /proc/sys/vm/drop_caches >/dev/null 2>&1 || true
@@ -96,28 +96,25 @@ jobs:
 
             # ==========================================
             # STAGING BUILDS (Old app stays online)
+            # Built in .staging/ so npm doesn't treat the copy
+            # as a duplicate workspace. package.json stays intact.
             # ==========================================
+            mkdir -p .staging
 
             echo "── Staging Storefront ──"
-            cp -r apps/storefront apps/storefront-new
-            cd apps/storefront-new
-            rm -rf .nuxt .output .next dist
+            cp -r apps/storefront .staging/storefront
+            cd .staging/storefront
+            rm -rf .nuxt .output .next dist node_modules
             ln -s ../../node_modules node_modules
-            # Rename package.json to bypass duplicate workspace error
-            mv package.json package.json.bak
             npm run build
-            mv package.json.bak package.json
             cd ../..
 
             echo "── Staging Admin ──"
-            cp -r apps/admin apps/admin-new
-            cd apps/admin-new
-            rm -rf .nuxt .output .next dist
+            cp -r apps/admin .staging/admin
+            cd .staging/admin
+            rm -rf .nuxt .output .next dist node_modules
             ln -s ../../node_modules node_modules
-            # Rename package.json to bypass duplicate workspace error
-            mv package.json package.json.bak
             npm run build
-            mv package.json.bak package.json
             cd ../..
 
             # ==========================================
@@ -126,10 +123,10 @@ jobs:
 
             echo "── Swapping new builds into place ──"
             mv apps/storefront apps/storefront-old
-            mv apps/storefront-new apps/storefront
+            mv .staging/storefront apps/storefront
 
             mv apps/admin apps/admin-old
-            mv apps/admin-new apps/admin
+            mv .staging/admin apps/admin
 
             echo "── Reloading PM2 ──"
             pm2 reload ecosystem.config.js --update-env
@@ -138,7 +135,7 @@ jobs:
             pm2 list
 
             echo "── Post-deploy cleanup ──"
-            rm -rf apps/storefront-old apps/admin-old
+            rm -rf apps/storefront-old apps/admin-old .staging
             rm -rf apps/*/.nuxt/cache apps/*/.next/cache 2>/dev/null || true
             npm cache clean --force 2>/dev/null || true
             git gc --prune=now 2>/dev/null || true
