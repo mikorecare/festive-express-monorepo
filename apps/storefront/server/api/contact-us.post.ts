@@ -68,6 +68,7 @@ export default defineEventHandler(async (event) => {
     try {
         const supabase = getSupabase();
 
+        // 1. Original RPC Call (Keep this - handles whatever it was doing before)
         const { data, error } = await supabase.rpc('handle_contact_form', {
             p_first_name: body.firstName.trim(),
             p_last_name: body.lastName.trim(),
@@ -79,6 +80,20 @@ export default defineEventHandler(async (event) => {
         if (error) {
             console.error('Supabase RPC error:', error);
             return { success: false, error: 'Failed to send message. Please try again.' };
+        }
+
+        const { error: contactSaveError } = await supabase
+            .from('contacts')
+            .insert({
+                first_name: body.firstName.trim(),
+                last_name: body.lastName.trim(),
+                email: body.email.trim(),
+                phone: body.phone.trim(),
+                message: body.message.trim(),
+            });
+
+        if (contactSaveError) {
+            console.error('Failed to save to contacts table:', contactSaveError);
         }
 
         // ---- Send SMS (best-effort; do not fail the form if it errors) ----
