@@ -249,7 +249,7 @@
           >
             <div
               v-if="firstParagraph(pkg.description)"
-              class="text-[1rem] sm:text-[1rem] md:text-[1.08rem] text-[#1C2D5B] text-start font-medium leading-relaxed mb-3 line-clamp-3 [&_p]:m-0 [&_strong]:font-bold [&_p]:line-clamp-3"
+              class="text-[1rem] sm:text-[1rem] md:text-[1.08rem] text-[#1C2D5B] text-start font-medium leading-snug mb-3 line-clamp-3 [&_p]:m-0 [&_strong]:font-bold [&_p]:line-clamp-3"
               v-html="firstParagraph(pkg.description)"
             ></div>
             <div

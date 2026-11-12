@@ -14,18 +14,16 @@
         <div v-fade class="max-w-[720px]">
           <h2
             id="video-testimonials-heading"
-            class="text-3xl sm:text-4xl font-extrabold leading-[1.15] mb-2 sm:mb-3 lg:text-7xl lg:leading-[1.05] uppercase tracking-wide"
+            class="text-[1.75rem] sm:text-4xl lg:text-5xl font-extrabold leading-[1.1] uppercase tracking-wide mb-2 sm:mb-3"
           >
             <span class="block text-[#1C2D5B]">Video testimonials</span>
             <span
-              class="block text-[#F49321] [text-shadow:_-1.5px_-1.5px_0_#fff,_1.5px_-1.5px_0_#fff,_-1.5px_1.5px_0_#fff,_1.5px_1.5px_0_#fff,_0_3px_8px_rgba(28,45,91,0.35)] lg:[text-shadow:_-3px_-3px_0_#fff,_3px_-3px_0_#fff,_-3px_3px_0_#fff,_3px_3px_0_#fff,_0_5px_12px_rgba(28,45,91,0.45)]"
+              class="block text-[#F49321] [text-shadow:_-2px_-2px_0_#fff,_2px_-2px_0_#fff,_-2px_2px_0_#fff,_2px_2px_0_#fff,_0_4px_10px_rgba(28,45,91,0.45)]"
             >
               Hear it from our neighbors
             </span>
           </h2>
-          <p
-            class="text-black text-base sm:text-lg mt-2 sm:mt-3 font-medium lg:text-2xl lg:max-w-[840px]"
-          >
+          <p class="text-black text-lg mt-2 sm:mt-3 font-medium leading-tight">
             Real homeowners on renting the magic and enjoying the season from
             the couch.
           </p>

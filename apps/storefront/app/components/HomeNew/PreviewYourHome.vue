@@ -72,21 +72,21 @@
 
           <ol
             v-fade
-            class="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 sm:mt-9 lg:mt-12 lg:block lg:space-y-6"
+            class="mt-4 grid grid-cols-2 gap-x-2 gap-y-4 sm:mt-9 sm:gap-y-6 lg:mt-12 lg:block lg:space-y-6"
           >
             <li
               v-for="(step, i) in steps"
               :key="i"
-              class="flex items-center gap-2.5 sm:gap-5"
+              class="flex items-center gap-2 sm:gap-5"
             >
               <span
-                class="shrink-0 w-7 h-7 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full bg-[#F49321] text-[#1C2D5B] font-black text-sm sm:text-xl lg:text-2xl flex items-center justify-center shadow-[0_4px_10px_rgba(244,147,33,0.4)] [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff]"
+                class="shrink-0 w-9 h-9 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full bg-[#F49321] text-[#1C2D5B] font-black text-lg sm:text-xl lg:text-2xl flex items-center justify-center shadow-[0_4px_10px_rgba(244,147,33,0.4)] [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff]"
                 aria-hidden="true"
               >
                 {{ i + 1 }}
               </span>
               <span
-                class="text-base leading-tight sm:text-3xl lg:text-4xl font-bold text-black"
+                class="text-md leading-tight lg:text-3xl font-bold text-black"
               >
                 {{ step }}
               </span>
