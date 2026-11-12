@@ -84,7 +84,7 @@ jobs:
             echo "Node: $(command -v node) | Version: $(node --version)"
 
             # Lowered to 512MB to force Node to use Swap safely without OOM crashing
-            export NODE_OPTIONS="--max-old-space-size=512"
+             export NODE_OPTIONS="--max-old-space-size=2560"
             echo "── Memory ──"
             free -h
 
