@@ -20,19 +20,19 @@
     >
       <!-- Eyebrow -->
       <p
-        class="text-[#F49321] font-extrabold text-4xl tracking-wide mb-1.5 text-left sm:text-5xl md:text-6xl lg:text-7xl lg:mb-4 [text-shadow:_-1.5px_-1.5px_0_#fff,_1.5px_-1.5px_0_#fff,_-1.5px_1.5px_0_#fff,_1.5px_1.5px_0_#fff,_0_3px_8px_rgba(28,45,91,0.35)] lg:[text-shadow:_-3px_-3px_0_#fff,_3px_-3px_0_#fff,_-3px_3px_0_#fff,_3px_3px_0_#fff,_0_5px_12px_rgba(28,45,91,0.45)]"
+        class="text-[#F49321] font-extrabold text-4xl tracking-wide mb-1.5 text-center lg:text-left sm:text-5xl md:text-6xl lg:text-7xl lg:mb-4 [text-shadow:_-1.5px_-1.5px_0_#fff,_1.5px_-1.5px_0_#fff,_-1.5px_1.5px_0_#fff,_1.5px_1.5px_0_#fff,_0_3px_8px_rgba(28,45,91,0.35)] lg:[text-shadow:_-3px_-3px_0_#fff,_3px_-3px_0_#fff,_-3px_3px_0_#fff,_3px_3px_0_#fff,_0_5px_12px_rgba(28,45,91,0.45)]"
       >
         How it works
       </p>
 
       <!-- Headline -->
       <h2
-        class="text-3xl sm:text-4xl font-poppins font-extrabold text-[#1C2D5B] leading-[1.15] mb-2 text-left lg:text-7xl lg:leading-[1.05] lg:mb-5 uppercase tracking-wide"
+        class="text-3xl sm:text-4xl font-poppins font-extrabold text-[#1C2D5B] leading-[1.15] mb-2 text-center lg:text-left lg:text-7xl lg:leading-[1.05] lg:mb-5 tracking-wide"
       >
         Professional holiday lighting, made simple.
       </h2>
       <p
-        class="text-[#F49321] font-extrabold text-xl sm:text-2xl lg:text-3xl tracking-wide mb-2 text-left lg:mb-14 [text-shadow:_-1.5px_-1.5px_0_#fff,_1.5px_-1.5px_0_#fff,_-1.5px_1.5px_0_#fff,_1.5px_1.5px_0_#fff,_0_3px_8px_rgba(28,45,91,0.35)]"
+        class="text-[#F49321] font-extrabold text-xl sm:text-2xl lg:text-3xl tracking-wide mb-2 text-center lg:text-left lg:mb-14 [text-shadow:_-1.5px_-1.5px_0_#fff,_1.5px_-1.5px_0_#fff,_-1.5px_1.5px_0_#fff,_1.5px_1.5px_0_#fff,_0_3px_8px_rgba(28,45,91,0.35)]"
       >
         Rent, Relax, &amp; Celebrate
       </p>

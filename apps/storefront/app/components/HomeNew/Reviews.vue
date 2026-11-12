@@ -19,7 +19,7 @@
         </p>
         <h2
           id="reviews-heading"
-          class="text-3xl sm:text-4xl font-extrabold text-[#1C2D5B] leading-[1.15] mb-3 uppercase tracking-wide lg:text-7xl lg:leading-[1.05]"
+          class="text-3xl sm:text-4xl font-extrabold text-[#1C2D5B] leading-[1.15] mb-3 tracking-wide lg:text-7xl lg:leading-[1.05]"
         >
           Five-Star Service Across Every Lighting Project
         </h2>

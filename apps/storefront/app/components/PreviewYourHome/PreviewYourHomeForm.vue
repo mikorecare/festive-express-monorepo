@@ -112,7 +112,7 @@
             </span>
             <span
               v-if="selectedPackageData"
-              class="text-[13px] sm:text-[14px] text-gray-500 truncate shrink-0"
+              class="text-[13px] sm:text-[14px] text-black font-bold truncate shrink-0"
             >
               ${{ selectedPackageData.previousPrice.toLocaleString() }}
             </span>
@@ -151,7 +151,7 @@
                   : ''
               "
             ></span>
-            <span class="font-semibold text-[#1C2F5B] truncate">
+            <span class="font-bold text-[12px] text-black truncate">
               {{ selectedColorData?.label || "Select color" }}
             </span>
           </span>

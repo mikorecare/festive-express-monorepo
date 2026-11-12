@@ -3,6 +3,14 @@ import sharedConfig from '../../packages/shared/tailwind.config.js'
 
 export default <Partial<Config>>{
   presets: [sharedConfig],
+  theme: {
+    extend: {
+      fontFamily: {
+        poppins: ['Poppins', 'sans-serif'],
+        sans: ['Poppins', 'sans-serif'],
+      },
+    },
+  },
   content: [
     './components/**/*.{js,vue,ts}',
     './layouts/**/*.vue',
