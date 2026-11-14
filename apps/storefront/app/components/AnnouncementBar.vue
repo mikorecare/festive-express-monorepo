@@ -2,7 +2,7 @@
   <div
     class="announcement-bar"
     role="region"
-    aria-label="Promotional announcement"
+    aria-label="Promotional announcement and countdown"
   >
     <div class="marquee-track">
       <!-- Render two identical groups for a seamless, infinite scroll loop -->
@@ -12,24 +12,61 @@
         class="marquee-group"
         :aria-hidden="group === 2"
       >
-        <p v-for="item in 4" :key="item" class="promo-text">
-          <span>Light up the holidays! Use code </span>
-          <button
-            type="button"
-            class="code-badge"
-            :tabindex="group === 2 ? -1 : 0"
-            @click="copyCode"
-            title="Click to copy code"
-          >
-            {{ promoCode }}
-          </button>
-          <span>
-            to get
-            <strong class="discount-amount">{{ formattedDiscount }}</strong> off
-            on your Christmas lights
-          </span>
-          <span class="separator" aria-hidden="true">•</span>
-        </p>
+        <template v-for="(entry, i) in marqueeSequence" :key="`${group}-${i}`">
+          <!-- Promo message -->
+          <p v-if="entry.type === 'promo'" class="marquee-item promo-text">
+            <span>Light up the holidays! Use code </span>
+            <button
+              type="button"
+              class="code-badge"
+              :tabindex="group === 2 ? -1 : 0"
+              @click="copyCode"
+              title="Click to copy code"
+            >
+              {{ promoCode }}
+            </button>
+            <span>
+              to get
+              <strong class="discount-amount">{{ formattedDiscount }}</strong>
+              off on your Christmas lights
+            </span>
+            <span class="separator" aria-hidden="true">•</span>
+          </p>
+
+          <!-- Countdown message -->
+          <p v-else class="marquee-item countdown-text">
+            <span class="countdown-label">
+              <IcnChirstmasTree class="inline-tree" />
+              Christmas is coming! Only
+            </span>
+
+            <!-- Segmented Time Badges -->
+            <span class="countdown-badges">
+              <span class="countdown-badge">
+                <span class="countdown-value">{{ countdown.days }}</span
+                >d
+              </span>
+              <span class="countdown-badge">
+                <span class="countdown-value">{{ countdown.hours }}</span
+                >h
+              </span>
+              <span class="countdown-badge">
+                <span class="countdown-value">{{ countdown.minutes }}</span
+                >m
+              </span>
+              <span class="countdown-badge">
+                <span class="countdown-value">{{ countdown.seconds }}</span
+                >s
+              </span>
+            </span>
+
+            <span class="countdown-label">
+              left to shop for your holiday lights!
+              <IcnChirstmasTree class="inline-tree" />
+            </span>
+            <span class="separator" aria-hidden="true">•</span>
+          </p>
+        </template>
       </div>
     </div>
   </div>
@@ -43,11 +80,11 @@
         aria-modal="true"
         aria-labelledby="modal-title"
       >
-        
         <h3 id="modal-title" class="modal-title">Promo Code Copied!</h3>
         <p class="modal-message">
           Code <strong class="highlight-code">{{ promoCode }}</strong> has been
-          copied to your clipboard. Paste it at promo code section at checkout to get
+          copied to your clipboard. Paste it at promo code section at checkout
+          to get
           <strong class="highlight-discount">{{ formattedDiscount }}</strong>
           off!
         </p>
@@ -60,12 +97,24 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
+import IcnChirstmasTree from "./Icons/IcnChirstmasTree.vue";
 
+/* -------------------- Promo code & currency -------------------- */
 const promoCode = "FEX500";
 const baseDiscountUSD = 500;
 const selectedCurrency = ref("USD");
 const copied = ref(false);
+
+const marqueeSequence = computed(() => {
+  const promo = { type: "promo" };
+  const countdown = { type: "countdown" };
+
+  if (isChristmasSeason.value) {
+    return [promo, promo, promo, promo];
+  }
+  return [promo, countdown, promo, countdown];
+});
 
 const currencyRates = {
   USD: { symbol: "$", rate: 1 },
@@ -88,6 +137,61 @@ const copyCode = async () => {
     console.error("Failed to copy promo code:", err);
   }
 };
+
+/* -------------------- Christmas countdown -------------------- */
+const isChristmasSeason = computed(() => {
+  // Christmas is Dec 25. Season = December 1 through December 31
+  const now = new Date();
+  const month = now.getMonth(); // 0-indexed: 11 = December
+  return month === 11;
+});
+
+const now = ref(new Date());
+let timerId = null;
+
+onMounted(() => {
+  // Update every 1 second for the seconds display
+  timerId = setInterval(() => {
+    now.value = new Date();
+  }, 1000);
+});
+
+onUnmounted(() => {
+  if (timerId) clearInterval(timerId);
+});
+
+// Return an object with padded values for the UI
+const countdown = computed(() => {
+  if (isChristmasSeason.value) {
+    return { days: "00", hours: "00", minutes: "00", seconds: "00" };
+  }
+
+  const currentYear = now.value.getFullYear();
+  const christmas = new Date(currentYear, 11, 25); // Dec 25 of current year
+
+  // If Christmas already passed this year, target next year
+  const target =
+    now.value.getTime() > christmas.getTime()
+      ? new Date(currentYear + 1, 11, 25)
+      : christmas;
+
+  const diffMs = target.getTime() - now.value.getTime();
+  if (diffMs <= 0) {
+    return { days: "00", hours: "00", minutes: "00", seconds: "00" };
+  }
+
+  const totalSeconds = Math.floor(diffMs / 1000);
+
+  // Pad with leading zero if less than 10
+  const pad = (num) => String(num).padStart(2, "0");
+
+  return {
+    days: String(Math.floor(totalSeconds / 86_400)),
+    hours: pad(Math.floor((totalSeconds % 86_400) / 3600)),
+    minutes: pad(Math.floor((totalSeconds % 3600) / 60)),
+    seconds: pad(Math.floor(totalSeconds % 60)),
+  };
+});
 </script>
 
 <style scoped>
@@ -133,13 +237,73 @@ const copyCode = async () => {
   flex-shrink: 0;
 }
 
-.promo-text {
+.marquee-item {
   margin: 0;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
 }
 
+/* Promo text (existing) */
+.promo-text {
+  /* inherits from .marquee-item */
+}
+
+/* Countdown text — brand-aligned */
+.countdown-text {
+  font-weight: 500;
+  gap: 0.5rem;
+}
+
+.countdown-label {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* --- Countdown Badges --- */
+.countdown-badges {
+  display: inline-flex;
+  gap: 0.35rem;
+  margin: 0 0.25rem;
+}
+
+.countdown-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.25
+  ); /* Darker background inside the navy bar */
+  border: 2px solid var(--brand-orange);
+  border-radius: 6px;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.85rem;
+  line-height: 1;
+  font-weight: 500;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  font-variant-numeric: tabular-nums; /* Prevents text jumping when numbers change */
+}
+
+.countdown-value {
+  color: #ffffff;
+  font-weight: 800;
+  margin-right: 1px;
+}
+
+.inline-tree {
+  display: inline-block;
+  vertical-align: -0.15em;
+  margin: 0 0.2em;
+  color: white;
+  width: 1.1em;
+  height: 1.1em;
+}
+
+/* Separator between marquee items */
 .separator {
   margin: 0 2.5rem;
   color: var(--brand-orange);
@@ -196,6 +360,11 @@ const copyCode = async () => {
   .separator {
     margin: 0 1.75rem;
   }
+
+  .countdown-badge {
+    padding: 0.1rem 0.35rem;
+    font-size: 0.75rem;
+  }
 }
 
 /* --- Modal Styles --- */
@@ -230,11 +399,6 @@ const copyCode = async () => {
     sans-serif;
 }
 
-.modal-icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.75rem;
-}
-
 .modal-title {
   margin: 0 0 0.5rem 0;
   font-size: 1.25rem;
@@ -245,7 +409,7 @@ const copyCode = async () => {
 .modal-message {
   margin: 0 0 1.5rem 0;
   font-size: 0.95rem;
-  line-align: 1.5;
+  line-height: 1.5;
   color: #4a5568;
 }
 
