@@ -43,6 +43,7 @@ export default defineNuxtConfig({
       '/track-order-backup',
     ],
     autoLastmod: true,
+    xsl: false,
   },
 
   app: {
