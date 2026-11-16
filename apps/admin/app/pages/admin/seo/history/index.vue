@@ -260,6 +260,43 @@
               </div>
             </div>
 
+            <!-- AI completeness warning -->
+            <div
+              v-if="
+                detail.report?.meta?.aiEnabled &&
+                ((detail.report.meta.chunks?.failed ?? 0) > 0 ||
+                  (detail.report.meta.chunks?.missing ?? 0) > 0 ||
+                  (detail.report.meta.chunks?.dropped ?? 0) > 0 ||
+                  (detail.report.meta.suggestionsLost ?? 0) > 0)
+              "
+              class="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 flex flex-wrap gap-x-4 gap-y-1"
+            >
+              <span class="inline-flex items-center gap-1 font-semibold">
+                <ExclamationTriangleIcon class="w-3.5 h-3.5" />
+                AI review was incomplete:
+              </span>
+              <span v-if="(detail.report.meta.chunks?.failed ?? 0) > 0">
+                {{ detail.report.meta.chunks?.failed }} part(s) could not be
+                analysed
+              </span>
+              <span v-if="(detail.report.meta.chunks?.missing ?? 0) > 0">
+                {{ detail.report.meta.chunks?.missing }} part(s) omitted by the
+                model
+              </span>
+              <span v-if="(detail.report.meta.chunks?.retriedOk ?? 0) > 0">
+                {{ detail.report.meta.chunks?.retriedOk }} part(s) recovered on
+                retry
+              </span>
+              <span v-if="(detail.report.meta.chunks?.dropped ?? 0) > 0">
+                {{ detail.report.meta.chunks?.dropped }} AI finding(s) dropped
+                by validation
+              </span>
+              <span v-if="(detail.report.meta.suggestionsLost ?? 0) > 0">
+                {{ detail.report.meta.suggestionsLost }} page(s) had no final AI
+                suggestion
+              </span>
+            </div>
+
             <!-- Executive summary -->
             <div
               v-if="detail.executive_summary"
@@ -304,6 +341,14 @@
                       "
                     >
                       {{ page.fetchError || page.currentMeta?.title || "—" }}
+                    </p>
+                    <!-- Per-page completeness flags -->
+                    <p
+                      v-if="pageFlags(page)"
+                      class="text-[10px] text-amber-600 mt-0.5 flex items-center gap-1"
+                    >
+                      <ExclamationTriangleIcon class="w-2.5 h-2.5 shrink-0" />
+                      {{ pageFlags(page) }}
                     </p>
                   </div>
                   <span
@@ -378,6 +423,7 @@ import {
   TrashIcon,
   SparklesIcon,
   DocumentMagnifyingGlassIcon,
+  ExclamationTriangleIcon,
 } from "@heroicons/vue/24/outline";
 
 type AuditListItem = {
@@ -394,6 +440,19 @@ type AuditListItem = {
   use_ai: boolean;
 };
 
+type AuditPage = {
+  url: string;
+  finalUrl: string;
+  status: number;
+  score: number;
+  fetchError: string | null;
+  currentMeta: { title: string };
+  ai?: "ok" | "cached" | "skipped" | "failed" | "partial";
+  aiParts?: { total: number; ok: number; truncated: boolean };
+  contentTruncated?: boolean;
+  suggestionsLost?: boolean;
+};
+
 type AuditDetail = AuditListItem & {
   report: {
     scannedAt: string;
@@ -403,15 +462,31 @@ type AuditDetail = AuditListItem & {
     pagesFailed: number;
     counts: { critical: number; warning: number; info: number };
     executiveSummary: string;
-    pages: Array<{
-      url: string;
-      finalUrl: string;
-      status: number;
-      score: number;
-      fetchError: string | null;
-      currentMeta: { title: string };
-    }>;
-    meta: unknown;
+    pages: AuditPage[];
+    meta: {
+      aiEnabled: boolean;
+      modelsUsed: Record<string, number>;
+      tokens: {
+        input: number;
+        output: number;
+        thoughts: number;
+        cached: number;
+      };
+      cachedPages: number;
+      aiFailedPages: number;
+      partialPages?: number;
+      skippedPages: number;
+      truncatedPages?: number;
+      chunks?: {
+        total: number;
+        cached: number;
+        failed: number;
+        missing: number;
+        retriedOk: number;
+        dropped: number;
+      };
+      suggestionsLost?: number;
+    };
   };
 };
 
@@ -437,9 +512,7 @@ const filtered = computed(() => {
 const fetchAudits = async () => {
   loading.value = true;
   try {
-    const res = await $fetch<{ audits: AuditListItem[] }>(
-      "/api/seo-audit",
-    );
+    const res = await $fetch<{ audits: AuditListItem[] }>("/api/seo-audit");
     audits.value = res.audits ?? [];
   } catch (e: any) {
     showToast(
@@ -497,6 +570,19 @@ const doDelete = async () => {
   } finally {
     deleting.value = false;
   }
+};
+
+/** Human-readable per-page completeness flags for the quick list. */
+const pageFlags = (page: AuditPage): string => {
+  return [
+    page.contentTruncated ? "content truncated" : "",
+    page.aiParts?.truncated ? "AI chunks truncated" : "",
+    page.suggestionsLost ? "suggestions synthesized" : "",
+    page.ai === "partial" ? "AI partial" : "",
+    page.ai === "failed" ? "AI failed" : "",
+  ]
+    .filter(Boolean)
+    .join(", ");
 };
 
 // --- Helpers ---
