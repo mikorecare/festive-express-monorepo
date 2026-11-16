@@ -1,6 +1,6 @@
 import { useAddons } from "~/composables/useAddons"
 import { useEstimateHandoff } from "~/composables/useEstimateHandoff"
-import type { ApiResponse, PackageRow, SkuRow } from "~/pages/packages/types"
+import type { ApiResponse, PackageRow, SkuRow } from "~~/server/api/packages/types"
 
 export function usePackagePage() {
     const route = useRoute()
