@@ -10,19 +10,21 @@
 
     <!-- Navigation - Scrollable with custom scrollbar -->
     <nav class="flex-1 overflow-y-auto px-2 space-y-1 sidebar-scroll">
+      <!-- Dashboard -->
       <NuxtLink
         to="/admin"
         class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg"
-        active-class="bg-brand-orange text-navy no-underline"
+        exact-active-class="bg-brand-orange text-navy no-underline"
       >
         <ChartBarIcon class="h-5 w-5" />
         <span v-if="!isCollapsed">Dashboard</span>
       </NuxtLink>
 
+      <!-- Orders -->
       <NuxtLink
         to="/admin/orders"
         class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg"
-        active-class="bg-brand-orange text-navy"
+        exact-active-class="bg-brand-orange text-navy"
       >
         <ShoppingBagIcon class="h-5 w-5" />
         <span v-if="!isCollapsed">Orders</span>
@@ -55,77 +57,51 @@
           <NuxtLink
             to="/admin/products"
             class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path === '/admin/products'
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
           >
             All Products
           </NuxtLink>
           <NuxtLink
             to="/admin/products/create"
             class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path === '/admin/products/create'
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
           >
             Add New Product
           </NuxtLink>
           <NuxtLink
             to="/admin/products/packages"
             class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path === '/admin/products/packages'
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
           >
             Package Programs
           </NuxtLink>
           <NuxtLink
             to="/admin/products/package-skus"
             class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path === '/admin/products/package-skus'
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
           >
             Package SKUs
           </NuxtLink>
           <NuxtLink
             to="/admin/products/inclusions"
             class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path === '/admin/products/inclusions'
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
           >
             Inclusion Items
           </NuxtLink>
           <NuxtLink
             to="/admin/products/colors"
             class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path === '/admin/products/colors'
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
           >
             Colors
           </NuxtLink>
           <NuxtLink
             to="/admin/products/promo-codes"
             class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path.startsWith('/admin/products/promo-codes')
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
           >
             Promo Codes
           </NuxtLink>
@@ -161,24 +137,18 @@
           <NuxtLink
             to="/admin/customers"
             class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path === '/admin/customers'
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
           >
             All Customers
           </NuxtLink>
           <NuxtLink
             to="/admin/customers/reviews"
-            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path.startsWith('/admin/customers/reviews')
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            class="flex items-center px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
           >
-            Reviews
+            <span>Reviews</span>
             <span
               v-if="pendingReviewsCount > 0"
               class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-500 rounded-full"
@@ -193,7 +163,7 @@
       <NuxtLink
         to="/admin/users"
         class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg"
-        active-class="bg-brand-orange text-navy"
+        exact-active-class="bg-brand-orange text-navy"
       >
         <UserIcon class="h-5 w-5" />
         <span v-if="!isCollapsed">Users</span>
@@ -226,55 +196,39 @@
           <NuxtLink
             to="/admin/blog"
             class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path === '/admin/blog'
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
           >
             All Posts
           </NuxtLink>
           <NuxtLink
             to="/admin/blog/create"
             class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path === '/admin/blog/create'
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
           >
             Add New Post
           </NuxtLink>
           <NuxtLink
             to="/admin/blog/categories"
             class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path.startsWith('/admin/blog/categories')
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
           >
             Categories
           </NuxtLink>
           <NuxtLink
             to="/admin/blog/tags"
             class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path.startsWith('/admin/blog/tags')
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
           >
             Tags
           </NuxtLink>
           <NuxtLink
             to="/admin/blog/videos"
             class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path.startsWith('/admin/blog/videos')
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
           >
             Videos
           </NuxtLink>
@@ -309,22 +263,16 @@
           <NuxtLink
             to="/admin/configuration/hero"
             class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path.startsWith('/admin/configuration/hero')
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
           >
             Hero Section
           </NuxtLink>
           <NuxtLink
             to="/admin/configuration/how-it-works"
             class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path.startsWith('/admin/configuration/how-it-works')
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
           >
             How It Works
           </NuxtLink>
@@ -332,11 +280,8 @@
           <NuxtLink
             to="/admin/configuration/about-us"
             class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path.startsWith('/admin/configuration/about-us')
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
           >
             About Us
           </NuxtLink>
@@ -344,33 +289,24 @@
           <NuxtLink
             to="/admin/configuration/faq"
             class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path.startsWith('/admin/configuration/faq')
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
           >
             FAQ's
           </NuxtLink>
           <NuxtLink
             to="/admin/configuration/gallery"
             class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path.startsWith('/admin/configuration/gallery')
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
           >
             Gallery
           </NuxtLink>
           <NuxtLink
             to="/admin/configuration/privacy-policy"
             class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path.startsWith('/admin/configuration/privacy-policy')
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
           >
             Privacy Policy
           </NuxtLink>
@@ -378,11 +314,8 @@
           <NuxtLink
             to="/admin/configuration/terms-of-use"
             class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path.startsWith('/admin/configuration/terms-of-use')
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
           >
             Terms of Use
           </NuxtLink>
@@ -390,11 +323,8 @@
           <NuxtLink
             to="/admin/configuration/cookie-policy"
             class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            :class="
-              route.path.startsWith('/admin/configuration/cookie-policy')
-                ? 'bg-brand-orange/20 text-white font-semibold'
-                : 'text-white/80 hover:text-white hover:bg-brand-orange/20'
-            "
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
           >
             Cookie Policy
           </NuxtLink>
@@ -405,7 +335,7 @@
       <NuxtLink
         to="/admin/invoices"
         class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg"
-        active-class="bg-brand-orange text-navy"
+        exact-active-class="bg-brand-orange text-navy"
       >
         <svg
           class="h-5 w-5"
@@ -423,10 +353,52 @@
         <span v-if="!isCollapsed">Invoices</span>
       </NuxtLink>
 
+      <!-- SEO with Submenu -->
+      <div class="relative">
+        <div
+          @click="toggleSeo"
+          class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg cursor-pointer select-none"
+          :class="{ 'bg-brand-orange text-navy': isSeoSection }"
+        >
+          <DocumentMagnifyingGlassIcon class="h-5 w-5" />
+          <span v-if="!isCollapsed" class="flex-1">SEO</span>
+          <span
+            v-if="!isCollapsed"
+            class="text-xs transition-transform duration-300"
+            :class="{ 'rotate-180': isSeoOpen }"
+          >
+            ▼
+          </span>
+        </div>
+
+        <!-- SEO Submenu -->
+        <div
+          v-if="!isCollapsed"
+          class="ml-4 mt-1 space-y-1 border-l-2 border-brand-orange/30 pl-3 overflow-hidden transition-all duration-300 ease-in-out"
+          :class="isSeoOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'"
+        >
+          <NuxtLink
+            to="/admin/seo"
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+          >
+            Audit
+          </NuxtLink>
+          <NuxtLink
+            to="/admin/seo/history"
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+          >
+            History
+          </NuxtLink>
+        </div>
+      </div>
+
+      <!-- Settings -->
       <NuxtLink
         to="/admin/settings"
         class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg"
-        active-class="bg-brand-orange text-navy"
+        exact-active-class="bg-brand-orange text-navy"
       >
         <Cog6ToothIcon class="h-5 w-5" />
         <span v-if="!isCollapsed">Settings</span>
@@ -506,6 +478,7 @@ import {
   ArrowRightOnRectangleIcon,
   NewspaperIcon,
   WrenchScrewdriverIcon,
+  DocumentMagnifyingGlassIcon,
 } from "@heroicons/vue/24/outline";
 import MainLogo from "./Logos/MainLogo.vue";
 import MainLogoForDark from "./Logos/MainLogoForDark.vue";
@@ -518,6 +491,7 @@ const isProductsOpen = ref(true);
 const isCustomersOpen = ref(true);
 const isBlogOpen = ref(true);
 const isConfigurationOpen = ref(true);
+const isSeoOpen = ref(true);
 const pendingReviewsCount = ref(0);
 const currentUser = ref<any>(null);
 
@@ -582,6 +556,10 @@ const toggleConfiguration = () => {
   isConfigurationOpen.value = !isConfigurationOpen.value;
 };
 
+const toggleSeo = () => {
+  isSeoOpen.value = !isSeoOpen.value;
+};
+
 const showLogoutConfirm = () => {
   showLogoutModal.value = true;
 };
@@ -628,6 +606,8 @@ const isBlogSection = computed(() => route.path.startsWith("/admin/blog"));
 const isConfigurationSection = computed(() =>
   route.path.startsWith("/admin/configuration"),
 );
+
+const isSeoSection = computed(() => route.path.startsWith("/admin/seo"));
 
 // Refresh pending reviews count on route change
 watch(

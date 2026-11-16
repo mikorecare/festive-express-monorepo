@@ -684,7 +684,7 @@ import type {
   InclusionSpec,
   Hotspot,
   PackageInclusion,
-} from "./types";
+} from "../../../server/api/packages/types";
 
 useHead({
   title: "Packages",

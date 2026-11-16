@@ -32,6 +32,7 @@ export default defineNuxtConfig({
     elavonPartnerAppId: process.env.ELAVON_PARTNER_APP_ID || "",
     elavonConsumerKey: process.env.ELAVON_CONSUMER_KEY || "",
     elavonConsumerSecret: process.env.ELAVON_CONSUMER_SECRET || "",
+    geminiApiKey: process.env.GEMINI_API_KEY,
     public: {
       turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY,
       apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api',
