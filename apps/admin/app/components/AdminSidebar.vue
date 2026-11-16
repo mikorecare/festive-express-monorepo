@@ -209,28 +209,53 @@
             Add New Post
           </NuxtLink>
           <NuxtLink
-            to="/admin/blog/categories"
-            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            exact-active-class="bg-brand-orange/20 text-white font-semibold"
-            active-class="bg-brand-orange/20 text-white font-semibold"
-          >
-            Categories
-          </NuxtLink>
-          <NuxtLink
-            to="/admin/blog/tags"
-            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
-            exact-active-class="bg-brand-orange/20 text-white font-semibold"
-            active-class="bg-brand-orange/20 text-white font-semibold"
-          >
-            Tags
-          </NuxtLink>
-          <NuxtLink
             to="/admin/blog/videos"
             class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
             exact-active-class="bg-brand-orange/20 text-white font-semibold"
             active-class="bg-brand-orange/20 text-white font-semibold"
           >
             Videos
+          </NuxtLink>
+        </div>
+      </div>
+
+      <div class="relative">
+        <div
+          @click="toggleProjects"
+          class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg cursor-pointer select-none"
+          :class="{ 'bg-brand-orange text-navy': isProjectsSection }"
+        >
+          <FolderOpenIcon class="h-5 w-5" />
+          <span v-if="!isCollapsed" class="flex-1">Projects</span>
+          <span
+            v-if="!isCollapsed"
+            class="text-xs transition-transform duration-300"
+            :class="{ 'rotate-180': isProjectsOpen }"
+          >
+            ▼
+          </span>
+        </div>
+
+        <!-- Projects Submenu -->
+        <div
+          v-if="!isCollapsed"
+          class="ml-4 mt-1 space-y-1 border-l-2 border-brand-orange/30 pl-3 overflow-hidden transition-all duration-300 ease-in-out"
+          :class="isProjectsOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'"
+        >
+          <NuxtLink
+            to="/admin/projects"
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
+          >
+            All Projects
+          </NuxtLink>
+          <NuxtLink
+            to="/admin/projects/create"
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+          >
+            Add New Project
           </NuxtLink>
         </div>
       </div>
@@ -391,6 +416,22 @@
           >
             History
           </NuxtLink>
+          <NuxtLink
+            to="/admin/seo/categories"
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
+          >
+            Categories
+          </NuxtLink>
+          <NuxtLink
+            to="/admin/seo/tags"
+            class="block px-3 py-2 text-sm rounded-lg transition-colors no-underline"
+            exact-active-class="bg-brand-orange/20 text-white font-semibold"
+            active-class="bg-brand-orange/20 text-white font-semibold"
+          >
+            Tags
+          </NuxtLink>
         </div>
       </div>
 
@@ -479,21 +520,23 @@ import {
   NewspaperIcon,
   WrenchScrewdriverIcon,
   DocumentMagnifyingGlassIcon,
+  FolderOpenIcon,
 } from "@heroicons/vue/24/outline";
-import MainLogo from "./Logos/MainLogo.vue";
+
 import MainLogoForDark from "./Logos/MainLogoForDark.vue";
 
 const route = useRoute();
 
 const isCollapsed = ref(false);
 const showLogoutModal = ref(false);
-const isProductsOpen = ref(true);
-const isCustomersOpen = ref(true);
-const isBlogOpen = ref(true);
-const isConfigurationOpen = ref(true);
-const isSeoOpen = ref(true);
+const isProductsOpen = ref(false);
+const isCustomersOpen = ref(false);
+const isBlogOpen = ref(false);
+const isConfigurationOpen = ref(false);
+const isSeoOpen = ref(false);
 const pendingReviewsCount = ref(0);
-const currentUser = ref<any>(null);
+const currentUser = ref<any>(false);
+const isProjectsOpen = ref(false);
 
 // Type definitions
 interface UserResponse {
@@ -552,6 +595,10 @@ const toggleBlog = () => {
   isBlogOpen.value = !isBlogOpen.value;
 };
 
+const toggleProjects = () => {
+  isProjectsOpen.value = !isProjectsOpen.value;
+};
+
 const toggleConfiguration = () => {
   isConfigurationOpen.value = !isConfigurationOpen.value;
 };
@@ -605,6 +652,10 @@ const isBlogSection = computed(() => route.path.startsWith("/admin/blog"));
 
 const isConfigurationSection = computed(() =>
   route.path.startsWith("/admin/configuration"),
+);
+
+const isProjectsSection = computed(() =>
+  route.path.startsWith("/admin/projects"),
 );
 
 const isSeoSection = computed(() => route.path.startsWith("/admin/seo"));
