@@ -49,7 +49,60 @@ export default defineEventHandler(async (event) => {
     }
 
     const limit = pLimit(5)
-    const scrapedPages = await Promise.all(urls.map((u) => limit(() => scrapePageSeo(u))))
+    const scrapedPages = await Promise.all(
+        urls.map((u) =>
+            limit(() =>
+                scrapePageSeo(u).catch((e) => {
+                    console.error('[seo-audit] scrape threw for', u, e instanceof Error ? e.message : e)
+                    // scrapePageSeo is written to never reject, but guard anyway.
+                    return {
+                        ...({} as any),
+                        url: u,
+                        finalUrl: u,
+                        status: 0,
+                        fetchError: 'Internal error while scraping this page',
+                        loadTimeMs: 0,
+                        ttfbMs: 0,
+                        title: '',
+                        metaDescription: '',
+                        canonical: null,
+                        robots: null,
+                        lang: null,
+                        hasViewport: false,
+                        h1s: [],
+                        h2s: [],
+                        headingLevels: [],
+                        missingAltCount: 0,
+                        totalImages: 0,
+                        hasOgTags: false,
+                        schemaCount: 0,
+                        invalidSchemaCount: 0,
+                        wordCount: 0,
+                        likelyClientRendered: false,
+                        bodySnippet: '',
+                        blocks: [],
+                        contentTruncated: false,
+                        evidence: {
+                            missingAlt: [],
+                            multipleH1: [],
+                            noH1: [],
+                            headingSkip: [],
+                            thinContent: null,
+                            hero: null,
+                            title: null,
+                            metaDescription: null,
+                            canonical: null,
+                            lang: null,
+                            viewport: null,
+                            ogTags: [],
+                            jsonLd: [],
+                            paragraphs: [],
+                        },
+                    } as ExtractedPageData
+                }),
+            ),
+        ),
+    )
 
     const { executiveSummary, pages, meta } = await generateFullSeoReport(
         scrapedPages,

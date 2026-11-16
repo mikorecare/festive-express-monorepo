@@ -149,9 +149,46 @@
         <span>
           {{ audit.report.meta.cachedPages }} cached ·
           {{ audit.report.meta.skippedPages }} skipped
+          <template v-if="audit.report.meta.partialPages">
+            · {{ audit.report.meta.partialPages }} partial
+          </template>
           <template v-if="audit.report.meta.aiFailedPages">
             · {{ audit.report.meta.aiFailedPages }} AI failed
           </template>
+          <template v-if="audit.report.meta.truncatedPages">
+            · {{ audit.report.meta.truncatedPages }} truncated
+          </template>
+        </span>
+      </div>
+
+      <!-- AI completeness warning -->
+      <div
+        v-if="audit.report?.meta?.aiEnabled && (
+          audit.report.meta.chunks?.failed > 0 ||
+          audit.report.meta.chunks?.missing > 0 ||
+          audit.report.meta.chunks?.dropped > 0 ||
+          audit.report.meta.suggestionsLost > 0
+        )"
+        class="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 flex flex-wrap gap-x-4 gap-y-1"
+      >
+        <span class="inline-flex items-center gap-1 font-semibold">
+          <ExclamationTriangleIcon class="w-3.5 h-3.5" />
+          AI review was incomplete:
+        </span>
+        <span v-if="audit.report.meta.chunks?.failed">
+          {{ audit.report.meta.chunks.failed }} part(s) could not be analysed
+        </span>
+        <span v-if="audit.report.meta.chunks?.missing">
+          {{ audit.report.meta.chunks.missing }} part(s) omitted by the model
+        </span>
+        <span v-if="audit.report.meta.chunks?.retriedOk">
+          {{ audit.report.meta.chunks.retriedOk }} part(s) recovered on retry
+        </span>
+        <span v-if="audit.report.meta.chunks?.dropped">
+          {{ audit.report.meta.chunks.dropped }} AI finding(s) dropped by validation
+        </span>
+        <span v-if="audit.report.meta.suggestionsLost">
+          {{ audit.report.meta.suggestionsLost }} page(s) had no final AI suggestion
         </span>
       </div>
 
@@ -169,6 +206,7 @@
             <option value="critical">Critical issues only</option>
             <option value="warning">Warnings only</option>
             <option value="info">Info / optimizations only</option>
+            <option value="ai-incomplete">AI incomplete / truncated pages</option>
           </select>
         </div>
       </div>
@@ -329,6 +367,11 @@
               <div class="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-brand-orange">
                 <SparklesIcon class="w-3.5 h-3.5" />
                 <span>AI Content & Meta Recommendations</span>
+                <span
+                  v-if="page.suggestionsLost"
+                  class="ml-1 px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 text-[10px] font-semibold normal-case tracking-normal"
+                  title="The final AI part failed; these are synthesized from the page's current metadata."
+                >fallback</span>
               </div>
               <p class="text-xs text-slate-600 leading-relaxed">
                 {{ page.aiSuggestions.contentFeedback }}
@@ -369,9 +412,28 @@
               </div>
             </div>
 
+            <!-- AI status note (only when the box is not shown) -->
+            <p
+              v-else-if="page.ai === 'failed' || page.ai === 'partial' || page.aiParts?.truncated || page.contentTruncated"
+              class="text-[11px] text-amber-600 flex items-start gap-1.5"
+            >
+              <ExclamationTriangleIcon class="w-3.5 h-3.5 mt-0.5 shrink-0" />
+              <span>
+                <template v-if="page.ai === 'failed'">
+                  AI suggestions unavailable for this page (all models were busy). Run the audit again to retry.
+                </template>
+                <template v-else-if="page.ai === 'partial'">
+                  Only {{ page.aiParts.ok }} of {{ page.aiParts.total }} page parts were analysed. AI suggestions reflect partial content.
+                </template>
+                <template v-else>
+                  Content was truncated before AI review. Suggestions may not reflect the full page.
+                </template>
+              </span>
+            </p>
+
             <!-- Card footer -->
             <div
-              class="mt-auto pt-3 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between"
+              class="mt-auto pt-3 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between gap-2"
             >
               <span>
                 {{
@@ -380,8 +442,14 @@
                     : `HTTP ${page.status} · ${page.loadTimeMs}ms`
                 }}
               </span>
-              <span v-if="!page.fetchError && page.status < 400">
+              <span v-if="!page.fetchError && page.status < 400" class="text-right">
                 {{ page.currentMeta?.wordCount }} words · {{ page.currentMeta?.h1s?.length ?? 0 }} H1
+                <template v-if="page.aiParts && page.aiParts.total > 1">
+                  · {{ page.aiParts.ok }}/{{ page.aiParts.total }} parts
+                </template>
+                <template v-if="page.contentTruncated || page.aiParts?.truncated">
+                  · <span class="text-amber-600 font-medium">truncated</span>
+                </template>
               </span>
             </div>
           </div>
@@ -440,6 +508,7 @@ import {
   ArrowDownTrayIcon,
   DocumentMagnifyingGlassIcon,
   MapPinIcon,
+  ExclamationTriangleIcon,
 } from "@heroicons/vue/24/outline";
 
 type Severity = "critical" | "warning" | "info";
@@ -467,7 +536,10 @@ type PageAuditReport = {
   score: number;
   loadTimeMs: number;
   fetchError: string | null;
-  ai: "ok" | "cached" | "skipped" | "failed";
+  ai: "ok" | "cached" | "skipped" | "failed" | "partial";
+  aiParts: { total: number; ok: number; truncated: boolean };
+  contentTruncated: boolean;
+  suggestionsLost: boolean;
   currentMeta: {
     title: string;
     description: string;
@@ -489,7 +561,18 @@ type SeoAuditMeta = {
   tokens: { input: number; output: number; thoughts: number; cached: number };
   cachedPages: number;
   aiFailedPages: number;
+  partialPages: number;
   skippedPages: number;
+  truncatedPages: number;
+  chunks: {
+    total: number;
+    cached: number;
+    failed: number;
+    missing: number;
+    retriedOk: number;
+    dropped: number;
+  };
+  suggestionsLost: number;
 };
 
 type AuditDetail = {
@@ -517,6 +600,8 @@ type AuditDetail = {
   };
 };
 
+type SeverityFilter = "all" | Severity | "ai-incomplete";
+
 const { showToast } = useToast();
 const route = useRoute();
 const router = useRouter();
@@ -525,7 +610,7 @@ const auditId = computed(() => String(route.params.id ?? ""));
 const audit = ref<AuditDetail | null>(null);
 const loading = ref(false);
 
-const severityFilter = ref<"all" | Severity>("all");
+const severityFilter = ref<SeverityFilter>("all");
 const pageSearch = ref("");
 
 const deleteTarget = ref<AuditDetail | null>(null);
@@ -564,6 +649,15 @@ const exportMarkdownReport = () => {
   const r = a.report;
   if (!r) return;
 
+  const completeness = r.meta?.aiEnabled
+    ? [
+        `\n## AI Review Completeness`,
+        `- Chunks: ${r.meta.chunks?.total ?? 0} total · ${r.meta.chunks?.cached ?? 0} cached · ${r.meta.chunks?.failed ?? 0} failed · ${r.meta.chunks?.missing ?? 0} missing · ${r.meta.chunks?.retriedOk ?? 0} retried OK · ${r.meta.chunks?.dropped ?? 0} dropped`,
+        `- Pages: ${r.meta.partialPages ?? 0} partial · ${r.meta.aiFailedPages ?? 0} failed · ${r.meta.truncatedPages ?? 0} truncated`,
+        `- Suggestions lost (last part failed): ${r.meta.suggestionsLost ?? 0}`,
+      ].join("\n")
+    : "";
+
   const lines = [
     `# SEO Audit Report: ${a.target_url}`,
     `Generated: ${new Date(a.created_at).toLocaleString()}`,
@@ -573,9 +667,19 @@ const exportMarkdownReport = () => {
     r.meta?.aiEnabled
       ? `AI tokens: ${r.meta.tokens.input} in / ${r.meta.tokens.output} out / ${r.meta.tokens.thoughts} thinking`
       : "",
+    completeness,
     `\n## Executive Summary\n${a.executive_summary ?? r.executiveSummary}\n`,
     `## Page Breakdown`,
     ...r.pages.map((p) => {
+      const flags = [
+        p.contentTruncated ? "content truncated" : "",
+        p.aiParts?.truncated ? "AI chunks truncated" : "",
+        p.suggestionsLost ? "suggestions synthesized" : "",
+        p.ai === "partial" ? "AI partial" : "",
+        p.ai === "failed" ? "AI failed" : "",
+      ]
+        .filter(Boolean)
+        .join(", ");
       const issueList = p.issues.length
         ? p.issues
             .map((i) => {
@@ -601,15 +705,21 @@ const exportMarkdownReport = () => {
             })
             .join("\n")
         : "- No issues found";
-      return [
-        `### ${p.url} (${p.fetchError ? "Not fetched" : `Score: ${p.score}/100`})`,
-        issueList,
-        p.aiSuggestions?.suggestedTitle
+
+      const suggestionsHeader = p.suggestionsLost
+        ? `\n- **AI Suggested Title (fallback — final part failed):** ${p.aiSuggestions.suggestedTitle}`
+        : p.aiSuggestions?.suggestedTitle
           ? `\n- **AI Suggested Title:** ${p.aiSuggestions.suggestedTitle}`
-          : "",
-        p.aiSuggestions?.suggestedDescription
-          ? `- **AI Suggested Description:** ${p.aiSuggestions.suggestedDescription}`
-          : "",
+          : "";
+      const suggestionsDesc = p.aiSuggestions?.suggestedDescription
+        ? `\n- **AI Suggested Description:** ${p.aiSuggestions.suggestedDescription}`
+        : "";
+
+      return [
+        `### ${p.url} (${p.fetchError ? "Not fetched" : `Score: ${p.score}/100`})${flags ? ` — _${flags}_` : ""}`,
+        issueList,
+        suggestionsHeader,
+        suggestionsDesc,
       ].join("\n");
     }),
   ].join("\n");
@@ -649,6 +759,17 @@ const doDelete = async () => {
 const filteredPages = computed<PageAuditReport[]>(() => {
   const pages = audit.value?.report?.pages ?? [];
   const q = pageSearch.value.trim().toLowerCase();
+
+  if (severityFilter.value === "ai-incomplete") {
+    return pages.filter(
+      (p) =>
+        p.ai === "partial" ||
+        p.ai === "failed" ||
+        p.contentTruncated ||
+        p.aiParts?.truncated ||
+        p.suggestionsLost,
+    );
+  }
 
   return pages
     .map((page) => {

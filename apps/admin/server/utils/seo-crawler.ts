@@ -19,6 +19,26 @@ export interface ElementRef {
     text?: string
 }
 
+/**
+ * One piece of visible page content, in document order.
+ * The whole page is kept as a flat list of these so the analyzer can cut it
+ * into parts without losing order, and the AI can point at a block by id.
+ */
+export interface ContentBlock {
+    /** Stable within one page: b0, b1, b2 ... */
+    id: string
+    /** h1-h6, p, ul, ol, dl, blockquote, table, figcaption, div */
+    tag: string
+    /** 1-6 for headings, 0 otherwise */
+    level: number
+    /** Readable selector, with :nth-of-type when siblings share the tag */
+    selector: string
+    /** 1-based line in the raw HTML, 0 if it could not be located */
+    line: number
+    /** Visible text (lists joined with " • ", tables with " | "), clipped */
+    text: string
+}
+
 export interface PageEvidence {
     missingAlt: ElementRef[]      // first 10 images with no alt attribute
     multipleH1: ElementRef[]      // the *extra* H1s (not the first)
@@ -33,7 +53,7 @@ export interface PageEvidence {
     viewport: ElementRef | null
     ogTags: ElementRef[]          // existing <meta property="og:*">
     jsonLd: ElementRef[]          // invalid JSON-LD <script> blocks
-    paragraphs: ElementRef[]      // first ~6 visible <p> inside <main>, used by AI
+    paragraphs: ElementRef[]      // first ~6 visible <p> inside <main>
 }
 
 export interface ExtractedPageData {
@@ -57,9 +77,15 @@ export interface ExtractedPageData {
     hasOgTags: boolean
     schemaCount: number
     invalidSchemaCount: number
+    /** Words in the main content only (nav, header chrome, footer, aside excluded) */
     wordCount: number
     likelyClientRendered: boolean
+    /** First SNIPPET_CHARS of the main content (kept for compatibility / fallback) */
     bodySnippet: string
+    /** The whole main content as ordered blocks, for chunked AI review */
+    blocks: ContentBlock[]
+    /** True when MAX_BLOCKS / MAX_CONTENT_CHARS cut the content short */
+    contentTruncated: boolean
     /** Element-level evidence per issue kind */
     evidence: PageEvidence
 }
@@ -75,6 +101,13 @@ const MAX_SITEMAPS = 10
 export const SNIPPET_CHARS = 1000
 const SKIP_EXT = /\.(pdf|jpe?g|png|gif|webp|avif|svg|ico|zip|gz|mp[34]|css|js|json|xml|txt|docx?|xlsx?|pptx?)$/i
 
+/** Limits for the block list handed to the analyzer. */
+const MAX_BLOCKS = 600
+const MAX_CONTENT_CHARS = 120_000
+const TEXT_MAX_HEADING = 200
+const TEXT_MAX_LIST = 1200
+const TEXT_MAX_DEFAULT = 700
+
 /**
  * Selector for subtrees that render nothing to a sighted user.
  * Tailwind's `.hidden`/`.md:hidden`/`.sr-only`, explicit `aria-hidden`,
@@ -83,6 +116,13 @@ const SKIP_EXT = /\.(pdf|jpe?g|png|gif|webp|avif|svg|ico|zip|gz|mp[34]|css|js|js
 const HIDDEN_SELECTOR =
     '.hidden, [hidden], [aria-hidden="true"], .sr-only, [style*="display:none"], [style*="display: none"], [style*="visibility:hidden"], [style*="visibility: hidden"]'
 
+/** Site chrome that should not count as page content. */
+const CHROME_SELECTOR =
+    'nav, aside, footer, [role="navigation"], [role="contentinfo"], [role="banner"], [role="complementary"]'
+
+const BLOCK_SELECTOR = 'h1, h2, h3, h4, h5, h6, p, ul, ol, dl, blockquote, table, figcaption, div'
+/** A block nested inside one of these is already covered by its parent block. */
+const NESTED_PARENTS = 'ul, ol, dl, blockquote, table, p, h1, h2, h3, h4, h5, h6, figcaption'
 
 const stripWww = (host: string) => host.toLowerCase().replace(/^www\./, '')
 const collapse = (s: string) => s.replace(/\s+/g, ' ').trim()
@@ -120,6 +160,22 @@ function lineOf(html: string, needle: string): number {
     let line = 1
     for (let i = 0; i < idx; i++) if (html.charCodeAt(i) === 10) line++
     return line
+}
+
+/** O(log n) position -> 1-based line lookup, built once per page. */
+function makeLineIndexer(html: string) {
+    const newlines: number[] = []
+    for (let i = 0; i < html.length; i++) if (html.charCodeAt(i) === 10) newlines.push(i)
+    return (pos: number) => {
+        let lo = 0
+        let hi = newlines.length
+        while (lo < hi) {
+            const mid = (lo + hi) >> 1
+            if (newlines[mid]! < pos) lo = mid + 1
+            else hi = mid
+        }
+        return lo + 1
+    }
 }
 
 /**
@@ -164,6 +220,19 @@ function refFor(
     }
 }
 
+const cssEscape = (s: string) => s.replace(/[^\w-]/g, '\\$&')
+
+/** Selector for content blocks: tag + id/first class, plus :nth-of-type when ambiguous. */
+function blockSelector($el: cheerio.Cheerio<any>, tag: string): string {
+    const id = $el.attr('id')
+    if (id) return `${tag}#${cssEscape(id)}`
+    const cls = ($el.attr('class') || '').split(/\s+/).filter(Boolean)[0]
+    let selector = cls ? `${tag}.${cssEscape(cls)}` : tag
+    const siblings = $el.parent().children(tag)
+    if (siblings.length > 1) selector += `:nth-of-type(${siblings.index($el) + 1})`
+    return selector
+}
+
 function emptyEvidence(): PageEvidence {
     return {
         missingAlt: [],
@@ -181,6 +250,100 @@ function emptyEvidence(): PageEvidence {
         jsonLd: [],
         paragraphs: [],
     }
+}
+
+// ---------------------------------------------------------------------------
+// Content blocks (whole page, in order)
+// ---------------------------------------------------------------------------
+
+function blockText($el: cheerio.Cheerio<any>, tag: string): string {
+    if (tag === 'ul' || tag === 'ol') {
+        const items = $el
+            .find('li')
+            .toArray()
+            .map((li) => collapse(cheerio.load('')(li).text()))
+            .filter(Boolean)
+        if (items.length) return items.join(' • ')
+    }
+    if (tag === 'table') {
+        const rows = $el
+            .find('tr')
+            .toArray()
+            .map((tr) =>
+                cheerio
+                    .load('')(tr)
+                    .find('th, td')
+                    .toArray()
+                    .map((c) => collapse(cheerio.load('')(c).text()))
+                    .filter(Boolean)
+                    .join(' | '),
+            )
+            .filter(Boolean)
+        if (rows.length) return rows.join(' ; ')
+    }
+    return collapse($el.text())
+}
+
+function extractBlocks(
+    $: cheerio.CheerioAPI,
+    $root: cheerio.Cheerio<any>,
+    html: string,
+): { blocks: ContentBlock[]; truncated: boolean } {
+    const rootEl = $root[0] as Element | undefined
+    const blocks: ContentBlock[] = []
+    if (!rootEl) return { blocks, truncated: false }
+
+    const lineAt = makeLineIndexer(html)
+    let cursor = 0
+    let chars = 0
+    let truncated = false
+
+    $root.find(BLOCK_SELECTOR).each((_, node) => {
+        if (blocks.length >= MAX_BLOCKS || chars >= MAX_CONTENT_CHARS) {
+            truncated = true
+            return false
+        }
+        const el = node as Element
+        const tag = (el.tagName as string).toLowerCase()
+        const $el = $(el)
+        const isHeading = /^h[1-6]$/.test(tag)
+
+        // Only leaf-ish divs: anything with block children is covered by those children.
+        if (tag === 'div' && $el.find(BLOCK_SELECTOR).length > 0) return
+        // Nested inside a block we already take whole (li in ul, p in blockquote, ...).
+        if ($el.parentsUntil(rootEl).filter(NESTED_PARENTS).length > 0) return
+
+        let text = blockText($el, tag)
+        const minLen = isHeading ? 2 : tag === 'div' ? 25 : 15
+        if (text.length < minLen) return
+
+        const max = isHeading
+            ? TEXT_MAX_HEADING
+            : tag === 'ul' || tag === 'ol' || tag === 'table'
+                ? TEXT_MAX_LIST
+                : TEXT_MAX_DEFAULT
+        if (text.length > max) text = `${text.slice(0, max).trimEnd()}…`
+
+        const needle = ($.html(el) || '').slice(0, 40)
+        const at = needle ? html.indexOf(needle, cursor) : -1
+        let line = 0
+        if (at >= 0) {
+            line = lineAt(at)
+            cursor = at + 1
+        }
+
+        blocks.push({
+            id: `b${blocks.length}`,
+            tag,
+            level: isHeading ? Number(tag[1]) : 0,
+            selector: blockSelector($el, tag),
+            line,
+            text,
+        })
+        chars += text.length
+    })
+
+    return { blocks, truncated: truncated || blocks.length >= MAX_BLOCKS }
 }
 
 // ---------------------------------------------------------------------------
@@ -314,6 +477,8 @@ function emptyPage(url: string, init: Partial<ExtractedPageData> = {}): Extracte
         wordCount: 0,
         likelyClientRendered: false,
         bodySnippet: '',
+        blocks: [],
+        contentTruncated: false,
         evidence: emptyEvidence(),
         ...init,
     }
@@ -452,7 +617,7 @@ export async function scrapePageSeo(url: string): Promise<ExtractedPageData> {
         evidence.ogTags.push(refFor(html, el as Element, $))
     })
 
-    // ---- headings (before stripping nav/footer so refs stay valid) ----
+    // ---- headings (before stripping so refs stay valid) ----
     const h1Els = $('h1').toArray() as Element[]
     const h2Els = $('h2').toArray() as Element[]
 
@@ -475,11 +640,14 @@ export async function scrapePageSeo(url: string): Promise<ExtractedPageData> {
     }
 
     // Heading-skip evidence
-    for (let i = 1; i < headingLevels.length; i++) {
+    let skips = 0
+    for (let i = 1; i < headingLevels.length && skips < 5; i++) {
         if (headingLevels[i]! - headingLevels[i - 1]! > 1) {
             const el = allHeadingEls[i]
-            if (el) evidence.headingSkip.push(refFor(html, el, $))
-            break
+            if (el) {
+                evidence.headingSkip.push(refFor(html, el, $))
+                skips++
+            }
         }
     }
 
@@ -487,14 +655,27 @@ export async function scrapePageSeo(url: string): Promise<ExtractedPageData> {
     // Scripts/styles/etc. never contribute visible text.
     $('script, style, noscript, template, svg').remove()
     // Hidden subtrees (Tailwind .hidden, .sr-only, aria-hidden="true", inline
-    // display:none) are still in the DOM for responsive layouts. Dropping them
-    // before text extraction keeps wordCount and bodySnippet honest.
+    // display:none) are still in the DOM for responsive layouts.
     $(HIDDEN_SELECTOR).remove()
+    // Site chrome. A <header> is only chrome when it has no H1 and is link-heavy,
+    // so hero headers inside the page survive.
+    $('header').each((_, el) => {
+        const $h = $(el)
+        if ($h.find('h1').length) return
+        if ($h.find('nav').length || $h.find('a[href]').length >= 4) $h.remove()
+    })
+    $(CHROME_SELECTOR).remove()
 
+    // Content root: <main> if it holds real content, otherwise the cleaned <body>.
     const bodyText = collapse($('body').text())
-    const wordCount = bodyText ? bodyText.split(' ').length : 0
-    const mainText = collapse($('main').first().text())
-    const snippetSource = mainText.length >= 200 ? mainText : bodyText
+    const mainEl = $('main').first()
+    const mainText = collapse(mainEl.text())
+    const mainWords = mainText ? mainText.split(' ').length : 0
+    const useMain = mainEl.length > 0 && mainWords >= 40
+    const $root = useMain ? mainEl : $('body')
+    const contentText = useMain ? mainText : bodyText
+
+    const wordCount = contentText ? contentText.split(' ').length : 0
     const likelyClientRendered = wordCount < 80 && $('#__nuxt, #app, #root, #__next').length > 0
 
     // Thin-content evidence
@@ -510,7 +691,7 @@ export async function scrapePageSeo(url: string): Promise<ExtractedPageData> {
         if (heroEl) evidence.hero = refFor(html, heroEl, $)
     }
 
-    // Paragraph evidence for AI (first 6 visible <p> inside main, capped)
+    // First visible paragraphs (kept for compatibility)
     const mainScope = $('main').length ? $('main') : $('body')
     mainScope.find('p').each((_, el) => {
         if (evidence.paragraphs.length >= 6) return
@@ -518,6 +699,9 @@ export async function scrapePageSeo(url: string): Promise<ExtractedPageData> {
         if (text.length < 20) return
         evidence.paragraphs.push(refFor(html, el as Element, $, { maxText: 200 }))
     })
+
+    // The whole content, in order, for chunked AI review
+    const { blocks, truncated } = extractBlocks($, $root, html)
 
     return {
         url,
@@ -542,7 +726,9 @@ export async function scrapePageSeo(url: string): Promise<ExtractedPageData> {
         invalidSchemaCount,
         wordCount,
         likelyClientRendered,
-        bodySnippet: snippetSource.slice(0, SNIPPET_CHARS),
+        bodySnippet: contentText.slice(0, SNIPPET_CHARS),
+        blocks,
+        contentTruncated: truncated,
         evidence,
     }
 }
