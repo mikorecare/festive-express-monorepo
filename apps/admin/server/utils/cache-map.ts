@@ -15,6 +15,11 @@ export const CACHE_MAP = {
     POSTS_PUBLIC: 'posts_list_cache',
     POSTS_ADMIN: 'admin_posts_list_cache',
     POST_DETAIL: 'post_detail_cache',
+
+    // ── Project gallery ─────────────────────────────────────
+    PROJECTS_PUBLIC: 'projects_list_cache',
+    PROJECTS_ADMIN: 'admin_projects_list_cache',
+    PROJECT_DETAIL: 'project_detail_cache',
 } as const
 
 export type CacheKey = typeof CACHE_MAP[keyof typeof CACHE_MAP]

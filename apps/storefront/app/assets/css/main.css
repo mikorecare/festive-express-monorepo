@@ -976,6 +976,96 @@ ctm-chat::part(engage-message-bubble) {
   background-color: #d97d14; /* Darker orange */
 }
 
+/* =========================================
+   TRANSPARENT 3D GLOSSY (Variant)
+   ========================================= */
+.btn-3d-transparent {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border-radius: 50px;
+  overflow: hidden;
+  cursor: pointer;
+  
+  /* Transparent Base with Border */
+  background: transparent;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Top gloss highlight */
+.btn-3d-transparent::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  right: 6px;
+  height: 45%;
+  border-radius: 40px 40px 20px 20px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.0) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Continuous sweeping shine */
+.btn-3d-transparent::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: 0;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.08) 40%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.08) 60%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  pointer-events: none;
+  z-index: 0;
+  /* Reusing your existing keyframe */
+  animation: glossyShineBtn3d 3s linear infinite;
+  will-change: transform;
+}
+
+/* Hover State: Fills with white, text turns navy */
+.btn-3d-transparent:hover {
+  transform: translateY(-2px);
+  background: #ffffff;
+  color: #1c2d5b;
+  box-shadow:
+    0 8px 16px rgba(0, 0, 0, 0.25),
+    inset 0 2px 4px rgba(255, 255, 255, 1);
+}
+
+.btn-3d-transparent:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+.btn-3d-transparent:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Keep text above gloss */
+.btn-3d-transparent > * {
+  position: relative;
+  z-index: 1;
+}
+
 .text-outline {
   --w: 2px;
   --o: #fff;

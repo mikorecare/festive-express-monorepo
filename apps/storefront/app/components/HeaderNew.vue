@@ -40,7 +40,7 @@
         <div
           class="grid grid-cols-3 items-center lg:flex lg:items-center lg:justify-between gap-2.5 md:gap-8"
         >
-          <!-- Mobile hamburger (left column) — glossy button, NO card/wrapper -->
+          <!-- Mobile hamburger (left column) -->
           <button
             type="button"
             class="mobile-menu-btn btn-secondary-2 justify-self-start lg:hidden"
@@ -58,7 +58,7 @@
             </span>
           </button>
 
-          <!-- Logo (center column on mobile, normal flow on desktop) -->
+          <!-- Logo -->
           <NuxtLink
             to="/"
             aria-label="Home"
@@ -101,6 +101,16 @@
                   FAQ
                 </NuxtLink>
               </li>
+              <!-- Added Gallery Here -->
+              <li>
+                <NuxtLink
+                  to="/gallery"
+                  class="nav-link block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
+                  active-class="nav-link-active"
+                >
+                  Gallery
+                </NuxtLink>
+              </li>
               <li>
                 <NuxtLink
                   to="/blogs"
@@ -113,7 +123,7 @@
             </ul>
           </nav>
 
-          <!-- Right actions: full call box on desktop; icon-only phone on mobile (right column) -->
+          <!-- Right actions -->
           <div class="flex justify-end lg:justify-normal lg:shrink-0">
             <a
               :href="telHref"
@@ -190,6 +200,17 @@
                   FAQ
                 </NuxtLink>
               </li>
+              <!-- Added Gallery Here -->
+              <li>
+                <NuxtLink
+                  to="/gallery"
+                  class="mobile-nav-link"
+                  active-class="mobile-nav-link-active"
+                  @click="mobileMenuOpen = false"
+                >
+                  Gallery
+                </NuxtLink>
+              </li>
               <li>
                 <NuxtLink
                   to="/blogs"
@@ -202,7 +223,7 @@
               </li>
             </ul>
 
-            <!-- Mobile call button (full glossy pill with number inside dropdown) -->
+            <!-- Mobile call button -->
             <a
               :href="telHref"
               class="contact-box btn-secondary-2 relative overflow-hidden w-full mt-3"
