@@ -169,6 +169,15 @@
         <span v-if="!isCollapsed">Users</span>
       </NuxtLink>
 
+      <NuxtLink
+        to="/admin/tracking"
+        class="flex items-center gap-3 px-4 py-3.5 text-white hover:bg-brand-orange hover:text-navy font-medium transition-colors text-base no-underline rounded-lg"
+        exact-active-class="bg-brand-orange text-navy"
+      >
+        <ArrowTrendingUpIcon class="h-5 w-5" />
+        <span v-if="!isCollapsed">Tracking</span>
+      </NuxtLink>
+
       <!-- Blog with Submenu -->
       <div class="relative">
         <div
@@ -521,6 +530,7 @@ import {
   WrenchScrewdriverIcon,
   DocumentMagnifyingGlassIcon,
   FolderOpenIcon,
+  ArrowTrendingUpIcon,
 } from "@heroicons/vue/24/outline";
 
 import MainLogoForDark from "./Logos/MainLogoForDark.vue";

@@ -5,12 +5,11 @@
     aria-label="Promotional announcement and countdown"
   >
     <div class="marquee-track">
-      <!-- Render two identical groups for a seamless, infinite scroll loop -->
       <div
         v-for="group in 2"
         :key="group"
         class="marquee-group"
-        :aria-hidden="group === 2"
+        :aria-hidden="group === 2 ? 'true' : undefined"
       >
         <template v-for="(entry, i) in marqueeSequence" :key="`${group}-${i}`">
           <!-- Promo message -->
@@ -72,28 +71,72 @@
   </div>
 
   <!-- Copied Success Modal -->
-  <transition name="modal-fade">
-    <div v-if="copied" class="modal-backdrop" @click.self="copied = false">
-      <div
-        class="modal-card"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-      >
-        <h3 id="modal-title" class="modal-title">Promo Code Copied!</h3>
-        <p class="modal-message">
-          Code <strong class="highlight-code">{{ promoCode }}</strong> has been
-          copied to your clipboard. Paste it at promo code section at checkout
-          to get
-          <strong class="highlight-discount">{{ formattedDiscount }}</strong>
-          off!
-        </p>
-        <button type="button" class="modal-close-btn" @click="copied = false">
-          Got it!
-        </button>
+
+  <!-- Copied Success Modal -->
+  <Teleport to="body">
+    <Transition name="modal-fade">
+      <div v-if="copied" class="modal-backdrop" @click.self="copied = false">
+        <div
+          class="modal-card"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+          aria-describedby="modal-description"
+          @keydown.esc="copied = false"
+        >
+          <button
+            type="button"
+            class="modal-x"
+            aria-label="Close"
+            @click="copied = false"
+          >
+            &times;
+          </button>
+
+          <div class="modal-success-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12l4 4L19 6" />
+            </svg>
+          </div>
+
+          <h3 id="modal-title" class="modal-title">Promo Code Copied!</h3>
+
+          <p id="modal-description" class="modal-message">
+            Your discount is ready. Apply this code at checkout to save.
+          </p>
+
+          <div class="modal-coupon">
+            <span class="modal-coupon-label"> YOUR PROMO CODE </span>
+            <strong class="modal-coupon-code">
+              {{ promoCode }}
+            </strong>
+          </div>
+
+          <div class="modal-discount">
+            <span>You'll save</span>
+            <strong>{{ formattedDiscount }}</strong>
+          </div>
+
+          <button type="button" class="modal-close-btn" @click="copied = false">
+            Continue Shopping
+            <span aria-hidden="true">→</span>
+          </button>
+
+          <p class="modal-hint">
+            Paste your code in the promo code field at checkout.
+          </p>
+        </div>
       </div>
-    </div>
-  </transition>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup>
@@ -125,13 +168,27 @@ const currencyRates = {
 
 const formattedDiscount = computed(() => {
   const { symbol, rate } = currencyRates[selectedCurrency.value];
-  const converted = Math.round(baseDiscountUSD * rate).toLocaleString();
+  const converted = Math.round(baseDiscountUSD * rate).toLocaleString("en-US");
   return `${symbol}${converted}`;
 });
 
+/* ---------- Clipboard (HTTPS + fallback for older browsers) ---------- */
 const copyCode = async () => {
   try {
-    await navigator.clipboard.writeText(promoCode);
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(promoCode);
+    } else {
+      // Fallback for non-HTTPS / unsupported browsers
+      const el = document.createElement("textarea");
+      el.value = promoCode;
+      el.setAttribute("readonly", "");
+      el.style.position = "absolute";
+      el.style.left = "-9999px";
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+    }
     copied.value = true;
   } catch (err) {
     console.error("Failed to copy promo code:", err);
@@ -196,38 +253,37 @@ const countdown = computed(() => {
 
 <style scoped>
 .announcement-bar {
-  --brand-primary: #1c2d58;
-  --brand-orange: #f49321;
-  --brand-pink: #ec008c;
+  --bar-bg: #0f1f45; /* dark navy from the mockup */
+  --bar-text: #ffffff;
+  --accent: #f58220; /* brand orange */
 
   position: sticky;
   top: 0;
   z-index: 999999;
   width: 100%;
   overflow: hidden;
-  background-color: var(--brand-primary);
-  color: #ffffff;
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
+  background-color: var(--bar-bg);
+  color: var(--bar-text);
+  font-family: inherit; /* picks up Poppins from your root, like the mockup */
   font-size: 0.875rem;
-  box-shadow: 0 2px 8px rgba(28, 45, 88, 0.25);
-  border-bottom: 2px solid var(--brand-orange);
+  font-weight: 500;
+  line-height: 1.4;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   padding: 0.55rem 0;
+  contain: layout style paint;
 }
 
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: scroll-left 35s linear infinite;
+  will-change: transform;
+  animation: scroll-left 45s linear infinite;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
-/* Pause scrolling on hover so users can easily click FEX500 */
-.announcement-bar:hover .marquee-track {
+.announcement-bar:hover .marquee-track,
+.announcement-bar:focus-within .marquee-track {
   animation-play-state: paused;
 }
 
@@ -271,21 +327,15 @@ const countdown = computed(() => {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(
-    0,
-    0,
-    0,
-    0.25
-  ); /* Darker background inside the navy bar */
-  border: 2px solid var(--brand-orange);
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 2px solid var(--accent);
   border-radius: 6px;
   padding: 0.15rem 0.45rem;
   font-size: 0.85rem;
   line-height: 1;
   font-weight: 500;
   color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-  font-variant-numeric: tabular-nums; /* Prevents text jumping when numbers change */
+  font-variant-numeric: tabular-nums;
 }
 
 .countdown-value {
@@ -306,29 +356,30 @@ const countdown = computed(() => {
 /* Separator between marquee items */
 .separator {
   margin: 0 2.5rem;
-  color: var(--brand-orange);
+  color: var(--accent);
+  opacity: 1;
   font-weight: 700;
 }
 
+/* --- Code Badge --- */
 .code-badge {
   display: inline-block;
-  background-color: var(--brand-pink);
+  background-color: transparent;
   color: #ffffff;
   font-weight: 700;
   letter-spacing: 0.05em;
-  padding: 0.12rem 0.5rem;
-  margin: 0 0.35rem;
-  border: none;
-  border-radius: 4px;
+  padding: 0.15rem 0.6rem;
+  margin: 0 0.4rem;
+  border: 2px solid var(--accent);
+  border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition:
     transform 0.15s ease,
-    filter 0.15s ease;
+    background-color 0.15s ease;
 }
 
 .code-badge:hover {
-  filter: brightness(1.12);
+  background-color: rgba(245, 130, 32, 0.15);
   transform: translateY(-1px);
 }
 
@@ -336,21 +387,70 @@ const countdown = computed(() => {
   transform: translateY(0);
 }
 
-.discount-amount {
-  color: var(--brand-orange);
-  font-weight: 700;
-  margin-left: 0.25rem;
+.code-badge:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 
+.discount-amount {
+  color: var(--bar-text);
+  font-weight: 600;
+  margin-left: 0.2rem;
+}
+
+/* --- Countdown --- */
+.countdown-container {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.countdown-label {
+  font-weight: 700;
+  margin-right: 0.5rem;
+  color: var(--bar-text);
+}
+
+.countdown-timer {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.time-unit {
+  background-color: var(--badge-bg);
+  color: var(--badge-text);
+  border-radius: 4px;
+  padding: 0.15rem 0.45rem;
+  display: inline-flex;
+  align-items: baseline;
+  min-width: 2.2rem;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.time-unit strong {
+  font-weight: 800;
+  color: var(--badge-text);
+}
+
+.time-unit small {
+  margin-left: 1px;
+  font-size: 0.75em;
+  color: var(--badge-text);
+  opacity: 0.85;
+}
+
+/* --- Animation: GPU-accelerated translate3d --- */
 @keyframes scroll-left {
   0% {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
   100% {
-    transform: translateX(-50%);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
+/* --- Responsive --- */
 @media (max-width: 768px) {
   .announcement-bar {
     font-size: 0.8125rem;
@@ -367,67 +467,266 @@ const countdown = computed(() => {
   }
 }
 
-/* --- Modal Styles --- */
+/* --- Accessibility: respect reduced-motion --- */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+    transform: none;
+    flex-wrap: wrap;
+  }
+  .marquee-group[aria-hidden="true"] {
+    display: none;
+  }
+  .marquee-group {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+/* Backdrop */
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(28, 45, 88, 0.6);
-  backdrop-filter: blur(4px);
   z-index: 1000000;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
 
+/* Card */
 .modal-card {
-  background-color: #ffffff;
-  color: #1c2d58;
+  position: relative;
+  box-sizing: border-box;
   width: 100%;
-  max-width: 360px;
-  border-radius: 12px;
-  padding: 2rem 1.5rem;
+  max-width: 400px;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  padding: 36px 30px 28px;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
   text-align: center;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  border-top: 4px solid #ec008c;
-  font-family:
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    sans-serif;
+  color: #162447;
+  font-family: system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI",
+    Roboto, sans-serif;
 }
 
+/* Close icon */
+.modal-x {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* Success check */
+.modal-success-icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: #ecfdf3;
+  color: #16a34a;
+}
+
+.modal-success-icon svg {
+  width: 30px;
+  height: 30px;
+}
+
+/* Heading */
 .modal-title {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1c2d58;
+  margin: 0 0 10px;
+  color: #162447;
+  font-size: 23px;
+  font-weight: 750;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
 }
 
 .modal-message {
-  margin: 0 0 1.5rem 0;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: #4a5568;
+  margin: 0 0 24px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
+/* Coupon */
+.modal-coupon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 12px;
+  border: 1.5px dashed #f58220;
+  border-radius: 12px;
+  background: #fff8f1;
+}
+
+.modal-coupon-label {
+  color: #a15b20;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.modal-coupon-code {
+  max-width: 100%;
+  color: #162447;
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  overflow-wrap: anywhere;
+}
+
+/* Savings */
+.modal-discount {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 20px 0;
+  padding: 0 2px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.modal-discount strong {
+  color: #16a34a;
+  font-size: 21px;
+  font-weight: 800;
+}
+
+/* Primary button */
+.modal-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  background: #f58220;
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.modal-close-btn:hover {
+  background: #df6c0c;
+  transform: translateY(-1px);
+}
+
+.modal-close-btn:active {
+  transform: translateY(0);
+}
+
+.modal-hint {
+  margin: 16px 0 0;
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Animation */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.modal-fade-enter-active .modal-card,
+.modal-fade-leave-active .modal-card {
+  transition: transform 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-from .modal-card,
+.modal-fade-leave-to .modal-card {
+  transform: translateY(12px) scale(0.97);
+  opacity: 0;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .modal-backdrop {
+    padding: 16px;
+  }
+
+  .modal-card {
+    max-height: calc(100dvh - 32px);
+    padding: 30px 22px 24px;
+    border-radius: 18px;
+  }
+
+  .modal-title {
+    font-size: 21px;
+  }
+
+  .modal-coupon-code {
+    font-size: 22px;
+  }
+
+  .modal-success-icon {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 16px;
+  }
+
+  .modal-discount strong {
+    font-size: 19px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal-fade-enter-active,
+  .modal-fade-leave-active,
+  .modal-fade-enter-active .modal-card,
+  .modal-fade-leave-active .modal-card {
+    transition: none;
+  }
+}
 .highlight-code {
-  background-color: #fef0f7;
-  color: #ec008c;
-  padding: 0.1rem 0.35rem;
+  background-color: #162447;
+  color: #ffffff;
+  padding: 0.1rem 0.4rem;
   border-radius: 4px;
   font-weight: 700;
 }
 
 .highlight-discount {
-  color: #f49321;
+  color: #f58220;
   font-weight: 700;
 }
 
 .modal-close-btn {
-  background-color: #1c2d58;
+  background-color: #162447;
   color: #ffffff;
   border: none;
   border-radius: 6px;
@@ -442,7 +741,7 @@ const countdown = computed(() => {
 }
 
 .modal-close-btn:hover {
-  background-color: #273b72;
+  background-color: #24345f;
   transform: translateY(-1px);
 }
 
@@ -450,7 +749,12 @@ const countdown = computed(() => {
   transform: translateY(0);
 }
 
-/* Modal Transition */
+.modal-close-btn:focus-visible {
+  outline: 2px solid #f58220;
+  outline-offset: 2px;
+}
+
+/* --- Modal Transition --- */
 .modal-fade-enter-active,
 .modal-fade-leave-active {
   transition:

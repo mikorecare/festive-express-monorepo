@@ -24,6 +24,7 @@
     "nuxt-meta-pixel": "^3.0.0",
     "nuxt-security": "^2.6.0",
     "sharp": "^0.35.4",
+    "ua-parser-js": "^2.0.10",
     "vue": "^3.5.39",
     "vue-router": "^5.1.0",
     "vue-sonner": "^2.0.9",

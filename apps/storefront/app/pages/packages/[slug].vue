@@ -72,6 +72,8 @@
             :price="selectedPrice"
           />
 
+          <PackageDetailsPackageSteps />
+
           <PackageDetailsPackageAddressInput
             v-model:address="address"
             :suggestions="suggestions"

@@ -2,7 +2,7 @@
   <div class="!font-poppins overflow-x-clipped pb-16 lg:pb-0">
     <AnnouncementBar />
     <HeaderNew />
-    <main id="main-content" role="main">
+    <main id="main-content" role="main" class="relative z-0">
       <NuxtPage />
     </main>
     <Footer />
@@ -17,7 +17,26 @@
 </template>
 
 <script setup lang="ts">
-import AnnouncementBar from './components/AnnouncementBar.vue';
+import { onMounted, onUnmounted } from "vue";
+import AnnouncementBar from "./components/AnnouncementBar.vue";
+import { useTracker } from "~/composables/useTracker";
+
+const tracker = useTracker();
+
+function handleGlobalClick(e: MouseEvent) {
+  const target = (e.target as HTMLElement).closest("button, a, [data-track]");
+  if (target) tracker.trackClick(target as HTMLElement);
+}
+
+onMounted(async () => {
+  await tracker.init();
+  document.addEventListener("click", handleGlobalClick);
+});
+
+onUnmounted(() => {
+  tracker.destroy();
+  document.removeEventListener("click", handleGlobalClick);
+});
 
 const chatWidget = ref();
 
