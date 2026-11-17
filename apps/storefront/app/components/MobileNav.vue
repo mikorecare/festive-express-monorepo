@@ -56,9 +56,16 @@
             :class="isActive(item.to) ? 'scale-110' : 'group-hover:scale-110'"
           />
 
-          <!-- Icon: FontAwesome fallback -->
+          <!-- Icon: Blog -->
           <IcNavBlog
             v-else-if="item.icon === 'blog'"
+            class="w-[1.35rem] h-[1.35rem] transition-transform duration-200 ease-out"
+            :class="isActive(item.to) ? 'scale-110' : 'group-hover:scale-110'"
+          />
+
+          <!-- Icon: Gallery -->
+          <IcnNavGallery
+            v-else-if="item.icon === 'gallery'"
             class="w-[1.35rem] h-[1.35rem] transition-transform duration-200 ease-out"
             :class="isActive(item.to) ? 'scale-110' : 'group-hover:scale-110'"
           />
@@ -76,6 +83,7 @@ import IcNavHome from "~/components/Icons/IcNavHome.vue";
 import IcNavBell from "~/components/Icons/IcNavBell.vue";
 import IcNavFaq from "~/components/Icons/IcNavFaq.vue";
 import IcNavBlog from "~/components/Icons/IcnNavBlog.vue";
+import IcnNavGallery from "~/components/Icons/IcnNavGallery.vue";
 
 const route = useRoute();
 
@@ -84,7 +92,7 @@ interface NavItem {
   label: string;
   /**
    * Either a sentinel for a built-in SVG icon:
-   *   "home" | "bell" | "faq"
+   *   "home" | "bell" | "faq" | "blog" | "gallery"
    * or a FontAwesome class string like "fas fa-home"
    */
   icon: string;
@@ -95,6 +103,7 @@ const navItems: NavItem[] = [
   { to: "/packages", label: "Packages", icon: "bell" },
   { to: "/faq", label: "FAQ", icon: "faq" },
   { to: "/blogs", label: "Blog", icon: "blog" },
+  { to: "/gallery", label: "Gallery", icon: "gallery" },
 ];
 
 const isActive = (path: string) => {

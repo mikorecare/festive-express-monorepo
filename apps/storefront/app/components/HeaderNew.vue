@@ -33,17 +33,20 @@
 
     <!-- Main Header (STICKY) -->
     <div
-      class="sticky top-0 z-[9999] bg-white py-2 md:py-3 shadow-md transition-all duration-300 w-full"
+      class="sticky top-0 z-[9999] py-2 md:py-3 transition-all duration-300 w-full"
+      :class="[
+        isScrolled
+          ? 'bg-white shadow-md'
+          : 'bg-transparent lg:bg-transparent shadow-none',
+      ]"
     >
-      <div class="w-full px-4 mx-auto max-w-7xl">
-        <!-- Mobile: 3 equal columns (menu | logo | phone). Desktop: original row -->
-        <div
-          class="grid grid-cols-3 items-center lg:flex lg:items-center lg:justify-between gap-2.5 md:gap-8"
-        >
-          <!-- Mobile hamburger (left column) -->
+      <div class="w-full px-4 mx-auto max-w-full">
+        <!-- Mobile Layout (Grid) -->
+        <div class="grid grid-cols-3 items-center lg:hidden gap-2.5">
+          <!-- Mobile hamburger -->
           <button
             type="button"
-            class="mobile-menu-btn btn-secondary-2 justify-self-start lg:hidden"
+            class="mobile-menu-btn btn-secondary-2 justify-self-start"
             aria-label="Open menu"
             :aria-expanded="mobileMenuOpen"
             @click="mobileMenuOpen = !mobileMenuOpen"
@@ -58,73 +61,19 @@
             </span>
           </button>
 
-          <!-- Logo -->
+          <!-- Mobile Logo (Center) -->
           <NuxtLink
             to="/"
             aria-label="Home"
-            class="logo-link flex flex-col items-center gap-1 text-transparent shrink-0 justify-self-center lg:justify-self-auto"
+            class="logo-link flex flex-col items-center gap-1 text-transparent shrink-0 justify-self-center"
           >
-            <div class="logo-wrap">
+            <div class="logo-wrap logo-wrap-mobile">
               <MainLogo class="logo-img" />
             </div>
           </NuxtLink>
 
-          <!-- Desktop nav -->
-          <nav class="hidden lg:block flex-1 min-w-0" role="navigation">
-            <ul
-              class="flex justify-end items-center gap-4 xl:gap-8 list-none p-0 m-0"
-            >
-              <li>
-                <NuxtLink
-                  to="/"
-                  class="nav-link block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
-                  exact-active-class="nav-link-active"
-                >
-                  Home
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/packages"
-                  class="nav-link block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
-                  active-class="nav-link-active"
-                >
-                  Packages
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/faq"
-                  class="nav-link block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
-                  active-class="nav-link-active"
-                >
-                  FAQ
-                </NuxtLink>
-              </li>
-              <!-- Added Gallery Here -->
-              <li>
-                <NuxtLink
-                  to="/gallery"
-                  class="nav-link block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
-                  active-class="nav-link-active"
-                >
-                  Gallery
-                </NuxtLink>
-              </li>
-              <li>
-                <NuxtLink
-                  to="/blogs"
-                  class="nav-link block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-base font-medium transition-colors hover:text-[#ff7a00]"
-                  active-class="nav-link-active"
-                >
-                  Blog
-                </NuxtLink>
-              </li>
-            </ul>
-          </nav>
-
-          <!-- Right actions -->
-          <div class="flex justify-end lg:justify-normal lg:shrink-0">
+          <!-- Mobile Phone -->
+          <div class="flex justify-end">
             <a
               :href="telHref"
               class="btn-gloss contact-box btn-secondary-2 relative overflow-hidden"
@@ -144,7 +93,99 @@
                   />
                 </svg>
               </span>
+            </a>
+          </div>
+        </div>
 
+        <!-- Desktop Layout (Flex, 3-part spacing) -->
+        <div
+          class="hidden lg:flex items-center justify-between gap-12 xl:gap-20"
+        >
+          <!-- 1. Logo (Left) -->
+          <NuxtLink
+            to="/"
+            aria-label="Home"
+            class="logo-link flex flex-1 items-center text-transparent shrink-0 ml-9"
+          >
+            <div class="logo-wrap">
+              <MainLogo class="logo-img" />
+            </div>
+          </NuxtLink>
+
+          <!-- 2. Navigation (Middle) -->
+          <nav class="flex-initial shrink-0" role="navigation">
+            <ul
+              class="flex justify-center items-center gap-6 xl:gap-16 list-none p-0 m-0"
+            >
+              <li>
+                <NuxtLink
+                  to="/"
+                  class="nav-link block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-lg font-medium transition-colors hover:text-[#ff7a00]"
+                  exact-active-class="nav-link-active"
+                >
+                  Home
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/packages"
+                  class="nav-link block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-lg font-medium transition-colors hover:text-[#ff7a00]"
+                  active-class="nav-link-active"
+                >
+                  Packages
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/faq"
+                  class="nav-link block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-lg font-medium transition-colors hover:text-[#ff7a00]"
+                  active-class="nav-link-active"
+                >
+                  FAQ
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/gallery"
+                  class="nav-link block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-lg font-medium transition-colors hover:text-[#ff7a00]"
+                  active-class="nav-link-active"
+                >
+                  Gallery
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink
+                  to="/blogs"
+                  class="nav-link block whitespace-nowrap text-[#1a2b4a] no-underline px-2 xl:px-3 py-2 text-sm xl:text-lg font-medium transition-colors hover:text-[#ff7a00]"
+                  active-class="nav-link-active"
+                >
+                  Blog
+                </NuxtLink>
+              </li>
+            </ul>
+          </nav>
+
+          <!-- 3. Phone Button (Right) -->
+          <div class="flex flex-1 justify-end shrink-0 xl:mr-4">
+            <a
+              :href="telHref"
+              class="btn-gloss contact-box btn-secondary-2 relative overflow-hidden"
+              :aria-label="`Call ${settings.contact_phone_display || '(941) 239-4722'}`"
+            >
+              <span class="phone-icon shrink-0">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  class="w-5 h-5"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M1.5 4.5a3 3 0 013-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 01-.694 1.955l-1.293.97c-.135.101-.164.279-.087.431a15.2 15.2 0 006.414 6.414c.152.077.33.048.431-.087l.97-1.293a1.875 1.875 0 011.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 01-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </span>
               <div class="contact-text">
                 <div class="call-now">CALL US NOW!</div>
                 <div class="phone-number">
@@ -176,9 +217,8 @@
                   class="mobile-nav-link"
                   exact-active-class="mobile-nav-link-active"
                   @click="mobileMenuOpen = false"
+                  >Home</NuxtLink
                 >
-                  Home
-                </NuxtLink>
               </li>
               <li>
                 <NuxtLink
@@ -186,9 +226,8 @@
                   class="mobile-nav-link"
                   active-class="mobile-nav-link-active"
                   @click="mobileMenuOpen = false"
+                  >Packages</NuxtLink
                 >
-                  Packages
-                </NuxtLink>
               </li>
               <li>
                 <NuxtLink
@@ -196,20 +235,17 @@
                   class="mobile-nav-link"
                   active-class="mobile-nav-link-active"
                   @click="mobileMenuOpen = false"
+                  >FAQ</NuxtLink
                 >
-                  FAQ
-                </NuxtLink>
               </li>
-              <!-- Added Gallery Here -->
               <li>
                 <NuxtLink
                   to="/gallery"
                   class="mobile-nav-link"
                   active-class="mobile-nav-link-active"
                   @click="mobileMenuOpen = false"
+                  >Gallery</NuxtLink
                 >
-                  Gallery
-                </NuxtLink>
               </li>
               <li>
                 <NuxtLink
@@ -217,40 +253,10 @@
                   class="mobile-nav-link"
                   active-class="mobile-nav-link-active"
                   @click="mobileMenuOpen = false"
+                  >Blog</NuxtLink
                 >
-                  Blog
-                </NuxtLink>
               </li>
             </ul>
-
-            <!-- Mobile call button -->
-            <a
-              :href="telHref"
-              class="contact-box btn-secondary-2 relative overflow-hidden w-full mt-3"
-              :aria-label="`Call ${settings.contact_phone_display || '(941) 239-4722'}`"
-            >
-              <span class="phone-icon shrink-0">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  class="w-5 h-5"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M1.5 4.5a3 3 0 013-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 01-.694 1.955l-1.293.97c-.135.101-.164.279-.087.431a15.2 15.2 0 006.414 6.414c.152.077.33.048.431-.087l.97-1.293a1.875 1.875 0 011.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 01-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </span>
-
-              <div class="contact-text">
-                <div class="call-now">CALL US NOW!</div>
-                <div class="phone-number">
-                  {{ settings.contact_phone_display || "(941) 239-4722" }}
-                </div>
-              </div>
-            </a>
           </nav>
         </transition>
       </div>
@@ -259,28 +265,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import MainLogo from "./Logos/MainLogo.vue";
 
 const { settings, telHref } = useSettings();
 
 const mobileMenuOpen = ref(false);
+const isScrolled = ref(false);
+
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 20;
+};
+
+onMounted(() => {
+  window.addEventListener("scroll", handleScroll, { passive: true });
+  handleScroll();
+});
+
+onUnmounted(() => {
+  window.removeEventListener("scroll", handleScroll);
+});
 </script>
 
 <style scoped>
-/* ============ LOGO: force big, no exceptions ============ */
 .logo-link {
   max-width: none !important;
-}
-
-.logo-wrap {
-  height: 100px;
-  width: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: visible;
-  flex: 0 0 auto;
 }
 
 .logo-wrap :deep(svg),
@@ -292,30 +301,33 @@ const mobileMenuOpen = ref(false);
   display: block;
 }
 
+/* Mobile logo: give the wrapper an explicit height so height:100% resolves */
+.logo-wrap-mobile {
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 @media (min-width: 1024px) {
   .logo-wrap {
     height: 110px;
   }
 }
-/* ======================================================== */
 
-/* Welcome Text & SVG Animation */
 .welcome {
   text-align: center;
 }
-
 .highlight {
   position: relative;
   display: inline-block;
   color: #f49321;
   font-weight: 700;
 }
-
 .brand-text {
   display: inline-block;
   animation: pulseText 2.8s ease-in-out infinite;
 }
-
 .underline-svg {
   position: absolute;
   bottom: -6px;
@@ -324,7 +336,6 @@ const mobileMenuOpen = ref(false);
   height: 18px;
   overflow: visible;
 }
-
 .underline-svg path {
   fill: none;
   stroke: #f49321;
@@ -345,7 +356,6 @@ const mobileMenuOpen = ref(false);
     transform: scale(1.03);
   }
 }
-
 @keyframes drawLine {
   0% {
     stroke-dashoffset: 800;
@@ -366,15 +376,12 @@ const mobileMenuOpen = ref(false);
   }
 }
 
-/* ---------- Nav link + active indicator ---------- */
 .nav-link {
   position: relative;
 }
-
 .nav-link-active {
   font-weight: 700;
 }
-
 .nav-link-active::after {
   content: "";
   position: absolute;
@@ -386,7 +393,6 @@ const mobileMenuOpen = ref(false);
   background: #ff7a00;
 }
 
-/* ---------- Contact Box Styles ---------- */
 .contact-box {
   display: flex;
   align-items: center;
@@ -399,7 +405,6 @@ const mobileMenuOpen = ref(false);
   background: #f49321 !important;
   border: 3px solid #1c2d5b;
 }
-
 .contact-box:hover {
   background: #1c2d5b !important;
   color: #f49321 !important;
@@ -410,8 +415,6 @@ const mobileMenuOpen = ref(false);
   animation-direction: alternate;
   border: 3px solid #f49321;
 }
-
-/* 3D Glossy Contact Box Button */
 .contact-box.btn-secondary-2 {
   display: inline-flex;
   align-items: center;
@@ -433,7 +436,6 @@ const mobileMenuOpen = ref(false);
     transform 0.15s ease,
     box-shadow 0.15s ease;
 }
-
 .contact-box.btn-secondary-2::before {
   content: "";
   position: absolute;
@@ -449,7 +451,6 @@ const mobileMenuOpen = ref(false);
   );
   pointer-events: none;
 }
-
 .contact-box.btn-secondary-2::after {
   content: "";
   position: absolute;
@@ -468,26 +469,22 @@ const mobileMenuOpen = ref(false);
   transform: rotate(25deg);
   pointer-events: none;
 }
-
 .contact-box.btn-secondary-2:hover {
   transform: translateY(-2px);
   box-shadow:
     0 8px 16px rgba(0, 0, 0, 0.4),
     inset 0 2px 4px rgba(255, 255, 255, 0.8);
 }
-
 .contact-box.btn-secondary-2:active {
   transform: translateY(1px);
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
 }
-
 .contact-box .phone-icon {
   font-size: 1.25rem;
   color: #ffffff;
   position: relative;
   z-index: 1;
 }
-
 .contact-box .contact-text {
   display: flex;
   flex-direction: column;
@@ -496,14 +493,12 @@ const mobileMenuOpen = ref(false);
   position: relative;
   z-index: 1;
 }
-
 .contact-box .phone-number {
   font-weight: 800;
   font-size: 1.05rem;
   letter-spacing: 0.5px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
-
 .contact-box .call-now {
   font-size: 0.7rem;
   font-weight: 900;
@@ -512,7 +507,6 @@ const mobileMenuOpen = ref(false);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
-/* ---------- Mobile hamburger glossy button — scoped to mobile only ---------- */
 @media (max-width: 1023px) {
   .mobile-menu-btn.btn-secondary-2 {
     display: inline-flex;
@@ -533,7 +527,6 @@ const mobileMenuOpen = ref(false);
       transform 0.15s ease,
       box-shadow 0.15s ease;
   }
-
   .mobile-menu-btn.btn-secondary-2::before {
     content: "";
     position: absolute;
@@ -549,80 +542,67 @@ const mobileMenuOpen = ref(false);
     );
     pointer-events: none;
   }
-
   .mobile-menu-btn.btn-secondary-2:active {
     transform: translateY(1px);
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
   }
-}
-
-.hamburger-icon {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 4px;
-  width: 20px;
-  height: 16px;
-}
-
-.hamburger-icon span {
-  display: block;
-  width: 100%;
-  height: 2.5px;
-  border-radius: 2px;
-  background: #ffffff;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
-  transition:
-    transform 0.25s ease,
-    opacity 0.2s ease;
-}
-
-.hamburger-icon.open span:nth-child(1) {
-  transform: translateY(6.5px) rotate(45deg);
-}
-.hamburger-icon.open span:nth-child(2) {
-  opacity: 0;
-}
-.hamburger-icon.open span:nth-child(3) {
-  transform: translateY(-6.5px) rotate(-45deg);
-}
-
-/* ---------- Mobile dropdown ---------- */
-.mobile-dropdown {
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  padding: 0.5rem;
-  border: 1px solid rgba(28, 45, 91, 0.08);
-}
-
-.mobile-nav-link {
-  display: block;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  color: #1a2b4a;
-  text-decoration: none;
-  font-weight: 500;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
-}
-
-.mobile-nav-link:hover {
-  background: rgba(244, 147, 33, 0.1);
-  color: #f49321;
-}
-
-.mobile-nav-link-active {
-  background: rgba(244, 147, 33, 0.12);
-  color: #f49321;
-  font-weight: 700;
-}
-
-/* Mobile adjustments */
-@media (max-width: 1023px) {
+  .hamburger-icon {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 20px;
+    height: 16px;
+  }
+  .hamburger-icon span {
+    display: block;
+    width: 100%;
+    height: 2.5px;
+    border-radius: 2px;
+    background: #ffffff;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+    transition:
+      transform 0.25s ease,
+      opacity 0.2s ease;
+  }
+  .hamburger-icon.open span:nth-child(1) {
+    transform: translateY(6.5px) rotate(45deg);
+  }
+  .hamburger-icon.open span:nth-child(2) {
+    opacity: 0;
+  }
+  .hamburger-icon.open span:nth-child(3) {
+    transform: translateY(-6.5px) rotate(-45deg);
+  }
+  .mobile-dropdown {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    padding: 0.5rem;
+    border: 1px solid rgba(28, 45, 91, 0.08);
+  }
+  .mobile-nav-link {
+    display: block;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    color: #1a2b4a;
+    text-decoration: none;
+    font-weight: 500;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+  .mobile-nav-link:hover {
+    background: rgba(244, 147, 33, 0.1);
+    color: #f49321;
+  }
+  .mobile-nav-link-active {
+    background: rgba(244, 147, 33, 0.12);
+    color: #f49321;
+    font-weight: 700;
+  }
   .contact-box {
     padding: 8px;
     width: 44px;
@@ -642,23 +622,7 @@ const mobileMenuOpen = ref(false);
     height: 12px;
     bottom: -4px;
   }
-
-  .mobile-dropdown .contact-box {
-    width: 100%;
-    height: auto;
-    padding: 0.6rem 2rem;
-    border-radius: 50px;
-    gap: 0.75rem;
-    background: linear-gradient(180deg, #f49321 0%, #f49321 50%, #f49321 100%);
-  }
-  .mobile-dropdown .contact-box .contact-text {
-    display: flex;
-  }
-  .mobile-dropdown .contact-box .phone-icon {
-    font-size: 1.25rem;
-  }
 }
-
 @keyframes festive-express-animation-pulse-grow {
   0% {
     transform: scale(1);

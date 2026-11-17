@@ -43,12 +43,13 @@
         ></div>
 
         <div class="relative z-20 max-w-4xl mx-auto px-6 text-center w-full">
-          <div class="mb-4">
+          <div class="mb-4 w-full text-left">
             <NuxtLink
               to="/gallery"
-              class="text-sm font-semibold text-white/70 hover:text-[#F49321] transition-colors inline-flex items-center"
+              class="inline-flex items-center text-sm font-semibold text-white/70 hover:text-[#F49321] transition-colors"
             >
-              <i class="fas fa-chevron-left mr-2 text-xs"></i> Back to Gallery
+              <i class="fas fa-chevron-left mr-2 text-xs"></i>
+              Back to Gallery
             </NuxtLink>
           </div>
 

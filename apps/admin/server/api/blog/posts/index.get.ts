@@ -1,4 +1,4 @@
-import { getSupabase } from '~~/server/utils/supabase'
+import { getSupabaseAdmin } from '~~/server/utils/supabase'
 
 export default defineEventHandler(async (event) => {
     try {

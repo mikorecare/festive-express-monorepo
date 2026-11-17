@@ -9,7 +9,7 @@
 </template> -->
 
 <template>
-  <HomeNewHero />
+  <HomeNewHeroNew />
   <HomeNewChooseYourHolidayPackage />
   <HomeNewPreviewYourHome />
   <HomeNewHowItWorks />
