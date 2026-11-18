@@ -15,10 +15,10 @@
       <li v-for="item in navItems" :key="item.to">
         <NuxtLink
           :to="item.to"
-          class="group relative flex flex-col items-center justify-center gap-0.5 py-2 rounded-2xl text-[0.68rem] font-semibold tracking-wide transition-all duration-200 ease-out active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F49321]/60"
+          class="group relative flex flex-col items-center justify-center gap-0.5 py-2 rounded-lg text-[0.68rem] font-semibold tracking-wide transition-all duration-200 ease-out active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F49321]/60"
           :class="
             isActive(item.to)
-              ? 'text-[#F49321] bg-[#F49321]/10'
+              ? 'text-[#F49321] bg-[#F49321]/10 border-t-4 border-t-[#F49321] rounded-t-none'
               : 'text-white hover:text-[#F49321] hover:bg-[#F49321]/5'
           "
           :aria-label="item.label"
@@ -43,8 +43,8 @@
           />
 
           <!-- Icon: Bell (Packages) -->
-          <IcNavBell
-            v-else-if="item.icon === 'bell'"
+          <IcnPackages
+            v-else-if="item.icon === 'packages'"
             class="w-[1.35rem] h-[1.35rem] transition-transform duration-200 ease-out"
             :class="isActive(item.to) ? 'scale-110' : 'group-hover:scale-110'"
           />
@@ -80,7 +80,7 @@
 
 <script setup lang="ts">
 import IcNavHome from "~/components/Icons/IcNavHome.vue";
-import IcNavBell from "~/components/Icons/IcNavBell.vue";
+import IcnPackages from "~/components/Icons/IcnPackages.vue";
 import IcNavFaq from "~/components/Icons/IcNavFaq.vue";
 import IcNavBlog from "~/components/Icons/IcnNavBlog.vue";
 import IcnNavGallery from "~/components/Icons/IcnNavGallery.vue";
@@ -100,7 +100,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { to: "/", label: "Home", icon: "home" },
-  { to: "/packages", label: "Packages", icon: "bell" },
+  { to: "/packages", label: "Packages", icon: "packages" },
   { to: "/faq", label: "FAQ", icon: "faq" },
   { to: "/blogs", label: "Blog", icon: "blog" },
   { to: "/gallery", label: "Gallery", icon: "gallery" },

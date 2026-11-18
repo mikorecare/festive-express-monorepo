@@ -8,7 +8,7 @@
       class="flex justify-between py-2 border-b border-gray-100"
     >
       <div class="pr-2">
-        <strong class="text-sm">{{ item.product?.name }}</strong>
+        <strong class="text-sm">{{ item.product?.name }} </strong>
 
         <small
           v-if="item.options?.c9_color"
@@ -65,12 +65,15 @@
           $&nbsp;
         </span>
         <span class="font-extrabold leading-none price-text -tracking-[0.04em]">
-          {{
+          <!-- {{
             (Number(item.price || 0) * item.quantity).toLocaleString(
               undefined,
               { minimumFractionDigits: 2, maximumFractionDigits: 2 },
             )
           }}
+          Designed for multiple orders will be commented for future reference for multiple orders  
+          -->
+          {{ Number(selectedPrice) }}
         </span>
       </span>
     </div>
@@ -393,6 +396,7 @@ const {
 } = usePromo();
 
 const props = defineProps<{
+  selectedPrice: number;
   cartItems: any[];
   cartTotal: number;
   alacarteCartTotal: number;

@@ -325,7 +325,7 @@ const { settings, loadSettings, telHref } = useSettings();
 
 const mobileOpen = ref(false);
 
-const { cartTotal, cartCount, loadCart } = useCart();
+// const { cartTotal, cartCount, loadCart } = useCart();
 
 const router = useRouter();
 const route = useRoute();
@@ -339,7 +339,7 @@ const scrollTo = async (id: string) => {
 };
 
 onMounted(() => {
-  loadCart();
+  // loadCart();
   loadSettings();
 });
 

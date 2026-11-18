@@ -7,14 +7,14 @@
       class="relative py-10 sm:py-16 text-white overflow-hidden min-h-[320px] sm:min-h-[500px]"
     >
       <img
-        src="/New/Banner/hero-new.webp"
+        src="/New/Banner/packages.webp"
         alt="Express Banner"
         width="1920"
         height="800"
         loading="eager"
         fetchpriority="high"
         decoding="async"
-        class="absolute inset-0 w-full h-full object-cover z-10"
+        class="absolute block inset-0 w-full h-full object-fill z-10"
       />
 
       <div class="absolute inset-0 bg-black/40 z-[11]" aria-hidden="true"></div>

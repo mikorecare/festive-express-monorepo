@@ -69,60 +69,83 @@
         <div class="lg:col-span-2 space-y-6">
           <!-- Package summary -->
           <div
-            class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 space-y-4"
+            class="bg-white rounded-2xl shadow-md border border-slate-200 space-y-4"
           >
-            <PackageDetailsPackageAddressInput
-              v-model:address="address"
-              :suggestions="suggestions"
-              :suggestions-open="suggestionsOpen"
-              :errors="errors"
-              :address-error="addressError"
-              :validating="validating"
-              @input="debouncedSearch"
-              @focus="suggestionsOpen = true"
-              @select="onSelectAddress"
-              @close="suggestionsOpen = false"
-            />
-
-            <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">
-                Installation Contact Phone *
-              </label>
-              <input
-                v-model="installPhone"
-                @input="formatPhone"
-                @blur="validateInstallation('phone')"
-                type="tel"
-                class="w-full md:max-w-[50%] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                :class="{ 'border-red-500': installation.errors.phone }"
-                maxlength="14"
-                placeholder="(555) 123-4567"
-              />
-              <p
-                v-if="installation.errors.phone"
-                class="text-red-500 text-sm mt-1"
+            <div
+              class="bg-[#1C2D5B] btn-gloss px-6 py-2 flex items-center border-b-4 border-[#F49321] rounded-t-xl mb-2"
+            >
+              <h3
+                class="text-lg font-extrabold text-white flex items-center tracking-wide"
               >
-                {{ installation.errors.phone }}
-              </p>
+                <i class="fas fa-map-location-dot mr-3 text-[#F49321]"></i
+                >Installation
+              </h3>
+            </div>
+            <div>
+              <div class="px-6 pb-6">
+                <PackageDetailsPackageAddressInput
+                  v-model:address="address"
+                  :suggestions="suggestions"
+                  :suggestions-open="suggestionsOpen"
+                  :errors="errors"
+                  :address-error="addressError"
+                  :validating="validating"
+                  @input="debouncedSearch"
+                  @focus="suggestionsOpen = true"
+                  @select="onSelectAddress"
+                  @close="suggestionsOpen = false"
+                />
+
+                <label class="block text-sm font-semibold text-gray-700 mb-1">
+                  Installation Contact Phone *
+                </label>
+                <input
+                  v-model="installPhone"
+                  @input="formatPhone"
+                  @blur="validateInstallation('phone')"
+                  type="tel"
+                  class="w-full md:max-w-[50%] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                  :class="{ 'border-red-500': installation.errors.phone }"
+                  maxlength="14"
+                  placeholder="(555) 123-4567"
+                />
+                <p
+                  v-if="installation.errors.phone"
+                  class="text-red-500 text-sm mt-1"
+                >
+                  {{ installation.errors.phone }}
+                </p>
+              </div>
             </div>
           </div>
 
           <!-- Step 2: Color + add-ons -->
           <div
-            class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 space-y-4"
+            class="bg-white rounded-2xl shadow-md border border-slate-200 space-y-4"
           >
-            <PackageDetailsPackageColorPicker
-              :skus="skusForPkg"
-              :selected="selectedSku"
-              :swatch-style="swatchStyle"
-              :by-key="byKey"
-              @select="selectSku"
-            />
+            <div
+              class="bg-[#1C2D5B] btn-gloss px-6 py-2 flex items-center border-b-4 border-[#F49321] rounded-t-xl mb-2"
+            >
+              <h3
+                class="text-lg font-extrabold text-white flex items-center tracking-wide"
+              >
+                <i class="fas fa-lightbulb mr-3 text-[#F49321]"></i>Customize
+              </h3>
+            </div>
+            <div class="pb-6 px-6">
+              <PackageDetailsPackageColorPicker
+                :skus="skusForPkg"
+                :selected="selectedSku"
+                :swatch-style="swatchStyle"
+                :by-key="byKey"
+                @select="selectSku"
+              />
 
-            <PackageDetailsPackageAddOnsTrigger
-              :extra="addonSubtotal + overagePrice"
-              @open="extrasOpen = true"
-            />
+              <PackageDetailsPackageAddOnsTrigger
+                :extra="addonSubtotal + overagePrice"
+                @open="extrasOpen = true"
+              />
+            </div>
           </div>
           <CheckoutPaymentInformation
             v-model="paymentForm"
@@ -169,16 +192,26 @@
           <!-- Step 1: Address + phone -->
 
           <!-- Step 3: Dates -->
-          <div
-            class="bg-white rounded-2xl shadow-md border border-slate-200 p-6"
-          >
-            <CheckoutScheduleService
-              :model-value="installation"
-              :errors="installation.errors"
-              :min-date="minDate"
-              @update:model-value="updateInstallation"
-              @validate="validateInstallation"
-            />
+          <div class="bg-white rounded-2xl shadow-md border border-slate-200">
+            <div
+              class="bg-[#1C2D5B] btn-gloss px-6 py-2 flex items-center border-b-4 border-[#F49321] rounded-t-xl mb-2"
+            >
+              <h3
+                class="text-lg font-extrabold text-white flex items-center tracking-wide"
+              >
+                <i class="fas fa-calendar-day mr-3 text-[#F49321]"></i
+                >Installation Dates
+              </h3>
+            </div>
+            <div class="pb-6 px-6 pt-2">
+              <CheckoutScheduleService
+                :model-value="installation"
+                :errors="installation.errors"
+                :min-date="minDate"
+                @update:model-value="updateInstallation"
+                @validate="validateInstallation"
+              />
+            </div>
           </div>
 
           <!-- Payment -->
@@ -201,6 +234,7 @@
         <!-- Right Column (Order Summary + voucher) -->
         <div class="lg:col-span-1">
           <CheckoutOrderSummary
+            :selected-price="selectedPrice"
             :cart-items="cartItems"
             :cart-total="cartTotal"
             :alacarte-cart-total="alacarteCartTotal"
