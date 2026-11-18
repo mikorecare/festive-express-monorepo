@@ -1,6 +1,15 @@
 import { ref } from 'vue'
 import { UAParser } from 'ua-parser-js'
 
+
+const ALLOWED_ORIGIN = 'https://festive.express'
+
+function isTrackingAllowed(): boolean {
+    if (!import.meta.client) return false
+
+    return window.location.origin === ALLOWED_ORIGIN
+}
+
 // ---------------------------------------------------------------------------
 // Device info
 // ---------------------------------------------------------------------------
@@ -167,10 +176,14 @@ function _useTracker() {
     }
 
     async function send(payload: Record<string, any>) {
+        if (!isTrackingAllowed()) return
+
         try {
-            await $fetch('/api/track', { method: 'POST', body: payload })
+            await $fetch('/api/track', {
+                method: 'POST',
+                body: payload,
+            })
         } catch (e) {
-            // swallow — tracking must never break the app
             console.warn('[tracker] failed', e)
         }
     }
@@ -207,12 +220,14 @@ function _useTracker() {
     }
 
     function sendUnload(durationMs: number) {
+        if (!isTrackingAllowed()) return
+
         const payload = JSON.stringify({
             ...buildBasePayload(),
             event_type: 'pageview',
             duration_ms: durationMs,
         })
-        // keepalive survives unload; endpoint is same-origin so no CORS
+
         fetch('/api/track', {
             method: 'POST',
             keepalive: true,
@@ -237,12 +252,11 @@ function _useTracker() {
     }
 
     async function init() {
-        if (!import.meta.client) return
+        if (!isTrackingAllowed()) return
+
         sessionId.value = crypto.randomUUID()
         deviceFp.value = getDeviceFingerprint()
 
-        // Collect device info once per session — it doesn't change mid-session.
-        // Enrichment is async, so we fire the initial pageview after it resolves.
         deviceInfo = await getDeviceInfoEnriched()
 
         currentPath = window.location.pathname
@@ -256,9 +270,11 @@ function _useTracker() {
     }
 
     function destroy() {
-        if (!import.meta.client) return
+        if (!isTrackingAllowed()) return
+
         window.removeEventListener('beforeunload', handleBeforeUnload)
         document.removeEventListener('visibilitychange', handleVisibilityChange)
+
         reportPageView(Date.now() - pageEnterTime)
     }
 
