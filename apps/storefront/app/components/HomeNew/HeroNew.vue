@@ -24,14 +24,14 @@
 
     <!-- Main Content Container -->
     <div
-      class="relative z-10 w-full max-w-7xl mr-auto px-4 lg:px-8 pt-8 sm:pt-12 lg:pt-24 pb-6 lg:pb-16 flex-1 flex flex-col lg:block lg:flex-none lg:my-auto"
+      class="relative z-10 w-full max-w-7xl mr-auto px-4 lg:px-8 pt-8 sm:pt-12 lg:pt-24 pb-6 lg:pb-16 flex-1 flex flex-col lg:block lg:mx-8 lg:flex-none lg:my-auto"
     >
       <div
-        class="w-full lg:w-auto max-w-2xl text-left mr-0 lg:mr-auto ml-0 lg:ml-10 flex-1 flex flex-col lg:block"
+        class="w-full lg:w-auto max-w-4xl text-left mr-0 lg:mr-auto ml-0 lg:ml-10 flex-1 flex flex-col lg:block"
       >
         <!-- Eyebrow -->
         <div
-          class="flex items-center justify-start gap-3 sm:gap-4 text-brand-orange font-bold tracking-wide sm:tracking-wider text-base sm:text-xl mb-3 sm:mb-6"
+          class="flex items-center justify-start gap-3 sm:gap-4 text-brand-orange font-bold tracking-wide sm:tracking-wider text-base sm:text-xl lg:text-2xl mb-3 sm:mb-6"
         >
           <span>RENT</span>
           <span
@@ -49,15 +49,15 @@
         <!-- Headline: scales with viewport so "Holiday Magic" stays on one line on phones -->
         <h1
           v-fade-left
-          class="text-[clamp(1.9rem,8.6vw,3rem)] text-7xl font-black text-navy leading-[1.1] mb-4 sm:mb-6"
+          class="text-[clamp(1.9rem,8.6vw,3rem)] lg:text-7xl font-black text-navy leading-[1.2] mb-4 sm:mb-6 lg:tracking-wide"
         >
           Holiday Lighting<br />
           From Your
-          <br />
+          <br class="lg:hidden" />
           <span class="relative inline-block">
             Couch
             <svg
-              class="absolute w-[105%] h-auto -bottom-2 -left-[2.5%] pointer-events-none"
+              class="absolute w-[105%] h-auto -bottom-2 lg:-bottom-6 -left-[2.5%] pointer-events-none"
               viewBox="0 0 242.54 25.21"
               fill="#f49321"
               preserveAspectRatio="none"
@@ -74,7 +74,7 @@
         <!-- Subheadline -->
         <p
           v-fade-left
-          class="text-2xl font-bold lg:font-semibold text-navy mb-3 sm:mb-4 sm:max-w-none leading-snug lg:leading-normal max-lg:whitespace-nowrap [text-shadow:0_0_15px_rgba(255,255,255,1)] lg:[text-shadow:none]"
+          class="text-2xl font-bold lg:font-semibold lg:text-2xl text-navy mb-3 sm:mb-4 sm:max-w-none leading-snug lg:leading-normal max-lg:whitespace-nowrap [text-shadow:0_0_15px_rgba(255,255,255,1)] lg:[text-shadow:none]"
         >
           A complete<br class="lg:hidden" />
           holiday decorating<br class="lg:hidden" />
@@ -85,7 +85,7 @@
         <!-- Description -->
         <p
           v-fade-left
-          class="text-xs sm:text-lg text-navy/95 lg:mb-10 sm:max-w-xl leading-relaxed lg:leading-normal max-lg:whitespace-nowrap [text-shadow:0_0_15px_rgba(255,255,255,1)] lg:[text-shadow:none]"
+          class="text-xs sm:text-lg lg:text-xl text-navy/95 lg:mb-10 sm:max-w-xl leading-relaxed lg:leading-normal max-lg:whitespace-nowrap [text-shadow:0_0_15px_rgba(255,255,255,1)] lg:[text-shadow:none]"
         >
           We install, maintain, and<br class="lg:hidden" />
           take it all down — so you<br class="lg:hidden" />
@@ -101,14 +101,14 @@
         >
           <NuxtLink
             to="#preview"
-            class="w-full max-w-[18rem] sm:max-w-sm mx-auto lg:!mx-0 lg:!w-auto lg:!max-w-none lg:shrink-0 btn-3d-glossy flex items-center justify-center gap-2 px-4 py-3 rounded-full font-semibold transition-colors duration-200 shadow-lg shadow-blue-900/20"
+            class="w-full max-w-[18rem] sm:max-w-sm mx-auto lg:!mx-0 lg:!w-auto lg:!max-w-none lg:text-2xl lg:shrink-0 btn-3d-glossy px-4 lg:!px-8 py-3  flex items-center justify-center gap-2 rounded-full font-semibold transition-colors duration-200 shadow-lg shadow-blue-900/20"
           >
             Preview Your Home →
           </NuxtLink>
 
           <NuxtLink
             to="/packages"
-            class="w-full max-w-[18rem] sm:max-w-sm mx-auto lg:!mx-0 lg:!w-auto lg:!max-w-none lg:shrink-0 btn-3d-glossy btn-3d-glossy-orange text-center px-4 py-3 rounded-full font-semibold transition-colors duration-200 shadow-lg shadow-orange-500/20"
+            class="w-full max-w-[18rem] sm:max-w-sm mx-auto lg:!mx-0 lg:!w-auto lg:!max-w-none lg:text-2xl lg:shrink-0 btn-3d-glossy btn-3d-glossy-orange text-center px-4 lg:!px-8 py-3 rounded-full font-semibold transition-colors duration-200 shadow-lg shadow-orange-500/20"
           >
             Explore the Packages
           </NuxtLink>
@@ -127,7 +127,7 @@
           class="flex-1 flex flex-col lg:flex-row items-center justify-center gap-2 lg:gap-4 text-center lg:text-left"
         >
           <svg
-            class="w-8 h-8 lg:w-9 lg:h-9 text-[#F28E2B] flex-shrink-0"
+            class="w-8 h-8 lg:w-12 lg:h-12 text-[#F28E2B] flex-shrink-0"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -157,7 +157,7 @@
           class="flex-1 flex flex-col lg:flex-row items-center justify-center gap-2 lg:gap-4 text-center lg:text-left"
         >
           <svg
-            class="w-8 h-8 lg:w-9 lg:h-9 text-[#F28E2B] flex-shrink-0"
+            class="w-8 h-8 lg:w-12 lg:h-12 text-[#F28E2B] flex-shrink-0"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -186,7 +186,7 @@
           class="flex-1 flex flex-col lg:flex-row items-center justify-center gap-2 lg:gap-4 text-center lg:text-left"
         >
           <svg
-            class="w-8 h-8 lg:w-9 lg:h-9 text-[#F28E2B] flex-shrink-0"
+            class="w-8 h-8 lg:w-12 lg:h-12 text-[#F28E2B] flex-shrink-0"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
