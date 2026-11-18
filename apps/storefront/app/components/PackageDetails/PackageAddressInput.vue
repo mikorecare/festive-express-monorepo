@@ -4,8 +4,9 @@
       for="estimator-address"
       class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-navy mb-1.5"
     >
-      Installation Address *
+      Address *
     </label>
+
     <div class="relative">
       <input
         id="estimator-address"
@@ -24,13 +25,34 @@
         @focus="onFocus"
       />
 
-      <!-- Skeleton Loader -->
-      <div
-        v-if="validating"
-        class="absolute inset-y-0 left-3 lg:left-4 right-3 flex items-center pointer-events-none"
-      >
-        <div class="h-3.5 bg-gray-300 rounded-md animate-pulse w-[65%]"></div>
-      </div>
+      <!-- Animated Loading State -->
+      <Transition name="loader-fade">
+        <div
+          v-if="validating"
+          class="absolute inset-0 z-10 flex items-center px-3 lg:px-4 pointer-events-none"
+        >
+          <div class="flex items-center gap-2.5">
+            <!-- Loading message -->
+            <Transition name="message" mode="out-in">
+              <span
+                :key="currentMessage"
+                class="text-[13px] sm:text-[14px] font-semibold text-brand-orange"
+              >
+                {{ currentMessage }}
+              </span>
+            </Transition>
+            <!-- Animated dots -->
+            <div class="flex items-center gap-1">
+              <span
+                v-for="dot in 3"
+                :key="dot"
+                class="loading-dot"
+                :style="{ animationDelay: `${(dot - 1) * 0.2}s` }"
+              ></span>
+            </div>
+          </div>
+        </div>
+      </Transition>
 
       <!-- Suggestions Dropdown -->
       <div
@@ -48,7 +70,9 @@
           >
             {{ s.main }}
           </div>
-          <div class="text-xs text-gray-500 truncate">{{ s.secondary }}</div>
+          <div class="text-xs text-gray-500 truncate">
+            {{ s.secondary }}
+          </div>
         </div>
       </div>
 
@@ -79,6 +103,58 @@ const emit = defineEmits<{
 
 const local = ref(props.address);
 
+const loadingMessages = [
+  "Locating your home",
+  "Almost there...",
+  "Finding your property details",
+  "Measuring your roof area",
+  "Almost there...",
+  "Analyzing your roof layout",
+  "Checking your property boundaries",
+  "Validating your address",
+  "Almost there...",
+  "Checking the distance",
+  "Calculating your service coverage",
+  "Reviewing your location details",
+  "Checking for overages",
+  "Finalizing the details",
+  "Just a few more seconds...",
+  "Almost done!",
+  "Thank you for your patience",
+];
+
+const currentMessageIndex = ref(0);
+
+const currentMessage = computed(
+  () => loadingMessages[currentMessageIndex.value],
+);
+
+let messageInterval: ReturnType<typeof setInterval> | null = null;
+
+watch(
+  () => props.validating,
+  (isValidating) => {
+    if (messageInterval) {
+      clearInterval(messageInterval);
+      messageInterval = null;
+    }
+
+    currentMessageIndex.value = 0;
+
+    if (isValidating) {
+      messageInterval = setInterval(() => {
+        currentMessageIndex.value =
+          (currentMessageIndex.value + 1) % loadingMessages.length;
+      }, 3500);
+    }
+  },
+  { immediate: true },
+);
+
+onUnmounted(() => {
+  if (messageInterval) clearInterval(messageInterval);
+});
+
 watch(
   () => props.address,
   (v) => {
@@ -107,3 +183,54 @@ const selectSuggestion = (s: any) => {
   emit("close");
 };
 </script>
+
+<style scoped>
+/* Sequential bouncing dots */
+.loading-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #f49321;
+  animation: dot-bounce 0.8s ease-in-out infinite;
+}
+
+@keyframes dot-bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+
+  30% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+/* Message transitions */
+.loader-fade-enter-active,
+.loader-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.loader-fade-enter-from,
+.loader-fade-leave-to {
+  opacity: 0;
+}
+
+.message-enter-active,
+.message-leave-active {
+  transition: all 0.2s ease;
+}
+
+.message-enter-from {
+  opacity: 0;
+  transform: translateY(5px);
+}
+
+.message-leave-to {
+  opacity: 0;
+  transform: translateY(-5px);
+}
+</style>

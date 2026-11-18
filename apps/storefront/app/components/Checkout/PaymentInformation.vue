@@ -6,8 +6,7 @@
       <h3
         class="text-lg font-extrabold text-white flex items-center tracking-wide"
       >
-        <i class="fas fa-credit-card mr-3 text-[#F49321]"></i> Payment & Contact
-        Information
+        <i class="fas fa-credit-card mr-3 text-[#F49321]"></i> Payment Information
       </h3>
     </div>
 
