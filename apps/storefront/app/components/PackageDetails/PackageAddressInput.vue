@@ -1,11 +1,21 @@
 <template>
   <div class="mb-2">
-    <label
-      for="estimator-address"
-      class="block text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-navy mb-1.5"
-    >
-      Address *
-    </label>
+    <!-- Address Label + Dancing Mascot -->
+    <div class="flex items-center gap-2 mb-1.5">
+      <label
+        for="estimator-address"
+        class="text-[14px] sm:text-[15px] lg:text-[16px] font-semibold text-navy"
+      >
+        Address *
+      </label>
+
+      <img
+        v-if="mascotFrame && validating"
+        :src="mascotFrame"
+        alt="Festivo dancing mascot"
+        class="w-20 h-20 object-contain mascot-dance"
+      />
+    </div>
 
     <div class="relative">
       <input
@@ -32,7 +42,6 @@
           class="absolute inset-0 z-10 flex items-center px-3 lg:px-4 pointer-events-none"
         >
           <div class="flex items-center gap-2.5">
-            <!-- Loading message -->
             <Transition name="message" mode="out-in">
               <span
                 :key="currentMessage"
@@ -41,7 +50,7 @@
                 {{ currentMessage }}
               </span>
             </Transition>
-            <!-- Animated dots -->
+
             <div class="flex items-center gap-1">
               <span
                 v-for="dot in 3"
@@ -70,6 +79,7 @@
           >
             {{ s.main }}
           </div>
+
           <div class="text-xs text-gray-500 truncate">
             {{ s.secondary }}
           </div>
@@ -102,6 +112,145 @@ const emit = defineEmits<{
 }>();
 
 const local = ref(props.address);
+
+/* =========================================
+   FESTIVO MASCOT CONFIGURATION
+========================================= */
+
+const mascotGroups = [
+  { name: "joy", frames: 8 },
+  { name: "jolly", frames: 6 },
+  { name: "merry", frames: 10 },
+] as const;
+
+const mascotFrame = ref<string>("");
+
+const loadedMascotFrames: string[] = [];
+
+let mascotInterval: ReturnType<typeof setInterval> | null = null;
+
+let mascotFrameIndex = 0;
+
+let mascotMounted = false;
+
+/* =========================================
+   PRELOAD MASCOT IMAGES
+   Wait until images are loaded before playing.
+   Failed images are automatically skipped.
+========================================= */
+
+const preloadMascotImage = (src: string): Promise<string | null> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+
+    img.onload = () => {
+      resolve(src);
+    };
+
+    img.onerror = () => {
+      console.warn("[Festivo Mascot] Failed to load:", src);
+      resolve(null);
+    };
+
+    img.src = src;
+  });
+};
+
+/* =========================================
+   START MASCOT ANIMATION
+========================================= */
+
+const startMascotAnimation = () => {
+  if (!mascotMounted || loadedMascotFrames.length === 0) {
+    return;
+  }
+
+  // Clear any previous animation
+  if (mascotInterval) {
+    clearInterval(mascotInterval);
+    mascotInterval = null;
+  }
+
+  mascotFrameIndex = 0;
+
+  const firstFrame = loadedMascotFrames[0];
+
+  if (!firstFrame) return;
+
+  mascotFrame.value = firstFrame;
+
+  // Play all successfully loaded frames sequentially
+  mascotInterval = setInterval(() => {
+    mascotFrameIndex = (mascotFrameIndex + 1) % loadedMascotFrames.length;
+
+    const nextFrame = loadedMascotFrames[mascotFrameIndex];
+
+    if (nextFrame) {
+      mascotFrame.value = nextFrame;
+    }
+  }, 120);
+};
+
+/* =========================================
+   INITIALIZE AND PRELOAD ALL 24 FRAMES
+========================================= */
+
+onMounted(async () => {
+  mascotMounted = true;
+
+  const allMascotPaths: string[] = [];
+
+  mascotGroups.forEach((group) => {
+    for (let i = 1; i <= group.frames; i++) {
+      allMascotPaths.push(`/Images/Festivo/${group.name}-3d-${i}.png`);
+    }
+  });
+
+  console.log(`[Festivo Mascot] Preloading ${allMascotPaths.length} images...`);
+
+  // Preload all images before starting animation
+  const results = await Promise.all(
+    allMascotPaths.map((path) => preloadMascotImage(path)),
+  );
+
+  // Keep only successfully loaded images, in original order
+  loadedMascotFrames.length = 0;
+
+  results.forEach((src) => {
+    if (src) {
+      loadedMascotFrames.push(src);
+    }
+  });
+
+  if (!mascotMounted) return;
+
+  console.log(
+    `[Festivo Mascot] Loaded ${loadedMascotFrames.length}/${allMascotPaths.length} images.`,
+  );
+
+  if (loadedMascotFrames.length > 0) {
+    startMascotAnimation();
+  } else {
+    console.warn("[Festivo Mascot] No mascot images could be loaded.");
+  }
+});
+
+/* =========================================
+   CLEANUP MASCOT ANIMATION
+========================================= */
+
+onUnmounted(() => {
+  mascotMounted = false;
+
+  if (mascotInterval) {
+    clearInterval(mascotInterval);
+    mascotInterval = null;
+  }
+});
+
+/* =========================================
+   ADDRESS VALIDATION LOADING MESSAGES
+========================================= */
 
 const loadingMessages = [
   "Locating your home",
@@ -152,13 +301,22 @@ watch(
 );
 
 onUnmounted(() => {
-  if (messageInterval) clearInterval(messageInterval);
+  if (messageInterval) {
+    clearInterval(messageInterval);
+    messageInterval = null;
+  }
 });
+
+/* =========================================
+   ADDRESS INPUT SYNCHRONIZATION
+========================================= */
 
 watch(
   () => props.address,
   (v) => {
-    if (v !== local.value) local.value = v;
+    if (v !== local.value) {
+      local.value = v;
+    }
   },
 );
 
@@ -173,6 +331,7 @@ const onInput = (e: Event) => {
 
 const onFocus = (e: Event) => {
   emit("focus");
+
   if (local.value.trim().length > 0) {
     emit("input", e);
   }
@@ -185,7 +344,14 @@ const selectSuggestion = (s: any) => {
 </script>
 
 <style scoped>
-/* Sequential bouncing dots */
+/* =========================================
+   FESTIVO MASCOT DANCE
+========================================= */
+
+/* =========================================
+   LOADING DOTS
+========================================= */
+
 .loading-dot {
   width: 5px;
   height: 5px;
@@ -208,7 +374,10 @@ const selectSuggestion = (s: any) => {
   }
 }
 
-/* Message transitions */
+/* =========================================
+   LOADING MESSAGE TRANSITIONS
+========================================= */
+
 .loader-fade-enter-active,
 .loader-fade-leave-active {
   transition: opacity 0.2s ease;
