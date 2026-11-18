@@ -7,20 +7,20 @@
       class="relative py-10 sm:py-16 text-white overflow-hidden min-h-[320px] sm:min-h-[500px]"
     >
       <img
-        src="/New/Banner/packages.webp"
+        src="/New/Banner/packages.avif"
         alt="Express Banner"
         width="1920"
         height="800"
         loading="eager"
         fetchpriority="high"
         decoding="async"
-        class="absolute block inset-0 w-full h-full object-fill z-10"
+        class="absolute inset-0 w-full h-full object-cover object-[60%_center] sm:object-[70%_center] lg:object-fill z-10"
       />
 
-      <div class="absolute inset-0 bg-black/40 z-[11]" aria-hidden="true"></div>
+      <!-- <div class="absolute inset-0 bg-black/40 z-[11]" aria-hidden="true"></div> -->
 
       <div
-        class="relative z-[12] container mx-auto px-3 sm:px-4 flex items-center justify-center min-h-[320px] sm:min-h-[500px]"
+        class="relative z-[12] container mx-auto px-3 sm:px-4 flex items-start justify-center min-h-[320px] sm:min-h-[500px]"
       >
         <div class="hero-content text-center max-w-2xl mx-auto">
           <h1

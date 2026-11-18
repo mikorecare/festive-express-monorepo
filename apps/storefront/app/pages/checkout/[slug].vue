@@ -3,21 +3,21 @@
     <section
       aria-label="Checkout page header"
       role="region"
-      class="relative py-10 sm:py-16 text-white overflow-hidden min-h-[320px] sm:min-h-[400px]"
+      class="relative py-10 sm:py-16 text-white overflow-hidden min-h-[420px] sm:min-h-[400px] !border-b-8 !border-b-red"
     >
       <img
-        src="/New/Banner/checkout.webp"
+        src="/New/Banner/checkout-latest.avif"
         alt="Checkout background"
-        width="1920"
+        width="2500"
         height="800"
         loading="eager"
         fetchpriority="high"
         decoding="async"
-        class="absolute inset-0 w-full h-full object-cover z-10"
+        class="absolute inset-0 w-full h-full object-cover object-[70%_70%] z-10"
       />
-      <div class="absolute inset-0 bg-black/40 z-[11]" aria-hidden="true"></div>
+      <!-- <div class="absolute inset-0 bg-black/10 z-[11]" aria-hidden="true"></div> -->
       <div
-        class="relative z-[12] container mx-auto px-3 sm:px-4 flex items-center justify-center min-h-[320px] sm:min-h-[400px]"
+        class="relative z-[12] container mx-auto px-3 sm:px-4 flex items-start justify-start min-h-[320px] sm:min-h-[400px]"
       >
         <div class="hero-content text-center max-w-2xl mx-auto">
           <h1

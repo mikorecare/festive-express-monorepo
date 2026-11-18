@@ -318,9 +318,9 @@
         >
           <!-- Header -->
           <div
-            class="flex items-center justify-between px-6 py-4 border-b border-gray-200 shrink-0"
+            class="flex items-center section-gloss bg-navy justify-between px-6 py-3 border-b border-gray-200 shrink-0"
           >
-            <h2 id="terms-modal-title" class="text-xl font-bold text-[#1C2D5B]">
+            <h2 id="terms-modal-title" class="text-xl font-bold text-white">
               {{ termsData?.title || "Terms and Conditions" }}
             </h2>
             <button
@@ -369,7 +369,7 @@
             <button
               type="button"
               @click="showTerms = false"
-              class="px-6 btn-3d-glossy py-2 bg-[#F49321] hover:bg-[#e07e0e] text-white text-sm font-bold rounded-lg transition-colors"
+              class="px-6 btn-3d-glossy btn-3d-glossy-orange py-2 text-white text-sm font-bold rounded-lg transition-colors"
             >
               I Understand
             </button>
