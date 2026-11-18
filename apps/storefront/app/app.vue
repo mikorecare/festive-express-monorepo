@@ -8,34 +8,52 @@
     <Footer />
     <FloatingCart />
     <CookieConsent />
-    <!-- <ChatWidget ref="chatWidget" /> -->
 
     <!-- Mobile-only bottom nav -->
     <MobileNav class="lg:hidden" />
-    <!-- <PromoCodeModal /> -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import AnnouncementBar from "./components/AnnouncementBar.vue";
 import { useTracker } from "~/composables/useTracker";
 
 const tracker = useTracker();
 
+const ALLOWED_ORIGIN = "https://festive.express";
+
+let trackingEnabled = false;
+
 function handleGlobalClick(e: MouseEvent) {
-  const target = (e.target as HTMLElement).closest("button, a, [data-track]");
-  if (target) tracker.trackClick(target as HTMLElement);
+  if (!trackingEnabled) return;
+
+  const target = (e.target as HTMLElement | null)?.closest(
+    "button, a, [data-track]",
+  );
+
+  if (target) {
+    tracker.trackClick(target as HTMLElement);
+  }
 }
 
 onMounted(async () => {
+  trackingEnabled = window.location.origin === ALLOWED_ORIGIN;
+
+  if (!trackingEnabled) return;
+
   await tracker.init();
+
   document.addEventListener("click", handleGlobalClick);
 });
 
 onUnmounted(() => {
-  tracker.destroy();
+  if (!trackingEnabled) return;
+
   document.removeEventListener("click", handleGlobalClick);
+  tracker.destroy();
+
+  trackingEnabled = false;
 });
 
 const chatWidget = ref();
