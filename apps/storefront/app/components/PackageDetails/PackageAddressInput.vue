@@ -1,6 +1,6 @@
 <template>
   <div class="mb-2">
-    <!-- Address Label + Dancing Mascot -->
+    <!-- Address Label + Success Checkmark + Dancing Mascot -->
     <div class="flex items-center gap-2 mb-1.5">
       <label
         for="estimator-address"
@@ -8,6 +8,27 @@
       >
         Address *
       </label>
+
+      <!-- Success Checkmark -->
+      <svg
+        v-if="
+          !validating &&
+          !addressError &&
+          !errors?.address &&
+          local.trim().length > 0 &&
+          validationCompleted
+        "
+        class="w-5 h-5 text-green-500 shrink-0"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-label="Address validated successfully"
+      >
+        <path d="M5 12.5l4.5 4.5L19 7" />
+      </svg>
 
       <img
         v-if="mascotFrame && validating"
@@ -133,6 +154,8 @@ let mascotFrameIndex = 0;
 
 let mascotMounted = false;
 
+const validationCompleted = ref(false);
+
 /* =========================================
    PRELOAD MASCOT IMAGES
    Wait until images are loaded before playing.
@@ -179,7 +202,7 @@ const startMascotAnimation = () => {
 
   mascotFrame.value = firstFrame;
 
-  // Play all successfully loaded frames sequentially
+  // Play all successfully loaded images sequentially
   mascotInterval = setInterval(() => {
     mascotFrameIndex = (mascotFrameIndex + 1) % loadedMascotFrames.length;
 
@@ -279,6 +302,17 @@ const currentMessage = computed(
 );
 
 let messageInterval: ReturnType<typeof setInterval> | null = null;
+
+watch(
+  () => props.validating,
+  (isValidating, wasValidating) => {
+    if (isValidating) {
+      validationCompleted.value = false;
+    } else if (wasValidating) {
+      validationCompleted.value = true;
+    }
+  },
+);
 
 watch(
   () => props.validating,
