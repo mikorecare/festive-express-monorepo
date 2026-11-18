@@ -6,7 +6,7 @@
       <NuxtPage />
     </main>
     <Footer />
-    <FloatingCart />
+    <!-- <FloatingCart /> -->
     <CookieConsent />
 
     <!-- Mobile-only bottom nav -->

@@ -482,7 +482,7 @@
 
             <!-- Redirect to Slug Page Button -->
             <NuxtLink
-              :to="`/packages/${pkg.slug}#package`"
+              :to="`/checkout/${pkg.slug}`"
               class="pkg-select-btn btn-gloss btn-gloss-orange group relative overflow-hidden w-[85%] mx-auto flex items-center justify-center bg-brand-orange border-2 border-white rounded-[50px] py-[12px] sm:py-[14px] px-[16px] text-[1.4rem] md:text-[2.1rem] uppercase font-bold tracking-[0.5px] cursor-pointer shadow-[0_4px_10px_rgba(0,0,0,0.15)] transition-all duration-200 ease-in-out hover:bg-[#1C2D5B]"
               :aria-label="`View details for ${pkg.name}`"
             >

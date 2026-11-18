@@ -178,7 +178,7 @@
 
 <script setup lang="ts">
 useHead({ title: "Checkout" });
-import CheckoutTurnstileWidget from "../components/Checkout/TurnstileWidget.vue";
+import CheckoutTurnstileWidget from "../../components/Checkout/TurnstileWidget.vue";
 import { usePhoneFormat } from "~/composables/usePhoneFormat";
 import { toast } from "vue-sonner";
 

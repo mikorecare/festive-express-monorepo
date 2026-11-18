@@ -93,7 +93,7 @@
             &times;
           </button>
 
-          <div class="modal-success-icon">
+          <!-- <div class="modal-success-icon">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -105,6 +105,10 @@
             >
               <path d="M5 12l4 4L19 6" />
             </svg>
+          </div> -->
+
+          <div>
+            <LogosDiscountLogo />
           </div>
 
           <h3 id="modal-title" class="modal-title">Promo Code Copied!</h3>
@@ -113,24 +117,19 @@
             Your discount is ready. Apply this code at checkout to save.
           </p>
 
-          <div class="modal-coupon">
+          <div class="modal-coupon mb-4">
             <span class="modal-coupon-label"> YOUR PROMO CODE </span>
             <strong class="modal-coupon-code">
               {{ promoCode }}
             </strong>
           </div>
 
-          <div class="modal-discount">
-            <span>You'll save</span>
-            <strong>{{ formattedDiscount }}</strong>
-          </div>
-
-          <button type="button" class="modal-close-btn" @click="copied = false">
+          <button type="button" class="btn-3d-glossy px-4 py-2 font-bold" @click="copied = false">
             Continue Shopping
             <span aria-hidden="true">→</span>
           </button>
 
-          <p class="modal-hint">
+          <p class="modal-hint text-gray-700">
             Paste your code in the promo code field at checkout.
           </p>
         </div>
@@ -575,14 +574,14 @@ const countdown = computed(() => {
   align-items: center;
   gap: 8px;
   padding: 18px 12px;
-  border: 1.5px dashed #f58220;
+  border: 1.5px dashed #f49321;
   border-radius: 12px;
   background: #fff8f1;
 }
 
 .modal-coupon-label {
-  color: #a15b20;
-  font-size: 10px;
+  color: #f49321;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: 1.5px;
 }
@@ -590,9 +589,9 @@ const countdown = computed(() => {
 .modal-coupon-code {
   max-width: 100%;
   color: #162447;
-  font-size: 25px;
+  font-size: 36px;
   font-weight: 800;
-  letter-spacing: 1px;
+  letter-spacing: 4px;
   overflow-wrap: anywhere;
 }
 
@@ -614,25 +613,6 @@ const countdown = computed(() => {
   font-weight: 800;
 }
 
-/* Primary button */
-.modal-close-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-  min-height: 50px;
-  padding: 12px 18px;
-  border: none;
-  border-radius: 10px;
-  background: #f58220;
-  color: #fff;
-  font: inherit;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
-}
 
 .modal-close-btn:hover {
   background: #df6c0c;
@@ -645,7 +625,6 @@ const countdown = computed(() => {
 
 .modal-hint {
   margin: 16px 0 0;
-  color: #94a3b8;
   font-size: 12px;
   line-height: 1.5;
 }
