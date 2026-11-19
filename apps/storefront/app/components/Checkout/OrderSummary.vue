@@ -1,14 +1,19 @@
 <template>
-  <div class="bg-white rounded-2xl p-6 shadow-md sticky top-24">
-    <h3 class="text-lg font-bold text-navy mb-4">Order Summary</h3>
+  <div class="bg-white rounded-2xl shadow-md sticky top-24">
+    <div
+      class="bg-[#1C2D5B] btn-gloss px-6 py-2 flex items-center border-b-4 border-[#F49321] rounded-t-xl mb-2"
+    >
+      <i class="fas fa-pen-to-square mr-3 text-[#F49321]"></i>
+      <h3 class="block text-sm font-bold text-white mb-1">Order Summary</h3>
+    </div>
 
     <div
       v-for="item in cartItems"
       :key="item.id"
-      class="flex justify-between py-2 border-b border-gray-100"
+      class="flex justify-between py-2 border-b border-gray-100 px-6"
     >
       <div class="pr-2">
-        <strong class="text-sm">{{ item.product?.name }}</strong>
+        <strong class="text-sm">{{ item.product?.name }} </strong>
 
         <small
           v-if="item.options?.c9_color"
@@ -65,19 +70,22 @@
           $&nbsp;
         </span>
         <span class="font-extrabold leading-none price-text -tracking-[0.04em]">
-          {{
+          <!-- {{
             (Number(item.price || 0) * item.quantity).toLocaleString(
               undefined,
               { minimumFractionDigits: 2, maximumFractionDigits: 2 },
             )
           }}
+          Designed for multiple orders will be commented for future reference for multiple orders  
+          -->
+          {{ Number(selectedPrice) }}
         </span>
       </span>
     </div>
 
     <hr class="my-3" />
 
-    <div class="flex justify-between text-sm py-1">
+    <div class="flex justify-between text-sm py-1 px-6">
       <span class="text-gray-600">Subtotal</span>
       <span class="font-bold inline-flex items-baseline">
         <span
@@ -96,7 +104,10 @@
       </span>
     </div>
 
-    <div v-if="alacarteCartTotal > 0" class="flex justify-between text-sm py-1">
+    <div
+      v-if="alacarteCartTotal > 0"
+      class="flex justify-between text-sm py-1 px-6"
+    >
       <span class="text-gray-600">A la carte</span>
       <span class="font-bold inline-flex items-baseline">
         <span
@@ -115,7 +126,7 @@
       </span>
     </div>
 
-    <div class="flex justify-between text-sm py-1" v-if="appliedPromo">
+    <div class="flex justify-between text-sm py-1 px-6" v-if="appliedPromo">
       <span class="text-gray-600">Discount ({{ appliedPromo.code }})</span>
       <span class="font-bold text-green-600 inline-flex items-baseline">
         <span class="mr-0.5">−</span>
@@ -135,7 +146,7 @@
       </span>
     </div>
 
-    <div class="flex justify-between text-sm py-1">
+    <div class="flex justify-between text-sm py-1 px-6">
       <span class="text-gray-600">Estimated Taxes</span>
       <span class="font-bold inline-flex items-baseline">
         <span
@@ -154,7 +165,7 @@
       </span>
     </div>
 
-    <div class="mt-3">
+    <div class="mt-3 px-6">
       <div class="flex gap-2">
         <input
           v-model="promoCode"
@@ -195,7 +206,7 @@
     </div>
 
     <div
-      class="flex justify-between items-center mt-3 pt-3 border-t-2 border-navy"
+      class="flex justify-between items-center mt-3 pt-3 border-t-2 border-navy px-6"
     >
       <span class="text-lg font-bold text-navy">Grand Total</span>
 
@@ -219,7 +230,7 @@
       </span>
     </div>
 
-    <div class="mt-4">
+    <div class="mt-4 px-6">
       <label
         class="block p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-orange-400 transition"
       >
@@ -233,19 +244,21 @@
       </label>
     </div>
 
-    <button
-      class="btn-3d-glossy btn-3d-glossy--orange w-full min-h-[56px] mt-4 text-lg font-extrabold uppercase tracking-wide"
-      :disabled="isPaying || !isFormValid"
-      @click="handlePay"
-    >
-      <span class="relative z-10">
-        {{ isPaying ? "Processing..." : "Confirm & Pay" }}
-      </span>
-    </button>
+    <div class="px-6 pb-3">
+      <button
+        class="btn-3d-glossy btn-3d-glossy-orange w-full min-h-[56px] mt-4 text-lg font-extrabold uppercase tracking-wide"
+        :disabled="isPaying || !isFormValid"
+        @click="handlePay"
+      >
+        <span class="relative z-10">
+          {{ isPaying ? "Processing..." : "Confirm & Pay" }}
+        </span>
+      </button>
+    </div>
 
     <slot name="turnstile"></slot>
 
-    <ul class="space-y-2 mt-4">
+    <ul class="space-y-2 mt-4 px-6">
       <li class="flex items-center text-sm text-gray-600">
         <CheckCircleIcon
           class="w-5 h-5 text-green-500 mr-2 inline-block"
@@ -270,7 +283,7 @@
     </ul>
 
     <!-- Legal Disclaimer & Terms Trigger -->
-    <p class="text-[10px] text-gray-700 mt-4 leading-relaxed text-center">
+    <p class="text-[10px] text-gray-700 mt-4 leading-relaxed text-center px-6 pb-2">
       By submitting this order, you agree to our
       <button
         type="button"
@@ -315,9 +328,9 @@
         >
           <!-- Header -->
           <div
-            class="flex items-center justify-between px-6 py-4 border-b border-gray-200 shrink-0"
+            class="flex items-center section-gloss bg-navy justify-between px-6 py-3 border-b border-gray-200 shrink-0"
           >
-            <h2 id="terms-modal-title" class="text-xl font-bold text-[#1C2D5B]">
+            <h2 id="terms-modal-title" class="text-xl font-bold text-white">
               {{ termsData?.title || "Terms and Conditions" }}
             </h2>
             <button
@@ -366,7 +379,7 @@
             <button
               type="button"
               @click="showTerms = false"
-              class="px-6 btn-3d-glossy py-2 bg-[#F49321] hover:bg-[#e07e0e] text-white text-sm font-bold rounded-lg transition-colors"
+              class="px-6 btn-3d-glossy btn-3d-glossy-orange py-2 text-white text-sm font-bold rounded-lg transition-colors"
             >
               I Understand
             </button>
@@ -393,6 +406,7 @@ const {
 } = usePromo();
 
 const props = defineProps<{
+  selectedPrice: number;
   cartItems: any[];
   cartTotal: number;
   alacarteCartTotal: number;

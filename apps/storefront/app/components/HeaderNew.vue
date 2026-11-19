@@ -99,7 +99,7 @@
 
         <!-- Desktop Layout (Flex, 3-part spacing) -->
         <div
-          class="hidden lg:flex items-center justify-between gap-12 xl:gap-20"
+          class="hidden lg:flex items-center justify-around gap-12 xl:gap-20 mx-8"
         >
           <!-- 1. Logo (Left) -->
           <NuxtLink

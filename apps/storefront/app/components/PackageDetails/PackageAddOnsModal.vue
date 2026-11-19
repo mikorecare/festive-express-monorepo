@@ -59,7 +59,7 @@
                     class="w-6 h-6 object-contain opacity-70"
                   />
                   <p
-                    class="text-xs font-black text-slate-400 uppercase tracking-widest"
+                    class="text-xs font-black text-navy uppercase tracking-widest"
                   >
                     {{ cat.label }}
                   </p>

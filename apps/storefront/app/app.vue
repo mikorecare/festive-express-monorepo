@@ -2,11 +2,11 @@
   <div class="!font-poppins overflow-x-clipped pb-16 lg:pb-0">
     <AnnouncementBar />
     <HeaderNew />
-    <main id="main-content" role="main" class="relative z-0">
+    <main id="main-content" role="main" class="relative z-0 overflow-x-hidden">
       <NuxtPage />
     </main>
     <Footer />
-    <FloatingCart />
+    <!-- <FloatingCart /> -->
     <CookieConsent />
 
     <!-- Mobile-only bottom nav -->

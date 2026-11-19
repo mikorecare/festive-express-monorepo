@@ -421,7 +421,7 @@ const selectPackage = (pkg: PackageRow) => {
     currency: "USD",
   });
 
-  navigateTo(`/packages/${pkg.slug}#package`);
+  navigateTo(`/checkout/${pkg.slug}`);
 };
 
 const handleCardHover = () => {

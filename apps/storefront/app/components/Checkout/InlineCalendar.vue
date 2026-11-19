@@ -2,7 +2,7 @@
   <div class="border border-gray-200 rounded-lg p-0 select-none">
     <!-- Month header -->
     <div
-      class="flex items-center justify-between mb-2 bg-navy py-2 rounded-t-lg px-2"
+      class="flex section-gloss items-center justify-between mb-2 bg-brand-orange py-2 rounded-t-lg px-2"
     >
       <button
         type="button"

@@ -12,9 +12,6 @@ export function usePackagePage() {
     const estimatedFootage = ref<number | null>(null)
     const packageIncludedFt = ref<number | null>(null)
 
-    // Track if we are editing an existing cart item
-    const editingCartItemId = ref<string | number | null>(null)
-
     const setOverage = (data: any | null) => {
         if (!data) {
             overagePrice.value = 0
@@ -102,7 +99,6 @@ export function usePackagePage() {
     const selectedSku = computed<SkuRow | null>(() => {
         if (!pkg.value) return null
 
-        // 1. If user picked a specific SKU, use it
         if (selectedSkuId.value != null) {
             const found = skusForPkg.value.find(
                 (s) => String(s.id) === String(selectedSkuId.value)
@@ -110,24 +106,19 @@ export function usePackagePage() {
             if (found) return found
         }
 
-        // 2. Use the first SKU for this package
         const first = skusForPkg.value[0]
         if (first) return first
 
-        // 3. Last resort: any SKU with a price from raw data
         const rawSku = data.value?.skus?.find((s) => s.price != null)
         return rawSku ?? null
     })
 
     const selectedPrice = computed(() => {
-        // 1. If a specific SKU is selected, use its price
         const sku = selectedSku.value
         if (sku?.price != null) return Number(sku.price)
 
-        // 2. Fall back to the package's own price
         if (pkg.value?.price != null) return Number(pkg.value.price)
 
-        // 3. Fall back to ANY SKU with a valid price (no package_id check)
         const anySku = data.value?.skus?.find((s) => s.price != null && Number(s.price) > 0)
         if (anySku?.price != null) return Number(anySku.price)
 
@@ -161,148 +152,38 @@ export function usePackagePage() {
     const addonSubtotal = computed(() => {
         let sum = 0
         for (const [id, qty] of Object.entries(addonQty)) {
-            // Force string comparison so it doesn't fail on UUID types
             const p = addonProducts.value.find((x) => String(x.id) === String(id))
             if (p) sum += Number(p.price) * qty
         }
         return sum
     })
 
-    const cart = useCart()
-    const adding = ref(false)
-    const cartModal = reactive({
-        open: false,
-        type: "success" as "success" | "error",
-        title: "",
-        message: "",
-    })
-    const openCartModal = (type: "success" | "error", title: string, message: string) => {
-        cartModal.type = type
-        cartModal.title = title
-        cartModal.message = message
-        cartModal.open = true
-    }
-
-    const { $fbq } = useNuxtApp()
-
-    // Function to pre-fill state for editing
-    const loadCartItemForEdit = (item: any) => {
-        editingCartItemId.value = item.id
-
-        if (item.product_id) {
-            selectedSkuId.value = item.product_id
-        }
-
-        Object.keys(addonQty).forEach((key) => delete addonQty[key])
-        if (item.options?.addons) {
-            item.options.addons.forEach((a: any) => {
-                addonQty[a.product_id] = a.quantity
-            })
-        }
-
-        if (item.options?.overage) {
-            overagePrice.value = Number(item.options.overage.amount) || 0
-            overageFt.value = Number(item.options.overage.feet) || 0
-            estimatedFootage.value = Number(item.options.overage.estimated_footage) || null
-            packageIncludedFt.value = Number(item.options.overage.package_included_ft) || null
-        } else {
-            setOverage(null)
-        }
-    }
-
-    const addToCart = async (serviceable: boolean, address: string, placeId: string, phone: string) => {
-        const sku = selectedSku.value
-        if (!sku?.id || adding.value) return false
-        if (!serviceable || !placeId) {
-            openCartModal("error", "Address required", "Please select a serviceable installation address first.")
-            return false
-        }
-
-        adding.value = true
-        try {
-            const selectedAddons = Object.entries(addonQty)
-                .filter(([_, qty]) => qty > 0)
-                .map(([id, qty]) => {
-                    // Force string comparison to find the product correctly
-                    const p = addonProducts.value.find((x) => String(x.id) === String(id))
-
-                    if (!p) {
-                        console.warn("Addon not found for ID:", id)
-                    }
-
-                    return {
-                        product_id: String(id),
-                        name: p?.name || "Add-on",
-                        price: Number(p?.price || 0),
-                        quantity: qty,
-                    }
-                })
-
-            const options = {
-                address: address,
-                place_id: placeId,
-                phone: phone,
-                addons: selectedAddons.length > 0 ? selectedAddons : undefined,
-                overage: overagePrice.value > 0 ? {
-                    amount: overagePrice.value,
-                    feet: overageFt.value,
-                    estimated_footage: estimatedFootage.value,
-                    package_included_ft: packageIncludedFt.value
-                } : undefined,
-            }
-
-            const isEdit = !!editingCartItemId.value
-
-            // If editing, remove old item first
-            if (isEdit) {
-                await cart.removeFromCart(editingCartItemId.value!)
-            }
-
-            const ok = await cart.addToCart(sku.id, 1, options)
-
-            if (ok !== false) {
-                if (typeof cart.loadCart === "function") await cart.loadCart()
-
-                const addonTotal = selectedAddons.reduce((sum, a) => sum + a.price * a.quantity, 0)
-                const mainPrice = Number(sku.price ?? pkg.value?.price ?? 0)
-                const overageAmt: number = Number(overagePrice.value || 0)
-
-                    ; ($fbq as any)("track", "AddToCart", {
-                        content_name: pkg.value?.name ?? sku.name,
-                        content_ids: [sku.id, ...selectedAddons.map((a) => a.product_id)],
-                        content_type: "product",
-                        contents: [
-                            { id: sku.id, quantity: 1, item_price: mainPrice },
-                            ...selectedAddons.map((a) => ({ id: a.product_id, quantity: a.quantity, item_price: a.price })),
-                        ],
-                        value: mainPrice + addonTotal + overageAmt,
-                        currency: "USD",
-                        num_items: 1 + selectedAddons.reduce((n, a) => n + a.quantity, 0),
-                    })
-
-                Object.keys(addonQty).forEach((key) => delete addonQty[key])
-                extrasOpen.value = false
-
-                // Clear edit mode AFTER success
-                if (isEdit) {
-                    editingCartItemId.value = null
+    // Same `options` object addToCart() used to send to /api/cart/add.
+    // NOTE: the cart API may have added more keys server-side (e.g. alacarte_total).
+    const buildOptions = (address: string, placeId: string, phone: string) => {
+        const selectedAddons = Object.entries(addonQty)
+            .filter(([_, qty]) => qty > 0)
+            .map(([id, qty]) => {
+                const p = addonProducts.value.find((x) => String(x.id) === String(id))
+                return {
+                    product_id: String(id),
+                    name: p?.name || "Add-on",
+                    price: Number(p?.price || 0),
+                    quantity: qty,
                 }
+            })
 
-                openCartModal(
-                    "success",
-                    isEdit ? "Cart updated" : "Added to cart",
-                    `${pkg.value?.name} was ${isEdit ? 'updated' : 'added'}.`
-                )
-                return true
-            } else {
-                openCartModal("error", "Could not add", "Something went wrong. Please try again.")
-                return false
-            }
-        } catch (e: any) {
-            openCartModal("error", "Could not add", e?.message || "Something went wrong.")
-            return false
-        } finally {
-            adding.value = false
+        return {
+            address,
+            place_id: placeId,
+            phone,
+            addons: selectedAddons.length > 0 ? selectedAddons : undefined,
+            overage: overagePrice.value > 0 ? {
+                amount: overagePrice.value,
+                feet: overageFt.value,
+                estimated_footage: estimatedFootage.value,
+                package_included_ft: packageIncludedFt.value,
+            } : undefined,
         }
     }
 
@@ -321,7 +202,6 @@ export function usePackagePage() {
         addonCategories, productsByCategory, bundledRibbonFor, addonProducts,
         addonQty, incrementAddon, decrementAddon, addonSubtotal,
         overagePrice, overageFt, estimatedFootage, packageIncludedFt, setOverage,
-        extrasOpen, editingCartItemId, loadCartItemForEdit,
-        cartModal, openCartModal, adding, addToCart,
+        extrasOpen, buildOptions,
     }
 }
