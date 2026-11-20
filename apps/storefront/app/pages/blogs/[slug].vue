@@ -81,10 +81,42 @@
                 {{ formatDate(post.published_at) }}
               </span>
               <span class="text-gray-300">|</span>
+              <NuxtLink
+                v-if="post.author?.full_name && post.author_slug"
+                :to="`/blogs/author/${post.author_slug}`"
+                class="inline-flex items-center gap-2.5 group"
+              >
+                <img
+                  v-if="post.author.display_photo_url"
+                  :src="post.author.display_photo_url"
+                  :alt="post.author.full_name"
+                  class="w-9 h-9 rounded-full object-cover border border-gray-200 group-hover:border-[#F49321] transition-colors shrink-0"
+                />
+                <div
+                  v-else
+                  class="w-9 h-9 rounded-full bg-[#1C2D5B] text-white text-xs font-bold flex items-center justify-center shrink-0"
+                >
+                  {{ post.author.full_name.charAt(0).toUpperCase() }}
+                </div>
+                <div class="flex flex-col space-y-0.5">
+                  <span
+                    class="text-xs md:text-sm font-bold text-[#1C2D5B] group-hover:text-[#F49321] transition-colors leading-none"
+                  >
+                    {{ post.author.full_name }}
+                  </span>
+                  <span
+                    v-if="post.author.job_title"
+                    class="text-[11px] font-medium text-gray-500 leading-none"
+                  >
+                    {{ post.author.job_title }}
+                  </span>
+                </div>
+              </NuxtLink>
               <span
+                v-else
                 class="text-gray-500 text-xs md:text-sm uppercase tracking-wider"
               >
-                By {{ post.author?.full_name || "Festive Express Team" }}
+                By Festive Express Team
               </span>
             </div>
 
@@ -334,8 +366,19 @@ import BrandedVideoPlayer from "../../components/Blogs/BrandVideoPlayer.vue";
 import NewsLetterForm from "~/components/Blogs/NewsLetterForm.vue";
 
 // --- Types ---
+interface AuthorDetail {
+  id?: string;
+  author_slug?: string;
+  full_name?: string;
+  job_title?: string | null;
+  bio?: string | null;
+  display_photo_url?: string | null;
+  social_links?: Record<string, string | null> | null;
+}
+
 interface Post {
   id: string;
+  author_slug?: string | null;
   title: string;
   slug: string;
   summary: string | null;
@@ -343,7 +386,7 @@ interface Post {
   featured_image: string | null;
   published_at: string | null;
   updated_at: string | null;
-  author?: { full_name?: string } | null;
+  author?: AuthorDetail | null;
   category?: { id: number; name: string; slug: string } | null;
   tags?: { id: number; name: string; slug: string }[];
 }
@@ -392,9 +435,73 @@ const { data: relatedData } = await useFetch<{ posts: RelatedPost[] }>(
 
 const relatedPosts = computed(() => relatedData.value?.posts ?? []);
 
+const stripHtmlToText = (html?: string | null): string | undefined => {
+  if (!html) return undefined;
+
+  const withoutTags = html
+    .replace(/<[^>]*>/g, " ")
+    .replace(/ /gi, " ")
+    .replace(/&/gi, "&")
+    .replace(/</gi, "<")
+    .replace(/>/gi, ">")
+    .replace(/"/gi, '"')
+    .replace(/'|'/gi, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return withoutTags.length ? withoutTags : undefined;
+};
+
 // --- SEO ---
 const siteUrl = "https://festive.express";
 const currentUrl = computed(() => `${siteUrl}/blogs/${route.params.slug}`);
+const authorName = computed(
+  () => post.value?.author?.full_name || "Festive Express Team",
+);
+
+const authorBioText = computed(() => stripHtmlToText(post.value?.author?.bio));
+
+const authorSameAs = computed(() => {
+  const links = post.value?.author?.social_links;
+  if (!links || typeof links !== "object") return undefined;
+  const urls = Object.values(links).filter(
+    (v): v is string => typeof v === "string" && v.trim().length > 0,
+  );
+  return urls.length ? urls : undefined;
+});
+
+const authorSchema = computed(() => {
+  if (post.value?.author?.full_name) {
+    const authorPageUrl = post.value.author_slug
+      ? `${siteUrl}/blogs/author/${encodeURIComponent(post.value.author_slug)}`
+      : undefined;
+
+    return {
+      "@type": "Person",
+      ...(authorPageUrl
+        ? {
+            "@id": `${authorPageUrl}#person`,
+            url: authorPageUrl,
+          }
+        : {}),
+      name: post.value.author.full_name,
+      ...(post.value.author.job_title
+        ? { jobTitle: post.value.author.job_title }
+        : {}),
+      ...(authorBioText.value ? { description: authorBioText.value } : {}),
+      ...(post.value.author.display_photo_url
+        ? { image: post.value.author.display_photo_url }
+        : {}),
+      ...(authorSameAs.value ? { sameAs: authorSameAs.value } : {}),
+    };
+  }
+
+  return {
+    "@type": "Organization",
+    name: "Festive Express",
+    url: siteUrl,
+  };
+});
 
 useSeoMeta({
   title: post.value?.title || "Blog Post",
@@ -408,6 +515,10 @@ useSeoMeta({
   ogUrl: currentUrl.value,
   ogType: "article",
   articlePublishedTime: post.value?.published_at || undefined,
+  articleModifiedTime:
+    post.value?.updated_at || post.value?.published_at || undefined,
+  articleAuthor: [authorName.value],
+  author: authorName.value,
   twitterCard: "summary_large_image",
   twitterTitle: post.value?.title || "Blog Post",
   twitterDescription:
@@ -420,32 +531,31 @@ useHead({
   script: [
     {
       type: "application/ld+json",
-      innerHTML: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "BlogPosting",
-        headline: post.value?.title,
-        image: post.value?.featured_image
-          ? [post.value.featured_image]
-          : undefined,
-        datePublished: post.value?.published_at,
-        dateModified: post.value?.updated_at || post.value?.published_at,
-        author: {
-          "@type": "Organization",
-          name: "Festive Express",
-          url: siteUrl,
-        },
-        publisher: {
-          "@type": "Organization",
-          name: "Festive Express",
-          logo: {
-            "@type": "ImageObject",
-            url: `${siteUrl}/Images/festive-express.png`,
+      innerHTML: computed(() =>
+        JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          headline: post.value?.title,
+          image: post.value?.featured_image
+            ? [post.value.featured_image]
+            : undefined,
+          datePublished: post.value?.published_at,
+          dateModified: post.value?.updated_at || post.value?.published_at,
+          author: authorSchema.value,
+          publisher: {
+            "@type": "Organization",
+            name: "Festive Express",
+            logo: {
+              "@type": "ImageObject",
+              url: `${siteUrl}/Images/festive-express.png`,
+            },
           },
-        },
-        description: post.value?.summary,
-        keywords: post.value?.tags?.map((t) => t.name).join(", ") || undefined,
-        mainEntityOfPage: { "@type": "WebPage", "@id": currentUrl.value },
-      }),
+          description: post.value?.summary,
+          keywords:
+            post.value?.tags?.map((t) => t.name).join(", ") || undefined,
+          mainEntityOfPage: { "@type": "WebPage", "@id": currentUrl.value },
+        }),
+      ),
     },
   ],
 });

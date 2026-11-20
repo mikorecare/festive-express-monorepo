@@ -109,6 +109,11 @@
           <!-- ============================== -->
           <!-- Card Top: hero image (z-20)   -->
           <!-- ============================== -->
+          <div v-if="index === 1" class="ribbon-wrap">
+            <div class="ribbon-clip">
+              <span>Most Popular</span>
+            </div>
+          </div>
           <div class="relative p-2.5 sm:p-3 pb-0 z-20">
             <h3 class="sr-only">{{ pkg.name }}</h3>
 
@@ -505,5 +510,73 @@ onMounted(async () => {
 .price-text {
   /* Keeps your tight spacing */
   letter-spacing: -0.05em;
+}
+
+/* Outer wrapper: positioned 8px outside the card */
+.ribbon-wrap {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  width: 115px;
+  height: 115px;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* Clips ONLY the diagonal ribbon */
+.ribbon-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 2;
+}
+
+/* Diagonal blue ribbon */
+.ribbon-clip span {
+  position: absolute;
+  display: block;
+  width: 165px;
+  top: 26px;
+  left: -38px;
+  padding: 7px 0;
+  transform: rotate(-45deg);
+
+  background: linear-gradient(135deg, #FF4DB0 0%, #EC008C 50%, #B8006F 100%);
+
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Top fold */
+.ribbon-wrap::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 96px;
+  width: 10px;
+  height: 8px; /* bottom edge = card edge */
+  background: linear-gradient(to bottom, #000b52 0%, #00041f 100%);
+  clip-path: path("M0 0 L10 0 C10 6 8 8 4 8 L0 8 Z");
+  z-index: 1;
+}
+
+/* Left fold (mirror) */
+.ribbon-wrap::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 96px;
+  width: 8px; /* right edge = card edge */
+  height: 10px;
+  background: linear-gradient(to right, #000b52 0%, #00041f 100%);
+  clip-path: path("M0 0 L0 10 C6 10 8 8 8 4 L8 0 Z");
+  z-index: 1;
 }
 </style>

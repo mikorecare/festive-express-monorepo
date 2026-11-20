@@ -35,14 +35,6 @@ export default defineEventHandler(async (event) => {
             message: 'Please choose a valid address.',
         }
     }
-    if (!pkg) {
-        return {
-            in_service_area: false,
-            ok: false,
-            reason: 'missing_package',
-            message: 'Please choose a package first.',
-        }
-    }
 
     const apiKey = config.googleMapsApiKey
     if (!apiKey) {
@@ -303,8 +295,32 @@ export default defineEventHandler(async (event) => {
         }
     }
 
-    // 8. Forward to estimator
+    // 7.5 No package — address is in range, but skip estimator
+    if (!pkg) {
+        return {
+            in_service_area: true,
+            ok: true,
+            reason: 'missing_package',
+            message: 'Address is within our service area. Choose a package to see pricing.',
+            place_id: place.id,
+            formatted_address: place.formattedAddress,
+            postal_code,
+            country,
+            city,
+            state,
+            lat: place.location.latitude,
+            lng: place.location.longitude,
+            distance_meters: distanceMeters,
+            distance_miles: distanceMiles,
+            duration_seconds: durationSeconds,
+            duration_minutes: Number(durationMinutes.toFixed(1)),
+            cached: !!existing,
+            saved,
+            estimator: null,
+        }
+    }
 
+    // 8. Forward to estimator
     const target = `${config.estimatorApiUrl}/api/overage`
 
     try {

@@ -31,6 +31,7 @@ export default defineEventHandler(async (event) => {
             featured_image: body.featured_image || null,
             status: body.status || 'draft',
             published_at: body.published_at || null,
+            author_slug: body.author_slug || null
         }
 
         const { data: post, error } = await supabase

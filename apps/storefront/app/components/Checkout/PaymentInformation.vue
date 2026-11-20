@@ -1,314 +1,196 @@
 <template>
-  <div class="bg-white rounded-2xl shadow-md">
-    <div
-      class="bg-[#1C2D5B] btn-gloss px-6 py-2 flex items-center border-b-4 border-[#F49321] rounded-t-xl mb-2"
+  <div class="py-2 px-2 flex items-center mb-2">
+    <h3
+      class="text-lg font-extrabold text-navy flex items-center tracking-wide"
     >
-      <h3
-        class="text-lg font-extrabold text-white flex items-center tracking-wide"
+      Card Details
+    </h3>
+  </div>
+
+  <div class="space-y-4 px-6 pb-6 pt-2">
+    <!-- Cardholder Name -->
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1"
+        >Name on Card *</label
       >
-        <i class="fas fa-credit-card mr-3 text-[#F49321]"></i> Payment Information
-      </h3>
+      <input
+        :value="modelValue.card_name"
+        @input="
+          updateField('card_name', ($event.target as HTMLInputElement).value)
+        "
+        @blur="$emit('validate', 'card_name')"
+        type="text"
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+        :class="{ 'border-red-500': errors.card_name }"
+        placeholder="John Doe"
+      />
+      <p v-if="errors.card_name" class="text-red-500 text-sm mt-1">
+        {{ errors.card_name }}
+      </p>
     </div>
 
-    <div class="space-y-4 px-6 pb-6 pt-2">
-      <!-- Contact Info Section -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1"
-            >First Name *</label
-          >
-          <input
-            :value="modelValue.billing_first_name"
-            @input="
-              updateField(
-                'billing_first_name',
-                ($event.target as HTMLInputElement).value,
-              )
-            "
-            @blur="$emit('validate', 'billing_first_name')"
-            type="text"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            :class="{ 'border-red-500': errors.billing_first_name }"
-            placeholder="John"
-          />
-          <p v-if="errors.billing_first_name" class="text-red-500 text-sm mt-1">
-            {{ errors.billing_first_name }}
-          </p>
-        </div>
-        <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1"
-            >Last Name *</label
-          >
-          <input
-            :value="modelValue.billing_last_name"
-            @input="
-              updateField(
-                'billing_last_name',
-                ($event.target as HTMLInputElement).value,
-              )
-            "
-            @blur="$emit('validate', 'billing_last_name')"
-            type="text"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            :class="{ 'border-red-500': errors.billing_last_name }"
-            placeholder="Doe"
-          />
-          <p v-if="errors.billing_last_name" class="text-red-500 text-sm mt-1">
-            {{ errors.billing_last_name }}
-          </p>
-        </div>
-        <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1"
-            >Email Address *</label
-          >
-          <input
-            :value="modelValue.billing_email"
-            @input="
-              updateField(
-                'billing_email',
-                ($event.target as HTMLInputElement).value,
-              )
-            "
-            @blur="$emit('validate', 'billing_email')"
-            type="email"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            :class="{ 'border-red-500': errors.billing_email }"
-            placeholder="john@example.com"
-          />
-          <p v-if="errors.billing_email" class="text-red-500 text-sm mt-1">
-            {{ errors.billing_email }}
-          </p>
-        </div>
-        <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1"
-            >Billing Phone *</label
-          >
-          <input
-            :value="modelValue.billing_phone"
-            @input="
-              updateField(
-                'billing_phone',
-                ($event.target as HTMLInputElement).value,
-              )
-            "
-            @blur="$emit('validate', 'billing_phone')"
-            type="tel"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            :class="{ 'border-red-500': errors.billing_phone }"
-            placeholder="(555) 123-4567"
-            maxlength="14"
-          />
-          <p v-if="errors.billing_phone" class="text-red-500 text-sm mt-1">
-            {{ errors.billing_phone }}
-          </p>
-        </div>
-      </div>
-
-      <!-- Cardholder Name -->
-      <div class="border-t border-gray-200 pt-4 mt-2">
-        <label class="block text-sm font-semibold text-gray-700 mb-1"
-          >Cardholder Name *</label
+    <!-- Card Number -->
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1"
+        >Card Number *</label
+      >
+      <div class="flex">
+        <span
+          class="inline-flex items-center px-3 border border-r-0 rounded-l-lg bg-gray-50 transition-colors duration-300"
+          :style="{ borderColor: cardBorderColor }"
         >
+          <i
+            :class="cardIcon"
+            class="text-xl w-7 h-5 flex items-center justify-center"
+            :style="{ color: cardColor }"
+          ></i>
+        </span>
         <input
-          :value="modelValue.card_name"
-          @input="
-            updateField('card_name', ($event.target as HTMLInputElement).value)
-          "
-          @blur="$emit('validate', 'card_name')"
+          :value="modelValue.card_number"
+          @input="handleCardNumberInput"
+          @blur="$emit('validate', 'card_number')"
           type="text"
-          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-          :class="{ 'border-red-500': errors.card_name }"
-          placeholder="John Doe"
+          class="flex-1 min-w-0 px-4 py-2 border rounded-r-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-colors duration-300"
+          :style="{
+            borderColor: errors.card_number ? '#EF4444' : cardBorderColor,
+          }"
+          placeholder="0000 0000 0000 0000"
+          maxlength="19"
         />
-        <p v-if="errors.card_name" class="text-red-500 text-sm mt-1">
-          {{ errors.card_name }}
-        </p>
       </div>
+      <div class="flex justify-between mt-1">
+        <p v-if="errors.card_number" class="text-red-500 text-sm">
+          {{ errors.card_number }}
+        </p>
+        <p
+          v-else-if="cardType"
+          class="text-sm font-semibold"
+          :style="{ color: cardColor }"
+        >
+          {{ cardType }}
+        </p>
+        <p v-else class="text-sm text-gray-400">Enter card number</p>
+        <span v-if="isValidCard" class="text-green-500 text-sm"
+          ><i class="fas fa-check-circle"></i> Valid</span
+        >
+      </div>
+    </div>
 
-      <!-- Card Number -->
+    <!-- Expiry & CVV -->
+    <div class="grid grid-cols-2 gap-4">
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-1"
-          >Card Number *</label
+          >Expiry Date *</label
         >
-        <div class="flex">
-          <span
-            class="inline-flex items-center px-3 border border-r-0 rounded-l-lg bg-gray-50 transition-colors duration-300"
-            :style="{ borderColor: cardBorderColor }"
-          >
-            <i
-              :class="cardIcon"
-              class="text-xl w-7 h-5 flex items-center justify-center"
-              :style="{ color: cardColor }"
-            ></i>
-          </span>
-          <input
-            :value="modelValue.card_number"
-            @input="handleCardNumberInput"
-            @blur="$emit('validate', 'card_number')"
-            type="text"
-            class="flex-1 px-4 py-2 border rounded-r-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-colors duration-300"
-            :style="{
-              borderColor: errors.card_number ? '#EF4444' : cardBorderColor,
-            }"
-            placeholder="0000 0000 0000 0000"
-            maxlength="19"
-          />
-        </div>
-        <div class="flex justify-between mt-1">
-          <p v-if="errors.card_number" class="text-red-500 text-sm">
-            {{ errors.card_number }}
-          </p>
-          <p
-            v-else-if="cardType"
-            class="text-sm font-semibold"
-            :style="{ color: cardColor }"
-          >
-            {{ cardType }}
-          </p>
-          <p v-else class="text-sm text-gray-400">Enter card number</p>
-          <span v-if="isValidCard" class="text-green-500 text-sm"
-            ><i class="fas fa-check-circle"></i> Valid</span
-          >
-        </div>
+        <input
+          :value="modelValue.card_expiry"
+          @input="handleExpiryInput"
+          @blur="$emit('validate', 'card_expiry')"
+          type="text"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+          :class="{ 'border-red-500': errors.card_expiry }"
+          placeholder="MM/YY"
+          maxlength="5"
+        />
+        <p v-if="errors.card_expiry" class="text-red-500 text-sm mt-1">
+          {{ errors.card_expiry }}
+        </p>
       </div>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1"
+          >CVV *</label
+        >
+        <input
+          :value="modelValue.card_cvv"
+          @input="
+            updateField('card_cvv', ($event.target as HTMLInputElement).value)
+          "
+          @blur="$emit('validate', 'card_cvv')"
+          type="password"
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+          :class="{ 'border-red-500': errors.card_cvv }"
+          placeholder="•••"
+          maxlength="4"
+        />
+        <p v-if="errors.card_cvv" class="text-red-500 text-sm mt-1">
+          {{ errors.card_cvv }}
+        </p>
+      </div>
+    </div>
 
-      <!-- Expiry & CVV -->
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1"
-            >Expiry Date *</label
-          >
+    <!-- Billing Address Section -->
+    <div class="border-t border-gray-200 pt-4 mt-4">
+      <label class="block text-sm font-semibold text-gray-700 mb-2"
+        >Billing Address *</label
+      >
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="md:col-span-4">
           <input
-            :value="modelValue.card_expiry"
-            @input="handleExpiryInput"
-            @blur="$emit('validate', 'card_expiry')"
+            :value="modelValue.billing_address"
+            @input="
+              updateField(
+                'billing_address',
+                ($event.target as HTMLInputElement).value,
+              )
+            "
+            @blur="$emit('validate', 'billing_address')"
             type="text"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            :class="{ 'border-red-500': errors.card_expiry }"
-            placeholder="MM/YY"
+            :class="{ 'border-red-500': errors.billing_address }"
+            placeholder="123 Main St"
+          />
+          <p v-if="errors.billing_address" class="text-red-500 text-sm mt-1">
+            {{ errors.billing_address }}
+          </p>
+        </div>
+
+        <div class="md:col-span-2">
+          <input
+            :value="modelValue.billing_city"
+            @input="
+              updateField(
+                'billing_city',
+                ($event.target as HTMLInputElement).value,
+              )
+            "
+            @blur="$emit('validate', 'billing_city')"
+            type="text"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            :class="{ 'border-red-500': errors.billing_city }"
+            placeholder="City"
+          />
+          <p v-if="errors.billing_city" class="text-red-500 text-sm mt-1">
+            {{ errors.billing_city }}
+          </p>
+        </div>
+
+        <div>
+          <input
+            :value="modelValue.billing_postcode"
+            @input="
+              updateField(
+                'billing_postcode',
+                ($event.target as HTMLInputElement).value,
+              )
+            "
+            @blur="$emit('validate', 'billing_postcode')"
+            type="text"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+            :class="{ 'border-red-500': errors.billing_postcode }"
+            placeholder="ZIP"
             maxlength="5"
           />
-          <p v-if="errors.card_expiry" class="text-red-500 text-sm mt-1">
-            {{ errors.card_expiry }}
-          </p>
-        </div>
-        <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1"
-            >CVV *</label
-          >
-          <input
-            :value="modelValue.card_cvv"
-            @input="
-              updateField('card_cvv', ($event.target as HTMLInputElement).value)
-            "
-            @blur="$emit('validate', 'card_cvv')"
-            type="password"
-            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-            :class="{ 'border-red-500': errors.card_cvv }"
-            placeholder="•••"
-            maxlength="4"
-          />
-          <p v-if="errors.card_cvv" class="text-red-500 text-sm mt-1">
-            {{ errors.card_cvv }}
+          <p v-if="errors.billing_postcode" class="text-red-500 text-sm mt-1">
+            {{ errors.billing_postcode }}
           </p>
         </div>
       </div>
+    </div>
 
-      <!-- Billing Address Section -->
-      <div class="border-t border-gray-200 pt-4 mt-4">
-        <label class="block text-sm font-semibold text-gray-700 mb-2"
-          >Billing Address *</label
-        >
-
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div class="md:col-span-4">
-            <input
-              :value="modelValue.billing_address"
-              @input="
-                updateField(
-                  'billing_address',
-                  ($event.target as HTMLInputElement).value,
-                )
-              "
-              @blur="$emit('validate', 'billing_address')"
-              type="text"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              :class="{ 'border-red-500': errors.billing_address }"
-              placeholder="123 Main St"
-            />
-            <p v-if="errors.billing_address" class="text-red-500 text-sm mt-1">
-              {{ errors.billing_address }}
-            </p>
-          </div>
-
-          <div class="md:col-span-2">
-            <input
-              :value="modelValue.billing_city"
-              @input="
-                updateField(
-                  'billing_city',
-                  ($event.target as HTMLInputElement).value,
-                )
-              "
-              @blur="$emit('validate', 'billing_city')"
-              type="text"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              :class="{ 'border-red-500': errors.billing_city }"
-              placeholder="City"
-            />
-            <p v-if="errors.billing_city" class="text-red-500 text-sm mt-1">
-              {{ errors.billing_city }}
-            </p>
-          </div>
-
-          <!-- <div>
-            <input
-              :value="modelValue.billing_state"
-              @input="
-                updateField(
-                  'billing_state',
-                  ($event.target as HTMLInputElement).value,
-                )
-              "
-              @blur="$emit('validate', 'billing_state')"
-              type="text"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              :class="{ 'border-red-500': errors.billing_state }"
-              placeholder="FL"
-              maxlength="2"
-            />
-            <p v-if="errors.billing_state" class="text-red-500 text-sm mt-1">
-              {{ errors.billing_state }}
-            </p>
-          </div> -->
-
-          <div>
-            <input
-              :value="modelValue.billing_postcode"
-              @input="
-                updateField(
-                  'billing_postcode',
-                  ($event.target as HTMLInputElement).value,
-                )
-              "
-              @blur="$emit('validate', 'billing_postcode')"
-              type="text"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-              :class="{ 'border-red-500': errors.billing_postcode }"
-              placeholder="ZIP"
-              maxlength="5"
-            />
-            <p v-if="errors.billing_postcode" class="text-red-500 text-sm mt-1">
-              {{ errors.billing_postcode }}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="text-xs text-gray-500 mt-2">
-        <i class="fas fa-lock mr-1"></i> Your payment information is secure and
-        encrypted.
-      </div>
+    <div class="text-xs text-gray-500 mt-2">
+      <i class="fas fa-lock mr-1"></i> Your payment information is secure and
+      encrypted.
     </div>
   </div>
 </template>

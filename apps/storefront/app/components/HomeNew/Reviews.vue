@@ -399,7 +399,7 @@ const reviews: Review[] = [
   {
     name: "Dennis and Kathy Lasota",
     location: "Lakewood National Golf Course, Bradenton, FL",
-    text: "This is our first year having our home completely decorated and had Festival Lighting Pros take care of it for us. We were very pleased with the end results and it saved my back and perhaps a spill on the ladder. And we are excited to show off our house.",
+    text: "This is our first year having our home completely decorated and had Festive Express take care of it for us. We were very pleased with the end results and it saved my back and perhaps a spill on the ladder. And we are excited to show off our house.",
     image: "/New/Reviews/Lasotas.D48-FVY2.webp",
   },
   {
@@ -417,7 +417,7 @@ const reviews: Review[] = [
   {
     name: "Darren and Amanda Arrington",
     location: "Miromar Lakes, Ft. Myers, FL",
-    text: "We've been working with Festival Lighting Pros the last two years to come put up lights at our house. They suggest new things that we can add every year. We're a little bit biased, but we think we've got the best house in the neighborhood with lights and all the neighbors come by.",
+    text: "We've been working with Festive Express the last two years to come put up lights at our house. They suggest new things that we can add every year. We're a little bit biased, but we think we've got the best house in the neighborhood with lights and all the neighbors come by.",
     image: "/New/Reviews/Arringtons.FrDOaoRb.webp",
   },
 ];

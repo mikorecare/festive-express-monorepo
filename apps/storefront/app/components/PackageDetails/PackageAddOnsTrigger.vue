@@ -14,7 +14,7 @@
         <p
           class="text-sm font-extrabold text-[#1C2D5B] uppercase tracking-wide"
         >
-          Customize package
+          Add wreaths, garland & more
         </p>
         <span
           v-if="extra > 0"

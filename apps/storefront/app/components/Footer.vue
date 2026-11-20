@@ -132,6 +132,83 @@
           </div>
         </div>
       </div>
+
+      <div
+        class="border-t border-white/15 pt-6 sm:pt-8 pb-8 sm:pb-12"
+        aria-labelledby="footer-service-areas"
+      >
+        <div class="flex flex-col gap-4 sm:gap-5">
+          <!-- Heading -->
+          <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <h2
+              id="footer-service-areas"
+              class="text-brand-orange text-base sm:text-[1.1rem] font-semibold uppercase tracking-widest"
+            >
+              Areas We Serve
+            </h2>
+
+            <span
+              class="hidden sm:block h-1 w-1 rounded-full bg-slate-400"
+              aria-hidden="true"
+            ></span>
+
+            <p class="text-slate-400 text-xs sm:text-sm">
+              Holiday Lighting Rental & Installation in Southwest Florida
+            </p>
+          </div>
+
+          <!-- Service Area Cities -->
+          <p
+            class="text-slate-300 text-sm sm:text-base leading-relaxed sm:leading-7 tracking-wide"
+          >
+            Sarasota <span class="text-brand-orange/70 mx-1">•</span> Bradenton
+            <span class="text-brand-orange/70 mx-1">•</span> Lakewood Ranch
+            <span class="text-brand-orange/70 mx-1">•</span> Venice
+            <span class="text-brand-orange/70 mx-1">•</span> Siesta Key
+            <span class="text-brand-orange/70 mx-1">•</span> Longboat Key
+            <span class="text-brand-orange/70 mx-1">•</span> Osprey
+            <span class="text-brand-orange/70 mx-1">•</span> Nokomis
+            <span class="text-brand-orange/70 mx-1">•</span> Palmetto
+            <span class="text-brand-orange/70 mx-1">•</span> Ellenton
+            <span class="text-brand-orange/70 mx-1">•</span> Parrish
+            <span class="text-brand-orange/70 mx-1">•</span> North Port
+            <span class="text-brand-orange/70 mx-1">•</span> Englewood
+            <span class="text-brand-orange/70 mx-1">•</span> Anna Maria
+            <span class="text-brand-orange/70 mx-1">•</span> Holmes Beach
+            <span class="text-brand-orange/70 mx-1">•</span> Ruskin
+            <span class="text-brand-orange/70 mx-1">•</span> Sun City Center
+            <span class="text-brand-orange/70 mx-1">•</span> Apollo Beach
+            <span class="text-brand-orange/70 mx-1">•</span>
+            Port Charlotte
+          </p>
+
+          <!-- County Coverage -->
+          <p class="text-slate-400 text-xs sm:text-sm leading-relaxed">
+            Serving Sarasota and Manatee counties, plus select communities in
+            Southern Hillsborough and Northern Charlotte counties.
+          </p>
+
+          <!-- Service Availability -->
+          <div class="flex items-start gap-2">
+            <i
+              class="fas fa-map-marker-alt text-brand-orange text-xs mt-1"
+              aria-hidden="true"
+            ></i>
+
+            <p class="text-slate-400 text-xs sm:text-sm leading-relaxed">
+              Our primary service area is approximately 45 minutes from
+              Sarasota, FL. Extended locations may be available upon request.
+
+              <NuxtLink
+                to="/#service-areas-form"
+                class="text-brand-orange hover:text-white font-semibold transition-colors duration-300 underline underline-offset-4"
+              >
+                Confirm your service area
+              </NuxtLink>
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="bg-white py-4 px-4 sm:px-6 lg:px-8">

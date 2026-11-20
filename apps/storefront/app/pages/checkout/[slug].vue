@@ -1,5 +1,7 @@
 <template>
-  <div class="checkout-page min-h-[80vh] bg-[#e7e7e7]">
+  <div
+    class="checkout-page bg-[url('/Images/Choose-Your-Package.webp')] bg-fixed bg-cover"
+  >
     <section
       aria-label="Checkout page header"
       role="region"
@@ -15,14 +17,13 @@
         decoding="async"
         class="absolute inset-0 w-full h-full object-cover object-[70%_70%] z-10"
       />
-      <!-- <div class="absolute inset-0 bg-black/10 z-[11]" aria-hidden="true"></div> -->
       <div
         class="relative z-[12] container mx-auto px-3 sm:px-4 flex items-start justify-start min-h-[320px] sm:min-h-[400px]"
       >
         <div class="hero-content text-center max-w-2xl mx-auto">
           <h1
             v-fade
-            class="text-[1.75rem] leading-tight sm:text-3xl md:text-5xl font-extrabold tracking-wider mb-3 sm:mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] sm:drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
+            class="text-[1.75rem] leading-tight sm:text-3xl md:text-5xl font-extrabold tracking-widest mb-3 sm:mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] sm:drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
           >
             <span
               class="text-outline text-brand-orange [--o:#fff] [--w:2px] md:[--w:3px]"
@@ -34,7 +35,7 @@
           </h1>
           <p
             v-fade
-            class="text-outline text-base sm:text-xl md:text-2xl tracking-wide font-bold text-[#1c2d5b] [--o:#fff] [--w:1.5px] md:[--w:2px] [text-wrap:balance] drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] sm:drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
+            class="text-outline text-base sm:text-xl md:text-2xl tracking-widest font-bold text-[#1c2d5b] [--o:#fff] [--w:1.5px] md:[--w:2px] [text-wrap:balance] drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] sm:drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
           >
             Finalize your professional holiday installation details and lock in
             your install/take down dates.
@@ -62,25 +63,34 @@
       >
     </div>
 
-    <div v-else class="container mx-auto px-4 py-8">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Left Column -->
-
-        <div class="lg:col-span-2 space-y-6">
-          <!-- Package summary -->
-          <div
-            class="bg-white rounded-2xl shadow-md border border-slate-200 space-y-4"
-          >
-            <div
-              class="bg-[#1C2D5B] btn-gloss px-6 py-2 flex items-center border-b-4 border-[#F49321] rounded-t-xl mb-2"
-            >
-              <h3
-                class="text-lg font-extrabold text-white flex items-center tracking-wide"
+    <div v-else class="max-w-4xl mx-auto px-4 py-8">
+      <div class="grid grid-cols-1 gap-6">
+        <!-- Left Column: steps 1–4 -->
+        <div class="space-y-6">
+          <!-- Step 1: Address + service-area check -->
+          <div class="bg-white rounded-2xl shadow-md space-y-4">
+            <div class="relative mb-2 mt-6">
+              <!-- 2. Glossy bar (removed relative, mb-2, mt-6, and overflow-visible) -->
+              <div
+                class="bg-[#1C2D5B] btn-gloss pl-20 pr-4 py-2 flex items-center border-b-4 border-[#F49321] rounded-t-xl"
               >
-                <i class="fas fa-map-location-dot mr-3 text-[#F49321]"></i
-                >Installation
-              </h3>
+                <h3
+                  class="text-lg font-extrabold text-white flex items-center tracking-wide"
+                >
+                  <i class="fas fa-map-location-dot mr-3 text-[#F49321]"></i
+                  >Installation Details
+                </h3>
+              </div>
+
+              <!-- 3. Badge moved OUTSIDE btn-gloss with z-10 added -->
+              <span
+                class="absolute left-4 -top-2 sm:-top-4 lg:-top-5 z-10 shrink-0 w-12 h-12 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full border border-navy bg-[#F49321] text-[#1C2D5B] font-black text-xl lg:text-2xl flex items-center justify-center shadow-[0_4px_10px_rgba(244,147,33,0.4)] [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff]"
+                aria-hidden="true"
+              >
+                1
+              </span>
             </div>
+
             <div>
               <div class="px-6 pb-6">
                 <PackageDetailsPackageAddressInput
@@ -95,43 +105,31 @@
                   @select="onSelectAddress"
                   @close="suggestionsOpen = false"
                 />
-
-                <label class="block text-sm font-semibold text-gray-700 mb-1">
-                  Phone *
-                </label>
-                <input
-                  v-model="installPhone"
-                  @input="formatPhone"
-                  @blur="validateInstallation('phone')"
-                  type="tel"
-                  class="w-full md:max-w-[50%] px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
-                  :class="{ 'border-red-500': installation.errors.phone }"
-                  maxlength="14"
-                  placeholder="(555) 123-4567"
-                />
-                <p
-                  v-if="installation.errors.phone"
-                  class="text-red-500 text-sm mt-1"
-                >
-                  {{ installation.errors.phone }}
-                </p>
               </div>
             </div>
           </div>
 
           <!-- Step 2: Color + add-ons -->
-          <div
-            class="bg-white rounded-2xl shadow-md border border-slate-200 space-y-4"
-          >
-            <div
-              class="bg-[#1C2D5B] btn-gloss px-6 py-2 flex items-center border-b-4 border-[#F49321] rounded-t-xl mb-2"
-            >
-              <h3
-                class="text-lg font-extrabold text-white flex items-center tracking-wide"
+          <div class="bg-white rounded-2xl shadow-md space-y-4">
+            <div class="relative mb-2 mt-6">
+              <div
+                class="bg-[#1C2D5B] btn-gloss pl-20 pr-4 py-2 flex items-center border-b-4 border-[#F49321] rounded-t-xl"
               >
-                <i class="fas fa-lightbulb mr-3 text-[#F49321]"></i>Customize
-              </h3>
+                <h3
+                  class="text-lg font-extrabold text-white flex items-center tracking-wide"
+                >
+                  <i class="fas fa-lightbulb mr-3 text-[#F49321]"></i>Customize
+                </h3>
+              </div>
+
+              <span
+                class="absolute left-4 -top-2 sm:-top-4 lg:-top-5 z-10 shrink-0 w-12 h-12 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full border border-navy bg-[#F49321] text-[#1C2D5B] font-black text-xl lg:text-2xl flex items-center justify-center shadow-[0_4px_10px_rgba(244,147,33,0.4)] [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff]"
+                aria-hidden="true"
+              >
+                2
+              </span>
             </div>
+
             <div class="pb-6 px-6">
               <PackageDetailsPackageColorPicker
                 :skus="skusForPkg"
@@ -147,62 +145,29 @@
               />
             </div>
           </div>
-          <CheckoutPaymentInformation
-            v-model="paymentForm"
-            :errors="paymentErrors"
-            @validate="validatePaymentField"
-          />
 
-          <div
-            class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden"
-          >
-            <div
-              class="relative btn-gloss overflow-hidden bg-[#1C2D5B] text-white px-4 py-2 flex items-center justify-between border-b-4 border-[#F49321]"
-            >
-              <span
-                class="relative z-10 text-sm sm:text-base font-extrabold tracking-wide"
+          <!-- Step 3: Install + removal dates -->
+          <div class="bg-white rounded-2xl shadow-md">
+            <div class="relative mb-2 mt-6">
+              <div
+                class="bg-[#1C2D5B] btn-gloss pl-20 pr-4 py-2 flex items-center border-b-4 border-[#F49321] rounded-t-xl"
               >
-                Package Details
-                <span class="text-[#F49321]">· {{ pkg.name }}</span>
-              </span>
-              <!-- <NuxtLink
-                to="/packages"
-                class="relative z-10 text-xs font-semibold uppercase tracking-wider underline underline-offset-2"
-              >
-                Change
-              </NuxtLink> -->
-            </div>
-            <div class="px-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-              <!-- <PackageDetailsPackageImageCard
-                :image-src="selectedSku?.image_url || pkg.title_image_url"
-                :alt="pkg.name"
-                :description="shortDescription"
-              /> -->
-              <div>
-                <PackageDetailsPackageHero
-                  :name="pkg.name"
-                  :title-image="pkg.title_image_url"
-                  :price="selectedPrice"
-                />
-                <PackageDetailsPackageInclusions :items="inclusions" />
+                <h3
+                  class="text-lg font-extrabold text-white flex items-center tracking-wide"
+                >
+                  <i class="fas fa-calendar-day mr-3 text-[#F49321]"></i>Install
+                  &amp; Removal Dates
+                </h3>
               </div>
-            </div>
-          </div>
 
-          <!-- Step 1: Address + phone -->
-
-          <!-- Step 3: Dates -->
-          <div class="bg-white rounded-2xl shadow-md border border-slate-200">
-            <div
-              class="bg-[#1C2D5B] btn-gloss px-6 py-2 flex items-center border-b-4 border-[#F49321] rounded-t-xl mb-2"
-            >
-              <h3
-                class="text-lg font-extrabold text-white flex items-center tracking-wide"
+              <span
+                class="absolute left-4 -top-2 sm:-top-4 lg:-top-5 z-10 shrink-0 w-12 h-12 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full border border-navy bg-[#F49321] text-[#1C2D5B] font-black text-xl lg:text-2xl flex items-center justify-center shadow-[0_4px_10px_rgba(244,147,33,0.4)] [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff]"
+                aria-hidden="true"
               >
-                <i class="fas fa-calendar-day mr-3 text-[#F49321]"></i
-                >Installation Dates
-              </h3>
+                3
+              </span>
             </div>
+
             <div class="pb-6 px-6 pt-2">
               <CheckoutScheduleService
                 :model-value="installation"
@@ -213,8 +178,6 @@
               />
             </div>
           </div>
-
-          <!-- Payment -->
 
           <!-- Customer Note -->
           <div class="bg-white rounded-2xl shadow-md">
@@ -236,23 +199,40 @@
               ></textarea>
             </div>
           </div>
+
+          <!-- Step 4: Contact info -->
+          <CheckoutContactInformation
+            v-model="paymentForm"
+            :errors="paymentErrors"
+            @validate="validatePaymentField"
+          />
         </div>
 
-        <!-- Right Column (Order Summary + voucher) -->
-        <div class="lg:col-span-1">
+        <!-- Right Column: step 5 (summary, promo, card, pay) -->
+        <div>
           <CheckoutOrderSummary
             :selected-price="selectedPrice"
             :cart-items="cartItems"
             :cart-total="cartTotal"
             :alacarte-cart-total="alacarteCartTotal"
+            :sales-tax-enabled="customerTaxEnabled"
             :estimated-tax="estimatedTax"
             :grand-total="grandTotal"
             :payment-method="paymentMethod"
             :is-paying="isPaying"
             :is-form-valid="isFormValid"
+            @update:salesTaxEnabled="customerTaxEnabled = $event"
             @update:paymentMethod="paymentMethod = $event"
             @pay="payWithConverge"
           >
+            <template #payment>
+              <CheckoutPaymentInformation
+                v-model="paymentForm"
+                :errors="paymentErrors"
+                @validate="validatePaymentField"
+              />
+            </template>
+
             <template #turnstile>
               <CheckoutTurnstileWidget
                 ref="turnstileRef"
@@ -291,7 +271,6 @@ useHead({ title: "Checkout" });
 import CheckoutTurnstileWidget from "~/components/Checkout/TurnstileWidget.vue";
 import { usePackagePage } from "~/composables/usePackagePage";
 import { useServiceableAddress } from "~/composables/useServiceableAddress";
-import { usePhoneFormat } from "~/composables/usePhoneFormat";
 import { toast } from "vue-sonner";
 
 const config = useRuntimeConfig();
@@ -300,15 +279,19 @@ const siteKey = config.public.turnstile.siteKey as string;
 const { settings } = useSettings();
 const { showToast } = useToast();
 const { discountAmount, appliedPromo } = usePromo();
-const { phone: installPhone, formatPhone } = usePhoneFormat("");
+const customerTaxEnabled = ref(false);
 
-const FL_TAX_RATE = computed(() => {
+const marketTaxRate = computed(() => {
   const raw =
     settings.value?.fl_tax_rate ?? (settings.value as any)?.["fl_tax_rate"];
   const n = Number(raw);
   if (!Number.isNaN(n) && n >= 0) return n;
   return 0.07;
 });
+
+const activeTaxRate = computed(() =>
+  customerTaxEnabled.value ? marketTaxRate.value : 0,
+);
 
 /* ------------------------------------------------------------------ */
 /* Package + address (moved over from the old slug page)               */
@@ -386,6 +369,22 @@ const installation = ref<Installation>({
   errors: {},
 });
 
+const paymentForm = ref({
+  billing_first_name: "",
+  billing_last_name: "",
+  billing_email: "",
+  billing_phone: "",
+  card_name: "",
+  card_number: "",
+  card_expiry: "",
+  card_cvv: "",
+  billing_address: "",
+  billing_city: "",
+  billing_postcode: "",
+});
+
+const installPhone = computed(() => paymentForm.value.billing_phone || "");
+
 // Keep the fields owned by this page in sync; dates/errors are owned by the schedule UI.
 watch(
   [pkg, selectedSku, address, postcode, installPhone],
@@ -456,20 +455,6 @@ const turnstileToken = ref("");
 const turnstileStatus = ref("");
 const turnstileStatusType = ref("");
 const validationErrors = ref({ turnstile: "" });
-
-const paymentForm = ref({
-  billing_first_name: "",
-  billing_last_name: "",
-  billing_email: "",
-  billing_phone: "",
-  card_name: "",
-  card_number: "",
-  card_expiry: "",
-  card_cvv: "",
-  billing_address: "",
-  billing_city: "",
-  billing_postcode: "",
-});
 
 const paymentErrors = ref({
   billing_first_name: "",
@@ -603,11 +588,7 @@ const validatePaymentField = (field: string) => {
 const validateInstallation = (field: string) => {
   const inst = installation.value;
 
-  if (field === "phone") {
-    const digits = (inst.phone || "").replace(/\D/g, "");
-    inst.errors.phone =
-      digits.length < 10 ? "Please enter a valid phone number" : "";
-  } else if (field === "install_dates") {
+  if (field === "install_dates") {
     inst.errors.install_dates =
       inst.install_dates.filter((d) => d).length === 0
         ? "Please select at least 1 date"
@@ -620,7 +601,6 @@ const validateInstallation = (field: string) => {
 const validateAllFields = () => {
   Object.keys(paymentForm.value).forEach((key) => validatePaymentField(key));
   validateInstallation("address");
-  validateInstallation("phone");
   validateInstallation("install_dates");
 
   validationErrors.value.turnstile = isTurnstileVerified.value
@@ -636,7 +616,7 @@ const promoDiscount = computed(() => discountAmount(combinedSubtotal.value));
 const taxableAmount = computed(() =>
   Math.max(0, combinedSubtotal.value - promoDiscount.value),
 );
-const estimatedTax = computed(() => taxableAmount.value * FL_TAX_RATE.value);
+const estimatedTax = computed(() => taxableAmount.value * activeTaxRate.value);
 const grandTotal = computed(() =>
   Math.max(
     0,
@@ -834,7 +814,6 @@ const payWithConverge = async () => {
 
 <style scoped>
 .checkout-page {
-  background: #e7e7e7;
   min-height: 80vh;
 }
 </style>

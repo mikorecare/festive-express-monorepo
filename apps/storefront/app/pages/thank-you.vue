@@ -158,7 +158,7 @@
             </p>
 
             <a
-              href="tel:5555555548"
+              href="tel:8333397737"
               class="flex items-center gap-4 bg-white/10 border border-white/15 rounded-xl p-4 hover:bg-white/20 transition-colors text-white no-underline mb-3"
             >
               <i class="fas fa-phone-alt text-[#F49321] text-lg"></i>
@@ -167,7 +167,7 @@
                   class="block text-white/60 text-xs font-bold tracking-wider uppercase"
                   >Phone Support</span
                 >
-                <strong class="text-white">(555) LIGHT-UP</strong>
+                <strong class="text-white">(833) F.EXPRES</strong>
               </div>
             </a>
 

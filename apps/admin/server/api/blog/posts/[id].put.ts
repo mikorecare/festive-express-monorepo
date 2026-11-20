@@ -1,6 +1,5 @@
 import { CACHE_MAP } from '~~/server/utils/cache-map'
 import { purgeLandingCache } from '~~/server/utils/purge'
-import { getSupabase } from '~~/server/utils/supabase'
 
 export default defineEventHandler(async (event) => {
     try {
@@ -23,6 +22,7 @@ export default defineEventHandler(async (event) => {
             status: body.status || 'draft',
             published_at: body.published_at || null,
             updated_at: new Date().toISOString(),
+            author_slug: body.author_slug || null
         }
 
         const { error } = await admin.from('posts').update(payload).eq('id', id)

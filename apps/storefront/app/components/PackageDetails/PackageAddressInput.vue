@@ -87,7 +87,7 @@
       <!-- Suggestions Dropdown -->
       <div
         v-if="suggestions.length && suggestionsOpen && !validating"
-        class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-[14px] shadow-lg max-h-60 overflow-y-auto"
+        class="absolute z-[999999] w-full mt-1 bg-white border border-gray-200 rounded-[14px] shadow-lg max-h-60 overflow-y-auto"
       >
         <div
           v-for="s in suggestions"

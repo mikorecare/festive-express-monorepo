@@ -1,8 +1,10 @@
-import { getSupabase } from '~~/server/utils/supabase'
+import { getSupabaseAdmin } from '~~/server/utils/supabase'
+import { CACHE_MAP } from '~~/server/utils/cache-map'
+import { purgeLandingCache } from '~~/server/utils/purge'
 
 export default defineEventHandler(async (event) => {
     try {
-        const supabase = getSupabase()
+        const supabase = getSupabaseAdmin()
         const id = getRouterParam(event, 'id')
         const body = await readBody(event)
 
@@ -25,7 +27,7 @@ export default defineEventHandler(async (event) => {
             .eq('id', id)
 
         if (error) throw error
-
+        await purgeLandingCache(CACHE_MAP.FAQS)
         return {
             success: true
         }

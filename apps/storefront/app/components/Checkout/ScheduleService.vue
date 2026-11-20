@@ -14,6 +14,8 @@
             :selected="modelValue.install_dates.filter(Boolean)"
             :min-date="minDate"
             :max-select="3"
+            :is-fully-booked="true"
+            :has-slots="true"
             @update:selected="onInstallDatesChange"
             @blur="$emit('validate', 'install_dates')"
             :class="{
@@ -45,7 +47,7 @@
           class="text-xs text-slate-500 mt-2 font-medium flex items-start gap-1"
         >
           <i class="fas fa-info-circle mt-0.5 text-[#F49321]"></i>
-          Earliest date is 3 days from today.
+          Earliest date is 2 days from today.
         </p>
       </div>
 
@@ -59,7 +61,7 @@
         <div class="flex-1">
           <InlineCalendar
             :selected="modelValue.removal_dates.filter(Boolean)"
-            :min-date="minDate"
+            :min-date="minDateRemoval"
             :max-select="3"
             @update:selected="onRemovalDatesChange"
           />
@@ -153,6 +155,10 @@ const formatDate = (dateString: string) => {
     day: "numeric",
   });
 };
+
+const minDateRemoval = computed(() => {
+  return "2027-01-02";
+});
 
 const toFixedArray = (arr: string[]) => {
   const cleaned = arr.filter(Boolean);
