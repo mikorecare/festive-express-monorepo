@@ -10,10 +10,6 @@ function isTrackingAllowed(): boolean {
     return window.location.origin === ALLOWED_ORIGIN
 }
 
-// ---------------------------------------------------------------------------
-// Device info
-// ---------------------------------------------------------------------------
-
 export interface DeviceInfo {
     os_name: string | null
     os_version: string | null
@@ -55,12 +51,6 @@ export function getDeviceInfo(): DeviceInfo {
     }
 }
 
-/**
- * Enrich DeviceInfo using the Chromium-only userAgentData API.
- * No-op on Firefox/Safari (they don't expose it).
- * `model` and `platformVersion` are high-entropy values that require an
- * explicit async request in modern Chromium.
- */
 export async function getDeviceInfoEnriched(): Promise<DeviceInfo> {
     const base = getDeviceInfo()
     if (!import.meta.client) return base
@@ -79,10 +69,6 @@ export async function getDeviceInfoEnriched(): Promise<DeviceInfo> {
         return base
     }
 }
-
-// ---------------------------------------------------------------------------
-// Fingerprint
-// ---------------------------------------------------------------------------
 
 function getDeviceFingerprint(): string {
     if (!import.meta.client) return 'ssr'
@@ -112,10 +98,6 @@ function getDeviceFingerprint(): string {
     return 'fp_' + Math.abs(hash).toString(36)
 }
 
-// ---------------------------------------------------------------------------
-// Source / environment detection
-// ---------------------------------------------------------------------------
-
 function detectSource(search: string) {
     const params = new URLSearchParams(search)
     const obj: Record<string, string> = {}
@@ -142,9 +124,6 @@ function extractPath(url: string): string {
     return url.slice(0, end) || '/'
 }
 
-// ---------------------------------------------------------------------------
-// Singleton composable
-// ---------------------------------------------------------------------------
 
 let trackerSingleton: ReturnType<typeof _useTracker> | null = null
 
@@ -170,7 +149,6 @@ function _useTracker() {
             query_params: queryParams,
             source,
             source_detail: sourceDetail,
-            // Device metadata (null-safe spread; every field is optional)
             ...(deviceInfo ?? {}),
         }
     }
@@ -240,13 +218,9 @@ function _useTracker() {
         sendUnload(Date.now() - pageEnterTime)
     }
 
-    // visibilitychange fires more reliably than beforeunload on mobile,
-    // especially when the tab is backgrounded or the app is killed.
     function handleVisibilityChange() {
         if (document.visibilityState === 'hidden') {
             sendUnload(Date.now() - pageEnterTime)
-            // Reset timer so we don't double-count when the page becomes
-            // visible again (the user didn't actually leave).
             pageEnterTime = Date.now()
         }
     }

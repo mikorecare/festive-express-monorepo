@@ -101,7 +101,7 @@
         >
           <NuxtLink
             to="#preview"
-            class="w-full max-w-[18rem] sm:max-w-sm mx-auto lg:!mx-0 lg:!w-auto lg:!max-w-none lg:text-2xl lg:shrink-0 btn-3d-glossy px-4 lg:!px-8 py-3  flex items-center justify-center gap-2 rounded-full font-semibold transition-colors duration-200 shadow-lg shadow-blue-900/20"
+            class="w-full max-w-[18rem] sm:max-w-sm mx-auto lg:!mx-0 lg:!w-auto lg:!max-w-none lg:text-2xl lg:shrink-0 btn-3d-glossy px-4 lg:!px-8 py-3 flex items-center justify-center gap-2 rounded-full font-semibold transition-colors duration-200 shadow-lg shadow-blue-900/20"
           >
             Preview Your Home →
           </NuxtLink>
@@ -143,7 +143,8 @@
           <span
             class="whitespace-nowrap text-[10px] min-[380px]:text-[11px] sm:text-base lg:text-[19px] font-extrabold text-navy leading-[1.2] lg:leading-[1.15]"
           >
-            Custom Designs<br />for Every Home
+            One Flat Price.<br />
+            No Quotes.
           </span>
         </div>
 

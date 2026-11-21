@@ -297,6 +297,11 @@ export default defineNuxtConfig({
       secretKey: process.env.SUPABASE_KEY,
     },
 
+    hris: {
+      apiKey: process.env.X_API_KEY,
+      apiUrl: process.env.HRIS_API
+    },
+
     elavonAccountId: process.env.ELAVON_ACCOUNT_ID || "",
     elavonUserId: process.env.ELAVON_USER_ID || "",
     elavonPin: process.env.ELAVON_PIN || "",

@@ -43,24 +43,51 @@
 
       <!-- Days grid -->
       <div class="grid grid-cols-7 gap-0.5 py-2">
-        <button
-          v-for="cell in cells"
-          :key="cell.key"
-          type="button"
-          class="h-7 rounded text-[11px] flex items-center justify-center transition-colors relative"
-          :class="cellClasses(cell)"
-          :disabled="cell.disabled"
-          @click="toggle(cell.iso)"
-          :title="cell.holidayName || undefined"
-        >
-          {{ cell.day }}
-          <!-- Holiday dot indicator -->
-          <span
-            v-if="cell.isHoliday && cell.isCurrentMonth"
-            class="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-0.5 h-0.5 rounded-full"
-            :class="cell.disabled ? 'bg-gray-300' : 'bg-brand-orange'"
-          />
-        </button>
+        <template v-for="(week, wi) in weeks" :key="wi">
+          <!-- FULLY BOOKED WEEK (whole prior week) -->
+          <div
+            v-if="isFullyBooked && week.isPast"
+            class="col-span-7 h-7 flex items-center justify-center text-[11px] font-semibold uppercase tracking-wider text-gray-400 bg-gray-50 rounded"
+          >
+            - - - Fully Booked - - -
+          </div>
+
+          <!-- NORMAL WEEK -->
+          <template v-else>
+            <button
+              v-for="cell in week.cells"
+              :key="cell.key"
+              type="button"
+              class="h-10 rounded text-[11px] flex items-center justify-center transition-colors relative"
+              :class="cellClasses(cell)"
+              :disabled="cell.disabled"
+              @click="toggle(cell.iso)"
+              :title="cell.holidayName || undefined"
+            >
+              <span
+                class="flex flex-col items-center justify-center leading-tight"
+              >
+                <span>{{ cell.day }}</span>
+
+                <span
+                  v-if="hasSlots && !cell.disabled && cell.iso"
+                  class="text-[8px] font-semibold whitespace-nowrap"
+                  :class="
+                    selectedSet.has(cell.iso) ? 'text-white/90' : 'text-red-500'
+                  "
+                >
+                  {{ getSlotsLeft(cell.iso) }} left
+                </span>
+              </span>
+              <!-- Holiday dot indicator -->
+              <span
+                v-if="cell.isHoliday && cell.isCurrentMonth"
+                class="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-0.5 h-0.5 rounded-full"
+                :class="cell.disabled ? 'bg-gray-300' : 'bg-brand-orange'"
+              />
+            </button>
+          </template>
+        </template>
       </div>
 
       <!-- Holiday legend -->
@@ -117,12 +144,18 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/24/outline";
 const props = withDefaults(
   defineProps<{
     selected: string[];
-    minDate?: string; // YYYY-MM-DD
+    minDate?: string;
     maxSelect?: number;
-    /** Mark the "Big Six" US holidays as unbookable (default true) */
     blockHolidays?: boolean;
+    isFullyBooked?: boolean;
+    hasSlots?: boolean;
   }>(),
-  { maxSelect: 3, blockHolidays: true },
+  {
+    maxSelect: 3,
+    blockHolidays: true,
+    isFullyBooked: false,
+    hasSlots: false,
+  },
 );
 
 const emit = defineEmits<{
@@ -130,9 +163,19 @@ const emit = defineEmits<{
 }>();
 
 const today = new Date();
+
+// Compute the effective minimum date (mirrors `minIso` logic below)
+const resolveMinDate = (): Date => {
+  if (props.minDate) return new Date(props.minDate + "T00:00:00");
+  const d = new Date();
+  d.setDate(d.getDate() + 2);
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+
 const initial = props.selected.length
   ? new Date(props.selected[0] + "T00:00:00")
-  : today;
+  : resolveMinDate();
 
 const viewYear = ref(initial.getFullYear());
 const viewMonth = ref(initial.getMonth()); // 0-11
@@ -140,6 +183,37 @@ const viewMonth = ref(initial.getMonth()); // 0-11
 const pad = (n: number) => String(n).padStart(2, "0");
 const toIso = (y: number, m: number, d: number) =>
   `${y}-${pad(m + 1)}-${pad(d)}`;
+
+const getSlotsLeft = (iso: string): number | null => {
+  if (!props.hasSlots || !iso) return null;
+
+  const date = new Date(`${iso}T00:00:00`);
+
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+
+  const daysAway = Math.round((date.getTime() - now.getTime()) / 86400000);
+
+  if (daysAway < 0) return null;
+
+  // Stable pseudo-random value based on the date
+  const seed = Number(iso.replaceAll("-", ""));
+  const random = (seed * 9301 + 49297) % 233280;
+
+  const randomBetween = (min: number, max: number) =>
+    min + (random % (max - min + 1));
+
+  if (daysAway <= 7) {
+    return randomBetween(1, 2);
+  }
+
+  if (daysAway > 21) {
+    return randomBetween(3, 5);
+  }
+
+  // Between 8 and 21 days
+  return randomBetween(2, 3);
+};
 
 /* ------------------------------------------------------------------ */
 /*  US "Big Six" holiday logic                                         */
@@ -327,6 +401,35 @@ const cells = computed<Cell[]>(() => {
       isHoliday: !!holidayInfo,
       holidayName: holidayInfo?.name ?? "",
     });
+  }
+
+  return out;
+});
+
+/**
+ * Group cells into weeks (rows of 7), and compute whether each
+ * week is entirely before today (for the "Fully Booked" collapse).
+ */
+const weeks = computed(() => {
+  const out: { cells: Cell[]; isPast: boolean }[] = [];
+  const todayIso = toIso(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  );
+
+  for (let i = 0; i < cells.value.length; i += 7) {
+    const slice = cells.value.slice(i, i + 7);
+
+    // "Past week" = every cell in the row is a real, in-month date
+    // that is strictly before today. Leading blanks (padding from the
+    // previous month) do NOT disqualify the row — we only care about
+    // the real days in it. If the row is entirely blank, it's not past.
+    const realCells = slice.filter((c) => c.isCurrentMonth && c.iso);
+    const isPast =
+      realCells.length > 0 && realCells.every((c) => c.iso < todayIso);
+
+    out.push({ cells: slice, isPast });
   }
 
   return out;

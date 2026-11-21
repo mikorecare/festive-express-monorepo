@@ -1,10 +1,26 @@
 <template>
-  <div class="bg-white rounded-2xl shadow-md sticky top-24">
-    <div
-      class="bg-[#1C2D5B] btn-gloss px-6 py-2 flex items-center border-b-4 border-[#F49321] rounded-t-xl mb-2"
-    >
-      <i class="fas fa-pen-to-square mr-3 text-[#F49321]"></i>
-      <h3 class="block text-sm font-bold text-white mb-1">Order Summary</h3>
+  <div class="bg-white rounded-2xl shadow-md h-full">
+    <div class="relative mb-2 mt-6">
+      <div
+        class="bg-[#1C2D5B] btn-gloss pl-20 pr-4 py-2 flex items-center border-b-4 border-[#F49321] rounded-t-xl"
+      >
+        <i class="fas fa-credit-card mr-3 text-[#F49321]"></i>
+        <h3 class="block text-lg font-bold text-white mb-1">
+          Payment &amp; Order Summary
+        </h3>
+      </div>
+
+      <span
+        class="absolute left-4 -top-2 sm:-top-4 lg:-top-5 z-10 shrink-0 w-12 h-12 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full border border-navy bg-[#F49321] text-[#1C2D5B] font-black text-xl lg:text-2xl flex items-center justify-center shadow-[0_4px_10px_rgba(244,147,33,0.4)] [text-shadow:_-1px_-1px_0_#fff,_1px_-1px_0_#fff,_-1px_1px_0_#fff,_1px_1px_0_#fff]"
+        aria-hidden="true"
+      >
+        5
+      </span>
+    </div>
+
+    <!-- Card + billing fields (provided by checkout.vue) -->
+    <div class="mt-4 px-3">
+      <slot name="payment"></slot>
     </div>
 
     <div
@@ -70,15 +86,12 @@
           $&nbsp;
         </span>
         <span class="font-extrabold leading-none price-text -tracking-[0.04em]">
-          <!-- {{
-            (Number(item.price || 0) * item.quantity).toLocaleString(
-              undefined,
-              { minimumFractionDigits: 2, maximumFractionDigits: 2 },
-            )
+          {{
+            Number(item.price || 0).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
           }}
-          Designed for multiple orders will be commented for future reference for multiple orders  
-          -->
-          {{ Number(selectedPrice) }}
         </span>
       </span>
     </div>
@@ -146,7 +159,41 @@
       </span>
     </div>
 
-    <div class="flex justify-between text-sm py-1 px-6">
+    <!-- Customer Sales Tax Toggle -->
+    <div class="flex items-center justify-between text-sm py-1.5 px-6">
+      <div class="pr-2">
+        <label
+          for="customer-sales-tax-toggle"
+          class="text-gray-700 font-medium cursor-pointer block"
+        >
+          Include Sales Tax
+        </label>
+        <span class="text-[11px] text-gray-500">
+          {{ salesTaxEnabled ? "Applied to taxable total" : "Not charged" }}
+        </span>
+      </div>
+
+      <button
+        id="customer-sales-tax-toggle"
+        type="button"
+        role="switch"
+        :aria-checked="salesTaxEnabled"
+        @click="$emit('update:salesTaxEnabled', !salesTaxEnabled)"
+        class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out"
+        :class="salesTaxEnabled ? 'bg-[#F49321]' : 'bg-gray-300'"
+      >
+        <span
+          class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ease-in-out"
+          :class="salesTaxEnabled ? 'translate-x-4' : 'translate-x-0'"
+        />
+      </button>
+    </div>
+
+    <!-- Estimated Taxes Row -->
+    <div
+      v-if="salesTaxEnabled || estimatedTax > 0"
+      class="flex justify-between text-sm py-1 px-6"
+    >
       <span class="text-gray-600">Estimated Taxes</span>
       <span class="font-bold inline-flex items-baseline">
         <span
@@ -197,11 +244,10 @@
         {{ promoError }}
       </p>
       <p v-else-if="appliedPromo" class="text-green-600 text-xs mt-1">
-        {{ appliedPromo.code }} applied!
         <span v-if="appliedPromo.discount_type === 'percent'">
           {{ appliedPromo.discount_value }}% off
         </span>
-        <span v-else> -${{ appliedPromo.discount_value }} off </span>
+        <span v-else> ${{ appliedPromo.discount_value }} off </span>
       </p>
     </div>
 
@@ -244,9 +290,9 @@
       </label>
     </div>
 
-    <div class="px-6 pb-3">
+    <div class="pb-3 flex w-full">
       <button
-        class="btn-3d-glossy btn-3d-glossy-orange w-full min-h-[56px] mt-4 text-lg font-extrabold uppercase tracking-wide"
+        class="btn-3d-glossy btn-3d-glossy-orange w-full max-w-xl mx-auto min-h-[56px] mt-4 text-lg font-extrabold uppercase tracking-wide"
         :disabled="isPaying || !isFormValid"
         @click="handlePay"
       >
@@ -258,7 +304,7 @@
 
     <slot name="turnstile"></slot>
 
-    <ul class="space-y-2 mt-4 px-6">
+    <!-- <ul class="space-y-2 mt-4 px-6">
       <li class="flex items-center text-sm text-gray-600">
         <CheckCircleIcon
           class="w-5 h-5 text-green-500 mr-2 inline-block"
@@ -280,10 +326,12 @@
         />
         Guaranteed Maintenance
       </li>
-    </ul>
+    </ul> -->
 
     <!-- Legal Disclaimer & Terms Trigger -->
-    <p class="text-[10px] text-gray-700 mt-4 leading-relaxed text-center px-6 pb-2">
+    <p
+      class="text-[12px] sm:text-[10px] text-gray-700 mt-4 leading-relaxed text-center px-6 pb-2"
+    >
       By submitting this order, you agree to our
       <button
         type="button"
@@ -328,7 +376,7 @@
         >
           <!-- Header -->
           <div
-            class="flex items-center section-gloss bg-navy justify-between px-6 py-3 border-b border-gray-200 shrink-0"
+            class="flex items-center bg-navy justify-between px-6 py-3 border-b border-gray-200 shrink-0"
           >
             <h2 id="terms-modal-title" class="text-xl font-bold text-white">
               {{ termsData?.title || "Terms and Conditions" }}
@@ -410,6 +458,7 @@ const props = defineProps<{
   cartItems: any[];
   cartTotal: number;
   alacarteCartTotal: number;
+  salesTaxEnabled: boolean;
   estimatedTax: number;
   grandTotal: number;
   paymentMethod: string;
@@ -418,6 +467,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
+  (e: "update:salesTaxEnabled", value: boolean): void;
   (e: "update:paymentMethod", value: string): void;
   (e: "pay", promoCodeId?: string): void;
 }>();
@@ -434,8 +484,7 @@ const handlePay = () => {
   emit("pay", appliedPromo.value?.id);
 };
 
-// NOTE: estimatedTax and grandTotal are now purely handled by the props passed from checkout.vue!
-// We removed the duplicate computed logic here.
+// NOTE: estimatedTax and grandTotal are handled by the props passed from checkout.vue.
 
 const {
   loadEarlyBird,

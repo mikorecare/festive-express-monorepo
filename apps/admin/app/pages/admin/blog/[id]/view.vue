@@ -76,7 +76,7 @@
 
         <div class="p-6 md:p-10 lg:p-16">
           <!-- Meta -->
-          <div class="flex flex-wrap items-center gap-3 mb-6">
+          <div class="flex flex-wrap items-center gap-4 mb-6">
             <span
               v-if="post.category"
               class="inline-block bg-[#1C2D5B] text-white px-1.5 py-0.5 text-[12px] font-bold uppercase tracking-wider rounded-sm shadow-sm"
@@ -89,10 +89,40 @@
               {{ formatDate(post.published_at) }}
             </span>
             <span class="text-gray-300">|</span>
+
+            <!-- Author Block: Mini Circle Avatar + Full Name (top) + Job Title (below) -->
+            <div v-if="authorProfile" class="inline-flex items-center gap-2.5">
+              <img
+                v-if="authorProfile.display_photo_url"
+                :src="authorProfile.display_photo_url"
+                :alt="authorProfile.full_name || 'Author'"
+                class="w-9 h-9 rounded-full object-cover border border-gray-200 shrink-0"
+              />
+              <div
+                v-else
+                class="w-9 h-9 rounded-full bg-[#1C2D5B] text-white text-xs font-bold flex items-center justify-center shrink-0"
+              >
+                {{ (authorProfile.full_name || "F").charAt(0).toUpperCase() }}
+              </div>
+              <div class="flex flex-col space-y-0.5">
+                <span
+                  class="text-xs md:text-sm font-bold text-[#1C2D5B] leading-none"
+                >
+                  {{ authorProfile.full_name || "Festive Express Team" }}
+                </span>
+                <span
+                  v-if="authorProfile.job_title"
+                  class="text-[11px] font-medium text-gray-500 leading-none"
+                >
+                  {{ authorProfile.job_title }}
+                </span>
+              </div>
+            </div>
             <span
+              v-else
               class="text-gray-500 text-xs md:text-sm uppercase tracking-wider"
             >
-              By {{ post.author?.full_name || "Festive Express Team" }}
+              By Festive Express Team
             </span>
           </div>
 
@@ -285,8 +315,17 @@ import { h, ref, onMounted, nextTick, render } from "vue";
 import BrandedVideoPlayer from "~/components/Blog/BrandVideoPlayer.vue";
 
 // --- Types ---
+interface AuthorDetail {
+  id?: string;
+  author_slug?: string;
+  full_name: string;
+  job_title?: string | null;
+  display_photo_url?: string | null;
+}
+
 interface Post {
   id: string;
+  author_slug?: string | null;
   title: string;
   slug: string;
   summary: string | null;
@@ -310,6 +349,7 @@ interface RelatedPost {
 // --- Fetch Data (Admin Endpoints) ---
 const route = useRoute();
 const postId = route.params.id;
+const authorProfile = ref<AuthorDetail | null>(null);
 
 // We use the admin endpoint that fetches a single post by ID
 const {
@@ -403,6 +443,35 @@ const formatDate = (isoString: string | null) => {
     year: "numeric",
   });
 };
+
+watch(
+  () => post.value?.author_slug,
+  async (slug) => {
+    if (!slug) {
+      authorProfile.value = null;
+      return;
+    }
+
+    try {
+      const res = await $fetch<{
+        success: boolean;
+        data: AuthorDetail | { data?: AuthorDetail } | null;
+      }>(`/api/blog/authors/${encodeURIComponent(slug)}`);
+
+      if (res.success && res.data) {
+        const raw =
+          "data" in res.data && res.data.data ? res.data.data : res.data;
+        authorProfile.value = (raw as AuthorDetail) || null;
+      } else {
+        authorProfile.value = null;
+      }
+    } catch (err) {
+      console.error("Failed to load author details:", err);
+      authorProfile.value = null;
+    }
+  },
+  { immediate: true },
+);
 </script>
 
 <style scoped>

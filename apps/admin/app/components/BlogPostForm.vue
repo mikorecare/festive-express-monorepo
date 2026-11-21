@@ -17,7 +17,7 @@
             {{ isEditing ? "Edit Post" : "New Post" }}
           </h1>
           <p class="text-slate-500 text-sm">
-            Title, category, tags, content & publishing
+            Title, author, category, tags, content & publishing
           </p>
         </div>
         <div class="flex gap-2">
@@ -108,7 +108,22 @@
             />
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-sm font-semibold text-slate-700 mb-1.5"
+                >Author</label
+              >
+              <select v-model="form.author_slug" class="field">
+                <option :value="null">— Select author —</option>
+                <option
+                  v-for="a in authors"
+                  :key="a.author_slug"
+                  :value="a.author_slug"
+                >
+                  {{ a.full_name }}{{ a.job_title ? ` (${a.job_title})` : "" }}
+                </option>
+              </select>
+            </div>
             <div>
               <label class="block text-sm font-semibold text-slate-700 mb-1.5"
                 >Category</label
@@ -294,7 +309,8 @@ import { PhotoIcon, TrashIcon, ArrowPathIcon } from "@heroicons/vue/24/outline";
 
 type PostRow = {
   id?: string;
-  author_id?: string;
+  author_id?: string | number | null;
+  author_slug: string | null;
   category_id: number | null;
   title: string;
   slug: string;
@@ -305,6 +321,18 @@ type PostRow = {
   published_at: string | null;
 };
 
+type Author = {
+  id: string;
+  author_slug: string;
+  full_name: string;
+  job_title?: string | null;
+  display_photo_url?: string | null;
+};
+
+type AuthorsPayload = {
+  count: number;
+  data: Author[];
+};
 type Category = { id: number; name: string; slug: string };
 type Tag = { id: number; name: string; slug: string };
 
@@ -316,6 +344,7 @@ const postId = computed(() => (route.params.id as string) || null);
 const isEditing = computed(() => !!postId.value);
 
 const emptyForm = (): PostRow => ({
+  author_slug: null,
   category_id: null,
   title: "",
   slug: "",
@@ -330,6 +359,7 @@ const form = ref<PostRow>(emptyForm());
 const saving = ref(false);
 const uploading = ref(false);
 
+const authors = ref<Author[]>([]);
 const categories = ref<Category[]>([]);
 const allTags = ref<Tag[]>([]);
 const selectedTagIds = ref<number[]>([]);
@@ -357,12 +387,21 @@ const autoSlug = () => {
   }
 };
 
-// --- Load categories & tags ---
+// --- Load authors, categories & tags ---
 const loadMeta = async () => {
-  const [catRes, tagRes] = await Promise.all([
+  const [authorRes, catRes, tagRes] = await Promise.all([
+    $fetch<{ success: boolean; data: AuthorsPayload | Author[] }>(
+      "/api/blog/authors",
+    ),
     $fetch<{ success: boolean; data: Category[] }>("/api/blog/categories"),
     $fetch<{ success: boolean; data: Tag[] }>("/api/blog/tags"),
   ]);
+
+  const rawAuthors = authorRes.data;
+  authors.value = Array.isArray(rawAuthors)
+    ? rawAuthors
+    : rawAuthors?.data || [];
+
   categories.value = catRes.data || [];
   allTags.value = tagRes.data || [];
 };
@@ -383,6 +422,8 @@ const loadPost = async () => {
     if (response.success && response.data) {
       const row = response.data;
       form.value = {
+        author_id: row.author_id ?? null,
+        author_slug: row.author_slug ?? null,
         category_id: row.category_id ?? null,
         title: row.title || "",
         slug: row.slug || "",
@@ -529,6 +570,7 @@ const saveContent = async (status: "draft" | "published") => {
       : form.value.published_at;
 
   const payload = {
+    author_slug: form.value.author_slug,
     category_id: form.value.category_id,
     title: form.value.title.trim(),
     slug: form.value.slug.trim(),

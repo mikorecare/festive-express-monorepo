@@ -13,13 +13,13 @@
         <div class="text-left">
           <span
             v-fade
-            class="text-brand-orange font-extrabold tracking-[0.8px] block mb-1 uppercase text-lg sm:text-2xl"
+            class="text-brand-orange font-extrabold tracking-widest block mb-1 uppercase text-lg sm:text-2xl"
           >
             WHY CHOOSE US?
           </span>
           <h2
             v-fade
-            class="font-extrabold text-white text-uppercase text-2xl sm:text-3xl lg:text-4xl mb-[1.5rem] lg:mb-[2rem] leading-[1.15]"
+            class="font-extrabold text-white text-uppercase tracking-wider text-2xl sm:text-3xl lg:text-4xl mb-[1.5rem] lg:mb-[2rem] leading-[1.15]"
           >
             Festive Express <span class="text-brand-orange">Difference</span>
           </h2>
@@ -32,7 +32,7 @@
           <!-- Item 1: Full-Service Installation -->
           <div
             v-fade-left
-            class="group text-center flex flex-col items-center cursor-pointer"
+            class="group text-center flex flex-col items-center cursor-pointer tracking-wider"
           >
             <div
               class="w-[64px] h-[64px] sm:w-[68px] sm:h-[68px] rounded-full flex items-center justify-center mb-2.5 sm:mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
@@ -64,7 +64,7 @@
           <!-- Item 2: Licensed & Insured -->
           <div
             v-fade-left
-            class="group text-center flex flex-col items-center cursor-pointer"
+            class="group text-center flex flex-col items-center cursor-pointer tracking-wider"
           >
             <div
               class="w-[64px] h-[64px] sm:w-[68px] sm:h-[68px] rounded-full flex items-center justify-center mb-2.5 sm:mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
@@ -96,7 +96,7 @@
           <!-- Item 3: Professional Grade Lighting -->
           <div
             v-fade-left
-            class="group text-center flex flex-col items-center cursor-pointer"
+            class="group text-center flex flex-col items-center cursor-pointer tracking-wider"
           >
             <div
               class="w-[64px] h-[64px] sm:w-[68px] sm:h-[68px] rounded-full flex items-center justify-center mb-2.5 sm:mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"
@@ -128,7 +128,7 @@
           <!-- Item 4: Ongoing Local Support -->
           <div
             v-fade-left
-            class="group text-center flex flex-col items-center cursor-pointer"
+            class="group text-center flex flex-col items-center cursor-pointer tracking-wider"
           >
             <div
               class="w-[64px] h-[64px] sm:w-[68px] sm:h-[68px] rounded-full flex items-center justify-center mb-2.5 sm:mb-[0.85rem] overflow-hidden transition-all duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_0_0_3px_#0d2247,0_0_0_5px_#F49321]"

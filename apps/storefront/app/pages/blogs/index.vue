@@ -42,7 +42,7 @@
 
           <p
             v-fade
-            class="text-outline text-base sm:text-xl md:text-2xl tracking-wide font-bold text-[#1c2d5b] [--o:#fff] [--w:1.5px] md:[--w:2px] [text-wrap:balance] drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] sm:drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
+            class="text-outline text-base sm:text-xl md:text-2xl tracking-widest font-bold text-[#1c2d5b] [--o:#fff] [--w:1.5px] md:[--w:2px] [text-wrap:balance] drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] sm:drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)]"
             aria-label="Blog description"
           >
             Explore expert advice, seasonal inspiration, and the latest news
@@ -129,13 +129,47 @@
                     {{ formatDate(featuredPost.published_at) }}
                   </span>
                   <span class="text-gray-300 hidden md:inline">|</span>
+
+                  <!-- Author Block -->
+                  <div
+                    v-if="featuredPost.author?.full_name"
+                    class="inline-flex items-center gap-2"
+                  >
+                    <img
+                      v-if="featuredPost.author.display_photo_url"
+                      :src="featuredPost.author.display_photo_url"
+                      :alt="featuredPost.author.full_name"
+                      class="w-7 h-7 md:w-8 md:h-8 rounded-full object-cover border border-gray-200 shrink-0"
+                    />
+                    <div
+                      v-else
+                      class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-[#1C2D5B] text-white text-[10px] md:text-xs font-bold flex items-center justify-center shrink-0"
+                    >
+                      {{
+                        featuredPost.author.full_name.charAt(0).toUpperCase()
+                      }}
+                    </div>
+                    <div class="flex flex-col space-y-0.5">
+                      <span
+                        class="text-[11px] md:text-xs font-bold text-[#1C2D5B] leading-none"
+                      >
+                        {{ featuredPost.author.full_name }}
+                      </span>
+                      <span
+                        v-if="featuredPost.author.job_title"
+                        class="text-[10px] font-medium text-gray-500 leading-none"
+                      >
+                        {{ featuredPost.author.job_title }}
+                      </span>
+                    </div>
+                  </div>
                   <span
+                    v-else
                     class="text-gray-500 text-[10px] md:text-sm uppercase tracking-wider"
                   >
                     By Festive Express Team
                   </span>
                 </div>
-
                 <h2
                   v-fade
                   class="outlined outlined-line1 block text-xl md:text-3xl lg:text-4xl font-extrabold text-[#1c2d5b] leading-tight mb-2 md:mb-3 tracking-wide line-clamp-2"
@@ -240,11 +274,20 @@
                     <span>{{ formatDate(post.published_at) }}</span>
                     <span class="text-gray-300">•</span>
                     <span
-                      >By
-                      {{
-                        post.author?.full_name || "Festive Express Team"
-                      }}</span
+                      v-if="post.author?.full_name"
+                      class="inline-flex items-center gap-1.5 normal-case"
                     >
+                      <img
+                        v-if="post.author.display_photo_url"
+                        :src="post.author.display_photo_url"
+                        :alt="post.author.full_name"
+                        class="w-4 h-4 rounded-full object-cover border border-gray-200 shrink-0"
+                      />
+                      <span class="font-bold text-[#1C2D5B] text-[11px]">
+                        {{ post.author.full_name }}
+                      </span>
+                    </span>
+                    <span v-else>By Festive Express Team</span>
                   </div>
 
                   <h4

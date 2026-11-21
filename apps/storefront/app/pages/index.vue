@@ -10,7 +10,9 @@
 
 <template>
   <HomeNewHeroNew />
+  <HomeNewAreasWeServe />
   <HomeNewChooseYourHolidayPackage />
+  <HomeNewExtrasAnimatedHouse />
   <HomeNewPreviewYourHome />
   <HomeNewHowItWorks />
 
