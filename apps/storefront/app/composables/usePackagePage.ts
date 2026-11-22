@@ -192,10 +192,6 @@ export function usePackagePage() {
         await loadAddons()
     })
 
-    useHead(() => ({
-        title: pkg.value ? `${pkg.value.name} | Festive Express` : "Package | Festive Express",
-    }))
-
     return {
         slug, pkg, pending, inclusions, skusForPkg, selectedSku, selectedPrice,
         shortDescription, selectSku, byKey, swatchStyle,
