@@ -89,7 +89,9 @@
             <div class="w-full" style="padding-bottom: 96.5%">
               <img
                 class="absolute top-0 left-0 w-full h-full rounded-lg object-contain object-top"
-                :src="result.imageUrl"
+                :src="
+                  result.imageUrl.replace(/^https?:\/\/52\.204\.215\.130/, '')
+                "
                 alt="Your home with holiday lighting"
               />
             </div>

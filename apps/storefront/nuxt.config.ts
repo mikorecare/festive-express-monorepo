@@ -461,7 +461,7 @@ export default defineNuxtConfig({
           "https://api.demo.convergepay.com",
           "https://api.convergepay.com",
         ],
-        'upgrade-insecure-requests': true,
+        'upgrade-insecure-requests': false,
       },
 
       strictTransportSecurity: {
@@ -500,7 +500,14 @@ export default defineNuxtConfig({
         'alt-svc': 'h3=":443"; ma=86400',
         'x-robots-tag': 'index, follow',
       }
-    }
+    },
+    '/estimator/renders/**': {
+      proxy: 'http://52.204.215.130/estimator/renders/**',
+      headers: {
+        'Cache-Control': 'private, no-store',
+        'x-robots-tag': 'noindex, nofollow',
+      },
+    },
   },
 
   nitro: {
