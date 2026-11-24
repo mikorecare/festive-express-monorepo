@@ -146,7 +146,7 @@ export default defineEventHandler(async (event) => {
         }
 
         if (renderResponse.imageUrl) {
-            renderResponse.imageUrl = new URL(renderResponse.imageUrl, config.estimatorAssetUrl).toString();
+            renderResponse.imageUrl = new URL(renderResponse.imageUrl, config.estimatorApiUrl).toString();
         }
     }
 
