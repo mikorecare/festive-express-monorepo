@@ -1,15 +1,15 @@
 <template>
   <section
     ref="sectionEl"
-    class="relative overflow-hidden bg-[#1C2D5B] py-6 sm:py-8 lg:py-10 bg-[url('/New/ChooseYourHomePackage/overlay.png')] bg-no-repeat  bg-cover"
+    class="relative overflow-hidden bg-[#1C2D5B] py-6 sm:py-8 lg:py-10 bg-[url('/New/ChooseYourHomePackage/overlay.png')] bg-no-repeat bg-cover max-sm:pt-0"
     aria-labelledby="homes-lit-heading"
   >
     <div
-      class="mx-auto flex w-full max-w-[1100px] flex-col items-center gap-5 px-4 sm:px-6 lg:flex-row lg:justify-center lg:gap-12 lg:px-8"
+      class="mx-auto flex w-full max-w-[1100px] flex-col items-center gap-5 px-4 sm:px-6 lg:flex-row lg:justify-center lg:gap-12 lg:px-8 max-sm:px-0"
     >
       <!-- LEFT: House animation + heading overlay -->
       <div
-        class="relative aspect-[720/323] w-full max-w-[640px] overflow-hidden bg-[#101B39] lg:w-[58%] lg:max-w-none"
+        class="relative aspect-[720/323] w-full max-w-[640px] overflow-hidden bg-[#101B39] lg:w-[58%] lg:max-w-none max-sm:max-w-none max-sm:m-0 max-sm:p-0"
       >
         <img
           v-if="ready"
@@ -68,7 +68,7 @@
       <!-- RIGHT: Counter block -->
       <div
         v-if="ready"
-        class="flex w-full flex-col items-center text-center lg:w-[34%]"
+        class="flex w-full flex-col items-center px-4 text-center lg:w-[34%] lg:px-0"
       >
         <h2 id="homes-lit-heading" class="sr-only">1,500+ Homes Lit!</h2>
 

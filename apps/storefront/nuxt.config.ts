@@ -391,6 +391,7 @@ export default defineNuxtConfig({
           "https://motion-media-llc.aryeo.com",
           "https://www.facebook.com",
           "https://facebook.com",
+          "http://52.204.215.130",
         ],
 
         'media-src': [
