@@ -461,7 +461,7 @@ export default defineNuxtConfig({
           "https://api.demo.convergepay.com",
           "https://api.convergepay.com",
         ],
-        'upgrade-insecure-requests': true,
+        'upgrade-insecure-requests': false,
       },
 
       strictTransportSecurity: {
