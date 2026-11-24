@@ -1,4 +1,5 @@
 import { createError, defineEventHandler, readBody } from "h3";
+import { joinURL } from "ufo";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event);
@@ -146,7 +147,9 @@ export default defineEventHandler(async (event) => {
         }
 
         if (renderResponse.imageUrl) {
-            renderResponse.imageUrl = new URL(renderResponse.imageUrl, config.estimatorApiUrl).toString();
+            renderResponse.imageUrl = /^https?:\/\//i.test(renderResponse.imageUrl)
+                ? renderResponse.imageUrl
+                : joinURL(config.estimatorApiUrl, renderResponse.imageUrl);
         }
     }
 
