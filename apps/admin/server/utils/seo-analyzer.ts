@@ -107,12 +107,12 @@ export interface SeoReportMeta {
 // Helpers
 // ---------------------------------------------------------------------------
 
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
-const sha1 = (s: string) => createHash('sha1').update(s).digest('hex')
-const isNoindex = (p: ExtractedPageData) => /\b(noindex|none)\b/.test(p.robots ?? '')
-const norm = (s: string) => s.replace(/\s+/g, ' ').trim().toLowerCase()
+export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+export const sha1 = (s: string) => createHash('sha1').update(s).digest('hex')
+export const isNoindex = (p: ExtractedPageData) => /\b(noindex|none)\b/.test(p.robots ?? '')
+export const norm = (s: string) => s.replace(/\s+/g, ' ').trim().toLowerCase()
 
-function fit(text: string, max: number): string {
+export function fit(text: string, max: number): string {
     const t = (text || '').replace(/\s+/g, ' ').trim()
     if (t.length <= max) return t
     const cut = t.slice(0, max + 1)
@@ -120,7 +120,7 @@ function fit(text: string, max: number): string {
     return (space > max * 0.6 ? cut.slice(0, space) : t.slice(0, max)).replace(/[\s,;:–-]+$/, '')
 }
 
-const toLocation = (r: ElementRef): IssueLocation => ({
+export const toLocation = (r: ElementRef): IssueLocation => ({
     selector: r.selector,
     line: r.line,
     snippet: r.html,
@@ -498,16 +498,16 @@ function applyDuplicateChecks(entries: Entry[]) {
 // Chunked AI review
 // ---------------------------------------------------------------------------
 
-const PROMPT_VERSION = 'chunked-v2'
-const DEFAULT_CHUNK_CHARS = 6000
-const DEFAULT_MAX_CHUNKS = 8
-const DEFAULT_BATCH_CHARS = 24_000
-const BLOCK_OVERHEAD = 40 // rough JSON overhead per block, in chars
-const CONTEXT_BLOCKS = 2 // tail of the previous part repeated as read-only context
-const MAX_AI_ISSUES_PER_PART = 3
-const MAX_AI_ISSUES_PER_PAGE = 10
-const MAX_RAISED = 12
-const MAX_OUTLINE = 80
+export const PROMPT_VERSION = 'chunked-v2'
+export const DEFAULT_CHUNK_CHARS = 6000
+export const DEFAULT_MAX_CHUNKS = 8
+export const DEFAULT_BATCH_CHARS = 24_000
+export const BLOCK_OVERHEAD = 40 // rough JSON overhead per block, in chars
+export const CONTEXT_BLOCKS = 2 // tail of the previous part repeated as read-only context
+export const MAX_AI_ISSUES_PER_PART = 3
+export const MAX_AI_ISSUES_PER_PAGE = 10
+export const MAX_RAISED = 12
+export const MAX_OUTLINE = 80
 
 const SEVERITIES: Severity[] = ['critical', 'warning', 'info']
 const CATEGORIES: IssueCategory[] = ['technical', 'content', 'metadata']
@@ -679,18 +679,19 @@ Never invent products, prices, locations or claims that are not in the page data
 
 const CACHE_TTL_MS = 12 * 60 * 60 * 1000
 const CACHE_MAX = 2000
-const aiCache = new Map<string, { at: number; value: AiChunkValue }>()
+const aiCache = new Map<string, { at: number; value: unknown }>()
 
-function cacheGet(key: string): AiChunkValue | null {
+export function cacheGet<T>(key: string): T | null {
     const hit = aiCache.get(key)
     if (!hit) return null
     if (Date.now() - hit.at > CACHE_TTL_MS) {
         aiCache.delete(key)
         return null
     }
-    return hit.value
+    return hit.value as T
 }
-function cacheSet(key: string, value: AiChunkValue) {
+
+export function cacheSet<T>(key: string, value: T): void {
     if (aiCache.size >= CACHE_MAX) {
         const oldest = aiCache.keys().next().value
         if (oldest) aiCache.delete(oldest)
@@ -700,15 +701,15 @@ function cacheSet(key: string, value: AiChunkValue) {
 
 // ---- Chunking -------------------------------------------------------------
 
-const blockSize = (b: ContentBlock) => b.text.length + BLOCK_OVERHEAD
-const isMajorHeading = (b: ContentBlock) => b.level > 0 && b.level <= 3
+export const blockSize = (b: ContentBlock) => b.text.length + BLOCK_OVERHEAD
+export const isMajorHeading = (b: ContentBlock) => b.level > 0 && b.level <= 3
 
 /**
  * Pack blocks into parts of about `budget` chars. Prefer to split right before a
  * heading (once the part is at least half full) and never leave a heading as the
  * last block of a part.
  */
-function buildChunks(
+export function buildChunks(
     blocks: ContentBlock[],
     budget: number,
     maxChunks: number,
@@ -748,7 +749,7 @@ function buildChunks(
     return { chunks, truncated }
 }
 
-function outlineOf(blocks: ContentBlock[]): OutlineItem[] {
+export function outlineOf(blocks: ContentBlock[]): OutlineItem[] {
     return blocks
         .filter((b) => b.level > 0)
         .slice(0, MAX_OUTLINE)
@@ -804,7 +805,7 @@ function createState(
     }
 }
 
-function buildItem(s: PageState, context: string): WorkItem {
+export function buildItem(s: PageState, context: string): WorkItem {
     const chunk = s.chunks[s.next]!
     const isLast = s.next === s.chunks.length - 1
     const first = chunk.blocks[0]!
@@ -949,7 +950,7 @@ function classifyError(e: any): ErrorKind {
     return 'other'
 }
 
-async function generateWithFallback<T>(
+export async function generateWithFallback<T>(
     ai: GoogleGenAI,
     models: readonly string[],
     meta: SeoReportMeta,
@@ -1071,7 +1072,8 @@ async function reviewPages(
         const toCall: WorkItem[] = []
         for (const t of items) {
             o.meta.chunks.total++
-            const hit = cacheGet(t.key)
+            const hit = cacheGet<AiChunkValue>(t.key)
+
             if (hit) {
                 o.meta.chunks.cached++
                 t.state.cached++
