@@ -1,0 +1,10 @@
+export const PLACES_BASE_URL = 'https://places.googleapis.com/v1/places'
+export const PLACES_SEARCH_URL = `${PLACES_BASE_URL}:searchText`
+export const SEARCH_FIELD_MASK = 'places.id,nextPageToken'
+export const DETAILS_FIELD_MASK = ['id', 'displayName', 'formattedAddress', 'websiteUri', 'nationalPhoneNumber', 'rating', 'userRatingCount', 'priceLevel'].join(',')
+export const PAGE_SIZE = 20
+export const MAX_SEARCH_PAGES = 3
+export const MAX_SEARCH_RESULTS = 60
+export const DEFAULT_MAX_NEW_RESULTS = 20
+export const REQUEST_TIMEOUT_MS = 15_000
+export const DETAILS_CONCURRENCY = 5
