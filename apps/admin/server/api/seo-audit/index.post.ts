@@ -1,6 +1,6 @@
 import pLimit from 'p-limit'
-import { generateFullSeoReport } from '~~/server/utils/seo-analyzer'
-import { discoverSiteUrls, scrapePageSeo } from '~~/server/utils/seo-crawler'
+import { generateFullSeoReport } from '~~/server/services/seo-analyzer'
+import { discoverSiteUrls, ExtractedPageData, scrapePageSeo } from '~~/server/services/seo-crawler'
 import { getAuthenticatedSupabase } from '~~/server/utils/auth'
 
 export default defineEventHandler(async (event) => {

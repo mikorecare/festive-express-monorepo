@@ -1,21 +1,8 @@
 import * as cheerio from 'cheerio'
-import { scrapePageSeo, type ExtractedPageData } from '~~/server/utils/seo-crawler'
+import { collapse } from '../../shared/text'
 
-/** A normal scraped page plus the money amounts the SEO crawler's block extractor drops. */
-export type CompetitorScrapedPage = ExtractedPageData & {
-    /** Package/service prices, labelled with the nearest heading, e.g. "Joy: $1,299" */
-    priceLines: string[]
-    /** Discounts, coupons, vouchers and similar: amounts that are NOT prices */
-    promoLines: string[]
-}
-
-const USER_AGENT = 'Admin-SEO-Auditor/1.0'
-const FETCH_TIMEOUT_MS = 12_000
-const MAX_HTML_CHARS = 3_000_000
 const MAX_LINES = 40
 const AMOUNT_RE = /\$\s?\d[\d,]*(?:\.\d{1,2})?/
-// Pages where a second request is not worth it
-const SKIP_PATHS = /privacy|terms|cookie|confirm|unsubscribe|login|signup|sign-up|account/i
 // Used to name a price when its card has no heading tag
 const LABEL_FALLBACK = '[class*="title"], [class*="name"], strong, b'
 
@@ -43,27 +30,6 @@ const PROMO_WORDS = new RegExp(
 
 /** Class/id names of containers that hold announcements, not products. */
 const PROMO_CONTAINER = /ticker|marquee|announce|promo|coupon|topbar|top-bar|ribbon|countdown|discount|voucher|popup|modal|toast/i
-
-const collapse = (s: string) => s.replace(/\s+/g, ' ').trim()
-
-async function fetchHtml(url: string): Promise<string | null> {
-    try {
-        const res = await fetch(url, {
-            redirect: 'follow',
-            signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-            headers: {
-                'User-Agent': USER_AGENT,
-                Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            },
-        })
-        if (!res.ok) return null
-        const type = res.headers.get('content-type') || ''
-        if (type && !/html/i.test(type)) return null
-        return (await res.text()).slice(0, MAX_HTML_CHARS)
-    } catch {
-        return null
-    }
-}
 
 /** schema.org prices (Product/Offer), e.g. "Joy: $1299" */
 function jsonLdPriceLines($: cheerio.CheerioAPI): string[] {
@@ -108,7 +74,10 @@ function inPromoContainer($: cheerio.CheerioAPI, el: any): boolean {
 }
 
 export function extractMoneyLines(html: string): { prices: string[]; promos: string[] } {
-    const $ = cheerio.load(html)
+    return extractMoneyFromDocument(cheerio.load(html))
+}
+
+export function extractMoneyFromDocument($: cheerio.CheerioAPI): { prices: string[]; promos: string[] } {
     const prices: string[] = []
     const promos: string[] = []
     const seenPrices = new Set<string>()
@@ -132,9 +101,9 @@ export function extractMoneyLines(html: string): { prices: string[]; promos: str
     for (const l of jsonLdPriceLines($)) addPrice(l)
 
     // 2. Money amounts in short leaf elements
-    $('script, style, noscript, template, svg').remove()
     $('body *').each((_, el) => {
         const $el = $(el)
+        if ($el.closest('script,style,noscript,template,svg').length) return
         if ($el.children().length > 0) return
         const text = collapse($el.text())
         if (!text || text.length > 120 || !AMOUNT_RE.test(text)) return
@@ -178,28 +147,3 @@ export function extractMoneyLines(html: string): { prices: string[]; promos: str
     return { prices, promos }
 }
 
-export async function scrapeCompetitorPage(url: string): Promise<CompetitorScrapedPage> {
-    // The normal SEO scrape is untouched
-    const page = await scrapePageSeo(url)
-
-    let priceLines: string[] = []
-    let promoLines: string[] = []
-    if (!page.fetchError && page.blocks.length > 0) {
-        let path = ''
-        try {
-            path = new URL(page.finalUrl).pathname
-        } catch {
-            // keep empty
-        }
-        if (!SKIP_PATHS.test(path)) {
-            const html = await fetchHtml(page.finalUrl)
-            if (html) {
-                const found = extractMoneyLines(html)
-                priceLines = found.prices
-                promoLines = found.promos
-            }
-        }
-    }
-
-    return { ...page, priceLines, promoLines }
-}

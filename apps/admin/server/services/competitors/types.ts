@@ -1,3 +1,4 @@
+import type { ContentBlock } from '../shared/crawler/types'
 import { Type, type Schema } from '@google/genai'
 
 // ---------------------------------------------------------------------------
